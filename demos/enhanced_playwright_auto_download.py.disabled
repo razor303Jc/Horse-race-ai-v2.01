@@ -1,0 +1,744 @@
+#!/usr/bin/env python3
+"""
+Enhanced Playwright Auto-Download System
+========================================
+
+Automated race data collection system with gradual integration into existing
+data pipeline. Supports multiple racing data sources with backup capabilities
+for when APIs are down.
+"""
+
+import asyncio
+import json
+import logging
+import time
+from dataclasses import asdict, dataclass
+from datetime import datetime, timedelta
+from pathlib import Path
+from typing import Any, Dict, List, Optional
+
+import pandas as pd
+from playwright.async_api import Browser, BrowserContext, Page, async_playwright
+from rich.console import Console
+from rich.panel import Panel
+from rich.progress import Progress, SpinnerColumn, TextColumn
+from rich.table import Table
+
+console = Console()
+logger = logging.getLogger(__name__)
+
+
+@dataclass
+class RealRaceCard:
+    """Real race card data structure."""
+
+    race_id: str
+    track: str
+    race_number: int
+    race_time: datetime
+    distance: str
+    surface: str
+    race_type: str
+    conditions: str
+    prize_money: float
+    field_size: int
+    horses: List[Dict[str, Any]]
+    betting_odds: Dict[str, float]
+    source: str = "playwright_scraper"
+    scraped_at: Optional[datetime] = None
+
+    def __post_init__(self):
+        if self.scraped_at is None:
+            self.scraped_at = datetime.now()
+
+
+@dataclass
+class RealHorseData:
+    """Real horse data structure."""
+
+    name: str
+    age: int
+    weight: str
+    jockey: str
+    trainer: str
+    form: str
+    recent_runs: List[Dict[str, Any]]
+    ratings: Dict[str, float]
+    odds: float
+    post_position: int
+    silks: Optional[str] = None
+    breeding: Optional[Dict[str, str]] = None
+
+
+class RacingDataSource:
+    """Base class for racing data sources."""
+
+    def __init__(self, name: str, url: str, priority: int = 1):
+        self.name = name
+        self.url = url
+        self.priority = priority
+        self.active = True
+        self.last_success = None
+        self.error_count = 0
+
+    async def test_connection(self, page: Page) -> bool:
+        """Test if the data source is accessible."""
+        try:
+            await page.goto(self.url, timeout=10000)
+            await page.wait_for_load_state("networkidle", timeout=5000)
+            self.last_success = datetime.now()
+            self.error_count = 0
+            return True
+        except Exception as e:
+            self.error_count += 1
+            logger.warning(f"Connection test failed for {self.name}: {e}")
+            return False
+
+
+class EnhancedPlaywrightScraper:
+    """Enhanced Playwright scraper with multiple source support."""
+
+    def __init__(self):
+        """Initialize the enhanced scraper."""
+        self.browser: Optional[Browser] = None
+        self.context: Optional[BrowserContext] = None
+        self.console = console
+
+        # Data directories
+        self.data_dir = Path("data")
+        self.real_data_dir = self.data_dir / "real_racing_data"
+        self.backup_dir = self.data_dir / "backup_data"
+        self.real_data_dir.mkdir(parents=True, exist_ok=True)
+        self.backup_dir.mkdir(parents=True, exist_ok=True)
+
+        # Racing data sources (priority order)
+        self.data_sources = [
+            RacingDataSource("Racing Post", "https://www.racingpost.com", 1),
+            RacingDataSource("Timeform", "https://www.timeform.com", 2),
+            RacingDataSource("At The Races", "https://www.attheraces.com", 3),
+            RacingDataSource("Racing UK", "https://www.racinguk.com", 4),
+        ]
+
+        # Data integration settings
+        self.real_data_percentage = 0.0  # Start with 0% real data
+        self.target_real_data_percentage = 100.0  # Eventually 100% real data
+        self.integration_step = 5.0  # Increase by 5% each successful collection
+
+        # Collection stats
+        self.collection_stats = {
+            "total_attempts": 0,
+            "successful_collections": 0,
+            "failed_collections": 0,
+            "real_race_cards": 0,
+            "synthetic_race_cards": 0,
+            "last_collection": None,
+        }
+
+        logger.info("Initialized Enhanced Playwright Scraper")
+
+    async def start(self) -> None:
+        """Start the browser with enhanced configuration."""
+        self.console.print("🚀 Starting Enhanced Playwright Scraper...")
+
+        playwright = await async_playwright().__aenter__()
+
+        # Enhanced browser configuration
+        self.browser = await playwright.chromium.launch(
+            headless=True,  # Use headless for production
+            args=[
+                "--no-sandbox",
+                "--disable-dev-shm-usage",
+                "--disable-blink-features=AutomationControlled",
+                "--disable-extensions",
+                "--disable-plugins",
+                "--disable-images",  # Faster loading
+                "--disable-javascript",  # For some sites
+                "--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+            ],
+        )
+
+        # Create context with stealth settings
+        self.context = await self.browser.new_context(
+            viewport={"width": 1920, "height": 1080},
+            user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
+        )
+
+        # Set timeouts
+        self.context.set_default_timeout(30000)
+
+        self.console.print("✅ Browser started successfully")
+
+    async def stop(self) -> None:
+        """Stop the browser and cleanup."""
+        if self.context:
+            await self.context.close()
+        if self.browser:
+            await self.browser.close()
+        self.console.print("🛑 Browser stopped")
+
+    async def test_data_sources(self) -> List[RacingDataSource]:
+        """Test all data sources and return available ones."""
+        self.console.print("🔍 Testing racing data sources...")
+
+        available_sources = []
+
+        for source in self.data_sources:
+            page = await self.context.new_page()
+
+            try:
+                if await source.test_connection(page):
+                    available_sources.append(source)
+                    self.console.print(f"✅ {source.name} - Available")
+                else:
+                    self.console.print(f"❌ {source.name} - Unavailable")
+            except Exception as e:
+                self.console.print(f"❌ {source.name} - Error: {e}")
+            finally:
+                await page.close()
+
+        return available_sources
+
+    async def scrape_racing_post(self, page: Page) -> List[RealRaceCard]:
+        """Scrape race cards from Racing Post."""
+        race_cards = []
+
+        try:
+            # Navigate to Racing Post results/cards page
+            await page.goto("https://www.racingpost.com/results", timeout=15000)
+            await page.wait_for_load_state("networkidle", timeout=10000)
+
+            # Look for race card links
+            race_links = await page.locator(
+                "a[href*='/results/'], a[href*='/racecards/']"
+            ).all()
+
+            for i, link in enumerate(race_links[:5]):  # Limit to first 5 races
+                try:
+                    href = await link.get_attribute("href")
+                    if href:
+                        race_url = (
+                            f"https://www.racingpost.com{href}"
+                            if href.startswith("/")
+                            else href
+                        )
+
+                        # Navigate to individual race
+                        await page.goto(race_url, timeout=10000)
+                        await page.wait_for_load_state("networkidle", timeout=5000)
+
+                        race_card = await self._extract_racing_post_data(page)
+                        if race_card:
+                            race_cards.append(race_card)
+
+                except Exception as e:
+                    logger.warning(f"Failed to scrape race {i}: {e}")
+                    continue
+
+        except Exception as e:
+            logger.error(f"Failed to scrape Racing Post: {e}")
+
+        return race_cards
+
+    async def _extract_racing_post_data(self, page: Page) -> Optional[RealRaceCard]:
+        """Extract race data from Racing Post page."""
+        try:
+            # Extract race info
+            race_title = await page.locator(
+                "h1, .rp-raceTimeVenue__title"
+            ).first.inner_text()
+
+            # Extract track name
+            track_element = await page.locator(
+                ".rp-raceTimeVenue__venue, .course-name"
+            ).first
+            track = (
+                await track_element.inner_text() if track_element else "Unknown Track"
+            )
+
+            # Extract distance
+            distance_element = await page.locator(
+                ".rp-raceTimeVenue__distance, .distance"
+            ).first
+            distance = (
+                await distance_element.inner_text() if distance_element else "Unknown"
+            )
+
+            # Extract race time
+            time_element = await page.locator(
+                ".rp-raceTimeVenue__time, .race-time"
+            ).first
+            race_time_str = await time_element.inner_text() if time_element else "12:00"
+
+            # Extract horses data
+            horses = []
+            betting_odds = {}
+
+            horse_rows = await page.locator(
+                "tr[data-test-selector='list-item'], .rp-horseTable__row"
+            ).all()
+
+            for row in horse_rows[:12]:  # Limit to 12 horses
+                try:
+                    horse_data = await self._extract_horse_from_row(row)
+                    if horse_data:
+                        horses.append(horse_data)
+                        betting_odds[horse_data["name"]] = horse_data.get("odds", 10.0)
+                except Exception as e:
+                    logger.debug(f"Failed to extract horse data: {e}")
+                    continue
+
+            if len(horses) < 3:  # Need at least 3 horses for valid race
+                return None
+
+            # Create race card
+            race_card = RealRaceCard(
+                race_id=f"RP_{datetime.now().strftime('%Y%m%d_%H%M%S')}_{len(horses)}",
+                track=track,
+                race_number=1,
+                race_time=datetime.now().replace(hour=12, minute=0),
+                distance=distance,
+                surface="Turf",
+                race_type="Flat",
+                conditions="Good",
+                prize_money=10000.0,
+                field_size=len(horses),
+                horses=horses,
+                betting_odds=betting_odds,
+                source="racing_post",
+            )
+
+            return race_card
+
+        except Exception as e:
+            logger.error(f"Failed to extract Racing Post data: {e}")
+            return None
+
+    async def _extract_horse_from_row(self, row) -> Optional[Dict[str, Any]]:
+        """Extract individual horse data from table row."""
+        try:
+            horse_data = {}
+
+            # Horse name
+            name_element = await row.locator(
+                ".rp-horseTable__horse__name, .horse-name"
+            ).first
+            if name_element:
+                horse_data["name"] = await name_element.inner_text()
+            else:
+                return None
+
+            # Jockey
+            jockey_element = await row.locator(".rp-horseTable__jockey, .jockey").first
+            horse_data["jockey"] = (
+                await jockey_element.inner_text() if jockey_element else "Unknown"
+            )
+
+            # Trainer
+            trainer_element = await row.locator(
+                ".rp-horseTable__trainer, .trainer"
+            ).first
+            horse_data["trainer"] = (
+                await trainer_element.inner_text() if trainer_element else "Unknown"
+            )
+
+            # Odds
+            odds_element = await row.locator(".rp-horseTable__odds, .odds").first
+            if odds_element:
+                odds_text = await odds_element.inner_text()
+                horse_data["odds"] = self._parse_odds(odds_text)
+            else:
+                horse_data["odds"] = 10.0
+
+            # Weight
+            weight_element = await row.locator(".rp-horseTable__weight, .weight").first
+            horse_data["weight"] = (
+                await weight_element.inner_text() if weight_element else "9-0"
+            )
+
+            # Age
+            age_element = await row.locator(".rp-horseTable__age, .age").first
+            age_text = await age_element.inner_text() if age_element else "4"
+            horse_data["age"] = int(age_text) if age_text.isdigit() else 4
+
+            # Form
+            form_element = await row.locator(".rp-horseTable__form, .form").first
+            horse_data["form"] = (
+                await form_element.inner_text() if form_element else "12345"
+            )
+
+            # Create recent performance data
+            horse_data["recent_runs"] = self._generate_recent_runs(horse_data["form"])
+
+            return horse_data
+
+        except Exception as e:
+            logger.debug(f"Failed to extract horse from row: {e}")
+            return None
+
+    def _parse_odds(self, odds_text: str) -> float:
+        """Parse odds from various formats."""
+        try:
+            odds_text = odds_text.strip().replace("£", "").replace("$", "")
+
+            if "/" in odds_text:  # Fractional odds
+                parts = odds_text.split("/")
+                if len(parts) == 2:
+                    return float(parts[0]) / float(parts[1]) + 1.0
+            elif odds_text.replace(".", "").replace("-", "").isdigit():  # Decimal odds
+                return float(odds_text)
+
+            return 10.0  # Default odds
+
+        except Exception:
+            return 10.0
+
+    def _generate_recent_runs(self, form: str) -> List[Dict[str, Any]]:
+        """Generate recent runs from form string."""
+        runs = []
+
+        for i, char in enumerate(form[:5]):  # Last 5 runs
+            if char.isdigit():
+                position = int(char)
+            elif char == "-":
+                position = 10
+            else:
+                position = 8
+
+            run = {
+                "date": (datetime.now() - timedelta(days=(i + 1) * 14)).strftime(
+                    "%Y-%m-%d"
+                ),
+                "track": "Various",
+                "distance": "1200m",
+                "surface": "Turf",
+                "finish_position": position,
+                "field_size": 12,
+                "beaten_lengths": position * 0.5,
+                "speed_figure": max(40, 100 - (position * 5)),
+                "weight_carried": "9-0",
+                "jockey": "Various",
+                "trainer": "Various",
+                "odds": position * 2.0,
+                "comments": f"Form position {char}",
+            }
+            runs.append(run)
+
+        return runs
+
+    async def collect_real_race_data(self) -> List[RealRaceCard]:
+        """Collect real race data from available sources."""
+        self.collection_stats["total_attempts"] += 1
+
+        self.console.print("📊 Collecting real race data...")
+
+        available_sources = await self.test_data_sources()
+
+        if not available_sources:
+            self.console.print("❌ No data sources available")
+            self.collection_stats["failed_collections"] += 1
+            return []
+
+        all_race_cards = []
+
+        for source in available_sources:
+            page = await self.context.new_page()
+
+            try:
+                if source.name == "Racing Post":
+                    race_cards = await self.scrape_racing_post(page)
+                    all_race_cards.extend(race_cards)
+
+                # Add more source scrapers here
+                # elif source.name == "Timeform":
+                #     race_cards = await self.scrape_timeform(page)
+
+            except Exception as e:
+                logger.error(f"Failed to collect from {source.name}: {e}")
+            finally:
+                await page.close()
+
+        if all_race_cards:
+            self.collection_stats["successful_collections"] += 1
+            self.collection_stats["real_race_cards"] += len(all_race_cards)
+            self.collection_stats["last_collection"] = datetime.now()
+
+            # Save real data
+            await self.save_real_race_data(all_race_cards)
+
+            self.console.print(f"✅ Collected {len(all_race_cards)} real race cards")
+        else:
+            self.collection_stats["failed_collections"] += 1
+            self.console.print("❌ No real race data collected")
+
+        return all_race_cards
+
+    async def save_real_race_data(self, race_cards: List[RealRaceCard]) -> None:
+        """Save real race data to files."""
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+
+        # Save as JSON
+        json_file = self.real_data_dir / f"real_race_cards_{timestamp}.json"
+
+        serializable_data = []
+        for card in race_cards:
+            card_dict = asdict(card)
+            # Convert datetime objects to strings
+            card_dict["race_time"] = card.race_time.isoformat()
+            card_dict["scraped_at"] = (card.scraped_at or datetime.now()).isoformat()
+            serializable_data.append(card_dict)
+
+        with open(json_file, "w") as f:
+            json.dump(serializable_data, f, indent=2)
+
+        self.console.print(f"💾 Saved real race data to: {json_file}")
+
+    async def integrate_with_existing_data(self) -> Dict[str, Any]:
+        """Integrate real data with existing synthetic data."""
+        self.console.print("🔄 Integrating real data with existing synthetic data...")
+
+        # Load existing synthetic data
+        synthetic_file = self.data_dir / "massive_test_race_cards.json"
+
+        if not synthetic_file.exists():
+            self.console.print("❌ No existing synthetic data found")
+            return {"status": "error", "message": "No synthetic data found"}
+
+        with open(synthetic_file, "r") as f:
+            synthetic_data = json.load(f)
+
+        # Load real data
+        real_data_files = list(self.real_data_dir.glob("real_race_cards_*.json"))
+
+        if not real_data_files:
+            self.console.print("❌ No real data available for integration")
+            return {"status": "error", "message": "No real data available"}
+
+        # Load latest real data
+        latest_real_file = max(real_data_files, key=lambda x: x.stat().st_mtime)
+
+        with open(latest_real_file, "r") as f:
+            real_data = json.load(f)
+
+        # Calculate integration ratio
+        total_races = len(synthetic_data)
+        real_races_to_include = int(total_races * (self.real_data_percentage / 100))
+
+        if real_races_to_include > len(real_data):
+            real_races_to_include = len(real_data)
+
+        # Create integrated dataset
+        integrated_data = []
+
+        # Add real data first
+        for i in range(real_races_to_include):
+            real_race = real_data[i]
+            # Convert to synthetic data format
+            converted_race = self._convert_real_to_synthetic_format(real_race)
+            integrated_data.append(converted_race)
+
+        # Add remaining synthetic data
+        synthetic_to_include = total_races - real_races_to_include
+        integrated_data.extend(synthetic_data[:synthetic_to_include])
+
+        # Save integrated data
+        integrated_file = (
+            self.data_dir
+            / f"integrated_race_cards_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+        )
+
+        with open(integrated_file, "w") as f:
+            json.dump(integrated_data, f, indent=2)
+
+        # Update main file
+        backup_file = (
+            self.backup_dir
+            / f"synthetic_backup_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+        )
+        synthetic_file.rename(backup_file)
+
+        with open(synthetic_file, "w") as f:
+            json.dump(integrated_data, f, indent=2)
+
+        # Update integration percentage
+        if real_races_to_include > 0:
+            self.real_data_percentage = min(
+                self.real_data_percentage + self.integration_step,
+                self.target_real_data_percentage,
+            )
+
+        integration_stats = {
+            "status": "success",
+            "total_races": len(integrated_data),
+            "real_races": real_races_to_include,
+            "synthetic_races": synthetic_to_include,
+            "real_data_percentage": self.real_data_percentage,
+            "integrated_file": str(integrated_file),
+            "backup_file": str(backup_file),
+        }
+
+        self.console.print(
+            f"✅ Integration complete: {real_races_to_include} real + {synthetic_to_include} synthetic"
+        )
+
+        return integration_stats
+
+    def _convert_real_to_synthetic_format(
+        self, real_race: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """Convert real race data to synthetic data format."""
+
+        # Extract horses data and convert to synthetic format
+        horses_data = {}
+        betting_odds = {}
+
+        for horse in real_race["horses"]:
+            horse_name = horse["name"]
+
+            # Convert recent runs to synthetic format
+            horse_performances = []
+            for run in horse.get("recent_runs", []):
+                perf = {
+                    "date": run["date"],
+                    "track": run["track"],
+                    "distance": run["distance"],
+                    "surface": run["surface"],
+                    "race_class": "Class 4",
+                    "field_size": run["field_size"],
+                    "finish_position": run["finish_position"],
+                    "beaten_lengths": run["beaten_lengths"],
+                    "time": "1:24.56",
+                    "speed_figure": run["speed_figure"],
+                    "pace_figures": {"early": 85, "late": 90},
+                    "weight_carried": run["weight_carried"],
+                    "jockey": run["jockey"],
+                    "trainer": run["trainer"],
+                    "odds": run["odds"],
+                    "purse": 15000,
+                    "conditions": "Good",
+                    "comments": run["comments"],
+                }
+                horse_performances.append(perf)
+
+            horses_data[horse_name] = horse_performances
+            betting_odds[horse_name] = horse["odds"]
+
+        # Create race info in synthetic format
+        race_info = {
+            "race_id": real_race["race_id"],
+            "track": real_race["track"],
+            "distance": real_race["distance"],
+            "surface": real_race["surface"],
+            "race_class": real_race["race_type"],
+            "conditions": real_race["conditions"],
+            "prize_money": real_race["prize_money"],
+            "date": real_race["race_time"][:10],
+            "time": real_race["race_time"][11:16],
+        }
+
+        return {
+            "race_info": race_info,
+            "horses_data": horses_data,
+            "betting_odds": betting_odds,
+            "source": f"real_data_{real_race['source']}",
+        }
+
+    def display_collection_stats(self) -> None:
+        """Display collection statistics."""
+
+        table = Table(title="Real Data Collection Statistics")
+        table.add_column("Metric", style="cyan")
+        table.add_column("Value", style="green")
+
+        table.add_row("Total Attempts", str(self.collection_stats["total_attempts"]))
+        table.add_row(
+            "Successful Collections",
+            str(self.collection_stats["successful_collections"]),
+        )
+        table.add_row(
+            "Failed Collections", str(self.collection_stats["failed_collections"])
+        )
+        table.add_row("Real Race Cards", str(self.collection_stats["real_race_cards"]))
+        table.add_row("Current Real Data %", f"{self.real_data_percentage:.1f}%")
+        table.add_row("Target Real Data %", f"{self.target_real_data_percentage:.1f}%")
+
+        if self.collection_stats["last_collection"]:
+            table.add_row(
+                "Last Collection",
+                self.collection_stats["last_collection"].strftime("%Y-%m-%d %H:%M:%S"),
+            )
+
+        self.console.print(table)
+
+    async def run_collection_cycle(self) -> Dict[str, Any]:
+        """Run a complete data collection and integration cycle."""
+
+        self.console.print(
+            Panel.fit(
+                "[bold blue]🏇 REAL DATA COLLECTION CYCLE[/bold blue]\n"
+                "[white]Collecting live race data and integrating with existing system[/white]",
+                border_style="blue",
+            )
+        )
+
+        try:
+            await self.start()
+
+            # Collect real data
+            real_race_cards = await self.collect_real_race_data()
+
+            # Integrate with existing data
+            if real_race_cards:
+                integration_result = await self.integrate_with_existing_data()
+            else:
+                integration_result = {
+                    "status": "skipped",
+                    "message": "No real data to integrate",
+                }
+
+            # Display stats
+            self.display_collection_stats()
+
+            return {
+                "collection_successful": len(real_race_cards) > 0,
+                "race_cards_collected": len(real_race_cards),
+                "integration_result": integration_result,
+                "real_data_percentage": self.real_data_percentage,
+            }
+
+        except Exception as e:
+            logger.error(f"Collection cycle failed: {e}")
+            return {"status": "error", "message": str(e)}
+
+        finally:
+            await self.stop()
+
+
+async def main():
+    """Main function to run the enhanced scraper."""
+    scraper = EnhancedPlaywrightScraper()
+
+    try:
+        result = await scraper.run_collection_cycle()
+
+        console.print("\n" + "=" * 60)
+        console.print("🎯 Collection Cycle Complete!")
+        console.print(f"📊 Result: {result}")
+
+        if result.get("collection_successful"):
+            console.print(
+                f"✅ Successfully collected {result['race_cards_collected']} race cards"
+            )
+            console.print(
+                f"📈 Real data percentage: {result['real_data_percentage']:.1f}%"
+            )
+        else:
+            console.print("❌ No real data collected this cycle")
+
+    except KeyboardInterrupt:
+        console.print("\n🛑 Collection cancelled by user")
+    except Exception as e:
+        console.print(f"\n❌ Collection failed: {e}")
+
+
+if __name__ == "__main__":
+    asyncio.run(main())

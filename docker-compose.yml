@@ -1,0 +1,306 @@
+version: "3.8"
+
+services:
+  # PostgreSQL Database - Primary database for main operations
+  postgres:
+    image: postgres:15-alpine
+    container_name: horse_racing_postgres
+    environment:
+      POSTGRES_DB: horse_racing_db
+      POSTGRES_USER: horse_racing
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-secure_password_123}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./docker/postgres/init:/docker-entrypoint-initdb.d
+    ports:
+      - "5433:5432"  # Use different port to avoid conflicts
+    networks:
+      - horse_racing_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U horse_racing -d horse_racing_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis for caching and session management
+  redis:
+    image: redis:7-alpine
+    container_name: horse_racing_redis
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-redis_password_123}
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6380:6379"  # Use different port to avoid conflicts
+    networks:
+      - horse_racing_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  # Main Horse Racing AI Application
+  horse-racing-ai:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: horse_racing_app
+    environment:
+      # Database configuration
+      DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/horse_racing_db
+      REDIS_URL: redis://:${REDIS_PASSWORD:-redis_password_123}@redis:6379/0
+
+      # Application settings
+      DEBUG: ${DEBUG:-false}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      PYTHONPATH: /app/src
+
+      # Scraping configuration
+      SCRAPER_HEADLESS: "true"
+      SCRAPER_TIMEOUT: 30000
+
+      # Notification settings
+      NTFY_TOPIC: ${NTFY_TOPIC:-horse-racing-alerts}
+      NTFY_URL: http://ntfy:8080
+
+      # ML Model settings
+      MODEL_PATH: /app/models
+      FEATURE_CACHE_PATH: /app/cache/features
+    volumes:
+      - ./data:/app/data
+      - ./models:/app/models
+      - ./cache:/app/cache
+      - ./logs:/app/logs
+    command: ["python", "demos/complete_racing_pipeline.py"]
+    ports:
+      - "8000:5002"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      ntfy:
+        condition: service_healthy
+    networks:
+      - horse_racing_network
+      - traefik
+    restart: unless-stopped
+    labels:
+      # Traefik configuration
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik"
+      
+      # API Routes
+      - "traefik.http.routers.horse-racing-api.rule=Host(`horse-racing.${DOMAIN:-localhost}`) && PathPrefix(`/api`)"
+      - "traefik.http.routers.horse-racing-api.entrypoints=websecure"
+      - "traefik.http.routers.horse-racing-api.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.horse-racing-api.service=horse-racing-api"
+      - "traefik.http.services.horse-racing-api.loadbalancer.server.port=8000"
+      
+      # Web Interface
+      - "traefik.http.routers.horse-racing-web.rule=Host(`horse-racing.${DOMAIN:-localhost}`)"
+      - "traefik.http.routers.horse-racing-web.entrypoints=websecure"
+      - "traefik.http.routers.horse-racing-web.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.horse-racing-web.service=horse-racing-web"
+      - "traefik.http.services.horse-racing-web.loadbalancer.server.port=8000"
+      
+      # Health check middleware
+      - "traefik.http.routers.horse-racing-api.middlewares=auth@file"
+      - "traefik.http.routers.horse-racing-web.middlewares=auth@file"
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:5002/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Playwright Scraper Service (separate container for isolation)
+  scraper:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.scraper
+    container_name: horse_racing_scraper
+    environment:
+      DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/horse_racing_db
+      REDIS_URL: redis://:${REDIS_PASSWORD:-redis_password_123}@redis:6379/0
+      DEBUG: ${DEBUG:-false}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      PYTHONPATH: /app/src
+      SCRAPER_HEADLESS: "true"
+      NTFY_TOPIC: ${NTFY_TOPIC:-horse-racing-alerts}
+      NTFY_URL: http://ntfy:8080
+    volumes:
+      - ./data:/app/data
+      - ./cache:/app/cache
+      - ./logs:/app/logs
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      ntfy:
+        condition: service_healthy
+    networks:
+      - horse_racing_network
+      - traefik
+    restart: unless-stopped
+    # Run scraper as a scheduled service
+    command: ["python", "-m", "src.horse_racing_ai.automation.scheduler"]
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik"
+      
+      # Scraper monitoring interface (if exposed)
+      - "traefik.http.routers.horse-racing-scraper.rule=Host(`scraper.horse-racing.${DOMAIN:-localhost}`)"
+      - "traefik.http.routers.horse-racing-scraper.entrypoints=websecure"
+      - "traefik.http.routers.horse-racing-scraper.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.horse-racing-scraper.service=horse-racing-scraper"
+      - "traefik.http.services.horse-racing-scraper.loadbalancer.server.port=8001"
+      - "traefik.http.routers.horse-racing-scraper.middlewares=auth@file"
+
+  # NTFY Notification Server
+  ntfy:
+    image: binwiederhier/ntfy:latest
+    container_name: horse_racing_ntfy
+    command:
+      - serve
+    environment:
+      # Base configuration
+      - NTFY_BASE_URL=http://localhost:8081
+      - NTFY_LISTEN_HTTP=:8080
+      - NTFY_BEHIND_PROXY=false
+      
+      # Security settings
+      - NTFY_AUTH_DEFAULT_ACCESS=read-write
+      - NTFY_UPSTREAM_BASE_URL=https://ntfy.sh
+      
+      # Cache and persistence
+      - NTFY_CACHE_FILE=/var/cache/ntfy/cache.db
+      - NTFY_CACHE_DURATION=12h
+      - NTFY_KEEPALIVE_INTERVAL=45s
+      - NTFY_MANAGER_INTERVAL=1m
+      
+      # Message limits
+      - NTFY_MESSAGE_SIZE_LIMIT=4096
+      - NTFY_GLOBAL_TOPIC_LIMIT=15000
+      - NTFY_VISITOR_SUBSCRIPTION_LIMIT=30
+      
+      # Logging
+      - NTFY_LOG_LEVEL=INFO
+      - NTFY_LOG_FORMAT=text
+    
+    volumes:
+      - ntfy_cache:/var/cache/ntfy
+      - ntfy_config:/etc/ntfy
+      
+    ports:
+      - "8081:8080"  # NTFY web interface and API
+      
+    networks:
+      - horse_racing_network
+      - traefik
+      
+    restart: unless-stopped
+    
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8080/v1/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik"
+      
+      # NTFY web interface
+      - "traefik.http.routers.horse-racing-ntfy.rule=Host(`ntfy.horse-racing.${DOMAIN:-localhost}`)"
+      - "traefik.http.routers.horse-racing-ntfy.entrypoints=websecure"
+      - "traefik.http.routers.horse-racing-ntfy.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.horse-racing-ntfy.service=horse-racing-ntfy"
+      - "traefik.http.services.horse-racing-ntfy.loadbalancer.server.port=8080"
+      - "traefik.http.routers.horse-racing-ntfy.middlewares=auth@file"
+
+  # Database Administration (pgAdmin)
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: horse_racing_pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@horseracingai.com}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-admin_password_123}
+      PGADMIN_LISTEN_PORT: 80
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+      - ./docker/pgadmin/servers.json:/pgadmin4/servers.json
+    ports:
+      - "8083:80"  # Use different port to avoid conflicts
+    depends_on:
+      - postgres
+    networks:
+      - horse_racing_network
+      - traefik
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik"
+      
+      # pgAdmin web interface
+      - "traefik.http.routers.horse-racing-pgadmin.rule=Host(`pgadmin.horse-racing.${DOMAIN:-localhost}`)"
+      - "traefik.http.routers.horse-racing-pgadmin.entrypoints=websecure"
+      - "traefik.http.routers.horse-racing-pgadmin.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.horse-racing-pgadmin.service=horse-racing-pgadmin"
+      - "traefik.http.services.horse-racing-pgadmin.loadbalancer.server.port=80"
+      - "traefik.http.routers.horse-racing-pgadmin.middlewares=auth@file"
+
+  # MkDocs Documentation Server
+  mkdocs:
+    image: squidfunk/mkdocs-material:latest
+    container_name: horse_racing_docs
+    ports:
+      - "8001:8000"
+    volumes:
+      - ./docs:/docs
+      - ./mkdocs.yml:/docs/mkdocs.yml
+      - ./documentation:/docs/docs/documentation
+      - ./README.md:/docs/docs/index.md
+      - ./requirements.txt:/docs/docs/requirements.txt
+      - ./pyproject.toml:/docs/docs/pyproject.toml
+    networks:
+      - horse_racing_network
+    restart: unless-stopped
+    command: serve --dev-addr=0.0.0.0:8000
+    environment:
+      - LIVE_RELOAD_SUPPORT=true
+      - FAST_MODE=true
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.horse-racing-docs.rule=Host(`docs.horse-racing.${DOMAIN:-localhost}`)"
+      - "traefik.http.routers.horse-racing-docs.entrypoints=websecure"
+      - "traefik.http.routers.horse-racing-docs.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.horse-racing-docs.service=horse-racing-docs"
+      - "traefik.http.services.horse-racing-docs.loadbalancer.server.port=8000"
+    profiles:
+      - dev
+      - docs
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  pgadmin_data:
+    driver: local
+  ntfy_cache:
+    driver: local
+  ntfy_config:
+    driver: local
+
+networks:
+  horse_racing_network:
+    driver: bridge
+    name: horse_racing_network
+  traefik:
+    external: true
+    name: traefik-dev

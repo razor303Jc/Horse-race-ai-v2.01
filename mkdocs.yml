@@ -1,0 +1,159 @@
+site_name: Horse Racing AI v2.0 Documentation
+site_description: Comprehensive documentation for the Horse Racing AI handicapping system
+site_author: Horse Racing AI Team
+site_url: https://docs.horse-racing.localhost
+
+# Repository
+repo_name: Horse-race-handicaping-ai/Horse-race-ai-v2.0
+repo_url: https://github.com/Horse-race-handicaping-ai/Horse-race-ai-v2.0
+edit_uri: edit/main/docs/
+
+# Navigation
+nav:
+  - Home: index.md
+  - Getting Started:
+    - Overview: getting-started/overview.md
+    - Installation: getting-started/installation.md
+    - Quick Start: getting-started/quickstart.md
+    - Docker Setup: getting-started/docker.md
+  - User Guide:
+    - Web Interface: user-guide/web-interface.md
+    - API Reference: user-guide/api-reference.md
+    - Best Practices: user-guide/best-practices.md
+  - Development:
+    - Setup: development/setup.md
+    - Docker Development: development/docker-dev.md
+    - Testing: development/testing.md
+  - Documentation:
+    - Complete Implementation: documentation/IMPLEMENTATION_COMPLETE.md
+    - Development Journey: documentation/COMPLETE_DEVELOPMENT_JOURNEY.md
+    - ML Implementation: documentation/ML_IMPLEMENTATION_COMPLETE.md
+    - Monte Carlo: documentation/MONTE_CARLO_IMPLEMENTATION_COMPLETE.md
+    - Next Phase Roadmap: documentation/NEXT_PHASE_ROADMAP.md
+    - Docker Reference: documentation/DOCKER_QUICK_REFERENCE.md
+  - Configuration:
+    - Requirements: requirements.txt
+    - Project Config: pyproject.toml
+
+# Theme
+theme:
+  name: material
+  palette:
+    # Palette toggle for light mode
+    - scheme: default
+      primary: blue
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    # Palette toggle for dark mode
+    - scheme: slate
+      primary: blue
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.expand
+    - navigation.path
+    - navigation.top
+    - search.highlight
+    - search.share
+    - toc.follow
+    - content.code.copy
+    - content.code.annotate
+  icon:
+    repo: fontawesome/brands/github
+
+# Extensions
+markdown_extensions:
+  - abbr
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - toc:
+      permalink: true
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.caret
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.magiclink:
+      repo_url_shorthand: true
+      user: squidfunk
+      repo: mkdocs-material
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde
+
+# Plugins
+plugins:
+  - search:
+      separator: '[\s\-,:!=\[\]()"/]+|(?!\b)(?=[A-Z][a-z])|\.(?!\d)|&[lg]t;'
+  # Temporarily disabled until custom Docker image is created
+  # - minify:
+  #     minify_html: true
+  # - git-revision-date-localized:
+  #     enable_creation_date: true
+  # - git-committers:
+  #     repository: Horse-race-handicaping-ai/Horse-race-ai-v2.0
+  #     branch: main
+
+# Extra
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/Horse-race-handicaping-ai/Horse-race-ai-v2.0
+    - icon: fontawesome/brands/docker
+      link: https://hub.docker.com/r/horse-racing-ai
+  version:
+    provider: mike
+    default: stable
+  generator: false
+
+# Copyright
+copyright: |
+  &copy; 2024 Horse Racing AI Team. Made with 
+  <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+    Material for MkDocs
+  </a>
+
+# Watch additional files
+watch:
+  - docs/
+  - mkdocs.yml
+
+# Validation
+validation:
+  nav:
+    omitted_files: info
+    not_found: warn
+    absolute_links: info
+  links:
+    not_found: ignore
+    absolute_links: ignore
+    unrecognized_links: ignore

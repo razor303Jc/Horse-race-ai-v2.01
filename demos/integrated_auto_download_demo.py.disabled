@@ -1,0 +1,428 @@
+#!/usr/bin/env python3
+"""
+Integrated Demo: Enhanced Auto-Download with Notifications
+=========================================================
+
+Comprehensive demonstration of the enhanced auto-download system
+integrated with the advanced notification service and NTFY alerts.
+"""
+
+import asyncio
+import logging
+import sys
+from datetime import datetime
+from pathlib import Path
+
+from rich.console import Console
+from rich.live import Live
+from rich.panel import Panel
+from rich.progress import BarColumn, Progress, SpinnerColumn, TextColumn
+from rich.table import Table
+
+# Add project path
+current_dir = Path(__file__).parent
+sys.path.insert(0, str(current_dir))
+
+try:
+    from advanced_notification_service import (
+        AdvancedNotificationService,
+        AlertCategory,
+        AlertSeverity,
+        NotificationEvent,
+    )
+    from enhanced_auto_download_system import EnhancedAutoDownloadSystem
+
+    IMPORTS_AVAILABLE = True
+except ImportError as e:
+    print(f"Import error: {e}")
+    IMPORTS_AVAILABLE = False
+
+console = Console()
+
+
+class IntegratedAutoDownloadDemo:
+    """Integrated demonstration of auto-download with notifications."""
+
+    def __init__(self):
+        """Initialize the demo."""
+        self.console = console
+
+        if not IMPORTS_AVAILABLE:
+            self.console.print("❌ [bold red]Required modules not available[/bold red]")
+            return
+
+        # Initialize systems
+        self.auto_download = EnhancedAutoDownloadSystem()
+        self.notifications = AdvancedNotificationService()
+
+        # Connect notification handlers
+        self._setup_notification_handlers()
+
+    def _setup_notification_handlers(self):
+        """Setup notification handlers for auto-download events."""
+        # Store original logger to intercept events
+        self.original_logger = self.auto_download.logger
+
+    async def run_integrated_demo(self):
+        """Run the complete integrated demonstration."""
+
+        if not IMPORTS_AVAILABLE:
+            return
+
+        # Display header
+        self.console.print(
+            Panel.fit(
+                "🏇 Enhanced Auto-Download System with NTFY Notifications\n"
+                "Real-time data collection with intelligent alerting",
+                style="bold blue",
+            )
+        )
+
+        try:
+            # Step 1: System startup notifications
+            await self.demo_startup_notifications()
+
+            # Step 2: Test notification system
+            await self.demo_notification_testing()
+
+            # Step 3: Health check with notifications
+            await self.demo_health_check_with_notifications()
+
+            # Step 4: Data collection with real-time alerts
+            await self.demo_data_collection_with_alerts()
+
+            # Step 5: Performance monitoring
+            await self.demo_performance_monitoring()
+
+            # Step 6: Final statistics and summary
+            await self.demo_final_summary()
+
+        except KeyboardInterrupt:
+            await self.notifications.notify_system_error(
+                "Demo", "Demo interrupted by user"
+            )
+            self.console.print("\n⚠️ [yellow]Demo interrupted by user[/yellow]")
+
+        except Exception as e:
+            await self.notifications.notify_system_error(
+                "Demo", f"Demo failed: {str(e)}"
+            )
+            self.console.print(f"\n❌ [bold red]Demo failed: {e}[/bold red]")
+
+    async def demo_startup_notifications(self):
+        """Demonstrate startup notifications."""
+        self.console.print("\n🚀 [bold]Step 1: System Startup Notifications[/bold]")
+
+        # Notify system components starting
+        await self.notifications.notify_system_startup("Auto-Download System")
+        await asyncio.sleep(1)
+
+        await self.notifications.notify_system_startup("Notification Service")
+        await asyncio.sleep(1)
+
+        await self.notifications.notify_system_startup("NTFY Integration")
+        await asyncio.sleep(1)
+
+        self.console.print("✅ Startup notifications sent to NTFY")
+
+    async def demo_notification_testing(self):
+        """Demonstrate notification system testing."""
+        self.console.print("\n🧪 [bold]Step 2: Notification System Testing[/bold]")
+
+        test_success = await self.notifications.test_notifications()
+
+        if test_success:
+            self.console.print("✅ All notification tests passed")
+        else:
+            self.console.print("⚠️ Some notification tests failed")
+
+        # Show notification statistics
+        stats = self.notifications.get_stats()
+
+        stats_table = Table(title="Notification Statistics")
+        stats_table.add_column("Metric", style="cyan")
+        stats_table.add_column("Value", style="magenta")
+
+        key_stats = ["total_events", "sent_notifications", "success_rate"]
+        for key in key_stats:
+            if key in stats:
+                value = stats[key]
+                if isinstance(value, float):
+                    formatted_value = (
+                        f"{value:.1f}%" if "rate" in key else f"{value:.2f}"
+                    )
+                else:
+                    formatted_value = str(value)
+                stats_table.add_row(key.replace("_", " ").title(), formatted_value)
+
+        self.console.print(stats_table)
+
+    async def demo_health_check_with_notifications(self):
+        """Demonstrate health check with notifications."""
+        self.console.print("\n🔍 [bold]Step 3: Health Check with Notifications[/bold]")
+
+        with Progress(
+            SpinnerColumn(),
+            TextColumn("[progress.description]{task.description}"),
+            console=self.console,
+        ) as progress:
+
+            task = progress.add_task("Performing health check...", total=None)
+
+            # Notify health check start
+            await self.notifications.send_notification(
+                NotificationEvent(
+                    title="Health Check Started",
+                    message="Starting comprehensive health check of all data sources.",
+                    category=AlertCategory.SYSTEM,
+                    severity=AlertSeverity.INFO,
+                )
+            )
+
+            # Perform health check
+            health_results = await self.auto_download.health_check_all_sources()
+
+            progress.update(task, description="Health check complete")
+
+        # Analyze health results and send appropriate notifications
+        healthy_sources = []
+        unhealthy_sources = []
+
+        for source_name, source in health_results.items():
+            if source.health_score > 70:
+                healthy_sources.append(source_name)
+            else:
+                unhealthy_sources.append(source_name)
+
+        # Send health summary notification
+        if unhealthy_sources:
+            await self.notifications.send_notification(
+                NotificationEvent(
+                    title="Health Check Alert",
+                    message=f"Health check complete. {len(unhealthy_sources)} unhealthy sources detected: {', '.join(unhealthy_sources)}",
+                    category=AlertCategory.SYSTEM,
+                    severity=AlertSeverity.MEDIUM,
+                    data={
+                        "healthy_sources": healthy_sources,
+                        "unhealthy_sources": unhealthy_sources,
+                    },
+                )
+            )
+        else:
+            await self.notifications.send_notification(
+                NotificationEvent(
+                    title="Health Check Passed",
+                    message=f"All {len(healthy_sources)} data sources are healthy and operational.",
+                    category=AlertCategory.SYSTEM,
+                    severity=AlertSeverity.LOW,
+                )
+            )
+
+        # Display health table
+        health_table = Table(title="Data Source Health")
+        health_table.add_column("Source", style="cyan")
+        health_table.add_column("Health Score", style="magenta")
+        health_table.add_column("Status", style="green")
+
+        for source_name, source in health_results.items():
+            status = (
+                "🟢 Healthy"
+                if source.health_score > 70
+                else "🟡 Warning" if source.health_score > 30 else "🔴 Unhealthy"
+            )
+            health_table.add_row(source_name, f"{source.health_score:.1f}%", status)
+
+        self.console.print(health_table)
+
+    async def demo_data_collection_with_alerts(self):
+        """Demonstrate data collection with real-time alerts."""
+        self.console.print(
+            "\n📊 [bold]Step 4: Data Collection with Real-time Alerts[/bold]"
+        )
+
+        # Notify collection start
+        await self.notifications.send_notification(
+            NotificationEvent(
+                title="Data Collection Started",
+                message="Beginning automated race data collection from multiple sources.",
+                category=AlertCategory.DATA_COLLECTION,
+                severity=AlertSeverity.INFO,
+            )
+        )
+
+        try:
+            # Collect race data
+            races = await self.auto_download.collect_race_data(max_races=5)
+
+            if races:
+                # Success notification
+                await self.notifications.notify_data_collection_complete(
+                    "Auto-Download System", len(races)
+                )
+
+                # Show sample data
+                sample_table = Table(title="Collected Race Data")
+                sample_table.add_column("Race ID", style="cyan")
+                sample_table.add_column("Source", style="magenta")
+                sample_table.add_column("Horses", style="green")
+                sample_table.add_column("Track", style="yellow")
+
+                for race in races[:3]:  # Show first 3 races
+                    sample_table.add_row(
+                        race.get("race_id", "Unknown"),
+                        race.get("source", "Unknown"),
+                        str(len(race.get("horses", []))),
+                        race.get("race_info", {}).get("track", "Unknown"),
+                    )
+
+                self.console.print(sample_table)
+
+                # Simulate finding betting opportunities
+                await self.demo_betting_opportunity_alerts(races)
+
+            else:
+                # Failure notification
+                await self.notifications.notify_data_collection_failed(
+                    "Auto-Download System", "No data sources available"
+                )
+                self.console.print("❌ No race data collected")
+
+        except Exception as e:
+            # Error notification
+            await self.notifications.notify_data_collection_failed(
+                "Auto-Download System", str(e)
+            )
+            self.console.print(f"❌ Data collection failed: {e}")
+
+    async def demo_betting_opportunity_alerts(self, races):
+        """Demonstrate betting opportunity alerts."""
+        self.console.print(
+            "\n💰 [bold]Simulating Betting Opportunity Detection...[/bold]"
+        )
+
+        # Simulate finding betting opportunities in collected data
+        if races and len(races) > 0:
+            race = races[0]
+            horses = race.get("horses", [])
+
+            if horses and len(horses) > 0:
+                # Simulate finding a value bet
+                horse = horses[0]
+                horse_name = horse.get("name", "Unknown Horse")
+                race_id = race.get("race_id", "Unknown Race")
+
+                # Simulate Monte Carlo analysis results
+                probability = 0.35  # 35% win probability
+                odds = 4.2  # 4.2 decimal odds
+
+                await self.notifications.notify_betting_opportunity(
+                    horse_name, race_id, probability, odds
+                )
+
+                self.console.print(
+                    f"🎯 Betting opportunity alert sent for {horse_name}"
+                )
+
+    async def demo_performance_monitoring(self):
+        """Demonstrate performance monitoring alerts."""
+        self.console.print("\n📈 [bold]Step 5: Performance Monitoring[/bold]")
+
+        # Simulate performance monitoring
+        components = ["Data Collection", "Analysis Engine", "Database"]
+
+        for component in components:
+            # Simulate checking performance metrics
+            await asyncio.sleep(1)
+
+            # Simulate a performance issue
+            if component == "Database":
+                await self.notifications.notify_performance_issue(
+                    component, "Query Response Time", 2.5, 2.0
+                )
+                self.console.print(f"⚠️ Performance alert sent for {component}")
+            else:
+                self.console.print(f"✅ {component} performance normal")
+
+    async def demo_final_summary(self):
+        """Show final demo summary."""
+        self.console.print("\n📋 [bold]Step 6: Demo Summary[/bold]")
+
+        # Get final statistics
+        auto_download_stats = self.auto_download.metrics
+        notification_stats = self.notifications.get_stats()
+
+        # Create summary table
+        summary_table = Table(title="Demo Results Summary")
+        summary_table.add_column("System", style="cyan")
+        summary_table.add_column("Metric", style="magenta")
+        summary_table.add_column("Value", style="green")
+
+        # Auto-download metrics
+        summary_table.add_row(
+            "Auto-Download", "Total Attempts", str(auto_download_stats.total_attempts)
+        )
+        summary_table.add_row(
+            "Auto-Download",
+            "Successful Scrapes",
+            str(auto_download_stats.successful_scrapes),
+        )
+        summary_table.add_row(
+            "Auto-Download", "Success Rate", f"{auto_download_stats.success_rate:.1f}%"
+        )
+
+        # Notification metrics
+        summary_table.add_row(
+            "Notifications",
+            "Total Events",
+            str(notification_stats.get("total_events", 0)),
+        )
+        summary_table.add_row(
+            "Notifications",
+            "Sent Notifications",
+            str(notification_stats.get("sent_notifications", 0)),
+        )
+        summary_table.add_row(
+            "Notifications",
+            "Success Rate",
+            f"{notification_stats.get('success_rate', 0):.1f}%",
+        )
+
+        self.console.print(summary_table)
+
+        # Send final notification
+        await self.notifications.send_notification(
+            NotificationEvent(
+                title="Demo Complete",
+                message=f"Enhanced Auto-Download demo completed successfully. Collected {auto_download_stats.successful_scrapes} races with {notification_stats.get('sent_notifications', 0)} notifications sent.",
+                category=AlertCategory.SYSTEM,
+                severity=AlertSeverity.INFO,
+                data={
+                    "auto_download_stats": auto_download_stats.__dict__,
+                    "notification_stats": notification_stats,
+                },
+            )
+        )
+
+        self.console.print(
+            "\n✅ [bold green]Integrated demo completed successfully![/bold green]"
+        )
+        self.console.print(
+            f"📱 Check your NTFY app or visit http://localhost:8081 to see all notifications"
+        )
+
+
+async def main():
+    """Main demonstration function."""
+    demo = IntegratedAutoDownloadDemo()
+    await demo.run_integrated_demo()
+
+
+if __name__ == "__main__":
+    # Setup logging
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    )
+
+    # Run demo
+    asyncio.run(main())

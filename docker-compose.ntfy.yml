@@ -1,0 +1,63 @@
+# NTFY Docker Configuration for Horse Racing AI
+# ==============================================
+
+services:
+  # NTFY Server - Self-hosted notifications
+  ntfy:
+    image: binwiederhier/ntfy:latest
+    container_name: horse_racing_ntfy
+    command:
+      - serve
+    environment:
+      # Base configuration
+      - NTFY_BASE_URL=http://localhost:8080
+      - NTFY_LISTEN_HTTP=:8080
+      - NTFY_BEHIND_PROXY=false
+      
+      # Security settings
+      - NTFY_AUTH_DEFAULT_ACCESS=read-write
+      - NTFY_UPSTREAM_BASE_URL=https://ntfy.sh
+      
+      # Cache and persistence
+      - NTFY_CACHE_FILE=/var/cache/ntfy/cache.db
+      - NTFY_CACHE_DURATION=12h
+      - NTFY_KEEPALIVE_INTERVAL=45s
+      - NTFY_MANAGER_INTERVAL=1m
+      
+      # Message limits
+      - NTFY_MESSAGE_SIZE_LIMIT=4096
+      - NTFY_GLOBAL_TOPIC_LIMIT=15000
+      - NTFY_VISITOR_SUBSCRIPTION_LIMIT=30
+      
+      # Logging
+      - NTFY_LOG_LEVEL=INFO
+      - NTFY_LOG_FORMAT=text
+    
+    volumes:
+      - ntfy_cache:/var/cache/ntfy
+      - ntfy_config:/etc/ntfy
+      
+    ports:
+      - "8080:8080"  # NTFY web interface and API
+      
+    networks:
+      - horse_racing_network
+      
+    restart: unless-stopped
+    
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8080/v1/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+volumes:
+  ntfy_cache:
+    driver: local
+  ntfy_config:
+    driver: local
+
+networks:
+  horse_racing_network:
+    external: true

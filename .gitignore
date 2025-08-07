@@ -1,0 +1,244 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+logs/
+*.log
+*.log.*
+
+# Database files
+*.db
+*.sqlite3
+*.db-journal
+
+# Cache
+cache/
+.cache/
+
+# Results and temporary files
+results/
+test_results/
+*.tmp
+*.temp
+
+# Environment variables
+.env
+.env.*
+.env.local
+.env.production
+
+# =============================================================================
+# LARGE DATA FILES & MODEL FILES (Prevent committing large files to git)
+# =============================================================================
+
+# All data directories (usually too large for git)
+data/
+!data/.gitkeep
+!data/README.md
+
+# All trained model files (typically large binary files)
+trained_models/
+!trained_models/.gitkeep
+!trained_models/README.md
+
+# Model files (machine learning models - too large for git)
+models/
+!models/.gitkeep
+!models/README.md
+*.pkl
+*.joblib
+*.h5
+*.model
+*.pt
+*.pth
+*.onnx
+*.tflite
+*.pb
+
+# =============================================================================
+# DATA FILES (Prevent committing data files)
+# =============================================================================
+
+# JSON data files (can contain large datasets)
+**/data/**/*.json
+**/results/**/*.json
+**/cards_data/**/*.json
+**/results_data/**/*.json
+**/horseracedatabase/**/*.json
+
+# CSV data files (can be very large)
+**/data/**/*.csv
+**/results/**/*.csv
+**/cards_data/**/*.csv
+**/results_data/**/*.csv
+**/horseracedatabase/**/*.csv
+
+# Excel files
+*.xlsx
+*.xls
+
+# Parquet files
+*.parquet
+
+# HDF5 files
+*.hdf5
+
+# =============================================================================
+# CONFIGURATION WITH SENSITIVE DATA
+# =============================================================================
+
+# Configuration files that might contain API keys or sensitive data
+config/*_config.json
+config/live_*.json
+config/api_*.json
+config/secret_*.json
+
+# Keep template configs but ignore actual configs
+!config/*_template.json
+!config/example_*.json
+
+# =============================================================================
+# TEMPORARY & GENERATED FILES
+# =============================================================================
+
+# Reports and analysis outputs
+reports/
+analysis_output/
+performance_reports/
+
+# Backup files
+*.bak
+*.backup
+*~
+
+# Archive (keep structure but ignore content)
+archive/
+!archive/.gitkeep
+!archive/README.md
+
+# Test data and outputs
+test_data/
+test_output/
+
+# Docker volumes and persistent data
+docker/data/
+docker/pgdata/
+docker/logs/
+
+# =============================================================================
+# SYSTEM FILES
+# =============================================================================
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Linux
+*~
+
+# =============================================================================
+# DEVELOPMENT & BUILD FILES
+# =============================================================================
+
+# PyCharm
+.idea/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# pytest
+.pytest_cache/
+.coverage
+htmlcov/
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Quality reports
+quality_reports/
+
+# Training environments
+training_env/
+
+# Node modules (if any JS tools are used)
+node_modules/
+
+# =============================================================================
+# LARGE OUTPUT FILES
+# =============================================================================
+
+# Large output files that shouldn't be in git
+*.zip
+*.tar.gz
+*.rar
+*.7z
+
+# Video files
+*.mp4
+*.avi
+*.mov
+
+# Image files (unless specifically needed)
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.bmp
+*.tiff
+
+# Keep specific image files that are part of documentation
+!docs/**/*.png
+!docs/**/*.jpg
+!README_images/*.png
+!screenshots/*.png
