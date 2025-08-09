@@ -42,21 +42,25 @@ services:
       timeout: 3s
       retries: 5
 
-  # Main Horse Racing AI Application
+  # Enhanced Horse Racing AI Web Application
   horse-racing-ai:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: horse_racing_app
+    container_name: horse_racing_enhanced_web_app
     environment:
       # Database configuration
       DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/horse_racing_db
       REDIS_URL: redis://:${REDIS_PASSWORD:-redis_password_123}@redis:6379/0
 
-      # Application settings
+      # Flask application settings
+      FLASK_APP: app.py
+      FLASK_ENV: production
+      FLASK_HOST: 0.0.0.0
+      FLASK_PORT: 5002
       DEBUG: ${DEBUG:-false}
       LOG_LEVEL: ${LOG_LEVEL:-INFO}
-      PYTHONPATH: /app/src
+      PYTHONPATH: /app
 
       # Scraping configuration
       SCRAPER_HEADLESS: "true"
@@ -69,14 +73,26 @@ services:
       # ML Model settings
       MODEL_PATH: /app/models
       FEATURE_CACHE_PATH: /app/cache/features
+      
+      # BETDAQ API settings (if available)
+      BETDAQ_API_KEY: ${BETDAQ_API_KEY:-}
+      BETDAQ_USERNAME: ${BETDAQ_USERNAME:-}
+      BETDAQ_PASSWORD: ${BETDAQ_PASSWORD:-}
+
+      # Live feed API keys (if available)
+      RACING_POST_API_KEY: ${RACING_POST_API_KEY:-}
+      TIMEFORM_API_KEY: ${TIMEFORM_API_KEY:-}
     volumes:
       - ./data:/app/data
       - ./models:/app/models
       - ./cache:/app/cache
       - ./logs:/app/logs
-    command: ["python", "demos/complete_racing_pipeline.py"]
+      - ./trained_models:/app/trained_models
+      - ./templates:/app/templates
+    command: ["python", "app.py"]
     ports:
-      - "8000:5002"
+      - "5002:5002"  # Enhanced Web Application
+      - "8000:8000"  # Alternative port
     depends_on:
       postgres:
         condition: service_healthy
@@ -88,33 +104,25 @@ services:
       - horse_racing_network
       - traefik
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5002/api/system_status"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
     labels:
-      # Traefik configuration
+      # Traefik configuration for Enhanced Web Application
       - "traefik.enable=true"
       - "traefik.docker.network=traefik"
       
-      # API Routes
-      - "traefik.http.routers.horse-racing-api.rule=Host(`horse-racing.${DOMAIN:-localhost}`) && PathPrefix(`/api`)"
-      - "traefik.http.routers.horse-racing-api.entrypoints=websecure"
-      - "traefik.http.routers.horse-racing-api.tls.certresolver=letsencrypt"
-      - "traefik.http.routers.horse-racing-api.service=horse-racing-api"
-      - "traefik.http.services.horse-racing-api.loadbalancer.server.port=8000"
-      
-      # Web Interface
+      # Web Application Routes
       - "traefik.http.routers.horse-racing-web.rule=Host(`horse-racing.${DOMAIN:-localhost}`)"
       - "traefik.http.routers.horse-racing-web.entrypoints=websecure"
       - "traefik.http.routers.horse-racing-web.tls.certresolver=letsencrypt"
       - "traefik.http.routers.horse-racing-web.service=horse-racing-web"
-      - "traefik.http.services.horse-racing-web.loadbalancer.server.port=8000"
+      - "traefik.http.services.horse-racing-web.loadbalancer.server.port=5002"
       
       # Health check middleware
-      - "traefik.http.routers.horse-racing-api.middlewares=auth@file"
       - "traefik.http.routers.horse-racing-web.middlewares=auth@file"
-    healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:5002/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
 
   # Playwright Scraper Service (separate container for isolation)
   scraper:

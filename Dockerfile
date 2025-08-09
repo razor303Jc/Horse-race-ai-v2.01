@@ -28,13 +28,22 @@ RUN playwright install --with-deps chromium
 COPY src/ ./src/
 COPY pyproject.toml .
 COPY main.py .
+COPY app.py .
+
+# Copy enhanced web application templates and static files
+COPY templates/ ./templates/
 
 # Copy demo directory with all analysis scripts
 COPY demos/ ./demos/
 
-# Copy data analysis summary and any documentation
-COPY RACE_DATA_ANALYSIS_SUMMARY.md* ./
-COPY *.md* ./
+# Copy configuration and documentation (conditionally)
+COPY config/ ./config/
+COPY docs/ ./docs/
+COPY *.md ./
+
+# Copy startup scripts
+COPY start_web_app.sh ./
+RUN chmod +x start_web_app.sh
 
 # Install the package in development mode
 RUN pip install -e .
@@ -55,9 +64,11 @@ RUN playwright install chromium
 # Set environment variables
 ENV PYTHONPATH=/app
 ENV PYTHONUNBUFFERED=1
+ENV FLASK_APP=app.py
+ENV FLASK_ENV=production
 
-# Expose port for any web services
-EXPOSE 8000
+# Expose ports for web services
+EXPOSE 5002 8000
 
-# Default command - run the complete racing pipeline
-CMD ["python", "demos/complete_racing_pipeline.py"]
+# Default command - run the enhanced web application
+CMD ["python", "app.py"]

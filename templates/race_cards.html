@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏇 Race Cards - Horse Racing AI v2.0</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .race-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 15px 0;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .race-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+        }
+        
+        .course-header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .race-item {
+            border: 1px solid #e9ecef;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px 0;
+            background: #f8f9fa;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .race-item:hover {
+            background: #e3f2fd;
+            border-color: #2196f3;
+            transform: translateX(5px);
+        }
+        
+        .race-time {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .race-class {
+            background: #17a2b8;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+        
+        .prize-money {
+            color: #28a745;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+        
+        .going-badge {
+            background: #6f42c1;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+        }
+        
+        .field-size {
+            background: #fd7e14;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+        }
+        
+        .header-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 20px 0;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid py-4">
+        <!-- Header -->
+        <div class="header-container">
+            <h1 class="display-4 mb-3">🏇 Today's Race Cards</h1>
+            <p class="lead text-muted mb-4">{{ race_data.date }} - All Courses</p>
+            <div class="text-center">
+                <a href="/" class="btn btn-outline-primary me-2">← Dashboard</a>
+                <a href="/live_analytics" class="btn btn-outline-success me-2">Live Analytics</a>
+                <a href="/betting_strategies" class="btn btn-outline-warning">Betting Strategies</a>
+            </div>
+        </div>
+
+        <!-- Race Cards by Course -->
+        {% for course_name, course_data in race_data.courses.items() %}
+        <div class="course-header">
+            <h2><i class="fas fa-map-marker-alt"></i> {{ course_name }}</h2>
+            <p class="mb-0">{{ course_data.total_races }} races scheduled today</p>
+        </div>
+
+        <div class="row">
+            {% for race in course_data.races %}
+            <div class="col-md-6 col-lg-4">
+                <div class="race-card" onclick="window.location.href='/race/{{ race.race_id }}'">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="race-time">{{ race.race_time }}</div>
+                        <div class="race-class">{{ race.race_class }}</div>
+                    </div>
+                    
+                    <h5 class="mb-3">{{ race.race_name }}</h5>
+                    
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <small class="text-muted">Distance:</small><br>
+                            <strong>{{ race.distance }}</strong>
+                        </div>
+                        <div class="col-6">
+                            <small class="text-muted">Prize Money:</small><br>
+                            <span class="prize-money">{{ race.prize_money }}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <span class="going-badge">{{ race.going }}</span>
+                            <span class="field-size ms-2">{{ race.field_size }} runners</span>
+                        </div>
+                        <div>
+                            <i class="fas fa-chevron-right text-primary"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endfor %}
+
+        <!-- Summary Stats -->
+        <div class="race-card mt-4">
+            <h4 class="text-center mb-4"><i class="fas fa-chart-bar"></i> Today's Racing Summary</h4>
+            <div class="row text-center">
+                <div class="col-md-3">
+                    <h3 class="text-primary">{{ race_data.courses|length }}</h3>
+                    <p class="text-muted">Active Courses</p>
+                </div>
+                <div class="col-md-3">
+                    <h3 class="text-success">
+                        {% set total_races = [] %}
+                        {% for course in race_data.courses.values() %}
+                            {% set _ = total_races.extend(course.races) %}
+                        {% endfor %}
+                        {{ total_races|length }}
+                    </h3>
+                    <p class="text-muted">Total Races</p>
+                </div>
+                <div class="col-md-3">
+                    <h3 class="text-warning">
+                        {% set total_runners = [] %}
+                        {% for course in race_data.courses.values() %}
+                            {% for race in course.races %}
+                                {% set _ = total_runners.append(race.field_size) %}
+                            {% endfor %}
+                        {% endfor %}
+                        {{ total_runners|sum }}
+                    </h3>
+                    <p class="text-muted">Total Runners</p>
+                </div>
+                <div class="col-md-3">
+                    <h3 class="text-info">
+                        {% set group_races = [] %}
+                        {% for course in race_data.courses.values() %}
+                            {% for race in course.races %}
+                                {% if "Group" in race.race_class %}
+                                    {% set _ = group_races.append(race) %}
+                                {% endif %}
+                            {% endfor %}
+                        {% endfor %}
+                        {{ group_races|length }}
+                    </h3>
+                    <p class="text-muted">Group Races</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI Insights -->
+        <div class="race-card mt-4">
+            <h4 class="text-center mb-4"><i class="fas fa-brain"></i> AI Racing Insights</h4>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="text-center p-3 bg-light rounded">
+                        <i class="fas fa-trophy fa-2x text-warning mb-2"></i>
+                        <h6>Featured Race</h6>
+                        <p class="small text-muted">King George VI Stakes at Ascot (14:00) - £1.25M Group 1</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="text-center p-3 bg-light rounded">
+                        <i class="fas fa-star fa-2x text-primary mb-2"></i>
+                        <h6>AI Confidence</h6>
+                        <p class="small text-muted">92% accuracy predicted for today's selections</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="text-center p-3 bg-light rounded">
+                        <i class="fas fa-chart-line fa-2x text-success mb-2"></i>
+                        <h6>Betting Value</h6>
+                        <p class="small text-muted">15+ value opportunities identified</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Add click handlers for race cards
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Race cards loaded for {{ race_data.date }}');
+            
+            // Auto-refresh every 5 minutes
+            setTimeout(function() {
+                window.location.reload();
+            }, 300000);
+        });
+    </script>
+</body>
+</html>

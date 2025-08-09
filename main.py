@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """
 Main entry point for Horse Racing AI v2.0 Web Application
+Updated to use the enhanced web application with full system integration.
 """
 
 import sys
@@ -11,7 +12,7 @@ project_root = Path(__file__).parent
 sys.path.insert(0, str(project_root))
 
 # Import after path setup
-from src.web.web_gui import app  # noqa: E402
+from src.web.enhanced_web_application import app  # noqa: E402
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5002, debug=True)
