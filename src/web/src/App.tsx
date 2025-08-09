@@ -2,10 +2,10 @@ import {
     Assessment,
     AttachMoney,
     Dashboard as DashboardIcon,
-    Sports,
     Psychology,
     Refresh,
     Speed,
+    Sports,
     TrendingUp
 } from '@mui/icons-material'
 import {
@@ -47,6 +47,7 @@ import {
     XAxis,
     YAxis
 } from 'recharts'
+import { DailyRaces } from './DailyRaces'
 
 interface SystemStatus {
   overall_status: string
@@ -319,6 +320,7 @@ function App() {
             <Tab icon={<AttachMoney />} label="Betting Performance" />
             <Tab icon={<Sports />} label="Live Predictions" />
             <Tab icon={<Psychology />} label="AI Insights" />
+            <Tab icon={<DashboardIcon />} label="Daily Races" />
           </Tabs>
         </Paper>
 
@@ -711,6 +713,10 @@ function App() {
               </Card>
             </Grid>
           </Grid>
+        )}
+
+        {currentTab === 5 && (
+          <DailyRaces />
         )}
       </Container>
     </Box>
