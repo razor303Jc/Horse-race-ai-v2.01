@@ -1,13 +1,15 @@
 import {
+    Assessment,
     AttachMoney,
     Dashboard as DashboardIcon,
+    Sports,
     Psychology,
     Refresh,
     Speed,
-    Timeline,
-    TrendingUp,
+    TrendingUp
 } from '@mui/icons-material'
 import {
+    Alert,
     AppBar,
     Box,
     Card,
@@ -18,17 +20,33 @@ import {
     IconButton,
     LinearProgress,
     Paper,
+    Tab,
     Table,
     TableBody,
     TableCell,
     TableContainer,
     TableHead,
     TableRow,
+    Tabs,
     Toolbar,
     Typography,
 } from '@mui/material'
 import axios from 'axios'
 import { useEffect, useState } from 'react'
+import {
+    Area,
+    AreaChart,
+    Bar,
+    BarChart,
+    CartesianGrid,
+    Cell,
+    Pie,
+    PieChart,
+    ResponsiveContainer,
+    Tooltip,
+    XAxis,
+    YAxis
+} from 'recharts'
 
 interface SystemStatus {
   overall_status: string
@@ -48,51 +66,121 @@ interface DashboardData {
     predictions_today: number
     features_per_horse: number
     training_records: number
+    model_accuracy: {
+      gradient_boost: number
+      neural_network: number
+      random_forest: number
+      svm: number
+    }
+    feature_importance: Array<{
+      name: string
+      importance: number
+    }>
   }
-  betting_integration: {
-    status: string
-    live_markets: number
-    profit_loss: number
-    strategies_available: number
+  betting_performance: {
+    total_pnl: number
+    win_rate: number
+    roi: number
+    trades_today: number
+    weekly_performance: Array<{
+      day: string
+      pnl: number
+    }>
+    bet_types: {
+      win: { count: number; success_rate: number; avg_odds: number }
+      place: { count: number; success_rate: number; avg_odds: number }
+      each_way: { count: number; success_rate: number; avg_odds: number }
+    }
+    risk_metrics: {
+      max_drawdown: number
+      sharpe_ratio: number
+      kelly_criterion: number
+    }
   }
   contextual_ai: {
-    status: string
-    factors_active: number
-    enhancement_score: number
+    processing_threads: number
+    last_insight: string
+    confidence_level: number
+    insights_generated: number
+    sentiment_analysis: {
+      market_sentiment: string
+      social_buzz: string
+      expert_consensus: number
+    }
+    recent_insights: Array<{
+      timestamp: string
+      insight: string
+      confidence: number
+      races_affected: string[]
+    }>
   }
-  real_time_performance: {
-    prediction_speed: string
-    live_feeds: string
-    auto_download: string
+  live_predictions: Array<{
+    horse: string
+    race: string
+    probability: number
+    confidence: number
+    value_rating: number
+    status: string
+    odds?: number
+    suggested_stake?: number
+    form_rating?: string
+    jockey?: string
+    trainer?: string
+    result?: string
+    profit?: number
+  }>
+  market_data: {
+    active_races: number
+    total_volume: number
+    avg_odds_movement: number
+    liquidity_index: number
+    top_tracks: Array<{
+      name: string
+      races: number
+      volume: number
+    }>
   }
 }
 
-interface RecentPrediction {
-  horse: string
-  race: string
-  probability: number
-  confidence: number
-  status: string
-  value_rating?: number
+interface BettingOpportunities {
+  opportunities: Array<{
+    race: string
+    horse: string
+    bet_type: string
+    bookmaker_odds: number
+    fair_odds: number
+    value_percentage: number
+    confidence: number
+    suggested_stake: number
+    expected_value: number
+  }>
+  portfolio_stats: {
+    total_opportunities: number
+    avg_value: number
+    recommended_total_stake: number
+    potential_profit: number
+  }
 }
 
 function App() {
   const [systemStatus, setSystemStatus] = useState<SystemStatus | null>(null)
   const [dashboardData, setDashboardData] = useState<DashboardData | null>(null)
-  const [recentPredictions, setRecentPredictions] = useState<RecentPrediction[]>([])
+  const [bettingOpportunities, setBettingOpportunities] = useState<BettingOpportunities | null>(null)
   const [loading, setLoading] = useState(true)
   const [lastUpdate, setLastUpdate] = useState<Date>(new Date())
+  const [currentTab, setCurrentTab] = useState(0)
 
   const fetchData = async () => {
     try {
-      const statusResponse = await axios.get('/api/system_status')
+      const [statusResponse, dashboardResponse, bettingResponse] = await Promise.all([
+        axios.get('/api/system_status'),
+        axios.get('/api/dashboard_data'),
+        axios.get('/api/betting_opportunities')
+      ])
+      
       setSystemStatus(statusResponse.data)
-      
-      // Fetch real dashboard data from API
-      const dashboardResponse = await axios.get('/api/dashboard_data')
       setDashboardData(dashboardResponse.data)
-      setRecentPredictions(dashboardResponse.data.recent_predictions || [])
-      
+      setBettingOpportunities(bettingResponse.data)
       setLastUpdate(new Date())
       setLoading(false)
     } catch (error) {
@@ -123,12 +211,21 @@ function App() {
     }
   }
 
+  const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat('en-GB', {
+      style: 'currency',
+      currency: 'GBP'
+    }).format(value)
+  }
+
+  const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8']
+
   if (loading) {
     return (
       <Box sx={{ width: '100%', mt: 4 }}>
         <LinearProgress />
         <Typography variant="h6" align="center" sx={{ mt: 2, color: 'white' }}>
-          Loading Horse Racing AI Dashboard...
+          Loading Advanced Horse Racing AI Dashboard...
         </Typography>
       </Box>
     )
@@ -140,7 +237,7 @@ function App() {
         <Toolbar>
           <DashboardIcon sx={{ mr: 2 }} />
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            🐎 Horse Racing AI v2.0 Dashboard
+            🐎 Horse Racing AI v2.0 - Advanced Analytics Dashboard
           </Typography>
           <Typography variant="body2" sx={{ mr: 2 }}>
             Last Update: {lastUpdate.toLocaleTimeString()}
@@ -209,149 +306,412 @@ function App() {
           </Grid>
         </Paper>
 
-        {/* Main Dashboard Cards */}
-        <Grid container spacing={4}>
-          {/* ML Models Card */}
-          <Grid item xs={12} md={6} lg={4}>
-            <Card className="dashboard-card" sx={{ height: '100%' }}>
-              <CardContent>
-                <Typography variant="h6" gutterBottom sx={{ color: 'white', display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <Psychology /> ML Models
-                </Typography>
-                <Box sx={{ mb: 2 }}>
-                  <Typography className="metric-value">{dashboardData?.ml_models.ensemble_auc}%</Typography>
-                  <Typography className="metric-label">Ensemble AUC</Typography>
-                </Box>
+        {/* Navigation Tabs */}
+        <Paper sx={{ mb: 3, background: 'rgba(255, 255, 255, 0.05)' }}>
+          <Tabs 
+            value={currentTab} 
+            onChange={(_, newValue) => setCurrentTab(newValue)}
+            variant="fullWidth"
+            sx={{ '& .MuiTab-root': { color: 'white' } }}
+          >
+            <Tab icon={<Assessment />} label="Overview" />
+            <Tab icon={<TrendingUp />} label="ML Analytics" />
+            <Tab icon={<AttachMoney />} label="Betting Performance" />
+            <Tab icon={<Sports />} label="Live Predictions" />
+            <Tab icon={<Psychology />} label="AI Insights" />
+          </Tabs>
+        </Paper>
+
+        {/* Tab Content */}
+        {currentTab === 0 && (
+          <Grid container spacing={3}>
+            {/* Key Metrics Cards */}
+            <Grid item xs={12} md={3}>
+              <Card sx={{ background: 'rgba(255, 255, 255, 0.05)', color: 'white' }}>
+                <CardContent>
+                  <Typography variant="h6" gutterBottom>
+                    <TrendingUp /> Today's P&L
+                  </Typography>
+                  <Typography variant="h4" color="success.main">
+                    {formatCurrency(dashboardData?.betting_performance.total_pnl || 0)}
+                  </Typography>
+                  <Typography variant="body2">
+                    {dashboardData?.betting_performance.trades_today || 0} trades
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+            
+            <Grid item xs={12} md={3}>
+              <Card sx={{ background: 'rgba(255, 255, 255, 0.05)', color: 'white' }}>
+                <CardContent>
+                  <Typography variant="h6" gutterBottom>
+                    <Assessment /> Win Rate
+                  </Typography>
+                  <Typography variant="h4" color="info.main">
+                    {dashboardData?.betting_performance.win_rate || 0}%
+                  </Typography>
+                  <Typography variant="body2">
+                    ROI: {dashboardData?.betting_performance.roi || 0}%
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+
+            <Grid item xs={12} md={3}>
+              <Card sx={{ background: 'rgba(255, 255, 255, 0.05)', color: 'white' }}>
+                <CardContent>
+                  <Typography variant="h6" gutterBottom>
+                    <Psychology /> ML Accuracy
+                  </Typography>
+                  <Typography variant="h4" color="warning.main">
+                    {dashboardData?.ml_models.ensemble_auc || 0}%
+                  </Typography>
+                  <Typography variant="body2">
+                    {dashboardData?.ml_models.predictions_today || 0} predictions today
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+
+            <Grid item xs={12} md={3}>
+              <Card sx={{ background: 'rgba(255, 255, 255, 0.05)', color: 'white' }}>
+                <CardContent>
+                  <Typography variant="h6" gutterBottom>
+                    <Speed /> Active Races
+                  </Typography>
+                  <Typography variant="h4" color="error.main">
+                    {dashboardData?.market_data.active_races || 0}
+                  </Typography>
+                  <Typography variant="body2">
+                    {formatCurrency(dashboardData?.market_data.total_volume || 0)} volume
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+
+            {/* Weekly Performance Chart */}
+            <Grid item xs={12} md={8}>
+              <Card sx={{ background: 'rgba(255, 255, 255, 0.05)', color: 'white', p: 2 }}>
+                <Typography variant="h6" gutterBottom>Weekly Performance Trend</Typography>
+                <ResponsiveContainer width="100%" height={300}>
+                  <AreaChart data={dashboardData?.betting_performance.weekly_performance || []}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="day" />
+                    <YAxis />
+                    <Tooltip formatter={(value) => [formatCurrency(Number(value)), 'P&L']} />
+                    <Area type="monotone" dataKey="pnl" stroke="#8884d8" fill="#8884d8" fillOpacity={0.6} />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </Card>
+            </Grid>
+
+            {/* Bet Types Distribution */}
+            <Grid item xs={12} md={4}>
+              <Card sx={{ background: 'rgba(255, 255, 255, 0.05)', color: 'white', p: 2 }}>
+                <Typography variant="h6" gutterBottom>Bet Types Success Rate</Typography>
+                <ResponsiveContainer width="100%" height={300}>
+                  <BarChart data={dashboardData?.betting_performance.bet_types ? [
+                    { name: 'Win', rate: dashboardData.betting_performance.bet_types.win.success_rate },
+                    { name: 'Place', rate: dashboardData.betting_performance.bet_types.place.success_rate },
+                    { name: 'Each Way', rate: dashboardData.betting_performance.bet_types.each_way.success_rate },
+                  ] : []}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="name" />
+                    <YAxis />
+                    <Tooltip formatter={(value) => [`${value}%`, 'Success Rate']} />
+                    <Bar dataKey="rate" fill="#00C49F" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </Card>
+            </Grid>
+          </Grid>
+        )}
+
+        {currentTab === 1 && (
+          <Grid container spacing={3}>
+            {/* ML Model Performance */}
+            <Grid item xs={12} md={6}>
+              <Card sx={{ background: 'rgba(255, 255, 255, 0.05)', color: 'white', p: 2 }}>
+                <Typography variant="h6" gutterBottom>Model Accuracy Comparison</Typography>
+                <ResponsiveContainer width="100%" height={300}>
+                  <BarChart data={dashboardData?.ml_models.model_accuracy ? [
+                    { name: 'Gradient Boost', accuracy: dashboardData.ml_models.model_accuracy.gradient_boost },
+                    { name: 'Neural Network', accuracy: dashboardData.ml_models.model_accuracy.neural_network },
+                    { name: 'Random Forest', accuracy: dashboardData.ml_models.model_accuracy.random_forest },
+                    { name: 'SVM', accuracy: dashboardData.ml_models.model_accuracy.svm },
+                  ] : []}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="name" />
+                    <YAxis />
+                    <Tooltip formatter={(value) => [`${value}%`, 'Accuracy']} />
+                    <Bar dataKey="accuracy" fill="#0088FE" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </Card>
+            </Grid>
+
+            {/* Feature Importance */}
+            <Grid item xs={12} md={6}>
+              <Card sx={{ background: 'rgba(255, 255, 255, 0.05)', color: 'white', p: 2 }}>
+                <Typography variant="h6" gutterBottom>Feature Importance</Typography>
+                <ResponsiveContainer width="100%" height={300}>
+                  <PieChart>
+                    <Pie
+                      data={dashboardData?.ml_models.feature_importance || []}
+                      cx="50%"
+                      cy="50%"
+                      labelLine={false}
+                      label={({ name, importance }) => `${name}: ${(importance * 100).toFixed(1)}%`}
+                      outerRadius={80}
+                      fill="#8884d8"
+                      dataKey="importance"
+                    >
+                      {dashboardData?.ml_models.feature_importance?.map((_, index) => (
+                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip />
+                  </PieChart>
+                </ResponsiveContainer>
+              </Card>
+            </Grid>
+
+            {/* ML Stats */}
+            <Grid item xs={12}>
+              <Card sx={{ background: 'rgba(255, 255, 255, 0.05)', color: 'white', p: 2 }}>
+                <Typography variant="h6" gutterBottom>ML Model Statistics</Typography>
                 <Grid container spacing={2}>
-                  <Grid item xs={6}>
-                    <Typography className="metric-value" sx={{ fontSize: '1.5rem' }}>
-                      {dashboardData?.ml_models.models_active}
-                    </Typography>
-                    <Typography className="metric-label">Active Models</Typography>
+                  <Grid item xs={12} sm={6} md={3}>
+                    <Typography variant="body2">Active Models</Typography>
+                    <Typography variant="h5">{dashboardData?.ml_models.models_active || 0}</Typography>
                   </Grid>
-                  <Grid item xs={6}>
-                    <Typography className="metric-value" sx={{ fontSize: '1.5rem' }}>
-                      {dashboardData?.ml_models.predictions_today}
-                    </Typography>
-                    <Typography className="metric-label">Predictions Today</Typography>
+                  <Grid item xs={12} sm={6} md={3}>
+                    <Typography variant="body2">Training Records</Typography>
+                    <Typography variant="h5">{dashboardData?.ml_models.training_records?.toLocaleString() || 0}</Typography>
+                  </Grid>
+                  <Grid item xs={12} sm={6} md={3}>
+                    <Typography variant="body2">Features per Horse</Typography>
+                    <Typography variant="h5">{dashboardData?.ml_models.features_per_horse || 0}</Typography>
+                  </Grid>
+                  <Grid item xs={12} sm={6} md={3}>
+                    <Typography variant="body2">Predictions Today</Typography>
+                    <Typography variant="h5">{dashboardData?.ml_models.predictions_today || 0}</Typography>
                   </Grid>
                 </Grid>
-                <Box sx={{ mt: 2 }}>
-                  <Chip
-                    label={dashboardData?.ml_models.status || 'Unknown'}
-                    color={getStatusColor(dashboardData?.ml_models.status || '')}
-                    size="small"
-                  />
-                </Box>
-              </CardContent>
-            </Card>
+              </Card>
+            </Grid>
           </Grid>
+        )}
 
-          {/* Betting Integration Card */}
-          <Grid item xs={12} md={6} lg={4}>
-            <Card className="dashboard-card" sx={{ height: '100%' }}>
-              <CardContent>
-                <Typography variant="h6" gutterBottom sx={{ color: 'white', display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <AttachMoney /> Betting Integration
-                </Typography>
-                <Box sx={{ mb: 2 }}>
-                  <Typography className="metric-value">£{dashboardData?.betting_integration.profit_loss}</Typography>
-                  <Typography className="metric-label">P&L Today</Typography>
-                </Box>
+        {currentTab === 2 && (
+          <Grid container spacing={3}>
+            {/* Betting Opportunities */}
+            <Grid item xs={12}>
+              <Card sx={{ background: 'rgba(255, 255, 255, 0.05)', color: 'white', p: 2 }}>
+                <Typography variant="h6" gutterBottom>High-Value Betting Opportunities</Typography>
+                <TableContainer>
+                  <Table>
+                    <TableHead>
+                      <TableRow>
+                        <TableCell sx={{ color: 'white' }}>Race</TableCell>
+                        <TableCell sx={{ color: 'white' }}>Horse</TableCell>
+                        <TableCell sx={{ color: 'white' }}>Bet Type</TableCell>
+                        <TableCell sx={{ color: 'white' }}>Value %</TableCell>
+                        <TableCell sx={{ color: 'white' }}>Confidence</TableCell>
+                        <TableCell sx={{ color: 'white' }}>Suggested Stake</TableCell>
+                        <TableCell sx={{ color: 'white' }}>Expected Value</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {bettingOpportunities?.opportunities.map((opp, index) => (
+                        <TableRow key={index}>
+                          <TableCell sx={{ color: 'white' }}>{opp.race}</TableCell>
+                          <TableCell sx={{ color: 'white' }}>{opp.horse}</TableCell>
+                          <TableCell sx={{ color: 'white' }}>{opp.bet_type}</TableCell>
+                          <TableCell sx={{ color: 'white' }}>
+                            <Chip 
+                              label={`${opp.value_percentage.toFixed(1)}%`}
+                              color={opp.value_percentage > 25 ? 'success' : 'warning'}
+                              size="small"
+                            />
+                          </TableCell>
+                          <TableCell sx={{ color: 'white' }}>{opp.confidence}%</TableCell>
+                          <TableCell sx={{ color: 'white' }}>{formatCurrency(opp.suggested_stake)}</TableCell>
+                          <TableCell sx={{ color: 'white' }}>{formatCurrency(opp.expected_value)}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              </Card>
+            </Grid>
+
+            {/* Portfolio Stats */}
+            <Grid item xs={12} md={6}>
+              <Card sx={{ background: 'rgba(255, 255, 255, 0.05)', color: 'white', p: 2 }}>
+                <Typography variant="h6" gutterBottom>Portfolio Statistics</Typography>
                 <Grid container spacing={2}>
                   <Grid item xs={6}>
-                    <Typography className="metric-value" sx={{ fontSize: '1.5rem' }}>
-                      {dashboardData?.betting_integration.live_markets}
-                    </Typography>
-                    <Typography className="metric-label">Live Markets</Typography>
+                    <Typography variant="body2">Total Opportunities</Typography>
+                    <Typography variant="h5">{bettingOpportunities?.portfolio_stats.total_opportunities || 0}</Typography>
                   </Grid>
                   <Grid item xs={6}>
-                    <Typography className="metric-value" sx={{ fontSize: '1.5rem' }}>
-                      {dashboardData?.betting_integration.strategies_available}
-                    </Typography>
-                    <Typography className="metric-label">Strategies</Typography>
+                    <Typography variant="body2">Average Value</Typography>
+                    <Typography variant="h5">{bettingOpportunities?.portfolio_stats.avg_value.toFixed(1) || 0}%</Typography>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Typography variant="body2">Recommended Stake</Typography>
+                    <Typography variant="h5">{formatCurrency(bettingOpportunities?.portfolio_stats.recommended_total_stake || 0)}</Typography>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Typography variant="body2">Potential Profit</Typography>
+                    <Typography variant="h5">{formatCurrency(bettingOpportunities?.portfolio_stats.potential_profit || 0)}</Typography>
                   </Grid>
                 </Grid>
-                <Box sx={{ mt: 2 }}>
-                  <Chip
-                    label={dashboardData?.betting_integration.status || 'Unknown'}
-                    color={getStatusColor(dashboardData?.betting_integration.status || '')}
-                    size="small"
-                  />
-                </Box>
-              </CardContent>
-            </Card>
-          </Grid>
+              </Card>
+            </Grid>
 
-          {/* Contextual AI Card */}
-          <Grid item xs={12} md={6} lg={4}>
-            <Card className="dashboard-card" sx={{ height: '100%' }}>
-              <CardContent>
-                <Typography variant="h6" gutterBottom sx={{ color: 'white', display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <TrendingUp /> Contextual AI
-                </Typography>
-                <Box sx={{ mb: 2 }}>
-                  <Typography className="metric-value">{(dashboardData?.contextual_ai.enhancement_score! * 100).toFixed(1)}%</Typography>
-                  <Typography className="metric-label">Enhancement Score</Typography>
-                </Box>
+            {/* Risk Metrics */}
+            <Grid item xs={12} md={6}>
+              <Card sx={{ background: 'rgba(255, 255, 255, 0.05)', color: 'white', p: 2 }}>
+                <Typography variant="h6" gutterBottom>Risk Metrics</Typography>
+                <Grid container spacing={2}>
+                  <Grid item xs={4}>
+                    <Typography variant="body2">Max Drawdown</Typography>
+                    <Typography variant="h6" color="error">{formatCurrency(dashboardData?.betting_performance.risk_metrics.max_drawdown || 0)}</Typography>
+                  </Grid>
+                  <Grid item xs={4}>
+                    <Typography variant="body2">Sharpe Ratio</Typography>
+                    <Typography variant="h6" color="success">{dashboardData?.betting_performance.risk_metrics.sharpe_ratio || 0}</Typography>
+                  </Grid>
+                  <Grid item xs={4}>
+                    <Typography variant="body2">Kelly Criterion</Typography>
+                    <Typography variant="h6" color="info">{dashboardData?.betting_performance.risk_metrics.kelly_criterion || 0}</Typography>
+                  </Grid>
+                </Grid>
+              </Card>
+            </Grid>
+          </Grid>
+        )}
+
+        {currentTab === 3 && (
+          <Grid container spacing={3}>
+            {/* Live Predictions Table */}
+            <Grid item xs={12}>
+              <Card sx={{ background: 'rgba(255, 255, 255, 0.05)', color: 'white', p: 2 }}>
+                <Typography variant="h6" gutterBottom>Live Race Predictions</Typography>
+                <TableContainer>
+                  <Table>
+                    <TableHead>
+                      <TableRow>
+                        <TableCell sx={{ color: 'white' }}>Horse</TableCell>
+                        <TableCell sx={{ color: 'white' }}>Race</TableCell>
+                        <TableCell sx={{ color: 'white' }}>Probability</TableCell>
+                        <TableCell sx={{ color: 'white' }}>Confidence</TableCell>
+                        <TableCell sx={{ color: 'white' }}>Value Rating</TableCell>
+                        <TableCell sx={{ color: 'white' }}>Odds</TableCell>
+                        <TableCell sx={{ color: 'white' }}>Jockey</TableCell>
+                        <TableCell sx={{ color: 'white' }}>Status</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {dashboardData?.live_predictions.map((prediction, index) => (
+                        <TableRow key={index}>
+                          <TableCell sx={{ color: 'white' }}>{prediction.horse}</TableCell>
+                          <TableCell sx={{ color: 'white' }}>{prediction.race}</TableCell>
+                          <TableCell sx={{ color: 'white' }}>{prediction.probability.toFixed(1)}%</TableCell>
+                          <TableCell sx={{ color: 'white' }}>{prediction.confidence}%</TableCell>
+                          <TableCell sx={{ color: 'white' }}>
+                            <Chip 
+                              label={prediction.value_rating.toFixed(1)}
+                              color={prediction.value_rating > 8 ? 'success' : prediction.value_rating > 6 ? 'warning' : 'error'}
+                              size="small"
+                            />
+                          </TableCell>
+                          <TableCell sx={{ color: 'white' }}>{prediction.odds?.toFixed(1) || 'N/A'}</TableCell>
+                          <TableCell sx={{ color: 'white' }}>{prediction.jockey || 'N/A'}</TableCell>
+                          <TableCell sx={{ color: 'white' }}>
+                            <Chip 
+                              label={prediction.status}
+                              color={prediction.status === 'ACTIVE' ? 'success' : prediction.status === 'COMPLETED' ? 'info' : 'default'}
+                              size="small"
+                            />
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              </Card>
+            </Grid>
+          </Grid>
+        )}
+
+        {currentTab === 4 && (
+          <Grid container spacing={3}>
+            {/* AI Insights Overview */}
+            <Grid item xs={12} md={8}>
+              <Card sx={{ background: 'rgba(255, 255, 255, 0.05)', color: 'white', p: 2 }}>
+                <Typography variant="h6" gutterBottom>Recent AI Insights</Typography>
+                {dashboardData?.contextual_ai.recent_insights?.map((insight, index) => (
+                  <Alert 
+                    key={index}
+                    severity="info" 
+                    sx={{ mb: 2, backgroundColor: 'rgba(33, 150, 243, 0.1)' }}
+                  >
+                    <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
+                      {insight.insight}
+                    </Typography>
+                    <Typography variant="body2" sx={{ mt: 1 }}>
+                      Confidence: {insight.confidence}% | Races: {insight.races_affected.join(', ')}
+                    </Typography>
+                    <Typography variant="caption">
+                      {new Date(insight.timestamp).toLocaleString()}
+                    </Typography>
+                  </Alert>
+                ))}
+              </Card>
+            </Grid>
+
+            {/* AI Statistics */}
+            <Grid item xs={12} md={4}>
+              <Card sx={{ background: 'rgba(255, 255, 255, 0.05)', color: 'white', p: 2 }}>
+                <Typography variant="h6" gutterBottom>AI Performance</Typography>
                 <Grid container spacing={2}>
                   <Grid item xs={12}>
-                    <Typography className="metric-value" sx={{ fontSize: '1.5rem' }}>
-                      {dashboardData?.contextual_ai.factors_active}
-                    </Typography>
-                    <Typography className="metric-label">Active Factors</Typography>
+                    <Typography variant="body2">Processing Threads</Typography>
+                    <Typography variant="h5">{dashboardData?.contextual_ai.processing_threads || 0}</Typography>
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Typography variant="body2">Confidence Level</Typography>
+                    <Typography variant="h5">{dashboardData?.contextual_ai.confidence_level || 0}%</Typography>
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Typography variant="body2">Insights Generated</Typography>
+                    <Typography variant="h5">{dashboardData?.contextual_ai.insights_generated || 0}</Typography>
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Typography variant="body2">Expert Consensus</Typography>
+                    <Typography variant="h5">{dashboardData?.contextual_ai.sentiment_analysis?.expert_consensus || 0}%</Typography>
                   </Grid>
                 </Grid>
-                <Box sx={{ mt: 2 }}>
-                  <Chip
-                    label={dashboardData?.contextual_ai.status || 'Unknown'}
-                    color={getStatusColor(dashboardData?.contextual_ai.status || '')}
-                    size="small"
-                  />
-                </Box>
-              </CardContent>
-            </Card>
-          </Grid>
-        </Grid>
+              </Card>
+            </Grid>
 
-        {/* Recent Predictions Table */}
-        <Paper sx={{ mt: 4, background: 'rgba(255, 255, 255, 0.05)', backdropFilter: 'blur(10px)' }}>
-          <Box sx={{ p: 3 }}>
-            <Typography variant="h6" gutterBottom sx={{ color: 'white', display: 'flex', alignItems: 'center', gap: 1 }}>
-              <Timeline /> Recent Predictions
-            </Typography>
-            <TableContainer>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>Horse</TableCell>
-                    <TableCell sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>Race</TableCell>
-                    <TableCell sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>Probability</TableCell>
-                    <TableCell sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>Confidence</TableCell>
-                    <TableCell sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>Status</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {recentPredictions.map((prediction, index) => (
-                    <TableRow key={index}>
-                      <TableCell sx={{ color: 'white' }}>{prediction.horse}</TableCell>
-                      <TableCell sx={{ color: 'white' }}>{prediction.race}</TableCell>
-                      <TableCell sx={{ color: 'white' }}>{prediction.probability}%</TableCell>
-                      <TableCell sx={{ color: 'white' }}>{prediction.confidence}%</TableCell>
-                      <TableCell>
-                        <Chip
-                          label={prediction.status}
-                          color={prediction.status === 'ACTIVE' ? 'success' : 'default'}
-                          size="small"
-                        />
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </Box>
-        </Paper>
+            {/* Latest Insight */}
+            <Grid item xs={12}>
+              <Card sx={{ background: 'rgba(255, 255, 255, 0.05)', color: 'white', p: 2 }}>
+                <Typography variant="h6" gutterBottom>Latest AI Insight</Typography>
+                <Alert severity="success" sx={{ backgroundColor: 'rgba(76, 175, 80, 0.1)' }}>
+                  <Typography variant="body1">
+                    {dashboardData?.contextual_ai.last_insight || 'No recent insights available'}
+                  </Typography>
+                </Alert>
+              </Card>
+            </Grid>
+          </Grid>
+        )}
       </Container>
     </Box>
   )
