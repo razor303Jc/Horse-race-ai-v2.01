@@ -1,0 +1,13 @@
+# Additional requirements for respectful auto downloader
+playwright>=1.40.0
+schedule>=1.2.0
+aiofiles>=23.2.1
+structlog>=23.2.0
+psutil>=5.9.0
+
+# For browser automation
+playwright-stealth>=1.0.6
+
+# For better HTTP handling
+httpx>=0.25.0
+user-agents>=2.2.0
