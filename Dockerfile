@@ -33,6 +33,11 @@ COPY app.py .
 # Copy enhanced web application templates and static files
 COPY templates/ ./templates/
 
+# Copy racing analyzer components
+COPY background_racing_analyzer.py .
+COPY webapp_racing_interface.py .
+COPY dynamic_racing_analyzer.py .
+
 # Copy demo directory with all analysis scripts
 COPY demos/ ./demos/
 
@@ -49,12 +54,12 @@ RUN chmod +x start_web_app.sh
 RUN pip install -e .
 
 # Create directories
-RUN mkdir -p /app/data /app/logs /app/models /app/cache
+RUN mkdir -p /app/data /app/logs /app/models /app/cache /app/reports
 
 # Create non-root user and set up permissions
 RUN groupadd -r horseai && useradd -r -g horseai -m horseai
 RUN chown -R horseai:horseai /app
-RUN chmod -R 755 /app/logs /app/data /app/models /app/cache
+RUN chmod -R 755 /app/logs /app/data /app/models /app/cache /app/reports
 
 # Install Playwright browsers for the horseai user
 USER horseai

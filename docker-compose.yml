@@ -82,6 +82,11 @@ services:
       # Live feed API keys (if available)
       RACING_POST_API_KEY: ${RACING_POST_API_KEY:-}
       TIMEFORM_API_KEY: ${TIMEFORM_API_KEY:-}
+      
+      # Racing Analyzer settings
+      OLLAMA_HOST: ${OLLAMA_HOST:-host.docker.internal:11434}
+      OLLAMA_MODEL: ${OLLAMA_MODEL:-jimscard/whiterabbit-neo:13b-q5_K_M}
+      RACING_ANALYZER_TIMEOUT: ${RACING_ANALYZER_TIMEOUT:-300}
     volumes:
       - ./data:/app/data
       - ./models:/app/models
@@ -89,6 +94,7 @@ services:
       - ./logs:/app/logs
       - ./trained_models:/app/trained_models
       - ./templates:/app/templates
+      - ./reports:/app/reports
     command: ["python", "app.py"]
     ports:
       - "5002:5002"  # Enhanced Web Application

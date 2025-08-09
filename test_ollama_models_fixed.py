@@ -1,0 +1,1 @@
+Exception: Command '['ollama', 'run', 'qwen2.5-coder:7b']' timed out after 300 seconds

@@ -18,14 +18,15 @@ This application integrates:
 - Management (management/) - Auto downloader management
 """
 
-from flask import Flask, render_template, jsonify, request, redirect, url_for, flash
-import sys
-import os
-from pathlib import Path
-import logging
-from datetime import datetime
 import json
+import logging
+import os
+import sys
 import traceback
+from datetime import datetime
+from pathlib import Path
+
+from flask import Flask, flash, jsonify, redirect, render_template, request, url_for
 
 
 def create_enhanced_app():
@@ -549,6 +550,130 @@ def create_enhanced_app():
         except Exception as e:
             logger.error(f"Race details error: {e}")
             return render_template("error.html", error=str(e))
+
+    @app.route("/racing_analyzer")
+    def racing_analyzer():
+        """Racing Media Analyzer Dashboard"""
+        try:
+            # Check if any reports are available
+            reports_dir = project_root / "reports"
+            reports_available = []
+
+            if reports_dir.exists():
+                json_files = list(reports_dir.glob("racing_data_*.json"))
+                for file in json_files:
+                    try:
+                        parts = file.stem.split("_")
+                        if len(parts) >= 4:
+                            date_part = parts[2]
+                            time_part = parts[3]
+                            reports_available.append(
+                                {
+                                    "date": date_part,
+                                    "time": time_part,
+                                    "file": str(file.name),
+                                }
+                            )
+                    except:
+                        continue
+
+            analyzer_data = {
+                "status": "ready",
+                "reports_available": reports_available,
+                "background_running": len(reports_available) > 0,
+            }
+
+            return render_template("racing_analyzer.html", data=analyzer_data)
+
+        except Exception as e:
+            logger.error(f"Racing analyzer error: {e}")
+            return render_template("error.html", error=str(e))
+
+    @app.route("/api/racing_analyzer/start", methods=["POST"])
+    def start_racing_analysis():
+        """Start racing analysis for a specific date"""
+        try:
+            data = request.get_json() or {}
+            target_date = data.get("date", "today")
+
+            # Import the interface
+            sys.path.insert(0, str(project_root))
+            from webapp_racing_interface import WebAppRacingInterface
+
+            interface = WebAppRacingInterface(str(project_root / "reports"))
+            result = interface.request_analysis(target_date, "json")
+
+            if "error" in result:
+                return jsonify({"success": False, "error": result["error"]}), 400
+
+            return jsonify(
+                {
+                    "success": True,
+                    "message": "Analysis started successfully",
+                    "data": result,
+                }
+            )
+
+        except Exception as e:
+            logger.error(f"Racing analysis start error: {e}")
+            return jsonify({"success": False, "error": str(e)}), 500
+
+    @app.route("/api/racing_analyzer/reports")
+    def list_racing_reports():
+        """List available racing reports"""
+        try:
+            reports_dir = project_root / "reports"
+            reports = []
+
+            if reports_dir.exists():
+                json_files = list(reports_dir.glob("racing_data_*.json"))
+                for file in json_files:
+                    try:
+                        parts = file.stem.split("_")
+                        if len(parts) >= 4:
+                            date_part = parts[2]
+                            time_part = parts[3]
+                            reports.append(
+                                {
+                                    "date": date_part,
+                                    "time": time_part,
+                                    "json_file": str(file.name),
+                                    "html_file": str(file.name)
+                                    .replace("racing_data_", "racing_report_")
+                                    .replace(".json", ".html"),
+                                }
+                            )
+                    except:
+                        continue
+
+            return jsonify({"reports": reports})
+
+        except Exception as e:
+            logger.error(f"List reports error: {e}")
+            return jsonify({"error": str(e)}), 500
+
+    @app.route("/reports/<filename>")
+    def serve_report(filename):
+        """Serve report files"""
+        try:
+            reports_dir = project_root / "reports"
+            file_path = reports_dir / filename
+
+            if file_path.exists() and file_path.is_file():
+                if filename.endswith(".html"):
+                    with open(file_path, "r", encoding="utf-8") as f:
+                        return f.read()
+                elif filename.endswith(".json"):
+                    with open(file_path, "r") as f:
+                        return f.read(), 200, {"Content-Type": "application/json"}
+                else:
+                    return "File type not supported", 400
+            else:
+                return "Report not found", 404
+
+        except Exception as e:
+            logger.error(f"Serve report error: {e}")
+            return f"Error serving report: {e}", 500
 
     @app.route("/api/system_status")
     def api_system_status():
