@@ -30,8 +30,15 @@ COPY pyproject.toml .
 COPY main.py .
 COPY app.py .
 
-# Copy enhanced web application templates and static files
+# Copy enhanced web application
+COPY src/web/enhanced_web_application.py ./
 COPY templates/ ./templates/
+
+# Copy AI applications
+COPY ai_code_analyzer.py .
+COPY ai_racing_commentator.py .
+COPY ai_betting_bot.py .
+COPY ai_form_analyzer.py .
 
 # Copy racing analyzer components
 COPY background_racing_analyzer.py .
@@ -73,7 +80,7 @@ ENV FLASK_APP=app.py
 ENV FLASK_ENV=production
 
 # Expose ports for web services
-EXPOSE 5002 8000
+EXPOSE 5003 8000
 
 # Default command - run the enhanced web application
-CMD ["python", "app.py"]
+CMD ["python", "src/web/enhanced_web_application.py"]

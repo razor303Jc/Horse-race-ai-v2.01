@@ -19,7 +19,7 @@ class AIFormAnalyzer:
         self.coder_model = "qwen2.5-coder:7b"
         self.analysis_model = "jimscard/whiterabbit-neo:13b-q5_K_M"
 
-    def query_model(self, model, prompt, timeout=90):
+    def query_model(self, model, prompt, timeout=3600):
         """Query specified Ollama model."""
         try:
             result = subprocess.run(
@@ -241,7 +241,7 @@ Give a concise analysis covering:
 
 Keep it brief but insightful."""
 
-        return self.query_model(self.analysis_model, prompt, timeout=30)
+        return self.query_model(self.analysis_model, prompt, timeout=1800)
 
 
 def main():

@@ -41,7 +41,7 @@ Only return the corrected code, no explanations."""
             input=prompt,
             text=True,
             capture_output=True,
-            timeout=300,
+            timeout=3600,
         )
 
         if result.returncode == 0:

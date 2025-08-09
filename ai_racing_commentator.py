@@ -17,7 +17,7 @@ class AIRacingCommentator:
     def __init__(self):
         self.model = "jimscard/whiterabbit-neo:13b-q5_K_M"
 
-    def query_ai(self, prompt, timeout=90):
+    def query_ai(self, prompt, timeout=3600):
         """Query WhiteRabbit Neo for commentary."""
         try:
             result = subprocess.run(

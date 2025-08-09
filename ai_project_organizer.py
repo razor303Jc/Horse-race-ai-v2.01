@@ -25,7 +25,7 @@ class ProjectOrganizer:
             / f"backup_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
         )
 
-    def query_coder(self, prompt, timeout=300):
+    def query_coder(self, prompt, timeout=3600):
         """Query Qwen2.5-Coder for organization decisions."""
         try:
             result = subprocess.run(

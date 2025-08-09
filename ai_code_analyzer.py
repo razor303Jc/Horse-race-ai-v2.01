@@ -19,7 +19,7 @@ class CodeAnalyzer:
         self.coder_model = "qwen2.5-coder:7b"
         self.project_root = Path("/home/jc/Documents/Horse-race-ai-v2.01")
 
-    def query_coder(self, prompt, timeout=300):
+    def query_coder(self, prompt, timeout=3600):
         """Query Qwen2.5-Coder with code analysis prompt."""
         try:
             result = subprocess.run(
@@ -73,7 +73,7 @@ Provide specific recommendations for:
 
 Focus on practical, implementable suggestions."""
 
-        response = self.query_coder(prompt, timeout=300)
+        response = self.query_coder(prompt, timeout=3600)
         print(response)
         return response
 
@@ -100,7 +100,7 @@ Suggest features like:
 
 Provide Python code snippets for implementation."""
 
-        response = self.query_coder(prompt, timeout=300)
+        response = self.query_coder(prompt, timeout=3600)
         print(response)
         return response
 
@@ -122,7 +122,7 @@ Include:
 
 Provide specific debugging techniques and code examples."""
 
-        response = self.query_coder(prompt, timeout=300)
+        response = self.query_coder(prompt, timeout=3600)
         print(response)
         return response
 
@@ -142,7 +142,7 @@ Create unit tests for:
 
 Provide Python pytest code with realistic test data and edge cases."""
 
-        response = self.query_coder(prompt, timeout=300)
+        response = self.query_coder(prompt, timeout=3600)
         print(response)
         return response
 
@@ -169,7 +169,7 @@ Suggest:
 
 Provide specific SQL and Python examples."""
 
-        response = self.query_coder(prompt, timeout=300)
+        response = self.query_coder(prompt, timeout=3600)
         print(response)
         return response
 
@@ -275,7 +275,7 @@ Please provide the corrected Python code that fixes these issues:
 
 Return ONLY the corrected Python code, no explanations."""
 
-        response = self.query_coder(prompt, timeout=300)
+        response = self.query_coder(prompt, timeout=3600)
 
         # Extract code from response if wrapped in code blocks
         if "```python" in response:

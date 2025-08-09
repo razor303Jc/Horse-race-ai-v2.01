@@ -26,7 +26,7 @@ class AIBettingBot:
         )
         self.logger = logging.getLogger(__name__)
 
-    def query_ai(self, prompt, timeout=60):
+    def query_ai(self, prompt, timeout=3600):
         """Query Qwen2.5-Coder for analysis."""
         try:
             result = subprocess.run(

@@ -19,7 +19,7 @@ class AIFormAnalyzer:
         self.coder_model = "qwen2.5-coder:7b"
         self.analysis_model = "jimscard/whiterabbit-neo:13b-q5_K_M"
 
-    def query_model(self, model, prompt, timeout=90):
+    def query_model(self, model, prompt, timeout=3600):
         """Query specified Ollama model."""
         try:
             result = subprocess.run(
@@ -102,3 +102,8 @@ Using your coding and statistical analysis skills:
 Focus on mathematical patterns and data-driven insights."""
 
         return self.query_model(self.coder_model, prompt)
+
+    def compare_horses(self, horse_data1, horse_data2):
+        """Compare two horses' form and provide insights."""
+        # Placeholder for comparison logic
+        pass
