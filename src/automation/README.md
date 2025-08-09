@@ -42,17 +42,17 @@ playwright install chromium
 
 ## 📋 Management Commands
 
-| Command | Description |
-|---------|-------------|
-| `install` | Install the auto downloader service |
-| `start` | Start the service |
-| `stop` | Stop the service |
-| `restart` | Restart the service |
-| `status` | Show service status and recent logs |
-| `logs` | Show recent logs |
-| `manual` | Run download manually for testing |
-| `test` | Test configuration and dependencies |
-| `uninstall` | Remove the service |
+| Command     | Description                         |
+| ----------- | ----------------------------------- |
+| `install`   | Install the auto downloader service |
+| `start`     | Start the service                   |
+| `stop`      | Stop the service                    |
+| `restart`   | Restart the service                 |
+| `status`    | Show service status and recent logs |
+| `logs`      | Show recent logs                    |
+| `manual`    | Run download manually for testing   |
+| `test`      | Test configuration and dependencies |
+| `uninstall` | Remove the service                  |
 
 ## ⏰ Schedule
 
@@ -64,12 +64,14 @@ playwright install chromium
 ## 🛡️ Respectful Scraping Policies
 
 ### Rate Limiting
+
 - Maximum **15 requests per minute**
 - **3-second delay** between page loads
 - **5-second delay** before retries
 - **Single-threaded** operation only
 
 ### Politeness Features
+
 - Honest User-Agent identification
 - Respects robots.txt directives
 - Appropriate HTTP headers
@@ -77,6 +79,7 @@ playwright install chromium
 - Comprehensive logging
 
 ### Success Criteria
+
 - Minimum **10 races** downloaded
 - Minimum **4 horses** per race
 - Valid data structure
@@ -125,21 +128,25 @@ Edit `config/respectful_downloader_config.json`:
 ## 📊 Monitoring
 
 ### Check Service Status
+
 ```bash
 ./scripts/manage_auto_downloader.sh status
 ```
 
 ### View Live Logs
+
 ```bash
 ./scripts/manage_auto_downloader.sh logs
 ```
 
 ### Manual Test Run
+
 ```bash
 ./scripts/manage_auto_downloader.sh manual
 ```
 
 ### Check Downloaded Data
+
 ```bash
 ls -la data/daily_downloads/
 ```
@@ -147,17 +154,20 @@ ls -la data/daily_downloads/
 ## 🔧 Troubleshooting
 
 ### Service Won't Start
+
 1. Check dependencies: `./scripts/manage_auto_downloader.sh test`
 2. Check permissions on data/logs directories
 3. Review logs: `sudo journalctl -u horse-racing-auto-downloader.service`
 
 ### Download Failures
+
 1. Check internet connectivity
 2. Verify horseracedatabase.com is accessible
 3. Review download logs in `data/daily_downloads/`
 4. Check if site structure has changed
 
 ### Configuration Issues
+
 1. Validate JSON: `python3 -m json.tool config/respectful_downloader_config.json`
 2. Check file permissions
 3. Verify paths exist
@@ -165,10 +175,12 @@ ls -la data/daily_downloads/
 ## 🎯 Data Output
 
 ### Downloaded Files
+
 - `race_data_YYYYMMDD_HHMMSS.json` - Race data
 - `race_data_YYYYMMDD_HHMMSS.session.json` - Session metadata
 
 ### Data Structure
+
 ```json
 {
   "download_date": "2025-08-09T00:01:00",

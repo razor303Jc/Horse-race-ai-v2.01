@@ -1,0 +1,82 @@
+version: '3.8'
+
+services:
+  auto-downloader:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: horserace-auto-downloader
+    environment:
+      - DOCKER_CONTAINER=true
+      - HEADLESS=true
+      - PLAYWRIGHT_BROWSERS_PATH=/app/.playwright
+      - TZ=UTC
+      - LOG_LEVEL=INFO
+      # WooCommerce credentials (from .env file)
+      - HORSERACE_DB_USERNAME=${HORSERACE_DB_USERNAME}
+      - HORSERACE_DB_PASSWORD=${HORSERACE_DB_PASSWORD}
+      - HORSERACE_DB_RESULTS_URL=${HORSERACE_DB_RESULTS_URL}
+      - HORSERACE_DB_CARDS_URL=${HORSERACE_DB_CARDS_URL}
+    volumes:
+      # Persistent data storage
+      - ./data:/app/data
+      - ./logs:/app/logs
+      - ./cache:/app/cache
+      # Timezone data
+      - /etc/localtime:/etc/localtime:ro
+    networks:
+      - horserace-network
+    restart: unless-stopped
+    # Run in scheduled mode by default
+    command: ["python", "run_docker_auto_downloader.py", "--mode", "scheduled", "--log-level", "INFO"]
+    
+    # Health check to ensure container is working
+    healthcheck:
+      test: ["CMD", "python", "-c", "import sys; sys.path.append('/app'); from src.automation.docker_config import validate_docker_setup; exit(0 if validate_docker_setup() else 1)"]
+      interval: 30m
+      timeout: 10s
+      retries: 3
+      start_period: 1m
+    
+    # Resource limits for container stability
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+          cpus: '1.0'
+        reservations:
+          memory: 512M
+          cpus: '0.5'
+
+  # Optional: Run once for testing
+  auto-downloader-test:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: horserace-auto-downloader-test
+    environment:
+      - DOCKER_CONTAINER=true
+      - HEADLESS=true
+      - PLAYWRIGHT_BROWSERS_PATH=/app/.playwright
+      - TZ=UTC
+      - LOG_LEVEL=DEBUG
+      # WooCommerce credentials (from .env file)
+      - HORSERACE_DB_USERNAME=${HORSERACE_DB_USERNAME}
+      - HORSERACE_DB_PASSWORD=${HORSERACE_DB_PASSWORD}
+      - HORSERACE_DB_RESULTS_URL=${HORSERACE_DB_RESULTS_URL}
+      - HORSERACE_DB_CARDS_URL=${HORSERACE_DB_CARDS_URL}
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+      - ./cache:/app/cache
+    networks:
+      - horserace-network
+    # Run once and exit
+    command: ["python", "run_docker_auto_downloader.py", "--mode", "once", "--log-level", "DEBUG"]
+    profiles:
+      - test
+
+networks:
+  horserace-network:
+    name: horserace-network
+    external: true

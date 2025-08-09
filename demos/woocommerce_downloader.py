@@ -12,6 +12,7 @@ Handles WooCommerce-specific download patterns from horseracedatabase.com:
 import asyncio
 import logging
 import os
+import random
 from datetime import datetime
 from pathlib import Path
 from typing import Dict, Optional
@@ -59,28 +60,90 @@ class WooCommerceDownloader:
         self.browser: Optional[Browser] = None
         self.context: Optional[BrowserContext] = None
 
-    async def start_browser(self) -> bool:
-        """Start browser with anti-detection settings."""
+    async def _human_type(
+        self, element, text: str, delay_range: tuple = (50, 150)
+    ) -> None:
+        """Type text character by character with human-like delays."""
+        # Clear the field first
+        await element.click()
+        await element.press("Control+a")
+        await element.press("Delete")
+
+        # Type each character with random delays
+        for char in text:
+            await element.type(char)
+            # Random delay between characters (50-150ms)
+            delay = random.randint(delay_range[0], delay_range[1])
+            await asyncio.sleep(delay / 1000)  # Convert to seconds
+
+        # Small pause after typing like a human would
+        await asyncio.sleep(random.randint(200, 500) / 1000)
+
+    async def _human_scroll(self, page: Page) -> None:
+        """Scroll page naturally like a human would."""
+        # Random scroll amount
+        scroll_amount = random.randint(200, 800)
+
+        # Scroll down with slight variations
+        for _ in range(3):
+            await page.mouse.wheel(0, scroll_amount + random.randint(-50, 50))
+            await asyncio.sleep(random.randint(500, 1500) / 1000)
+
+    async def _human_page_interaction(self, page: Page) -> None:
+        """Add human-like page interactions."""
+        # Random mouse movements
+        width = 1920
+        height = 1080
+
+        # Move mouse to random positions
+        for _ in range(random.randint(1, 3)):
+            x = random.randint(100, width - 100)
+            y = random.randint(100, height - 100)
+            await page.mouse.move(x, y)
+            await asyncio.sleep(random.randint(300, 800) / 1000)
+
+    async def start_browser(self, headless: bool = True) -> bool:
+        """Start browser with anti-detection settings and Docker support."""
         try:
             playwright = await async_playwright().start()
+
+            # Docker-optimized browser arguments
+            browser_args = [
+                "--no-sandbox",
+                "--disable-blink-features=AutomationControlled",
+                "--disable-dev-shm-usage",
+                "--disable-web-security",
+                "--disable-features=VizDisplayCompositor",
+                "--disable-gpu",
+                "--disable-extensions",
+                "--disable-plugins",
+                "--disable-images",  # Speed up loading in container
+                "--disable-javascript-harmony-shipping",
+                "--disable-background-timer-throttling",
+                "--disable-renderer-backgrounding",
+                "--disable-backgrounding-occluded-windows",
+                "--disable-ipc-flooding-protection",
+                "--memory-pressure-off",
+                "--max_old_space_size=4096",
+                "--single-process",  # Important for containers
+            ]
+
             self.browser = await playwright.chromium.launch(
-                headless=False,  # Show browser for debugging
-                args=[
-                    "--no-sandbox",
-                    "--disable-blink-features=AutomationControlled",
-                    "--disable-dev-shm-usage",
-                ],
+                headless=headless,
+                args=browser_args,
             )
 
             self.context = await self.browser.new_context(
-                user_agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
+                user_agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
                 viewport={"width": 1920, "height": 1080},
                 extra_http_headers={
                     "Accept-Language": "en-US,en;q=0.9",
+                    "Accept-Encoding": "gzip, deflate, br",
+                    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
                 },
             )
 
-            logger.info("Browser started successfully")
+            logger.info(f"Browser started successfully (headless={headless})")
             return True
 
         except Exception as e:
@@ -165,11 +228,13 @@ class WooCommerceDownloader:
                 try:
                     element = page.locator(selector).first
                     if await element.count() > 0:
-                        await element.fill(self.username)
+                        # Type safety check
+                        assert self.username is not None, "Username not configured"
+                        await self._human_type(element, self.username)
                         username_filled = True
                         logger.info(f"Username filled using selector: {selector}")
                         break
-                except:
+                except Exception:
                     continue
 
             if not username_filled:
@@ -190,11 +255,13 @@ class WooCommerceDownloader:
                 try:
                     element = page.locator(selector).first
                     if await element.count() > 0:
-                        await element.fill(self.password)
+                        # Type safety check
+                        assert self.password is not None, "Password not configured"
+                        await self._human_type(element, self.password)
                         password_filled = True
                         logger.info(f"Password filled using selector: {selector}")
                         break
-                except:
+                except Exception:
                     continue
 
             if not password_filled:
@@ -270,13 +337,13 @@ class WooCommerceDownloader:
             return None
 
     async def run_with_direct_urls(
-        self, results_url: str = None, cards_url: str = None
+        self, results_url: str = None, cards_url: str = None, headless: bool = True
     ) -> Dict[str, bool]:
         """Run downloader with direct WooCommerce URLs."""
         results = {"results": False, "cards": False}
 
         try:
-            if not await self.start_browser():
+            if not await self.start_browser(headless=headless):
                 return results
 
             page = await self.context.new_page()
