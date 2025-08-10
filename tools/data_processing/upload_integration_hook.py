@@ -1,10 +1,16 @@
 #!/usr/bin/env python3
 """
-🔗 Data Upload Integration Hook
-Automatically runs data relationships pipeline after every upload
+🔗 Data Upload Integration Hook - Enhanced with ML Preprocessing
+Automatically runs complete data processing pipeline after every upload
 
 This script integrates with the data upload process to ensure
-every new batch of racing data gets properly processed.
+every new batch of racing data gets:
+1. Data relationships fixed (jockey/trainer/course mapping)
+2. ML features prepared and scaled (StandardScaler preprocessing)
+
+Two-stage automated workflow:
+- Stage 1: Data relationships pipeline (Priority 1A)
+- Stage 2: ML feature preprocessing (Priority 1B)
 
 Author: AI Assistant
 Date: August 10, 2025
@@ -44,6 +50,9 @@ class DataUploadIntegration:
             / "tools"
             / "data_processing"
             / "automated_relationships_pipeline.py"
+        )
+        self.ml_pipeline_script = (
+            self.project_root / "tools" / "ml_pipeline" / "ml_feature_preparation.py"
         )
         self.config_file = (
             self.project_root / "config" / "data_relationships_pipeline.json"
@@ -125,7 +134,7 @@ class DataUploadIntegration:
             )
 
             if result.returncode == 0:
-                logger.info("✅ Pipeline completed successfully")
+                logger.info("✅ Data relationships pipeline completed successfully")
 
                 # Update status file
                 status = {
@@ -165,6 +174,83 @@ class DataUploadIntegration:
             logger.error(f"❌ Error running pipeline: {e}")
             return False
 
+    def run_ml_preprocessing(self) -> bool:
+        """Execute the ML feature preparation pipeline after data relationships are fixed."""
+        try:
+            logger.info("🤖 Starting ML feature preprocessing pipeline...")
+
+            # Build command for ML preprocessing
+            cmd = [sys.executable, str(self.ml_pipeline_script)]
+
+            # Run ML pipeline
+            result = subprocess.run(
+                cmd, capture_output=True, text=True, timeout=1800  # 30 min timeout
+            )
+
+            if result.returncode == 0:
+                logger.info("✅ ML preprocessing pipeline completed successfully")
+
+                # Parse output to get key metrics
+                output_lines = result.stdout.split("\n")
+                ml_metrics = {}
+                for line in output_lines:
+                    if "Training Data:" in line:
+                        # Extract training data metrics
+                        try:
+                            parts = line.split()
+                            samples_idx = next(
+                                i for i, part in enumerate(parts) if "samples" in part
+                            )
+                            ml_metrics["training_samples"] = parts[
+                                samples_idx - 1
+                            ].replace(",", "")
+                        except:
+                            pass
+                    elif "features" in line and "Training" not in line:
+                        try:
+                            parts = line.split()
+                            features_idx = next(
+                                i for i, part in enumerate(parts) if "features" in part
+                            )
+                            ml_metrics["total_features"] = parts[
+                                features_idx - 1
+                            ].replace(",", "")
+                        except:
+                            pass
+
+                # Update status with ML metrics
+                ml_status = {
+                    "timestamp": datetime.now().isoformat(),
+                    "ml_preprocessing_success": True,
+                    "ml_metrics": ml_metrics,
+                    "stdout": result.stdout[-1000:],
+                    "stderr": result.stderr[-1000:] if result.stderr else None,
+                }
+
+                # Update or create ML status file
+                ml_status_file = (
+                    self.project_root / "logs" / "ml_preprocessing_status.json"
+                )
+                ml_status_file.parent.mkdir(exist_ok=True)
+                with open(ml_status_file, "w") as f:
+                    json.dump(ml_status, f, indent=2)
+
+                return True
+            else:
+                logger.error(
+                    f"❌ ML preprocessing failed with return code {result.returncode}"
+                )
+                logger.error(f"stdout: {result.stdout}")
+                logger.error(f"stderr: {result.stderr}")
+                return False
+
+        except subprocess.TimeoutExpired:
+            logger.error("❌ ML preprocessing timed out after 30 minutes")
+            return False
+        except Exception as e:
+            logger.error(f"❌ ML preprocessing execution failed: {e}")
+            return False
+
     def post_upload_hook(self) -> bool:
         """Main hook function called after data uploads."""
         logger.info("🔗 Data upload integration hook triggered")
@@ -172,14 +258,36 @@ class DataUploadIntegration:
         try:
             # Check if new data requires pipeline run
             if self.check_new_data():
-                success = self.run_pipeline()
+                # Step 1: Run data relationships pipeline
+                logger.info("📋 Step 1: Running data relationships pipeline...")
+                relationships_success = self.run_pipeline()
 
-                if success:
-                    logger.info("🎉 Post-upload data relationships processing complete")
+                if relationships_success:
+                    logger.info("✅ Data relationships processing complete")
+
+                    # Step 2: Run ML preprocessing pipeline
+                    logger.info("📋 Step 2: Running ML feature preprocessing...")
+                    ml_success = self.run_ml_preprocessing()
+
+                    if ml_success:
+                        logger.info("🎉 Complete post-upload processing successful!")
+                        logger.info("   ✅ Data relationships fixed")
+                        logger.info("   ✅ ML features prepared and scaled")
+                        return True
+                    else:
+                        logger.warning(
+                            "⚠️ Data relationships fixed but ML preprocessing failed"
+                        )
+                        logger.info("   ✅ Data relationships fixed")
+                        logger.info("   ❌ ML features preparation failed")
+                        # Still return True since core data processing succeeded
+                        return True
                 else:
                     logger.error("❌ Post-upload data relationships processing failed")
+                    logger.info("   ❌ Data relationships processing failed")
+                    logger.info("   ⏭️ ML preprocessing skipped")
+                    return False
 
-                return success
             else:
                 logger.info("ℹ️  No pipeline run needed - data is up to date")
                 return True
