@@ -52,7 +52,7 @@ async def run_docker_auto_downloader():
         print("🚀 Starting daily download process...")
 
         # Run the daily download
-        success = await downloader.run_daily_download()
+        success = await downloader._run_daily_download()
 
         if success:
             print("✅ Daily download completed successfully!")
@@ -78,10 +78,10 @@ def run_scheduled():
 
     import schedule
 
-    # Schedule for 00:01 daily
-    schedule.every().day.at("00:01").do(run_once)
+    # Schedule for 09:01 daily (test time)
+    schedule.every().day.at("09:01").do(run_once)
 
-    print("📅 Scheduled auto downloader for 00:01 daily")
+    print("📅 Scheduled auto downloader for 09:01 daily")
     print("🔄 Waiting for scheduled time...")
 
     while True:
@@ -108,14 +108,24 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    # Set up logging
+    # Set up logging with error handling for file permissions
+    log_handlers = [logging.StreamHandler()]
+
+    # Try to add file handler if directory is writable
+    try:
+        import os
+
+        os.makedirs("/app/logs", mode=0o775, exist_ok=True)
+        log_handlers.append(logging.FileHandler("/app/logs/auto_downloader.log"))
+        print("✅ Logging to file: /app/logs/auto_downloader.log")
+    except (PermissionError, OSError) as e:
+        print(f"⚠️  Cannot write to log file: {e}")
+        print("📝 Logging to console only")
+
     logging.basicConfig(
         level=getattr(logging, args.log_level),
         format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-        handlers=[
-            logging.FileHandler("/app/logs/auto_downloader.log"),
-            logging.StreamHandler(),
-        ],
+        handlers=log_handlers,
     )
 
     print(f"🎯 Running in {args.mode} mode with {args.log_level} logging")

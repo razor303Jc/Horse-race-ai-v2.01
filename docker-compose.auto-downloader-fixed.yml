@@ -4,7 +4,7 @@ services:
   auto-downloader:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.auto
     container_name: horserace-auto-downloader
     environment:
       - DOCKER_CONTAINER=true

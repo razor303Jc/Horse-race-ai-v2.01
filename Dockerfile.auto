@@ -1,0 +1,69 @@
+# Official Python runtime as base image (lightweight)
+FROM python:3.11-slim
+
+# Set working directory
+WORKDIR /app
+
+# Install system dependencies for Playwright and minimal utilities
+RUN apt-get update && apt-get install -y \
+    wget \
+    curl \
+    gnupg \
+    ca-certificates \
+    # Minimal dependencies for browser operation
+    libnss3 \
+    libatk-bridge2.0-0 \
+    libdrm2 \
+    libxkbcommon0 \
+    libgtk-3-0 \
+    libgbm1 \
+    libasound2 \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy requirements first for better caching (minimal auto downloader requirements)
+COPY requirements-auto-downloader.txt .
+
+# Install Python dependencies (only what's needed for auto downloader)
+RUN pip install --no-cache-dir -r requirements-auto-downloader.txt
+
+# Install Playwright browsers as root first
+RUN playwright install --with-deps chromium
+
+# Copy ONLY the auto downloader components
+COPY src/automation/ ./src/automation/
+COPY demos/ ./demos/
+COPY run_docker_auto_downloader.py .
+
+# Copy .env for environment variables (optional)
+COPY .env* ./
+
+# Create minimal directory structure for auto downloader
+RUN mkdir -p /app/data /app/logs /app/cache
+
+# Create non-root user and set up permissions
+RUN groupadd -r autodownloader && useradd -r -g autodownloader -m autodownloader
+
+# Set ownership and permissions for directories BEFORE switching user
+RUN chown -R autodownloader:autodownloader /app
+RUN chmod -R 755 /app/logs /app/data /app/cache
+RUN chmod -R 775 /app/logs  # Allow write access for logging
+
+# Switch to non-root user for security
+USER autodownloader
+
+# Set up Playwright browsers for the autodownloader user
+ENV PLAYWRIGHT_BROWSERS_PATH=/app/.playwright
+RUN playwright install chromium
+
+# Set environment variables for auto downloader
+ENV PYTHONPATH=/app
+ENV PYTHONUNBUFFERED=1
+ENV DOCKER_CONTAINER=true
+ENV HEADLESS=true
+
+# Health check for auto downloader
+HEALTHCHECK --interval=5m --timeout=30s --start-period=2m --retries=3 \
+    CMD python -c "import sys; sys.path.append('/app'); from src.automation.docker_config import validate_docker_setup; exit(0 if validate_docker_setup() else 1)" || exit 1
+
+# Default command - run the auto downloader in scheduled mode
+CMD ["python", "run_docker_auto_downloader.py", "--mode", "scheduled", "--log-level", "INFO"]

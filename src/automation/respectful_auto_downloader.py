@@ -240,59 +240,124 @@ class RespectfulAutoDownloader:
             # Set up Docker directories if running in container
             if RUNNING_IN_DOCKER and USE_DOCKER_CONFIG:
                 logger.info("🐳 Detected Docker environment, using optimized settings")
-                setup_docker_directories()
+                try:
+                    setup_docker_directories()
+                except Exception as setup_error:
+                    logger.warning(
+                        f"Docker directory setup failed, continuing: {setup_error}"
+                    )
 
-            self.playwright = await async_playwright().__aenter__()
+            # Initialize Playwright with error handling
+            try:
+                self.playwright = await async_playwright().__aenter__()
+                logger.info("Playwright initialized successfully")
+            except Exception as playwright_error:
+                logger.error(f"Failed to initialize Playwright: {playwright_error}")
+                return False
 
             # Use Docker-optimized args if available, otherwise fallback to defaults
             if RUNNING_IN_DOCKER and USE_DOCKER_CONFIG:
-                browser_args = get_docker_browser_args()
-                logger.info("Using Docker-optimized browser arguments")
+                try:
+                    browser_args = get_docker_browser_args()
+                    logger.info("Using Docker-optimized browser arguments")
+                except Exception as docker_config_error:
+                    logger.warning(
+                        f"Docker config failed, using fallback: {docker_config_error}"
+                    )
+                    browser_args = self._get_fallback_browser_args()
             else:
-                browser_args = [
-                    "--no-sandbox",
-                    "--disable-dev-shm-usage",
-                    "--disable-blink-features=AutomationControlled",
-                    "--disable-web-security",
-                    "--disable-features=VizDisplayCompositor",
-                    "--disable-gpu",
-                    "--disable-extensions",
-                    "--disable-plugins",
-                    "--disable-images",  # Speed up loading in container
-                    "--disable-javascript-harmony-shipping",
-                    "--disable-background-timer-throttling",
-                    "--disable-renderer-backgrounding",
-                    "--disable-backgrounding-occluded-windows",
-                    "--disable-ipc-flooding-protection",
-                    "--memory-pressure-off",
-                    "--max_old_space_size=4096",
-                    "--single-process",  # Important for containers
-                ]
+                browser_args = self._get_fallback_browser_args()
 
-            self.browser = await self.playwright.chromium.launch(
-                headless=self.config.headless,
-                args=browser_args,
-            )
+            # Launch browser with enhanced error handling and timeout
+            try:
+                self.browser = await self.playwright.chromium.launch(
+                    headless=self.config.headless,
+                    args=browser_args,
+                    timeout=60000,  # 60 second timeout
+                )
+                logger.info("Browser launched successfully")
+            except Exception as browser_error:
+                logger.error(f"Failed to launch browser: {browser_error}")
+                # Try with minimal args as fallback
+                try:
+                    logger.info("Attempting fallback browser launch with minimal args")
+                    self.browser = await self.playwright.chromium.launch(
+                        headless=True,
+                        args=["--no-sandbox", "--disable-dev-shm-usage"],
+                        timeout=60000,
+                    )
+                    logger.info("Fallback browser launch successful")
+                except Exception as fallback_error:
+                    logger.error(f"Fallback browser launch failed: {fallback_error}")
+                    return False
 
-            self.context = await self.browser.new_context(
-                user_agent=self.config.user_agent,
-                viewport={
-                    "width": self.config.viewport_width,
-                    "height": self.config.viewport_height,
-                },
-                extra_http_headers={
-                    "Accept-Language": "en-US,en;q=0.9",
-                    "Accept-Encoding": "gzip, deflate, br",
-                    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
-                },
-            )
+            # Create browser context with enhanced error handling
+            try:
+                self.context = await self.browser.new_context(
+                    user_agent=self.config.user_agent,
+                    viewport={
+                        "width": self.config.viewport_width,
+                        "height": self.config.viewport_height,
+                    },
+                    extra_http_headers={
+                        "Accept-Language": "en-US,en;q=0.9",
+                        "Accept-Encoding": "gzip, deflate, br",
+                        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+                    },
+                    ignore_https_errors=True,  # Helpful in container environments
+                )
+                logger.info("Browser context created successfully")
+            except Exception as context_error:
+                logger.error(f"Failed to create browser context: {context_error}")
+                await self._cleanup_browser()
+                return False
 
-            logger.info("Browser initialized successfully")
+            # Validate browser context is working
+            try:
+                test_page = await self.context.new_page()
+                await test_page.goto("about:blank", timeout=30000)
+                await test_page.close()
+                logger.info("Browser context validation successful")
+            except Exception as validation_error:
+                logger.error(f"Browser context validation failed: {validation_error}")
+                await self._cleanup_browser()
+                return False
+
+            logger.info("Browser initialized successfully with full validation")
             return True
 
         except Exception as e:
-            logger.error(f"Failed to initialize browser: {e}")
+            logger.error(f"Critical error in browser initialization: {e}")
+            await self._cleanup_browser()
             return False
+
+    def _get_fallback_browser_args(self) -> List[str]:
+        """Get fallback browser arguments for container environments"""
+        return [
+            "--no-sandbox",
+            "--disable-dev-shm-usage",
+            "--disable-blink-features=AutomationControlled",
+            "--disable-web-security",
+            "--disable-features=VizDisplayCompositor",
+            "--disable-gpu",
+            "--disable-extensions",
+            "--disable-plugins",
+            "--disable-images",  # Speed up loading in container
+            "--disable-javascript-harmony-shipping",
+            "--disable-background-timer-throttling",
+            "--disable-renderer-backgrounding",
+            "--disable-backgrounding-occluded-windows",
+            "--disable-ipc-flooding-protection",
+            "--memory-pressure-off",
+            "--max_old_space_size=4096",
+            "--single-process",  # Important for containers
+            "--disable-software-rasterizer",
+            "--disable-background-networking",
+            "--disable-default-apps",
+            "--disable-sync",
+            "--no-first-run",
+            "--no-default-browser-check",
+        ]
 
     async def _cleanup_browser(self) -> None:
         """Clean up browser resources properly to avoid asyncio warnings"""
