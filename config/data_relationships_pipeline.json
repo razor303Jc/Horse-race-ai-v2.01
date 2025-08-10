@@ -1,0 +1,47 @@
+{
+  "jockey_assignment": {
+    "prefer_top_performers": true,
+    "top_performer_weight": 0.7,
+    "min_runs_for_top_status": 10,
+    "min_win_percentage": 0.01,
+    "diversity_factor": 0.3
+  },
+  "trainer_assignment": {
+    "prefer_top_performers": true,
+    "top_performer_weight": 0.7,
+    "min_runs_for_top_status": 10,
+    "min_win_percentage": 0.01,
+    "diversity_factor": 0.3
+  },
+  "course_assignment": {
+    "major_courses_weight": 3,
+    "popular_courses_weight": 2,
+    "regular_courses_weight": 1,
+    "regional_distribution": true
+  },
+  "quality_thresholds": {
+    "min_unique_jockeys": 100,
+    "min_unique_trainers": 100,
+    "max_placeholder_percentage": 1.0,
+    "min_overall_quality_score": 95.0
+  },
+  "pipeline_settings": {
+    "batch_size": 1000,
+    "random_seed": 42,
+    "enable_rollback_on_failure": true,
+    "max_retries": 3,
+    "timeout_seconds": 3600
+  },
+  "monitoring": {
+    "enable_progress_tracking": true,
+    "enable_performance_metrics": true,
+    "alert_on_quality_failure": true,
+    "save_detailed_reports": true
+  },
+  "historic_dataset_goals": {
+    "target_years": 5,
+    "estimated_records_per_year": 50000,
+    "target_total_records": 250000,
+    "maintain_data_consistency": true
+  }
+}
