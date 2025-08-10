@@ -36,6 +36,9 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.progress import Progress, SpinnerColumn, TextColumn
 
+# Import data validator
+from data_validator import HorseRacingDataValidator
+
 # Load environment variables
 load_dotenv()
 
@@ -547,11 +550,21 @@ class HorseRaceDatabaseDownloader:
 
             # Send completion notification
             if results_success and cards_success:
-                self.send_ntfy_notification(
-                    "🏇 Data Download Complete",
-                    "Successfully downloaded today's race cards and yesterday's results from horseracedatabase.com",
-                    "high",
-                )
+                # Validate downloaded data
+                validation_passed = self._validate_downloaded_data()
+
+                if validation_passed:
+                    self.send_ntfy_notification(
+                        "🏇 Data Download Complete",
+                        "Successfully downloaded today's race cards and yesterday's results from horseracedatabase.com",
+                        "high",
+                    )
+                else:
+                    self.send_ntfy_notification(
+                        "⚠️ Download Complete with Validation Issues",
+                        "Data downloaded but validation found issues. Check logs for details.",
+                        "default",
+                    )
             elif results_success or cards_success:
                 self.send_ntfy_notification(
                     "⚠️ Partial Download",
@@ -569,6 +582,59 @@ class HorseRaceDatabaseDownloader:
 
         except Exception as e:
             self.console.print(f"[red]❌ Error downloading files: {e}[/red]")
+            return False
+
+    def _validate_downloaded_data(self) -> bool:
+        """
+        Validate downloaded data using the data validator
+
+        Returns:
+            bool: True if validation passes, False if there are errors
+        """
+        try:
+            logger.info("🔍 Validating downloaded data...")
+
+            # Run validation
+            validator = HorseRacingDataValidator(self.download_dir)
+            validation_results = validator.validate_download()
+
+            # Check validation status
+            validation_status = validation_results["summary"]["validation_status"]
+            error_count = validation_results["summary"]["error_count"]
+            warning_count = validation_results["summary"]["warning_count"]
+
+            # Log results
+            if validation_status == "PASSED":
+                logger.info(f"✅ Data validation passed ({warning_count} warnings)")
+                self.console.print("[green]✅ Data validation passed[/green]")
+
+                # Log key metrics
+                if "record_counts" in validation_results["summary"]:
+                    counts = validation_results["summary"]["record_counts"]
+                    logger.info(
+                        f"📊 Data counts: Results races={counts['results_races']}, Records={counts['results_records']}, Cards races={counts['cards_races']}"
+                    )
+
+                return True
+            else:
+                logger.error(
+                    f"❌ Data validation failed: {error_count} errors, {warning_count} warnings"
+                )
+                self.console.print(
+                    f"[red]❌ Data validation failed: {error_count} errors[/red]"
+                )
+
+                # Log errors and warnings
+                for error in validation_results["errors"]:
+                    logger.error(f"  Error: {error}")
+                for warning in validation_results["warnings"]:
+                    logger.warning(f"  Warning: {warning}")
+
+                return False
+
+        except Exception as e:
+            logger.error(f"❌ Data validation failed with exception: {e}")
+            self.console.print(f"[red]❌ Data validation error: {e}[/red]")
             return False
 
     async def run(self) -> bool:
