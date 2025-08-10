@@ -1,10 +1,16 @@
-import { AccessTime, InfoOutlined, MonetizationOn, TrendingUp } from '@mui/icons-material';
+import { AccessTime, InfoOutlined, LocationOn, MonetizationOn, Person, Psychology, TrendingUp, Visibility } from '@mui/icons-material';
 import {
     Box,
+    Button,
     Card,
     CardContent,
     CardHeader,
     Chip,
+    CircularProgress,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
     FormControl,
     Grid,
     InputLabel,
@@ -19,7 +25,7 @@ import {
     TableRow,
     ToggleButton,
     ToggleButtonGroup,
-    Typography,
+    Typography
 } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 
@@ -49,20 +55,45 @@ interface RaceData {
   race_insights: string[];
 }
 
-interface DailyRacesData {
-  date: string;
+interface Horse {
+  horse_name: string;
+  jockey_name: string;
+  trainer_name: string;
+  age: number;
+  weight_kg: number;
+  win_odds: number;
+  win_probability?: number;
+  career_record: string;
+  recent_form?: string;
+  position?: number;
+  silk_colors?: string;
+}
+
+interface RaceCardData {
+  race_id: string;
+  race_name: string;
+  time: string;
+  venue: string;
+  distance: string;
+  class: number;
+  going: string;
+  prize_money: number;
+  horses: Horse[];
+}
+
+interface DailyRacesStats {
   total_races: number;
   total_meetings: number;
-  races: RaceData[];
   daily_stats: {
     total_prize_money: number;
-    average_field_size: number;
     group_races: number;
+    average_field_size: number;
     handicaps: number;
     maiden_races: number;
     chase_hurdle_races: number;
     quality_distribution: Record<string, number>;
   };
+  races: RaceData[];
 }
 
 const getQualityColor = (rating: string) => {
@@ -100,8 +131,12 @@ const formatCurrency = (amount: number) => {
 };
 
 export const DailyRaces: React.FC = () => {
-  const [data, setData] = useState<DailyRacesData | null>(null);
+  const [data, setData] = useState<DailyRacesStats | null>(null);
   const [loading, setLoading] = useState(true);
+  const [selectedRaceCard, setSelectedRaceCard] = useState<RaceCardData | null>(null);
+  const [raceCardDialogOpen, setRaceCardDialogOpen] = useState(false);
+  const [loadingRaceCard, setLoadingRaceCard] = useState(false);
+  const [raceCardError, setRaceCardError] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState<string>('time');
   const [filterMeeting, setFilterMeeting] = useState<string>('all');
   const [filterType, setFilterType] = useState<string>('all');
@@ -122,6 +157,38 @@ export const DailyRaces: React.FC = () => {
 
     fetchDailyRaces();
   }, []);
+
+  const fetchRaceCard = async (raceId: string) => {
+    setLoadingRaceCard(true);
+    setRaceCardError(null);
+    
+    try {
+      const response = await fetch(`/api/race_details/${raceId}`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const raceCardData = await response.json();
+      setSelectedRaceCard(raceCardData);
+      setRaceCardDialogOpen(true);
+    } catch (error) {
+      setRaceCardError(error instanceof Error ? error.message : 'Failed to fetch race card');
+    } finally {
+      setLoadingRaceCard(false);
+    }
+  };
+
+  const getOddsColor = (probability: number) => {
+    if (probability > 40) return '#4caf50'; // Green for favorites
+    if (probability > 20) return '#ff9800'; // Orange for decent chances  
+    if (probability > 10) return '#2196f3'; // Blue for outsiders
+    return '#9e9e9e'; // Gray for long shots
+  };
+
+  const getFormColor = (form: string) => {
+    if (form.includes('1') || form.includes('2')) return '#4caf50';
+    if (form.includes('3') || form.includes('4')) return '#ff9800';
+    return '#9e9e9e';
+  };
 
   if (loading) {
     return <Typography>Loading daily races...</Typography>;
@@ -307,7 +374,17 @@ export const DailyRaces: React.FC = () => {
               </TableHead>
               <TableBody>
                 {sortedRaces.map((race) => (
-                  <TableRow key={race.race_id} hover>
+                  <TableRow 
+                    key={race.race_id} 
+                    hover 
+                    sx={{ 
+                      cursor: 'pointer',
+                      '&:hover': {
+                        backgroundColor: 'rgba(25, 118, 210, 0.08)'
+                      }
+                    }}
+                    onClick={() => fetchRaceCard(race.race_id)}
+                  >
                     <TableCell>
                       <Typography variant="body2" fontWeight="bold">
                         {race.time}
@@ -388,6 +465,149 @@ export const DailyRaces: React.FC = () => {
           </TableContainer>
         </CardContent>
       </Card>
+
+      {/* Race Card Details Dialog */}
+      <Dialog 
+        open={raceCardDialogOpen} 
+        onClose={() => setRaceCardDialogOpen(false)}
+        maxWidth="lg"
+        fullWidth
+      >
+        <DialogTitle sx={{ pb: 1 }}>
+          {selectedRaceCard && (
+            <Box>
+              <Typography variant="h5" component="div" gutterBottom>
+                {selectedRaceCard.race_name}
+              </Typography>
+              <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+                <Chip icon={<AccessTime />} label={selectedRaceCard.time} size="small" color="primary" />
+                <Chip icon={<LocationOn />} label={selectedRaceCard.venue} size="small" color="secondary" />
+                <Chip label={`${selectedRaceCard.distance}`} size="small" />
+                <Chip label={`Class ${selectedRaceCard.class}`} size="small" />
+                <Chip label={selectedRaceCard.going} size="small" />
+                <Chip label={`${formatCurrency(selectedRaceCard.prize_money)}`} size="small" color="success" />
+              </Box>
+            </Box>
+          )}
+        </DialogTitle>
+        
+        <DialogContent>
+          {loadingRaceCard ? (
+            <Box sx={{ display: 'flex', justifyContent: 'center', p: 3 }}>
+              <CircularProgress />
+            </Box>
+          ) : raceCardError ? (
+            <Box sx={{ textAlign: 'center', p: 3 }}>
+              <Typography color="error" gutterBottom>
+                Error loading race card: {raceCardError}
+              </Typography>
+              <Button 
+                onClick={() => selectedRaceCard && fetchRaceCard(selectedRaceCard.race_id)}
+                variant="outlined"
+              >
+                Retry
+              </Button>
+            </Box>
+          ) : selectedRaceCard ? (
+            <TableContainer component={Paper} elevation={0}>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>#</TableCell>
+                    <TableCell>Horse</TableCell>
+                    <TableCell>Jockey</TableCell>
+                    <TableCell>Trainer</TableCell>
+                    <TableCell>Age/Wgt</TableCell>
+                    <TableCell>Odds</TableCell>
+                    <TableCell>Form</TableCell>
+                    <TableCell>Record</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {selectedRaceCard.horses.map((horse, index) => (
+                    <TableRow key={index} hover>
+                      <TableCell>
+                        <Typography variant="body2" fontWeight="bold">
+                          {horse.position || index + 1}
+                        </Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Box>
+                          <Typography variant="body2" fontWeight="bold">
+                            {horse.horse_name}
+                          </Typography>
+                          {horse.silk_colors && (
+                            <Typography variant="caption" color="text.secondary">
+                              {horse.silk_colors}
+                            </Typography>
+                          )}
+                        </Box>
+                      </TableCell>
+                      <TableCell>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                          <Person fontSize="small" color="action" />
+                          <Typography variant="body2">
+                            {horse.jockey_name}
+                          </Typography>
+                        </Box>
+                      </TableCell>
+                      <TableCell>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                          <Psychology fontSize="small" color="action" />
+                          <Typography variant="body2">
+                            {horse.trainer_name}
+                          </Typography>
+                        </Box>
+                      </TableCell>
+                      <TableCell>
+                        <Typography variant="body2">
+                          {horse.age}y / {horse.weight_kg}kg
+                        </Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Chip
+                          label={`${horse.win_odds}/1`}
+                          size="small"
+                          sx={{
+                            backgroundColor: getOddsColor(horse.win_probability || 0),
+                            color: 'white',
+                            fontWeight: 'bold'
+                          }}
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <Chip
+                          label={horse.recent_form || 'N/A'}
+                          size="small"
+                          sx={{
+                            backgroundColor: getFormColor(horse.recent_form || ''),
+                            color: 'white',
+                            fontSize: '0.7rem'
+                          }}
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                          <Visibility fontSize="small" color="action" />
+                          <Typography variant="body2">
+                            {horse.career_record}
+                          </Typography>
+                        </Box>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          ) : null}
+        </DialogContent>
+        
+        <DialogActions>
+          <Button onClick={() => setRaceCardDialogOpen(false)}>
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };
