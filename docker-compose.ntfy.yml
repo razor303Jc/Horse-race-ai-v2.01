@@ -10,8 +10,8 @@ services:
       - serve
     environment:
       # Base configuration
-      - NTFY_BASE_URL=http://localhost:8080
-      - NTFY_LISTEN_HTTP=:8080
+      - NTFY_BASE_URL=http://localhost:8081
+      - NTFY_LISTEN_HTTP=:8081
       - NTFY_BEHIND_PROXY=false
       
       # Security settings
@@ -38,7 +38,7 @@ services:
       - ntfy_config:/etc/ntfy
       
     ports:
-      - "8080:8080"  # NTFY web interface and API
+      - "8081:8080"  # NTFY web interface and API
       
     networks:
       - horse_racing_network
@@ -46,7 +46,7 @@ services:
     restart: unless-stopped
     
     healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8080/v1/health"]
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8081/v1/health"]
       interval: 10s
       timeout: 5s
       retries: 3

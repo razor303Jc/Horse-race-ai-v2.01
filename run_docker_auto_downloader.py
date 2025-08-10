@@ -3,7 +3,7 @@
 Docker Auto Downloader Runner
 ============================
 
-Runs the respectful auto downloader optimized for Docker containers.
+Runs the working auto downloader optimized for Docker containers.
 This script ensures proper Docker environment setup and configuration.
 """
 
@@ -21,11 +21,9 @@ os.environ["PLAYWRIGHT_BROWSERS_PATH"] = "/app/.playwright"
 # Ensure we're in the right directory
 sys.path.insert(0, "/app")
 
-from src.automation.docker_config import (
-    get_docker_environment_config,
-    validate_docker_setup,
-)
-from src.automation.respectful_auto_downloader import RespectfulAutoDownloader
+# Import our working auto downloader
+sys.path.append("/app")
+from working_auto_downloader import HorseRaceDatabaseDownloader
 
 
 async def run_docker_auto_downloader():
@@ -33,26 +31,29 @@ async def run_docker_auto_downloader():
 
     print("🐳 Starting Horse Racing Auto Downloader in Docker")
 
-    # Validate Docker setup
-    if not validate_docker_setup():
-        print("❌ Docker environment validation failed")
-        return False
+    # Validate environment variables
+    required_vars = [
+        "HORSERACE_DB_USERNAME",
+        "HORSERACE_DB_PASSWORD",
+        "HORSERACE_DB_RESULTS_URL",
+        "HORSERACE_DB_CARDS_URL",
+    ]
 
-    # Set up environment
-    env_config = get_docker_environment_config()
-    for key, value in env_config.items():
-        os.environ[key] = str(value)
+    missing_vars = [var for var in required_vars if not os.getenv(var)]
+    if missing_vars:
+        print(f"❌ Missing required environment variables: {missing_vars}")
+        return False
 
     print("✅ Docker environment validated and configured")
 
     try:
         # Initialize the auto downloader
-        downloader = RespectfulAutoDownloader()
+        downloader = HorseRaceDatabaseDownloader()
 
         print("🚀 Starting daily download process...")
 
         # Run the daily download
-        success = await downloader._run_daily_download()
+        success = await downloader.run()
 
         if success:
             print("✅ Daily download completed successfully!")
@@ -78,10 +79,10 @@ def run_scheduled():
 
     import schedule
 
-    # Schedule for 09:01 daily (test time)
-    schedule.every().day.at("09:01").do(run_once)
+    # Schedule for 15:01 daily (test time)
+    schedule.every().day.at("15:01").do(run_once)
 
-    print("📅 Scheduled auto downloader for 09:01 daily")
+    print("📅 Scheduled auto downloader for 15:01 daily")
     print("🔄 Waiting for scheduled time...")
 
     while True:

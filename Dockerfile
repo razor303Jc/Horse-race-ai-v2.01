@@ -33,6 +33,9 @@ COPY app.py .
 # Copy Docker auto downloader runner
 COPY run_docker_auto_downloader.py .
 
+# Copy working auto downloader
+COPY working_auto_downloader.py .
+
 # Copy enhanced web application (if exists)
 COPY src/web/api_server.py ./
 COPY templates/ ./templates/
