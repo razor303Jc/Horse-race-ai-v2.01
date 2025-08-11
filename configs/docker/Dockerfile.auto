@@ -32,7 +32,9 @@ RUN playwright install --with-deps chromium
 # Copy ONLY the auto downloader components
 COPY src/automation/ ./src/automation/
 COPY demos/ ./demos/
-COPY run_docker_auto_downloader.py .
+COPY tools/utilities/run_docker_auto_downloader.py .
+COPY docker/automation/working_auto_downloader.py .
+COPY tools/data_processing/data_validator.py .
 
 # Copy .env for environment variables (optional)
 COPY .env* ./

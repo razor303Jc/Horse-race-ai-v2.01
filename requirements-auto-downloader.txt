@@ -5,6 +5,11 @@ aiofiles>=23.2.1
 structlog>=23.2.0
 psutil>=5.9.0
 aiohttp>=3.8.0
+requests>=2.31.0
+
+# Data processing and validation
+pandas>=2.1.0
+numpy>=1.25.0
 
 # Environment configuration
 python-dotenv>=1.0.0

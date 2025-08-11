@@ -46,8 +46,8 @@ class DataRelationshipsFixer:
 
     def __init__(self):
         self.db_config = {
-            "host": "localhost",
-            "port": 5433,
+            "host": "postgres",  # Docker service name for container networking
+            "port": 5432,  # Internal container port
             "database": "horse_racing_db",
             "user": "horse_racing",
             "password": "secure_password_123",
