@@ -203,7 +203,7 @@ const RealRaceCards: React.FC = () => {
                 🏇 Live Race Cards
             </Typography>
 
-            {raceCards.races.map((race) => (
+            {raceCards.races.map((race, index) => (
                 <Accordion key={race.race_id} sx={{ mb: 2 }}>
                     <AccordionSummary expandIcon={<ExpandMore />}>
                         <Box sx={{ display: 'flex', alignItems: 'center', width: '100%' }}>

@@ -20,10 +20,28 @@ nav:
     - Web Interface: user-guide/web-interface.md
     - API Reference: user-guide/api-reference.md
     - Best Practices: user-guide/best-practices.md
+  - System Operations:
+    - Auto Downloader: operations/auto-downloader.md
+    - Data Pipeline: operations/data-pipeline.md
+    - ML Processing: operations/ml-processing.md
+    - Monitoring & Health: operations/monitoring.md
+    - Security Auditing: operations/security.md
+    - NTFY Notifications: operations/notifications.md
+    - Performance Tuning: operations/performance.md
   - Development:
     - Setup: development/setup.md
     - Docker Development: development/docker-dev.md
     - Testing: development/testing.md
+    - Code Review: development/code-review.md
+    - Logging Standards: development/logging.md
+    - Error Handling: development/error-handling.md
+  - Reports & Analytics:
+    - System Health Dashboard: reports/system-health.md
+    - Security Audit Reports: reports/security-audits.md
+    - Performance Metrics: reports/performance.md
+    - Data Quality Reports: reports/data-quality.md
+    - Pipeline Reports: reports/pipeline-reports.md
+    - Error Analysis: reports/error-analysis.md
   - Documentation:
     - Complete Implementation: documentation/IMPLEMENTATION_COMPLETE.md
     - Development Journey: documentation/COMPLETE_DEVELOPMENT_JOURNEY.md
@@ -31,6 +49,7 @@ nav:
     - Monte Carlo: documentation/MONTE_CARLO_IMPLEMENTATION_COMPLETE.md
     - Next Phase Roadmap: documentation/NEXT_PHASE_ROADMAP.md
     - Docker Reference: documentation/DOCKER_QUICK_REFERENCE.md
+    - Auto Downloader Guide: documentation/ENHANCED_AUTO_DOWNLOAD_COMPLETE.md
   - Configuration:
     - Requirements: requirements.txt
     - Project Config: pyproject.toml

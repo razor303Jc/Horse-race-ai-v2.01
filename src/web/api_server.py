@@ -800,47 +800,6 @@ async def get_daily_races():
     }
 
 
-# 🚀 SIMPLE ML PREDICTION ENDPOINTS
-try:
-    from .ml_predictor import get_ml_status, predict_single_horse
-
-    @app.post("/api/predict")
-    async def simple_horse_prediction(horse_data: dict):
-        """🎯 Simple horse prediction endpoint"""
-        try:
-            result = predict_single_horse(horse_data)
-            return result
-        except Exception as e:
-            return {"success": False, "error": str(e)}
-
-    @app.get("/api/ml/status")
-    async def ml_status():
-        """🔍 ML model status"""
-        return get_ml_status()
-
-    logger.info("✅ ML Prediction endpoints added")
-
-except ImportError as e:
-    logger.warning(f"⚠️ ML predictor not available: {e}")
-
-    @app.post("/api/predict")
-    async def dummy_prediction(horse_data: dict):
-        """🎯 Dummy prediction endpoint (ML not available)"""
-        return {
-            "success": True,
-            "horse_name": horse_data.get("horse_name", "Unknown"),
-            "win_probability": 0.25,
-            "confidence_level": "Demo",
-            "recommendation": "Demo mode - ML models not loaded",
-            "timestamp": datetime.now().isoformat(),
-        }
-
-    @app.get("/api/ml/status")
-    async def ml_status_demo():
-        """🔍 Demo ML status"""
-        return {"status": "demo_mode", "model_loaded": False}
-
-
 # Serve React app static files
 @app.get("/")
 async def serve_react_app():

@@ -24,6 +24,9 @@ from typing import Dict, List, Optional, Tuple
 import aiofiles
 import aiohttp
 import requests  # Add requests for NTFY notifications
+
+# Import data validator
+from data_validator import HorseRacingDataValidator
 from dotenv import load_dotenv
 from playwright.async_api import (
     Browser,
@@ -35,9 +38,6 @@ from playwright.async_api import (
 from rich.console import Console
 from rich.panel import Panel
 from rich.progress import Progress, SpinnerColumn, TextColumn
-
-# Import data validator
-from data_validator import HorseRacingDataValidator
 
 # Load environment variables
 load_dotenv()
@@ -78,7 +78,9 @@ class HorseRaceDatabaseDownloader:
             safe_title = title.encode("ascii", "ignore").decode("ascii").strip()
             safe_message = message.encode("ascii", "ignore").decode("ascii").strip()
 
-            url = "http://localhost:8081/horse-racing-alerts"
+            # Use Docker network name instead of localhost when in container
+            ntfy_host = os.getenv("NTFY_HOST", "horse_racing_ntfy:8081")
+            url = f"http://{ntfy_host}/horse-racing-alerts"
             headers = {
                 "Title": safe_title,
                 "Priority": priority,

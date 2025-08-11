@@ -79,10 +79,10 @@ def run_scheduled():
 
     import schedule
 
-    # Schedule for 00:01 daily (production time)
-    schedule.every().day.at("00:01").do(run_once)
+    # Schedule for 13:30 daily (testing time)
+    schedule.every().day.at("13:30").do(run_once)
 
-    print("📅 Scheduled auto downloader for 00:01 daily")
+    print("📅 Scheduled auto downloader for 13:30 daily")
     print("🔄 Waiting for scheduled time...")
 
     while True:

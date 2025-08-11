@@ -1,6 +1,11 @@
 # Official Python runtime as base image (lightweight)
 FROM python:3.11-slim
 
+# Build argument for dynamic user name
+ARG USER_NAME=jc
+ARG USER_UID=1000
+ARG USER_GID=1000
+
 # Set working directory
 WORKDIR /app
 
@@ -42,18 +47,18 @@ COPY .env* ./
 # Create minimal directory structure for auto downloader
 RUN mkdir -p /app/data /app/logs /app/cache
 
-# Create non-root user and set up permissions
-RUN groupadd -r autodownloader && useradd -r -g autodownloader -m autodownloader
+# Create user with dynamic name and matching UID/GID to avoid permission issues
+RUN groupadd -g ${USER_GID} ${USER_NAME} && useradd -u ${USER_UID} -g ${USER_GID} -m ${USER_NAME}
 
 # Set ownership and permissions for directories BEFORE switching user
-RUN chown -R autodownloader:autodownloader /app
+RUN chown -R ${USER_NAME}:${USER_NAME} /app
 RUN chmod -R 755 /app/logs /app/data /app/cache
 RUN chmod -R 775 /app/logs  # Allow write access for logging
 
-# Switch to non-root user for security
-USER autodownloader
+# Switch to dynamic user to match host permissions
+USER ${USER_NAME}
 
-# Set up Playwright browsers for the autodownloader user
+# Set up Playwright browsers for the user
 ENV PLAYWRIGHT_BROWSERS_PATH=/app/.playwright
 RUN playwright install chromium
 

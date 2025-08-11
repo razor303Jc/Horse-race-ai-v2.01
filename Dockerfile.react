@@ -25,7 +25,6 @@ RUN pip install --no-cache-dir fastapi uvicorn python-multipart
 
 # Copy backend code
 COPY src/web/api_server.py ./
-COPY src/web/ml_predictor.py ./
 
 # Copy built frontend
 COPY --from=frontend-builder /app/frontend/dist ./static

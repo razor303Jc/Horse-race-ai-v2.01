@@ -5,6 +5,10 @@ services:
     build:
       context: .
       dockerfile: configs/docker/Dockerfile.auto
+      args:
+        USER_NAME: ${USER_NAME:-jc}
+        USER_UID: 1000
+        USER_GID: 1000
     container_name: horserace-auto-downloader
     environment:
       - DOCKER_CONTAINER=true
@@ -12,61 +16,44 @@ services:
       - PLAYWRIGHT_BROWSERS_PATH=/app/.playwright
       - TZ=UTC
       - LOG_LEVEL=INFO
+      - NTFY_HOST=ntfy:8081
       # WooCommerce credentials (from .env file)
       - HORSERACE_DB_USERNAME=${HORSERACE_DB_USERNAME}
       - HORSERACE_DB_PASSWORD=${HORSERACE_DB_PASSWORD}
       - HORSERACE_DB_RESULTS_URL=${HORSERACE_DB_RESULTS_URL}
       - HORSERACE_DB_CARDS_URL=${HORSERACE_DB_CARDS_URL}
-      # Enhanced error handling
-      - PYTHONUNBUFFERED=1
-      - PYTHONDONTWRITEBYTECODE=1
     volumes:
       # Persistent data storage
       - ./data:/app/data
       - ./logs:/app/logs
       - ./cache:/app/cache
-      # Browser and system optimization
-      - /tmp:/tmp
-      - /dev/shm:/dev/shm
       # Timezone data
       - /etc/localtime:/etc/localtime:ro
     networks:
       - horserace-network
     restart: unless-stopped
-    
-    # Enhanced startup command with better error handling
+    # Run in scheduled mode by default
     command: ["python", "run_docker_auto_downloader.py", "--mode", "scheduled", "--log-level", "INFO"]
     
-    # Improved health check
+    # Health check to ensure container is working
     healthcheck:
       test: ["CMD", "python", "-c", "import sys; sys.path.append('/app'); from src.automation.docker_config import validate_docker_setup; exit(0 if validate_docker_setup() else 1)"]
-      interval: 5m
-      timeout: 30s
+      interval: 30m
+      timeout: 10s
       retries: 3
-      start_period: 2m
+      start_period: 1m
     
-    # Resource limits optimized for browser operation
+    # Resource limits for container stability
     deploy:
       resources:
         limits:
-          memory: 3G  # Increased for browser operations
-          cpus: '1.5'  # Increased for better performance
+          memory: 2G
+          cpus: '1.0'
         reservations:
-          memory: 1G   # Increased base reservation
+          memory: 512M
           cpus: '0.5'
 
-    # Enhanced security and operation
-    security_opt:
-      - seccomp:unconfined  # Required for Chrome/Chromium in containers
-    
-    # Browser optimization
-    shm_size: 2gb  # Important for browser stability
-    
-    # Ensure proper shutdown handling
-    stop_grace_period: 30s
-    stop_signal: SIGTERM
-
-  # Test service for manual runs  
+  # Optional: Run once for testing
   auto-downloader-test:
     build:
       context: .
@@ -78,6 +65,7 @@ services:
       - PLAYWRIGHT_BROWSERS_PATH=/app/.playwright
       - TZ=UTC
       - LOG_LEVEL=DEBUG
+      # WooCommerce credentials (from .env file)
       - HORSERACE_DB_USERNAME=${HORSERACE_DB_USERNAME}
       - HORSERACE_DB_PASSWORD=${HORSERACE_DB_PASSWORD}
       - HORSERACE_DB_RESULTS_URL=${HORSERACE_DB_RESULTS_URL}
@@ -86,19 +74,14 @@ services:
       - ./data:/app/data
       - ./logs:/app/logs
       - ./cache:/app/cache
-      - /tmp:/tmp
-      - /dev/shm:/dev/shm
-      - /etc/localtime:/etc/localtime:ro
     networks:
       - horserace-network
-    # Run once and exit for testing
+    # Run once and exit
     command: ["python", "run_docker_auto_downloader.py", "--mode", "once", "--log-level", "DEBUG"]
     profiles:
       - test
-    shm_size: 2gb
-    security_opt:
-      - seccomp:unconfined
 
 networks:
   horserace-network:
-    driver: bridge
+    name: horserace-network
+    external: true
