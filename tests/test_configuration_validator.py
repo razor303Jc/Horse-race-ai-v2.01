@@ -20,10 +20,10 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 # Import after path setup
 from pipeline_config_validator import (
-    PipelineConfig,
     DatabaseConfig,
     DataSourceConfig,
-    create_config_manager
+    PipelineConfig,
+    create_config_manager,
 )
 
 
@@ -38,6 +38,7 @@ class TestConfigurationValidator:
     def teardown_method(self):
         """Cleanup after each test"""
         import shutil
+
         shutil.rmtree(self.temp_dir, ignore_errors=True)
 
     def test_valid_config_creation(self):
@@ -50,20 +51,20 @@ class TestConfigurationValidator:
                 "user": "test_user",
                 "password": "test_pass",
                 "pool_min_connections": 1,
-                "pool_max_connections": 10
+                "pool_max_connections": 10,
             },
             "data_sources": {
                 "enabled": ["racing_post", "betfair"],
                 "circuit_breaker_threshold": 5,
                 "circuit_breaker_timeout": 300,
                 "retry_attempts": 3,
-                "timeout_minutes": 30
-            }
+                "timeout_minutes": 30,
+            },
         }
-        
+
         # Create config from dict
         config = PipelineConfig(**config_data)
-        
+
         # Verify config properties
         assert config.database.host == "localhost"
         assert config.database.port == 5432
@@ -82,9 +83,9 @@ class TestConfigurationValidator:
             user="test_user",
             password="secure_pass",
             pool_min_connections=1,
-            pool_max_connections=10
+            pool_max_connections=10,
         )
-        
+
         assert db_config.host == "localhost"
         assert db_config.port == 5432
         assert db_config.pool_min_connections <= db_config.pool_max_connections
@@ -99,7 +100,7 @@ class TestConfigurationValidator:
                 user="test_user",
                 password="secure_pass",
                 pool_min_connections=1,
-                pool_max_connections=10
+                pool_max_connections=10,
             )
 
     def test_invalid_connection_pool_range(self):
@@ -112,7 +113,7 @@ class TestConfigurationValidator:
                 user="test_user",
                 password="secure_pass",
                 pool_min_connections=10,  # Min > Max
-                pool_max_connections=5
+                pool_max_connections=5,
             )
 
     def test_data_sources_config_validation(self):
@@ -123,9 +124,9 @@ class TestConfigurationValidator:
             circuit_breaker_threshold=5,
             circuit_breaker_timeout=300,
             retry_attempts=3,
-            timeout_minutes=30
+            timeout_minutes=30,
         )
-        
+
         assert ds_config.circuit_breaker_threshold == 5
         assert ds_config.circuit_breaker_timeout == 300
         assert ds_config.retry_attempts == 3
@@ -139,16 +140,16 @@ class TestConfigurationValidator:
                 circuit_breaker_threshold=-1,  # Invalid negative value
                 circuit_breaker_timeout=300,
                 retry_attempts=3,
-                timeout_minutes=30
+                timeout_minutes=30,
             )
 
     def test_config_manager_creation(self):
         """Test configuration manager creation"""
         ConfigManagerClass = create_config_manager()
-        
+
         # Should return a class
         assert isinstance(ConfigManagerClass, type)
-        
+
         # Create temporary config file
         config_data = {
             "database": {
@@ -158,23 +159,23 @@ class TestConfigurationValidator:
                 "user": "test_user",
                 "password": "test_pass",
                 "pool_min_connections": 1,
-                "pool_max_connections": 10
+                "pool_max_connections": 10,
             },
             "data_sources": {
                 "enabled": ["racing_post", "betfair"],
                 "circuit_breaker_threshold": 5,
                 "circuit_breaker_timeout": 300,
                 "retry_attempts": 3,
-                "timeout_minutes": 30
-            }
+                "timeout_minutes": 30,
+            },
         }
-        
-        with open(self.config_path, 'w') as f:
+
+        with open(self.config_path, "w") as f:
             json.dump(config_data, f)
-        
+
         # Create manager instance
         manager = ConfigManagerClass(self.config_path)
-        
+
         # Should be able to get config
         config = manager.get_config()
         assert isinstance(config, PipelineConfig)
@@ -182,7 +183,7 @@ class TestConfigurationValidator:
     def test_config_manager_validation(self):
         """Test configuration manager validation"""
         ConfigManagerClass = create_config_manager()
-        
+
         # Create valid config file
         config_data = {
             "database": {
@@ -192,22 +193,22 @@ class TestConfigurationValidator:
                 "user": "test_user",
                 "password": "test_pass",
                 "pool_min_connections": 1,
-                "pool_max_connections": 10
+                "pool_max_connections": 10,
             },
             "data_sources": {
                 "enabled": ["racing_post", "betfair"],
                 "circuit_breaker_threshold": 5,
                 "circuit_breaker_timeout": 300,
                 "retry_attempts": 3,
-                "timeout_minutes": 30
-            }
+                "timeout_minutes": 30,
+            },
         }
-        
-        with open(self.config_path, 'w') as f:
+
+        with open(self.config_path, "w") as f:
             json.dump(config_data, f)
-        
+
         manager = ConfigManagerClass(self.config_path)
-        
+
         # Validation should pass
         issues = manager.validate_current_config()
         assert isinstance(issues, list)
@@ -217,10 +218,10 @@ class TestConfigurationValidator:
     def test_missing_config_file_handling(self):
         """Test handling of missing configuration file"""
         ConfigManagerClass = create_config_manager()
-        
+
         # Try to create manager with non-existent file
         non_existent_path = Path(self.temp_dir) / "non_existent.json"
-        
+
         # This should handle missing file gracefully
         # (Implementation may vary - could raise exception or use defaults)
         try:
@@ -234,11 +235,11 @@ class TestConfigurationValidator:
     def test_invalid_json_handling(self):
         """Test handling of invalid JSON in config file"""
         ConfigManagerClass = create_config_manager()
-        
+
         # Create invalid JSON file
-        with open(self.config_path, 'w') as f:
+        with open(self.config_path, "w") as f:
             f.write("{ invalid json content")
-        
+
         # Should handle invalid JSON gracefully
         try:
             manager = ConfigManagerClass(self.config_path)
@@ -253,7 +254,7 @@ class TestConfigurationValidator:
     def test_config_hot_reload_capability(self):
         """Test configuration hot-reload capability"""
         ConfigManagerClass = create_config_manager()
-        
+
         # Create initial config
         initial_config = {
             "database": {
@@ -263,38 +264,38 @@ class TestConfigurationValidator:
                 "user": "test_user",
                 "password": "test_pass",
                 "pool_min_connections": 1,
-                "pool_max_connections": 10
+                "pool_max_connections": 10,
             },
             "data_sources": {
                 "enabled": ["racing_post", "betfair"],
                 "circuit_breaker_threshold": 5,
                 "circuit_breaker_timeout": 300,
                 "retry_attempts": 3,
-                "timeout_minutes": 30
-            }
+                "timeout_minutes": 30,
+            },
         }
-        
-        with open(self.config_path, 'w') as f:
+
+        with open(self.config_path, "w") as f:
             json.dump(initial_config, f)
-        
+
         manager = ConfigManagerClass(self.config_path)
         initial_config_obj = manager.get_config()
         initial_threshold = initial_config_obj.data_sources.circuit_breaker_threshold
         assert initial_threshold == 5
-        
+
         # Update config file
         updated_config = initial_config.copy()
         updated_config["data_sources"]["circuit_breaker_threshold"] = 10
-        
-        with open(self.config_path, 'w') as f:
+
+        with open(self.config_path, "w") as f:
             json.dump(updated_config, f)
-        
+
         # Check if manager can detect/reload changes
         # (Implementation may require explicit reload call)
         try:
-            if hasattr(manager, 'reload_config'):
+            if hasattr(manager, "reload_config"):
                 manager.reload_config()
-            
+
             updated_config_obj = manager.get_config()
             updated_threshold = (
                 updated_config_obj.data_sources.circuit_breaker_threshold
