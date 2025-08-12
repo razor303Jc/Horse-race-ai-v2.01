@@ -28,6 +28,12 @@ user-agents>=2.2.0
 
 # WooCommerce downloader dependencies
 rich>=13.7.0
+
+# Visualization and reporting  
+plotly>=5.17.0
+kaleido>=0.2.1
+seaborn>=0.13.0
+matplotlib>=3.8.0
 aiohttp>=3.9
 
 # Monitoring

@@ -4,18 +4,19 @@ Contextual-Enhanced Production Racing AI
 Integrates contextual reward system with our real trained models
 """
 
-import os
-import sys
-import numpy as np
-import pandas as pd
 import logging
-import joblib
+import os
+import random
+import sys
 import warnings
+from dataclasses import dataclass
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Dict, List, Tuple, Optional
-from dataclasses import dataclass
-import random
+from typing import Dict, List, Optional, Tuple
+
+import joblib
+import numpy as np
+import pandas as pd
 
 warnings.filterwarnings("ignore")
 
@@ -678,6 +679,68 @@ class ContextualRacingAI:
                     f"   • {bet.horse_name}: {bet.contextual_win_probability:.1%} (Contextual {bet.contextual_multiplier:.2f}x)"
                 )
 
+    def run_daily_analysis(self) -> Dict:
+        """Execute daily contextual analysis for pipeline integration."""
+        logger.info("🧠 Starting daily contextual analysis...")
+
+        try:
+            # Generate race with contextual factors for analysis
+            race_datetime = datetime.now()
+            race_data = self.generate_contextual_race_data(
+                num_horses=12, race_datetime=race_datetime
+            )
+
+            # Make contextual predictions
+            predictions = self.predict_race_with_context(race_data)
+
+            # Generate insights
+            insights = {
+                "timestamp": datetime.now().isoformat(),
+                "races_analyzed": 1,
+                "predictions_generated": len(predictions),
+                "average_confidence": np.mean(
+                    [p.confidence_score for p in predictions]
+                ),
+                "top_opportunities": [],
+            }
+
+            # Extract top opportunities
+            strong_bets = [p for p in predictions if p.value_rating == "STRONG BUY"][:5]
+            for bet in strong_bets:
+                insights["top_opportunities"].append(
+                    {
+                        "horse_name": bet.horse_name,
+                        "win_probability": round(bet.win_probability, 3),
+                        "expected_value": round(bet.expected_value, 2),
+                        "confidence": round(bet.confidence_score, 3),
+                    }
+                )
+
+            # Save insights for daily reporting
+            insights_file = (
+                Path(__file__).parent.parent
+                / "reports"
+                / "daily_contextual_insights.json"
+            )
+            insights_file.parent.mkdir(exist_ok=True)
+            with open(insights_file, "w") as f:
+                import json
+
+                json.dump(insights, f, indent=2)
+
+            logger.info(
+                f"✅ Daily analysis complete - {len(predictions)} predictions generated"
+            )
+            return {
+                "status": "success",
+                "insights_generated": len(insights["top_opportunities"]),
+                "predictions_made": len(predictions),
+            }
+
+        except Exception as e:
+            logger.error(f"Daily analysis failed: {e}")
+            return {"status": "error", "error": str(e)}
+
     def run_contextual_demo(self):
         """Run comprehensive contextual demo"""
         print("🧠 CONTEXTUAL-ENHANCED PRODUCTION RACING AI")
@@ -702,8 +765,29 @@ class ContextualRacingAI:
 
 
 def main():
-    """Run contextual-enhanced racing AI demo"""
+    """Main entry point with command line arguments."""
+    import argparse
+
+    parser = argparse.ArgumentParser(description="Contextual Enhanced Racing AI")
+    parser.add_argument(
+        "--daily-analysis", action="store_true", help="Run daily analysis for pipeline"
+    )
+    parser.add_argument(
+        "--demo", action="store_true", help="Run demonstration analysis"
+    )
+
+    args = parser.parse_args()
+
+    # Create enhanced analyzer
     ai = ContextualRacingAI()
+
+    if args.daily_analysis:
+        # Daily analysis for pipeline integration
+        result = ai.run_daily_analysis()
+        print(f"Daily analysis result: {result}")
+        return
+
+    # Demo mode (default)
     ai.run_contextual_demo()
 
 

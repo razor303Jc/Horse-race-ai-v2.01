@@ -28,6 +28,29 @@ nav:
     - Security Auditing: operations/security.md
     - NTFY Notifications: operations/notifications.md
     - Performance Tuning: operations/performance.md
+  - Reports & Analytics:
+    - Pipeline Overview: reports/pipeline-overview.md
+    - Data Volume Analysis: reports/data-analysis.md
+    - ML Model Performance: reports/ml-performance.md
+    - Monte Carlo Results: reports/monte-carlo.md
+    - Daily Reports: reports/daily-reports.md
+    - System Health: reports/system-health.md
+    - Analytics Dashboard: reports/analytics-dashboard.md
+  - Advanced Analytics:
+    - Form Scoring System: analytics/form-scoring.md
+    - Power Ratings: analytics/power-ratings.md
+    - Speed Analysis: analytics/speed-analysis.md
+    - Pace Analysis: analytics/pace-analysis.md
+    - Performance Trends: analytics/performance-trends.md
+    - Comparative Analysis: analytics/comparative-analysis.md
+    - Value Betting Insights: analytics/value-betting.md
+  - Live Monitoring:
+    - System Dashboard: monitoring/system-dashboard.md
+    - Pipeline Status: monitoring/pipeline-status.md
+    - Performance Metrics: monitoring/performance-metrics.md
+    - Error Tracking: monitoring/error-tracking.md
+    - Health Checks: monitoring/health-checks.md
+    - Alert Management: monitoring/alert-management.md
   - Development:
     - Setup: development/setup.md
     - Docker Development: development/docker-dev.md
@@ -133,6 +156,9 @@ markdown_extensions:
 plugins:
   - search:
       separator: '[\s\-,:!=\[\]()"/]+|(?!\b)(?=[A-Z][a-z])|\.(?!\d)|&[lg]t;'
+  - macros:
+      verbose: true
+  - table-reader
   # Temporarily disabled until custom Docker image is created
   # - minify:
   #     minify_html: true

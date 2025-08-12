@@ -41,7 +41,7 @@ Centralized configuration for:
 
 - 🎯 Quality thresholds and targets
 - ⚖️ Assignment weights and preferences
-- 📈 5-year dataset goals and metrics
+- 📈 16-year dataset goals and metrics
 - 🔧 Performance and monitoring settings
 
 ## Quick Start
@@ -114,7 +114,7 @@ data-processor:
 # Edit crontab
 crontab -e
 
-# Add this line (runs every 2 hours)
+# Add this line (runs every 2)
 0 */2 * * * cd /home/jc/Documents/Horse-race-ai-v2.01 && python3 tools/data_processing/pipeline_scheduler.py --single-check
 ```
 
@@ -141,7 +141,7 @@ crontab -e
 - 📋 Audit trail of all changes
 - 🔒 No data loss protection
 
-## 5-Year Dataset Goals
+## 16-Year Dataset Goals
 
 ### Target Metrics
 

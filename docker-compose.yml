@@ -130,49 +130,49 @@ services:
       # Health check middleware (removed for testing)
       # - "traefik.http.routers.horse-racing-web.middlewares=auth@file"
 
-  # Playwright Scraper Service (separate container for isolation)
-  scraper:
-    build:
-      context: .
-      dockerfile: docker/Dockerfile.scraper
-    container_name: horse_racing_scraper
-    environment:
-      DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/horse_racing_db
-      REDIS_URL: redis://:${REDIS_PASSWORD:-redis_password_123}@redis:6379/0
-      DEBUG: ${DEBUG:-false}
-      LOG_LEVEL: ${LOG_LEVEL:-INFO}
-      PYTHONPATH: /app/src
-      SCRAPER_HEADLESS: "true"
-      NTFY_TOPIC: ${NTFY_TOPIC:-horse-racing-alerts}
-      NTFY_URL: http://ntfy:8081
-    volumes:
-      - ./data:/app/data
-      - ./cache:/app/cache
-      - ./logs:/app/logs
-    depends_on:
-      postgres:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-      ntfy:
-        condition: service_healthy
-    networks:
-      - horse_racing_network
-      - traefik
-    restart: unless-stopped
-    # Run scraper as a scheduled service
-    command: ["python", "-m", "src.horse_racing_ai.automation.scheduler"]
-    labels:
-      - "traefik.enable=true"
-      - "traefik.docker.network=traefik"
-      
-      # Scraper monitoring interface (if exposed)
-      - "traefik.http.routers.horse-racing-scraper.rule=Host(`scraper.horse-racing.${DOMAIN:-localhost}`)"
-      - "traefik.http.routers.horse-racing-scraper.entrypoints=websecure"
-      - "traefik.http.routers.horse-racing-scraper.tls.certresolver=letsencrypt"
-      - "traefik.http.routers.horse-racing-scraper.service=horse-racing-scraper"
-      - "traefik.http.services.horse-racing-scraper.loadbalancer.server.port=8001"
-      - "traefik.http.routers.horse-racing-scraper.middlewares=auth@file"
+  # OLD Playwright Scraper Service - DISABLED (replaced by dedicated auto-downloader)
+  # scraper:
+  #   build:
+  #     context: .
+  #     dockerfile: docker/Dockerfile.scraper
+  #   container_name: horse_racing_scraper
+  #   environment:
+  #     DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/horse_racing_db
+  #     REDIS_URL: redis://:${REDIS_PASSWORD:-redis_password_123}@redis:6379/0
+  #     DEBUG: ${DEBUG:-false}
+  #     LOG_LEVEL: ${LOG_LEVEL:-INFO}
+  #     PYTHONPATH: /app/src
+  #     SCRAPER_HEADLESS: "true"
+  #     NTFY_TOPIC: ${NTFY_TOPIC:-horse-racing-alerts}
+  #     NTFY_URL: http://ntfy:8081
+  #   volumes:
+  #     - ./data:/app/data
+  #     - ./cache:/app/cache
+  #     - ./logs:/app/logs
+  #   depends_on:
+  #     postgres:
+  #       condition: service_healthy
+  #     redis:
+  #       condition: service_healthy
+  #     ntfy:
+  #       condition: service_healthy
+  #   networks:
+  #     - horse_racing_network
+  #     - traefik
+  #   restart: unless-stopped
+  #   # Run scraper as a scheduled service
+  #   command: ["python", "-m", "src.horse_racing_ai.automation.scheduler"]
+  #   labels:
+  #     - "traefik.enable=true"
+  #     - "traefik.docker.network=traefik"
+  #     
+  #     # Scraper monitoring interface (if exposed)
+  #     - "traefik.http.routers.horse-racing-scraper.rule=Host(`scraper.horse-racing.${DOMAIN:-localhost}`)"
+  #     - "traefik.http.routers.horse-racing-scraper.entrypoints=websecure"
+  #     - "traefik.http.routers.horse-racing-scraper.tls.certresolver=letsencrypt"
+  #     - "traefik.http.routers.horse-racing-scraper.service=horse-racing-scraper"
+  #     - "traefik.http.services.horse-racing-scraper.loadbalancer.server.port=8001"
+  #     - "traefik.http.routers.horse-racing-scraper.middlewares=auth@file"
 
   # NTFY Notification Server
   ntfy:
@@ -268,9 +268,11 @@ services:
       - "traefik.http.services.horse-racing-pgadmin.loadbalancer.server.port=80"
       - "traefik.http.routers.horse-racing-pgadmin.middlewares=auth@file"
 
-  # MkDocs Documentation Server
+  # MkDocs Documentation Server with Reporting Capabilities
   mkdocs:
-    image: squidfunk/mkdocs-material:latest
+    build:
+      context: .
+      dockerfile: Dockerfile.mkdocs
     container_name: horse_racing_docs
     ports:
       - "8001:8000"
@@ -281,6 +283,10 @@ services:
       - ./README.md:/docs/docs/index.md
       - ./requirements.txt:/docs/docs/requirements.txt
       - ./pyproject.toml:/docs/docs/pyproject.toml
+      - ./reports:/docs/docs/reports
+      - ./tools:/docs/tools
+      - ./experiments:/docs/experiments
+      - ./trained_models:/docs/trained_models
     networks:
       - horse_racing_network
     restart: unless-stopped
@@ -288,6 +294,13 @@ services:
     environment:
       - LIVE_RELOAD_SUPPORT=true
       - FAST_MODE=true
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=horse_racing_db
+      - POSTGRES_USER=horse_racing
+      - POSTGRES_PASSWORD=secure_password_123
+    depends_on:
+      - postgres
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.horse-racing-docs.rule=Host(`docs.horse-racing.${DOMAIN:-localhost}`)"
@@ -298,6 +311,34 @@ services:
     profiles:
       - dev
       - docs
+
+  # Reports and Analytics Service
+  reports:
+    build:
+      context: .
+      dockerfile: Dockerfile.reports
+    container_name: horse_racing_reports
+    environment:
+      DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/horse_racing_db
+      REDIS_URL: redis://:${REDIS_PASSWORD:-redis_password_123}@redis:6379/0
+      PYTHONPATH: /app
+      REPORTS_OUTPUT: /app/reports
+    volumes:
+      - ./reports:/app/reports
+      - ./data:/app/data
+      - ./tools:/app/tools
+      - ./experiments:/app/experiments
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - horse_racing_network
+    restart: "no"  # Run on demand
+    profiles:
+      - reports
+      - analytics
 
 volumes:
   postgres_data:

@@ -4,32 +4,33 @@ Enhanced ML Integration System with Real Models
 Combines our real trained models with advanced scoring systems
 """
 
-import os
-import sys
-import sqlite3
-import numpy as np
-import pandas as pd
 import logging
-import joblib
+import os
+import sqlite3
+import sys
 import warnings
+from dataclasses import dataclass
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Dict, List, Tuple, Optional, Any
-from dataclasses import dataclass
+from typing import Any, Dict, List, Optional, Tuple
+
+import joblib
+import numpy as np
+import pandas as pd
 
 # ML imports
 from sklearn.ensemble import (
-    RandomForestClassifier,
     ExtraTreesClassifier,
     GradientBoostingClassifier,
+    RandomForestClassifier,
     VotingClassifier,
 )
-from sklearn.linear_model import LogisticRegression
-from sklearn.neural_network import MLPClassifier
-from sklearn.model_selection import cross_val_score, train_test_split
-from sklearn.preprocessing import StandardScaler, RobustScaler, LabelEncoder
 from sklearn.feature_selection import SelectKBest, f_classif
-from sklearn.metrics import roc_auc_score, classification_report, accuracy_score
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score, classification_report, roc_auc_score
+from sklearn.model_selection import cross_val_score, train_test_split
+from sklearn.neural_network import MLPClassifier
+from sklearn.preprocessing import LabelEncoder, RobustScaler, StandardScaler
 
 warnings.filterwarnings("ignore")
 
@@ -104,40 +105,86 @@ class EnhancedMLIntegrationSystem:
         logger.info("📦 Loading real trained models...")
 
         try:
-            # Load race card models (our best performers)
-            race_card_dir = self.models_dir / "race_card_models"
-
-            self.real_models["rf"] = joblib.load(
-                race_card_dir / "random_forest_race_card.joblib"
-            )
-            self.real_models["gb"] = joblib.load(
-                race_card_dir / "gradient_boosting_race_card.joblib"
-            )
-            self.real_models["nn"] = joblib.load(
-                race_card_dir / "neural_network_race_card.joblib"
-            )
-            self.real_models["lr"] = joblib.load(
-                race_card_dir / "logistic_regression_race_card.joblib"
+            # Load production models (new aligned models with correct feature count)
+            production_dir = (
+                self.models_dir.parent / "tools" / "trained_models" / "production"
             )
 
-            self.real_scalers = joblib.load(race_card_dir / "scalers_race_card.joblib")
-            self.real_encoders = joblib.load(
-                race_card_dir / "encoders_race_card.joblib"
-            )
-            self.real_features = joblib.load(
-                race_card_dir / "features_race_card.joblib"
-            )
-            self.real_performance = joblib.load(
-                race_card_dir / "performance_race_card.joblib"
-            )
+            if production_dir.exists():
+                # Load production models
+                self.real_models["rf"] = joblib.load(
+                    production_dir / "random_forest_production.joblib"
+                )
+                self.real_models["gb"] = joblib.load(
+                    production_dir / "gradient_boosting_production.joblib"
+                )
+                self.real_models["nn"] = joblib.load(
+                    production_dir / "neural_network_production.joblib"
+                )
+                self.real_models["lr"] = joblib.load(
+                    production_dir / "logistic_regression_production.joblib"
+                )
 
-            logger.info("✅ Real models loaded successfully")
-            logger.info(f"📊 Real model performance:")
-            for name, perf in self.real_performance.items():
-                logger.info(f"   - {name}: AUC {perf['roc_auc']:.4f}")
+                # Load production scaler and features
+                self.real_scalers = {
+                    "scaler": joblib.load(production_dir / "scaler_production.joblib")
+                }
+                self.real_features = joblib.load(
+                    production_dir / "features_production.joblib"
+                )
+                self.real_performance = joblib.load(
+                    production_dir / "performance_production.joblib"
+                )
+
+                logger.info("✅ Production models loaded successfully")
+                logger.info(f"📊 Production model performance:")
+                for name, perf in self.real_performance.items():
+                    logger.info(f"   - {name}: AUC {perf['test_auc']:.4f}")
+
+                logger.info(f"🎯 Feature count: {len(self.real_features)}")
+
+            else:
+                logger.warning(
+                    "⚠️ Production models directory not found, trying race card models..."
+                )
+
+                # Fallback to race card models (if they exist)
+                race_card_dir = self.models_dir / "race_card_models"
+                if race_card_dir.exists():
+                    self.real_models["rf"] = joblib.load(
+                        race_card_dir / "random_forest_race_card.joblib"
+                    )
+                    self.real_models["gb"] = joblib.load(
+                        race_card_dir / "gradient_boosting_race_card.joblib"
+                    )
+                    self.real_models["nn"] = joblib.load(
+                        race_card_dir / "neural_network_race_card.joblib"
+                    )
+                    self.real_models["lr"] = joblib.load(
+                        race_card_dir / "logistic_regression_race_card.joblib"
+                    )
+
+                    self.real_scalers = joblib.load(
+                        race_card_dir / "scalers_race_card.joblib"
+                    )
+                    self.real_encoders = joblib.load(
+                        race_card_dir / "encoders_race_card.joblib"
+                    )
+                    self.real_features = joblib.load(
+                        race_card_dir / "features_race_card.joblib"
+                    )
+                    self.real_performance = joblib.load(
+                        race_card_dir / "performance_race_card.joblib"
+                    )
+
+                    logger.info("✅ Race card models loaded successfully")
+                    logger.info(f"📊 Race card model performance:")
+                    for name, perf in self.real_performance.items():
+                        logger.info(f"   - {name}: AUC {perf['roc_auc']:.4f}")
 
         except Exception as e:
             logger.warning(f"⚠️ Could not load real models: {e}")
+            logger.info("🔄 Will use synthetic models only")
 
     def _initialize_synthetic_models(self):
         """Initialize synthetic advanced models"""
@@ -555,34 +602,37 @@ class EnhancedMLIntegrationSystem:
             return real_preds
 
         try:
-            # Prepare features for real models (simplified)
+            # Prepare features for production models (17 features exactly)
             features = self._prepare_real_features(horse_data)
 
-            # Random Forest
+            # Random Forest (no scaling needed)
             if "rf" in self.real_models:
                 real_preds["rf"] = float(
                     self.real_models["rf"].predict_proba(features.reshape(1, -1))[0, 1]
                 )
 
-            # Gradient Boosting
+            # Gradient Boosting (no scaling needed)
             if "gb" in self.real_models:
                 real_preds["gb"] = float(
                     self.real_models["gb"].predict_proba(features.reshape(1, -1))[0, 1]
                 )
 
             # Neural Network (needs scaling)
-            if "nn" in self.real_models and "feature_scaler" in self.real_scalers:
-                features_scaled = self.real_scalers["feature_scaler"].transform(
+            if "nn" in self.real_models and "scaler" in self.real_scalers:
+                features_scaled = self.real_scalers["scaler"].transform(
                     features.reshape(1, -1)
                 )
                 real_preds["nn"] = float(
                     self.real_models["nn"].predict_proba(features_scaled)[0, 1]
                 )
 
-            # Logistic Regression
-            if "lr" in self.real_models:
+            # Logistic Regression (needs scaling)
+            if "lr" in self.real_models and "scaler" in self.real_scalers:
+                features_scaled = self.real_scalers["scaler"].transform(
+                    features.reshape(1, -1)
+                )
                 real_preds["lr"] = float(
-                    self.real_models["lr"].predict_proba(features.reshape(1, -1))[0, 1]
+                    self.real_models["lr"].predict_proba(features_scaled)[0, 1]
                 )
 
             # Ensemble (average of available predictions)
@@ -595,51 +645,29 @@ class EnhancedMLIntegrationSystem:
         return real_preds
 
     def _prepare_real_features(self, horse_data: pd.Series) -> np.ndarray:
-        """Prepare features for real models (simplified version)"""
-        # Use available features that match our real model training
+        """Prepare features for production models (17 features exactly)"""
+        # Match the exact 17 features our production models expect
         features = [
-            horse_data.get("horse_age", 4),
-            horse_data.get("horse_weight_kg", 57),
-            horse_data.get("draw", 8),
-            horse_data.get("field_size", 12),
-            horse_data.get("log_odds", 1.5),
-            horse_data.get("odds_rank", 6),
-            horse_data.get("odds_percentile", 0.5),
-            horse_data.get("is_favorite", 0),
-            horse_data.get("is_outsider", 0),
-            horse_data.get("market_strength", 0.2),
-            horse_data.get("market_share", 0.08),
-            horse_data.get("draw_percentile", 0.5),
-            horse_data.get("weight_percentile", 0.5),
-            horse_data.get("age_percentile", 0.5),
-            horse_data.get("recent_form_rating", 75),
-            horse_data.get("speed_rating", 78),
-            horse_data.get("class_rating", 76),
-            horse_data.get("track_rating", 74),
-            horse_data.get("distance_rating", 77),
-            horse_data.get("jockey_rating", 75),
-            horse_data.get("trainer_rating", 76),
-            horse_data.get("total_rating", 76),
-            horse_data.get("form_rank", 6),
-            horse_data.get("speed_rank", 6),
-            horse_data.get("total_rating_rank", 6),
-            horse_data.get("career_starts", 8),
-            horse_data.get("career_wins", 1),
-            horse_data.get("career_places", 3),
-            horse_data.get("win_rate", 0.12),
-            horse_data.get("place_rate", 0.35),
-            horse_data.get("experience_score", 2.0),
-            horse_data.get("days_since_last_run", 21),
-            horse_data.get("freshness_score", 0.045),
-            horse_data.get("recent_wins", 0),
-            horse_data.get("recent_places", 1),
-            horse_data.get("form_consistency", 3),
-            horse_data.get("distance_numeric", 1600),
-            horse_data.get("log_prize", 11.0),
-            horse_data.get("prize_per_runner", 4000),
+            horse_data.get("log_odds", np.log(6.0)),  # 1. log_odds
+            horse_data.get("implied_probability", 1 / 6.0),  # 2. implied_probability
+            horse_data.get("odds_rank", 6),  # 3. odds_rank
+            horse_data.get("is_favorite", 0),  # 4. is_favorite
+            horse_data.get("combined_performance", 0.15),  # 5. combined_performance
+            horse_data.get("field_size", 12),  # 6. field_size
+            horse_data.get("min_odds", 2.0),  # 7. min_odds
+            horse_data.get("max_odds", 50.0),  # 8. max_odds
+            horse_data.get("avg_odds", 8.5),  # 9. avg_odds
+            horse_data.get("draw_percentile", 0.5),  # 10. draw_percentile
+            horse_data.get("weight_percentile", 0.5),  # 11. weight_percentile
+            horse_data.get("age_category", 1),  # 12. age_category
+            horse_data.get("horse_age", 4),  # 13. horse_age
+            horse_data.get("horse_weight_kg", 57),  # 14. horse_weight_kg
+            horse_data.get("draw", 8),  # 15. draw
+            horse_data.get("jockey_win_pct", 0.12),  # 16. jockey_win_pct
+            horse_data.get("trainer_win_pct", 0.15),  # 17. trainer_win_pct
         ]
 
-        return np.array(features[:40])  # Limit to expected number of features
+        return np.array(features, dtype=float)
 
     def _get_synthetic_prediction(self, horse_data: pd.Series) -> float:
         """Get prediction from synthetic ensemble"""
@@ -762,10 +790,15 @@ def main():
     print("\n📊 TRAINING RESULTS")
     print("-" * 60)
     print("Real Model Performance (from actual training):")
-    for name, perf in results["real_performance"].items():
-        print(
-            f"   📈 {name}: AUC {perf['roc_auc']:.4f}, Accuracy {perf['accuracy']:.4f}"
-        )
+    for name, perf in system.real_performance.items():
+        # Handle both old and new performance format
+        auc_key = "test_auc" if "test_auc" in perf else "roc_auc"
+        accuracy_key = "test_accuracy" if "test_accuracy" in perf else "accuracy"
+
+        auc_value = perf.get(auc_key, 0.0)
+        accuracy_value = perf.get(accuracy_key, 0.0)
+
+        print(f"   📈 {name}: AUC {auc_value:.4f}, Accuracy {accuracy_value:.4f}")
 
     print(f"\nSynthetic Model Performance:")
     for name, result in results["synthetic_results"].items():
