@@ -1,0 +1,46 @@
+# Dockerfile for running comprehensive reports and analytics
+FROM python:3.11-slim
+
+# Set working directory
+WORKDIR /app
+
+# Install system dependencies for visualization and ML
+RUN apt-get update && apt-get install -y \
+    gcc \
+    g++ \
+    python3-dev \
+    build-essential \
+    curl \
+    wget \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy requirements
+COPY requirements.txt .
+COPY requirements-auto-downloader.txt .
+
+# Install Python dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r requirements-auto-downloader.txt
+
+# Install additional packages for reporting
+RUN pip install --no-cache-dir \
+    plotly>=5.17.0 \
+    kaleido>=0.2.1 \
+    seaborn>=0.13.0 \
+    matplotlib>=3.8.0 \
+    psutil>=5.9.0 \
+    jupyter>=1.0.0 \
+    notebook>=7.0.0
+
+# Copy source code
+COPY . .
+
+# Create reports directory
+RUN mkdir -p /app/reports
+
+# Set environment variables
+ENV PYTHONPATH=/app
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Default command to run reports
+CMD ["python", "reports/comprehensive_pipeline_report.py"]
