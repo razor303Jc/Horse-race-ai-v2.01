@@ -60,6 +60,14 @@ def retry_on_failure(max_retries=3, delay=1, backoff=2):
         return wrapper
     return decorator
 
+
+# Phase 2: Enhanced reliability imports
+from pipeline_config_validator import PipelineConfig, create_config_manager
+from enhanced_error_handling import (
+    CircuitBreaker, EnhancedRetry, ErrorContextLogger, AlertManager,
+    CircuitBreakerError, RetryExhaustedException
+)
+
 logger = logging.getLogger(__name__)
 
 
@@ -72,29 +80,89 @@ class DailyPipelineOrchestrator:
         self.reports_dir = self.project_root / "reports"
         self.docs_dir = self.project_root / "docs"
 
-        # Initialize configuration
-        self.config = self._load_config()
+        # Phase 2: Initialize Pydantic configuration manager
+        ConfigManagerClass = create_config_manager()
+        self.config_manager = ConfigManagerClass(self.config_file)
+        self.config = self.config_manager.get_config()
+        
+        # Validate configuration on startup
+        issues = self.config_manager.validate_current_config()
+        if issues:
+            logger.warning(f"Configuration issues found: {issues}")
+        else:
+            logger.info("✅ Configuration validation passed")
 
-        # Database connection pool
+        # Database connection pool with config validation
         self.db_config = {
-            "host": "localhost",
-            "port": 5433,
-            "database": "horse_racing_db",
-            "user": "horse_racing",
-            "password": os.getenv("POSTGRES_PASSWORD", "secure_password_123"),
+            "host": self.config.database.host,
+            "port": self.config.database.port,
+            "database": self.config.database.database,
+            "user": self.config.database.user,
+            "password": self.config.database.password,
         }
         
-        # Initialize connection pool
+        # Initialize connection pool with validated config
         try:
             self.connection_pool = psycopg2.pool.ThreadedConnectionPool(
-                1, 20, **self.db_config
+                self.config.database.pool_min_connections,
+                self.config.database.pool_max_connections,
+                **self.db_config
             )
-            logger.info("✅ Database connection pool initialized")
+            logger.info("✅ Database connection pool initialized with validated config")
         except Exception as e:
             logger.error(f"❌ Failed to initialize connection pool: {e}")
             self.connection_pool = None
 
-        # Pipeline status tracking
+        # Phase 2: Initialize error handling components
+        self.error_logger = ErrorContextLogger("pipeline_errors")
+        self.alert_manager = AlertManager()
+        
+        # Circuit breakers for external services
+        self.circuit_breakers = {
+            "database": CircuitBreaker(
+                failure_threshold=self.config.data_sources.circuit_breaker_threshold,
+                timeout=self.config.data_sources.circuit_breaker_timeout,
+                name="database"
+            ),
+            "auto_downloader": CircuitBreaker(
+                failure_threshold=5,
+                timeout=300,
+                name="auto_downloader"
+            ),
+            "relationships_pipeline": CircuitBreaker(
+                failure_threshold=3,
+                timeout=180,
+                name="relationships_pipeline"
+            ),
+            "analytics_scripts": CircuitBreaker(
+                failure_threshold=4,
+                timeout=240,
+                name="analytics_scripts"
+            )
+        }
+        
+        # Enhanced retry handlers
+        self.retry_handlers = {
+            "database_operations": EnhancedRetry(
+                max_attempts=self.config.data_sources.retry_attempts,
+                base_delay=1.0,
+                circuit_breaker=self.circuit_breakers["database"],
+                name="database_operations"
+            ),
+            "external_scripts": EnhancedRetry(
+                max_attempts=3,
+                base_delay=2.0,
+                max_delay=60.0,
+                name="external_scripts"
+            ),
+            "file_operations": EnhancedRetry(
+                max_attempts=2,
+                base_delay=0.5,
+                name="file_operations"
+            )
+        }
+
+        # Pipeline status tracking with enhanced metrics
         self.pipeline_status = {
             "last_run": None,
             "current_stage": None,
@@ -103,22 +171,44 @@ class DailyPipelineOrchestrator:
             "failure_count": 0,
             "stages_completed": {},
             "analytics_results": {},
+            "circuit_breaker_metrics": {},
+            "retry_metrics": {},
+            "error_summary": {}
         }
+
     
+    @retry_on_failure(max_retries=3, delay=1, backoff=2)
     def get_db_connection(self):
-        """Get database connection from pool with error handling."""
+        """Get database connection from pool with circuit breaker protection."""
         if not self.connection_pool:
             raise Exception("Database connection pool not initialized")
+        
+        # Check circuit breaker
+        if not self.circuit_breakers["database"]._can_attempt():
+            raise CircuitBreakerError("Database circuit breaker is open")
         
         try:
             conn = self.connection_pool.getconn()
             if conn.closed:
                 self.connection_pool.putconn(conn)
                 conn = self.connection_pool.getconn()
+            
+            # Circuit breaker success
+            self.circuit_breakers["database"]._on_success()
             return conn
+            
         except Exception as e:
-            logger.error(f"Failed to get database connection: {e}")
+            # Circuit breaker failure
+            self.circuit_breakers["database"]._on_failure(e)
+            
+            self.error_logger.log_error(
+                e,
+                context={"operation": "get_db_connection", "pool_status": "active"},
+                stage="database_connection",
+                severity="error"
+            )
             raise
+
     
     def return_db_connection(self, conn):
         """Return connection to pool."""
@@ -200,33 +290,193 @@ class DailyPipelineOrchestrator:
             json.dump(self.pipeline_status, f, indent=2, default=str)
 
 
-    async def _run_subprocess_safely(self, script_path: Path, args: list = None, timeout: int = 600):
-        """Run subprocess with proper resource management and timeout."""
-        args = args or []
+
+    def _save_status(self):
+        """Save current pipeline status with enhanced metrics."""
+        status_file = self.project_root / "logs" / "pipeline_status.json"
+        status_file.parent.mkdir(exist_ok=True)
+
+        # Collect circuit breaker metrics
+        self.pipeline_status["circuit_breaker_metrics"] = {
+            name: cb.get_metrics() for name, cb in self.circuit_breakers.items()
+        }
+        
+        # Collect retry metrics
+        self.pipeline_status["retry_metrics"] = {
+            name: handler.get_metrics() for name, handler in self.retry_handlers.items()
+        }
+        
+        # Get error summary
+        self.pipeline_status["error_summary"] = self.error_logger.get_error_summary(hours=24)
+        
+        # Add configuration validation status
+        config_issues = self.config_manager.validate_current_config()
+        self.pipeline_status["config_validation"] = {
+            "valid": len(config_issues) == 0,
+            "issues": config_issues,
+            "last_validated": datetime.now().isoformat()
+        }
+
+        with open(status_file, "w") as f:
+            json.dump(self.pipeline_status, f, indent=2, default=str)
+    
+    def get_enhanced_health_check(self) -> dict:
+        """Enhanced health check with circuit breaker and configuration status."""
+        health_status = self.health_check()  # Get basic health check
+        
+        # Add circuit breaker status
+        circuit_breaker_health = {}
+        for name, cb in self.circuit_breakers.items():
+            circuit_breaker_health[name] = {
+                "state": cb.state.value,
+                "failure_count": cb.failure_count,
+                "healthy": cb.state.value != "open"
+            }
+        
+        health_status["circuit_breakers"] = circuit_breaker_health
+        health_status["circuit_breakers_healthy"] = all(
+            cb["healthy"] for cb in circuit_breaker_health.values()
+        )
+        
+        # Add configuration validation status
+        config_issues = self.config_manager.validate_current_config()
+        health_status["configuration"] = {
+            "valid": len(config_issues) == 0,
+            "issues": config_issues
+        }
+        
+        # Update overall health status
+        health_status["overall"] = (
+            health_status["overall"] and 
+            health_status["circuit_breakers_healthy"] and
+            health_status["configuration"]["valid"]
+        )
+        
+        return health_status
+    
+    def reload_configuration(self) -> bool:
+        """Reload configuration and update components."""
         try:
-            process = await asyncio.create_subprocess_exec(
-                sys.executable, str(script_path), *args,
-                stdout=asyncio.subprocess.PIPE,
-                stderr=asyncio.subprocess.PIPE,
-                cwd=self.project_root
-            )
+            old_config = self.config
+            success = self.config_manager.reload_config()
             
-            try:
-                stdout, stderr = await asyncio.wait_for(
-                    process.communicate(), timeout=timeout
-                )
-                return {
-                    "returncode": process.returncode,
-                    "stdout": stdout.decode(),
-                    "stderr": stderr.decode()
-                }
-            except asyncio.TimeoutError:
-                process.kill()
-                await process.wait()
-                raise TimeoutError(f"Script {script_path.name} timed out after {timeout}s")
+            if success:
+                self.config = self.config_manager.get_config()
+                
+                # Update circuit breaker thresholds if changed
+                if hasattr(old_config, 'data_sources'):
+                    if (old_config.data_sources.circuit_breaker_threshold != 
+                        self.config.data_sources.circuit_breaker_threshold):
+                        
+                        for cb in self.circuit_breakers.values():
+                            cb.failure_threshold = self.config.data_sources.circuit_breaker_threshold
+                
+                logger.info("✅ Configuration reloaded and applied")
+                return True
+            else:
+                logger.error("❌ Configuration reload failed")
+                return False
                 
         except Exception as e:
-            logger.error(f"Subprocess execution failed: {e}")
+            self.error_logger.log_error(
+                e,
+                context={"operation": "reload_configuration"},
+                stage="configuration_management",
+                severity="error"
+            )
+            return False
+
+    async def _run_subprocess_safely(self, script_path: Path, args: list = None, timeout: int = None):
+        """Run subprocess with circuit breaker, retry, and comprehensive error handling."""
+        args = args or []
+        timeout = timeout or self.config.processing.max_processing_time_minutes * 60
+        
+        # Determine which circuit breaker to use
+        script_name = script_path.name.lower()
+        if "downloader" in script_name:
+            circuit_breaker = self.circuit_breakers["auto_downloader"]
+            retry_handler = self.retry_handlers["external_scripts"]
+        elif "relationship" in script_name:
+            circuit_breaker = self.circuit_breakers["relationships_pipeline"] 
+            retry_handler = self.retry_handlers["external_scripts"]
+        else:
+            circuit_breaker = self.circuit_breakers["analytics_scripts"]
+            retry_handler = self.retry_handlers["external_scripts"]
+        
+        # Check circuit breaker before attempting
+        if not circuit_breaker._can_attempt():
+            error_msg = f"Circuit breaker for {script_path.name} is open"
+            await self.alert_manager.send_alert(
+                "circuit_breaker_open",
+                error_msg,
+                severity="warning",
+                context={"script": str(script_path)}
+            )
+            raise CircuitBreakerError(error_msg)
+        
+        async def subprocess_operation():
+            try:
+                process = await asyncio.create_subprocess_exec(
+                    sys.executable, str(script_path), *args,
+                    stdout=asyncio.subprocess.PIPE,
+                    stderr=asyncio.subprocess.PIPE,
+                    cwd=self.project_root
+                )
+                
+                try:
+                    stdout, stderr = await asyncio.wait_for(
+                        process.communicate(), timeout=timeout
+                    )
+                    
+                    result = {
+                        "returncode": process.returncode,
+                        "stdout": stdout.decode(),
+                        "stderr": stderr.decode()
+                    }
+                    
+                    if process.returncode == 0:
+                        circuit_breaker._on_success()
+                    else:
+                        raise subprocess.CalledProcessError(
+                            process.returncode, str(script_path), stderr.decode()
+                        )
+                    
+                    return result
+                    
+                except asyncio.TimeoutError:
+                    process.kill()
+                    await process.wait()
+                    timeout_error = TimeoutError(f"Script {script_path.name} timed out after {timeout}s")
+                    circuit_breaker._on_failure(timeout_error)
+                    raise timeout_error
+                    
+            except Exception as e:
+                circuit_breaker._on_failure(e)
+                
+                self.error_logger.log_error(
+                    e,
+                    context={
+                        "script": str(script_path),
+                        "args": args,
+                        "timeout": timeout,
+                        "circuit_breaker_state": circuit_breaker.state.value
+                    },
+                    stage="subprocess_execution",
+                    severity="error"
+                )
+                raise
+        
+        # Apply retry mechanism
+        try:
+            retryable_operation = await retry_handler(subprocess_operation)
+            return await retryable_operation()
+        except RetryExhaustedException as e:
+            await self.alert_manager.send_alert(
+                "subprocess_retry_exhausted",
+                f"Script {script_path.name} failed after all retry attempts",
+                severity="critical",
+                context={"script": str(script_path), "error": str(e)}
+            )
             raise
 
     
