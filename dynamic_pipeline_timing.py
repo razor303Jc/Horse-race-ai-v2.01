@@ -37,77 +37,136 @@ class PipelineTimeAllocator:
         self.config_path = config_path or Path("config/dynamic_pipeline_timing.json")
         self.project_root = Path(__file__).parent
 
-        # Stage definitions with estimated durations and dependencies
+        # Full 17-Stage Pipeline Definitions with estimated durations and dependencies
         self.stage_definitions = {
+            # Phase 1: Data Acquisition and Validation (25 minutes)
             "data_download": {
                 "duration_minutes": 5,
                 "description": "Download daily racing data",
                 "prerequisites": [],
                 "critical": True,
-                "fixed_time": "05:00",  # Fixed schedule
+                "fixed_time": "05:00",  # Fixed schedule from auto-downloader
+                "phase": "data_acquisition",
             },
             "data_validation": {
-                "duration_minutes": 2,
-                "description": "Validate downloaded data integrity",
+                "duration_minutes": 3,
+                "description": "Validate downloaded data integrity and completeness",
                 "prerequisites": ["data_download"],
                 "critical": True,
+                "phase": "data_acquisition",
             },
             "data_preprocessing": {
-                "duration_minutes": 10,
+                "duration_minutes": 12,
                 "description": "Clean and preprocess race data",
                 "prerequisites": ["data_validation"],
                 "critical": True,
+                "phase": "data_acquisition",
             },
-            "feature_engineering": {
-                "duration_minutes": 15,
-                "description": "Extract and engineer features for ML models",
+            "data_relationships": {
+                "duration_minutes": 8,
+                "description": "Process data relationships and linkages",
                 "prerequisites": ["data_preprocessing"],
                 "critical": True,
+                "phase": "data_acquisition",
             },
-            "ml_model_training": {
-                "duration_minutes": 120,  # 2 hours - longest stage
-                "description": "Train/retrain ML models (Random Forest, XGBoost, Neural Networks)",
+            # Phase 2: Feature Engineering and Analysis (45 minutes)
+            "feature_engineering": {
+                "duration_minutes": 18,
+                "description": "Extract and engineer features for ML models",
+                "prerequisites": ["data_relationships"],
+                "critical": True,
+                "phase": "feature_engineering",
+            },
+            "contextual_analysis": {
+                "duration_minutes": 15,
+                "description": "Generate contextual analysis and insights",
                 "prerequisites": ["feature_engineering"],
                 "critical": True,
-                "scalable": True,  # Can be shortened if time is limited
+                "phase": "feature_engineering",
             },
+            "form_scoring": {
+                "duration_minutes": 12,
+                "description": "Calculate detailed form scores and ratings",
+                "prerequisites": ["contextual_analysis"],
+                "critical": True,
+                "phase": "feature_engineering",
+            },
+            # Phase 3: Advanced Analytics (120 minutes)
+            "power_ratings": {
+                "duration_minutes": 20,
+                "description": "Generate power ratings and speed figures",
+                "prerequisites": ["form_scoring"],
+                "critical": True,
+                "phase": "advanced_analytics",
+            },
+            "speed_analysis": {
+                "duration_minutes": 15,
+                "description": "Comprehensive speed and pace analysis",
+                "prerequisites": ["power_ratings"],
+                "critical": True,
+                "phase": "advanced_analytics",
+            },
+            "ml_model_training": {
+                "duration_minutes": 85,  # Reduced from 120 to fit 17 stages
+                "description": "Train/retrain ML models (RF, XGBoost, Neural Networks)",
+                "prerequisites": ["speed_analysis"],
+                "critical": True,
+                "scalable": True,  # Can be shortened if time is limited
+                "phase": "advanced_analytics",
+            },
+            # Phase 4: Simulation and Optimization (50 minutes)
             "monte_carlo_simulations": {
-                "duration_minutes": 45,
+                "duration_minutes": 30,  # Reduced from 45
                 "description": "Run Monte Carlo simulations for race outcomes",
                 "prerequisites": ["ml_model_training"],
                 "critical": True,
                 "scalable": True,
+                "phase": "simulation",
             },
-            "composite_scoring": {
-                "duration_minutes": 20,
-                "description": "Calculate composite scores and ratings",
+            "race_trends": {
+                "duration_minutes": 10,
+                "description": "Analyze race trends and patterns",
                 "prerequisites": ["monte_carlo_simulations"],
                 "critical": True,
+                "phase": "simulation",
             },
+            "composite_scoring": {
+                "duration_minutes": 10,
+                "description": "Calculate composite scores and final ratings",
+                "prerequisites": ["race_trends"],
+                "critical": True,
+                "phase": "simulation",
+            },
+            # Phase 5: Strategy and Selection (35 minutes)
             "betting_strategies": {
                 "duration_minutes": 15,
-                "description": "Generate betting recommendations",
+                "description": "Generate betting recommendations and strategies",
                 "prerequisites": ["composite_scoring"],
                 "critical": True,
-            },
-            "report_generation": {
-                "duration_minutes": 10,
-                "description": "Generate analysis reports and insights",
-                "prerequisites": ["betting_strategies"],
-                "critical": False,
+                "phase": "strategy",
             },
             "ai_selections": {
-                "duration_minutes": 5,
+                "duration_minutes": 8,
                 "description": "Finalize AI selections for races",
                 "prerequisites": ["betting_strategies"],
                 "critical": True,
+                "phase": "strategy",
             },
-            "pre_race_updates": {
-                "duration_minutes": 10,
-                "description": "Last-minute data updates and adjustments",
+            "report_generation": {
+                "duration_minutes": 12,
+                "description": "Generate comprehensive analysis reports",
                 "prerequisites": ["ai_selections"],
+                "critical": False,
+                "phase": "strategy",
+            },
+            # Phase 6: Pre-Race Operations (15 minutes)
+            "pre_race_updates": {
+                "duration_minutes": 15,
+                "description": "Last-minute data updates and live adjustments",
+                "prerequisites": ["report_generation"],
                 "critical": True,
                 "buffer_stage": True,  # Runs until race time
+                "phase": "pre_race",
             },
         }
 
@@ -377,6 +436,308 @@ class PipelineTimeAllocator:
             remaining -= set(ready)
 
         return ordered
+
+    def calculate_17_stage_allocation(
+        self, download_time: str = "06:25", first_race_time: Optional[datetime] = None
+    ) -> Dict:
+        """Enhanced allocation specifically designed for all 17 pipeline stages"""
+        logger.info("🎯 Calculating optimal 17-stage pipeline allocation...")
+
+        # Calculate available time window
+        start_time, end_time, total_minutes = self.calculate_available_time_window(
+            download_time, first_race_time
+        )
+
+        # Calculate total required time for all 17 stages
+        total_required = sum(
+            stage["duration_minutes"] for stage in self.stage_definitions.values()
+        )
+
+        # Get phase breakdown
+        phase_analysis = self._analyze_phases()
+
+        logger.info(
+            f"📊 17-Stage Analysis: Required={total_required}min, "
+            f"Available={total_minutes}min, Phases={len(phase_analysis)}"
+        )
+
+        # Choose allocation strategy based on available time
+        if total_minutes >= (total_required + 30):  # 30min buffer minimum
+            return self._allocate_17_stage_optimal(
+                start_time, end_time, total_minutes, phase_analysis
+            )
+        elif total_minutes >= total_required:
+            return self._allocate_17_stage_tight(
+                start_time, end_time, total_minutes, phase_analysis
+            )
+        else:
+            return self._allocate_17_stage_compressed(
+                start_time, end_time, total_minutes, phase_analysis
+            )
+
+    def _analyze_phases(self) -> Dict:
+        """Analyze the 6 phases of the 17-stage pipeline"""
+        phases = {}
+
+        for stage_name, stage_info in self.stage_definitions.items():
+            phase = stage_info.get("phase", "unknown")
+            if phase not in phases:
+                phases[phase] = {
+                    "stages": [],
+                    "total_duration": 0,
+                    "critical_stages": 0,
+                    "scalable_stages": 0,
+                }
+
+            phases[phase]["stages"].append(stage_name)
+            phases[phase]["total_duration"] += stage_info["duration_minutes"]
+
+            if stage_info.get("critical", False):
+                phases[phase]["critical_stages"] += 1
+            if stage_info.get("scalable", False):
+                phases[phase]["scalable_stages"] += 1
+
+        return phases
+
+    def _allocate_17_stage_optimal(
+        self,
+        start_time: datetime,
+        end_time: datetime,
+        total_minutes: int,
+        phase_analysis: Dict,
+    ) -> Dict:
+        """Optimal allocation with buffer time for all 17 stages"""
+        logger.info("✅ Creating optimal 17-stage schedule with buffer time")
+
+        current_time = start_time
+        stage_schedule = {}
+
+        # Add small buffer between phases (2 minutes each)
+        phase_buffer = 2
+
+        # Sort stages by dependency order
+        ordered_stages = self._resolve_dependencies()
+
+        for stage_name in ordered_stages:
+            stage_info = self.stage_definitions[stage_name]
+
+            # Handle fixed time stages (like auto-downloader at 06:25)
+            if "fixed_time" in stage_info:
+                stage_time = datetime.strptime(stage_info["fixed_time"], "%H:%M").time()
+                stage_datetime = datetime.combine(current_time.date(), stage_time)
+            else:
+                stage_datetime = current_time
+
+            # Use full duration in optimal mode
+            duration = stage_info["duration_minutes"]
+            stage_end = stage_datetime + timedelta(minutes=duration)
+
+            stage_schedule[stage_name] = {
+                "start_time": stage_datetime.strftime("%H:%M"),
+                "end_time": stage_end.strftime("%H:%M"),
+                "duration_minutes": duration,
+                "description": stage_info["description"],
+                "critical": stage_info.get("critical", False),
+                "phase": stage_info.get("phase", "unknown"),
+            }
+
+            # Update current time with small buffer between phases
+            if "fixed_time" not in stage_info:
+                next_stage_idx = ordered_stages.index(stage_name) + 1
+                if next_stage_idx < len(ordered_stages) and self.stage_definitions[
+                    ordered_stages[next_stage_idx]
+                ].get("phase") != stage_info.get("phase"):
+                    # Add buffer between phases
+                    current_time = stage_end + timedelta(minutes=phase_buffer)
+                else:
+                    current_time = stage_end
+
+        return self._finalize_schedule(
+            stage_schedule, start_time, end_time, total_minutes, "optimal"
+        )
+
+    def _allocate_17_stage_tight(
+        self,
+        start_time: datetime,
+        end_time: datetime,
+        total_minutes: int,
+        phase_analysis: Dict,
+    ) -> Dict:
+        """Tight allocation with minimal buffer for all 17 stages"""
+        logger.info("⚡ Creating tight 17-stage schedule with minimal buffer")
+
+        current_time = start_time
+        stage_schedule = {}
+
+        # Sort stages by dependency order
+        ordered_stages = self._resolve_dependencies()
+
+        for stage_name in ordered_stages:
+            stage_info = self.stage_definitions[stage_name]
+
+            # Handle fixed time stages
+            if "fixed_time" in stage_info:
+                stage_time = datetime.strptime(stage_info["fixed_time"], "%H:%M").time()
+                stage_datetime = datetime.combine(current_time.date(), stage_time)
+            else:
+                stage_datetime = current_time
+
+            # Use full duration but no buffers
+            duration = stage_info["duration_minutes"]
+            stage_end = stage_datetime + timedelta(minutes=duration)
+
+            stage_schedule[stage_name] = {
+                "start_time": stage_datetime.strftime("%H:%M"),
+                "end_time": stage_end.strftime("%H:%M"),
+                "duration_minutes": duration,
+                "description": stage_info["description"],
+                "critical": stage_info.get("critical", False),
+                "phase": stage_info.get("phase", "unknown"),
+            }
+
+            if "fixed_time" not in stage_info:
+                current_time = stage_end
+
+        return self._finalize_schedule(
+            stage_schedule, start_time, end_time, total_minutes, "tight"
+        )
+
+    def _allocate_17_stage_compressed(
+        self,
+        start_time: datetime,
+        end_time: datetime,
+        total_minutes: int,
+        phase_analysis: Dict,
+    ) -> Dict:
+        """Compressed allocation for all 17 stages with intelligent scaling"""
+        logger.warning(
+            "⚠️ Creating compressed 17-stage schedule - time pressure detected"
+        )
+
+        # Calculate compression needed
+        total_required = sum(
+            stage["duration_minutes"] for stage in self.stage_definitions.values()
+        )
+        compression_ratio = total_minutes / total_required
+
+        current_time = start_time
+        stage_schedule = {}
+
+        # Sort stages by dependency order
+        ordered_stages = self._resolve_dependencies()
+
+        for stage_name in ordered_stages:
+            stage_info = self.stage_definitions[stage_name]
+
+            # Handle fixed time stages
+            if "fixed_time" in stage_info:
+                stage_time = datetime.strptime(stage_info["fixed_time"], "%H:%M").time()
+                stage_datetime = datetime.combine(current_time.date(), stage_time)
+                duration = stage_info["duration_minutes"]  # Don't compress fixed stages
+            else:
+                stage_datetime = current_time
+
+                # Intelligent compression based on stage characteristics
+                if stage_info.get("scalable", False):
+                    # Scalable stages can be compressed more aggressively
+                    duration = max(
+                        5, int(stage_info["duration_minutes"] * compression_ratio)
+                    )
+                elif stage_info.get("critical", True):
+                    # Critical stages get minimal compression
+                    duration = max(
+                        int(stage_info["duration_minutes"] * 0.8),  # Max 20% reduction
+                        int(stage_info["duration_minutes"] * compression_ratio),
+                    )
+                else:
+                    # Non-critical stages can be compressed more
+                    duration = max(
+                        3, int(stage_info["duration_minutes"] * compression_ratio)
+                    )
+
+            stage_end = stage_datetime + timedelta(minutes=duration)
+
+            stage_schedule[stage_name] = {
+                "start_time": stage_datetime.strftime("%H:%M"),
+                "end_time": stage_end.strftime("%H:%M"),
+                "duration_minutes": duration,
+                "original_duration": stage_info["duration_minutes"],
+                "compressed": duration < stage_info["duration_minutes"],
+                "compression_ratio": duration / stage_info["duration_minutes"],
+                "description": stage_info["description"],
+                "critical": stage_info.get("critical", False),
+                "phase": stage_info.get("phase", "unknown"),
+            }
+
+            if "fixed_time" not in stage_info:
+                current_time = stage_end
+
+        return self._finalize_schedule(
+            stage_schedule,
+            start_time,
+            end_time,
+            total_minutes,
+            "compressed",
+            compression_ratio,
+        )
+
+    def _finalize_schedule(
+        self,
+        stage_schedule: Dict,
+        start_time: datetime,
+        end_time: datetime,
+        total_minutes: int,
+        schedule_type: str,
+        compression_ratio: float = 1.0,
+    ) -> Dict:
+        """Finalize schedule with analysis and validation"""
+
+        # Calculate final timings
+        allocated_minutes = sum(
+            stage["duration_minutes"] for stage in stage_schedule.values()
+        )
+
+        final_stage_end = max(
+            datetime.strptime(stage["end_time"], "%H:%M").replace(
+                year=start_time.year, month=start_time.month, day=start_time.day
+            )
+            for stage in stage_schedule.values()
+        )
+
+        buffer_minutes = int((end_time - final_stage_end).total_seconds() / 60)
+
+        # Build analysis
+        timing_analysis = {
+            "total_window_minutes": total_minutes,
+            "allocated_minutes": allocated_minutes,
+            "buffer_minutes": buffer_minutes,
+            "schedule_type": schedule_type,
+            "first_race_time": end_time.strftime("%H:%M"),
+            "pipeline_completion": final_stage_end.strftime("%H:%M"),
+            "total_stages": len(stage_schedule),
+            "phases_covered": len(
+                set(stage.get("phase", "unknown") for stage in stage_schedule.values())
+            ),
+        }
+
+        if compression_ratio < 1.0:
+            timing_analysis["compression_ratio"] = compression_ratio
+            timing_analysis["warnings"] = [
+                f"Time pressure - {compression_ratio:.1%} compression applied",
+                "Some stages may have reduced accuracy",
+            ]
+
+        allocation_summary = {
+            "schedule": stage_schedule,
+            "timing_analysis": timing_analysis,
+        }
+
+        logger.info(
+            f"✅ {schedule_type.title()} 17-stage schedule: "
+            f"{allocated_minutes}min allocated, {buffer_minutes}min buffer"
+        )
+
+        return allocation_summary
 
     def save_schedule_config(
         self, allocation: Dict, config_path: Optional[Path] = None

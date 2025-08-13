@@ -1,0 +1,24 @@
+{
+  "alerts": {
+    "pipeline_failure": {
+      "enabled": true,
+      "threshold": "1_failure",
+      "notification": "log"
+    },
+    "schedule_generation_failure": {
+      "enabled": true,
+      "threshold": "2_consecutive_failures",
+      "notification": "log"
+    },
+    "compression_ratio_critical": {
+      "enabled": true,
+      "threshold": 0.5,
+      "notification": "log"
+    }
+  },
+  "monitoring": {
+    "check_interval_minutes": 5,
+    "log_retention_days": 30,
+    "metrics_enabled": true
+  }
+}
