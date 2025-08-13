@@ -23,6 +23,9 @@ nav:
   - System Operations:
     - Auto Downloader: operations/auto-downloader.md
     - Data Pipeline: operations/data-pipeline.md
+    - 17-Stage Dynamic Pipeline: operations/17-stage-dynamic-pipeline.md
+    - Dynamic Scheduling: operations/dynamic-scheduling.md
+    - Pipeline Timing & Allocation: operations/pipeline-timing.md
     - ML Processing: operations/ml-processing.md
     - Monitoring & Health: operations/monitoring.md
     - Security Auditing: operations/security.md
@@ -70,6 +73,10 @@ nav:
     - Development Journey: documentation/COMPLETE_DEVELOPMENT_JOURNEY.md
     - ML Implementation: documentation/ML_IMPLEMENTATION_COMPLETE.md
     - Monte Carlo: documentation/MONTE_CARLO_IMPLEMENTATION_COMPLETE.md
+    - 17-Stage Dynamic Pipeline: documentation/17-STAGE-DYNAMIC-PIPELINE.md
+    - Dynamic Timing System: documentation/DYNAMIC-TIMING-SYSTEM.md
+    - Production Deployment: documentation/PRODUCTION-DEPLOYMENT.md
+    - Integration Testing: documentation/INTEGRATION-TESTING.md
     - Next Phase Roadmap: documentation/NEXT_PHASE_ROADMAP.md
     - Docker Reference: documentation/DOCKER_QUICK_REFERENCE.md
     - Auto Downloader Guide: documentation/ENHANCED_AUTO_DOWNLOAD_COMPLETE.md
