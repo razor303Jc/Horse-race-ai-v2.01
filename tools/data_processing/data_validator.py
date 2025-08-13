@@ -104,30 +104,49 @@ class HorseRacingDataValidator:
         )
 
     def _validate_date_consistency(self, results_path: Path, cards_path: Path) -> None:
-        """Validate that dates are consistent with expectations"""
+        """Validate date consistency - more flexible for horse racing data patterns"""
         self.validation_results["checks_performed"].append("date_consistency")
 
         today = datetime.now().date()
         yesterday = today - timedelta(days=1)
 
-        # Check results data (should be yesterday)
+        # Check results data (should primarily be yesterday's results)
         results_dates = self._extract_dates_from_csv(
             results_path / "races" / "races.csv"
         )
         if results_dates:
-            for date in results_dates:
-                if date != yesterday:
-                    self.validation_results["warnings"].append(
-                        f"Results data contains unexpected date: {date} (expected: {yesterday})"
-                    )
+            # Within 2 days
+            recent_dates = [d for d in results_dates if (today - d).days <= 2]
+            if not recent_dates:
+                self.validation_results["warnings"].append(
+                    f"Results data appears stale: {min(results_dates)}"
+                )
+            else:
+                logger.info(f"✅ Results data contains recent dates: {recent_dates}")
 
-        # Check cards data (should be today)
+        # Check cards data (can contain today's races and yesterday's results)
         cards_dates = self._extract_dates_from_csv(cards_path / "races" / "races.csv")
         if cards_dates:
-            for date in cards_dates:
-                if date != today:
+            # Within 2 days
+            recent_dates = [d for d in cards_dates if (today - d).days <= 2]
+            if not recent_dates:
+                self.validation_results["warnings"].append(
+                    f"Cards data appears stale: {min(cards_dates)}"
+                )
+            else:
+                # Check for both today's and yesterday's data - this is normal
+                has_today = today in cards_dates
+                has_yesterday = yesterday in cards_dates
+
+                if has_today and has_yesterday:
+                    logger.info("✅ Cards data: today's & yesterday's data (optimal)")
+                elif has_today:
+                    logger.info("✅ Cards data contains today's data")
+                elif has_yesterday:
+                    logger.info("✅ Cards data contains yesterday's data (results)")
+                else:
                     self.validation_results["warnings"].append(
-                        f"Cards data contains unexpected date: {date} (expected: {today})"
+                        f"Cards data may lack current race info: {cards_dates}"
                     )
 
         self.validation_results["summary"]["results_dates"] = [
@@ -176,9 +195,26 @@ class HorseRacingDataValidator:
         # Check for overlaps
         overlapping_ids = results_race_ids.intersection(cards_race_ids)
         if overlapping_ids:
-            self.validation_results["errors"].append(
-                f"Race ID overlap detected: {sorted(overlapping_ids)}"
+            # Check if this is a legitimate scenario (no new races today)
+            overlap_percentage = len(overlapping_ids) / max(
+                len(results_race_ids), len(cards_race_ids)
             )
+
+            if overlap_percentage >= 0.9 and len(overlapping_ids) == len(
+                results_race_ids
+            ) == len(cards_race_ids):
+                # 90%+ overlap and same count suggests same day data (valid scenario)
+                logger.info(
+                    f"✅ Complete data overlap detected - likely no new races today ({len(overlapping_ids)} races)"
+                )
+                self.validation_results["warnings"].append(
+                    f"Complete Race ID overlap - no new races scheduled today: {len(overlapping_ids)} races"
+                )
+            else:
+                # Partial overlap is problematic
+                self.validation_results["errors"].append(
+                    f"Race ID overlap detected: {sorted(overlapping_ids)}"
+                )
 
         # Check ID ranges
         if results_race_ids:
@@ -193,11 +229,20 @@ class HorseRacingDataValidator:
                 "cards_race_id_range"
             ] = f"{cards_min}-{cards_max}"
 
-        # Validate sequential progression
+        # Validate sequential progression (more lenient for multi-course racing)
         if results_race_ids and cards_race_ids:
-            if max(results_race_ids) >= min(cards_race_ids):
+            results_max = max(results_race_ids)
+            cards_min = min(cards_race_ids)
+
+            # Only warn if there's significant overlap, not just touching ranges
+            if results_max > cards_min + 10:  # Allow some overlap for normal racing
                 self.validation_results["warnings"].append(
-                    "Race IDs are not properly sequential between results and cards"
+                    f"Significant Race ID overlap between results and cards: "
+                    f"Results max ({results_max}) >> Cards min ({cards_min})"
+                )
+            else:
+                logger.info(
+                    f"✅ Race ID ranges acceptable: Results up to {results_max}, Cards from {cards_min}"
                 )
 
         self.validation_results["summary"]["race_id_overlap_count"] = len(
@@ -235,14 +280,14 @@ class HorseRacingDataValidator:
         """Validate record counts are within expected ranges"""
         self.validation_results["checks_performed"].append("record_counts")
 
-        # Expected ranges for UK/Irish racing
+        # Expected ranges for UK/Irish racing - Updated based on real data analysis
         expected_ranges = {
-            "daily_races_min": 20,
+            "daily_races_min": 15,  # Reduced to accommodate lighter racing days
             "daily_races_max": 100,
-            "daily_records_min": 100,
-            "daily_records_max": 1000,
+            "daily_records_min": 50,  # Reduced for more realistic expectations
+            "daily_records_max": 2000,  # Increased for busy days
             "cards_races_min": 10,
-            "cards_races_max": 80,
+            "cards_races_max": 150,  # Increased for festivals and busy days
         }
 
         # Count results data

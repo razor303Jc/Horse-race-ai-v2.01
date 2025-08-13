@@ -14,7 +14,7 @@ services:
       - DOCKER_CONTAINER=true
       - HEADLESS=true
       - PLAYWRIGHT_BROWSERS_PATH=/app/.playwright
-      - TZ=UTC
+      - TZ=Europe/London
       - LOG_LEVEL=INFO
       - NTFY_HOST=ntfy:8081
       # WooCommerce credentials (from .env file)

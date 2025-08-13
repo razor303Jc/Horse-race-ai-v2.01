@@ -1,0 +1,6 @@
+#!/bin/bash
+# Auto-Downloader Schedule Manager - Quick Access Script
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+cd "$SCRIPT_DIR" && python3 tools/cli/schedule_manager.py "$@"

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 🏇 Daily Pipeline Orchestrator - Stages 2 & 3 Implementation
-Automated daily processing from data download (00:01) to contextual analysis
+Automated daily processing from data download (04:00) to contextual analysis
 
 This orchestrator manages the complete daily pipeline:
 1. Download daily racing data
@@ -14,7 +14,6 @@ Author: AI Assistant
 Date: August 11, 2025
 """
 
-import argparse
 import asyncio
 import json
 import logging
@@ -28,7 +27,6 @@ from typing import Dict, List, Optional
 
 import psycopg2
 import schedule
-from psycopg2 import pool
 
 # Setup logging
 logging.basicConfig(
@@ -36,53 +34,6 @@ logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     handlers=[logging.FileHandler("/tmp/daily_pipeline.log"), logging.StreamHandler()],
 )
-
-import functools
-import time
-
-
-def retry_on_failure(max_retries=3, delay=1, backoff=2):
-    """Retry decorator with exponential backoff."""
-
-    def decorator(func):
-        @functools.wraps(func)
-        async def wrapper(*args, **kwargs):
-            retries = 0
-            while retries < max_retries:
-                try:
-                    # Handle both sync and async functions
-                    if asyncio.iscoroutinefunction(func):
-                        return await func(*args, **kwargs)
-                    else:
-                        return func(*args, **kwargs)
-                except Exception as e:
-                    retries += 1
-                    if retries == max_retries:
-                        raise e
-                    wait_time = delay * (backoff ** (retries - 1))
-                    logger.warning(
-                        f"Attempt {retries} failed: {e}. Retrying in {wait_time}s..."
-                    )
-                    time.sleep(wait_time)
-            return None
-
-        return wrapper
-
-    return decorator
-
-
-from enhanced_error_handling import (
-    AlertManager,
-    CircuitBreaker,
-    CircuitBreakerError,
-    EnhancedRetry,
-    ErrorContextLogger,
-    RetryExhaustedException,
-)
-
-# Phase 2: Enhanced reliability imports
-from pipeline_config_validator import PipelineConfig, create_config_manager
-
 logger = logging.getLogger(__name__)
 
 
@@ -95,78 +46,19 @@ class DailyPipelineOrchestrator:
         self.reports_dir = self.project_root / "reports"
         self.docs_dir = self.project_root / "docs"
 
-        # Phase 2: Initialize Pydantic configuration manager
-        ConfigManagerClass = create_config_manager()
-        self.config_manager = ConfigManagerClass(self.config_file)
-        self.config = self.config_manager.get_config()
+        # Initialize configuration
+        self.config = self._load_config()
 
-        # Validate configuration on startup
-        issues = self.config_manager.validate_current_config()
-        if issues:
-            logger.warning(f"Configuration issues found: {issues}")
-        else:
-            logger.info("✅ Configuration validation passed")
-
-        # Database connection pool with config validation
+        # Database connection
         self.db_config = {
-            "host": self.config.database.host,
-            "port": self.config.database.port,
-            "database": self.config.database.database,
-            "user": self.config.database.user,
-            "password": self.config.database.password,
+            "host": "localhost",
+            "port": 5433,
+            "database": "horse_racing_db",
+            "user": "horse_racing",
+            "password": os.getenv("POSTGRES_PASSWORD", "secure_password_123"),
         }
 
-        # Initialize connection pool with validated config
-        try:
-            self.connection_pool = psycopg2.pool.ThreadedConnectionPool(
-                self.config.database.pool_min_connections,
-                self.config.database.pool_max_connections,
-                **self.db_config,
-            )
-            logger.info("✅ Database connection pool initialized with validated config")
-        except Exception as e:
-            logger.error(f"❌ Failed to initialize connection pool: {e}")
-            self.connection_pool = None
-
-        # Phase 2: Initialize error handling components
-        self.error_logger = ErrorContextLogger("pipeline_errors")
-        self.alert_manager = AlertManager()
-
-        # Circuit breakers for external services
-        self.circuit_breakers = {
-            "database": CircuitBreaker(
-                failure_threshold=self.config.data_sources.circuit_breaker_threshold,
-                timeout=self.config.data_sources.circuit_breaker_timeout,
-                name="database",
-            ),
-            "auto_downloader": CircuitBreaker(
-                failure_threshold=5, timeout=300, name="auto_downloader"
-            ),
-            "relationships_pipeline": CircuitBreaker(
-                failure_threshold=3, timeout=180, name="relationships_pipeline"
-            ),
-            "analytics_scripts": CircuitBreaker(
-                failure_threshold=4, timeout=240, name="analytics_scripts"
-            ),
-        }
-
-        # Enhanced retry handlers
-        self.retry_handlers = {
-            "database_operations": EnhancedRetry(
-                max_attempts=self.config.data_sources.retry_attempts,
-                base_delay=1.0,
-                circuit_breaker=self.circuit_breakers["database"],
-                name="database_operations",
-            ),
-            "external_scripts": EnhancedRetry(
-                max_attempts=3, base_delay=2.0, max_delay=60.0, name="external_scripts"
-            ),
-            "file_operations": EnhancedRetry(
-                max_attempts=2, base_delay=0.5, name="file_operations"
-            ),
-        }
-
-        # Pipeline status tracking with enhanced metrics
+        # Pipeline status tracking
         self.pipeline_status = {
             "last_run": None,
             "current_stage": None,
@@ -175,65 +67,13 @@ class DailyPipelineOrchestrator:
             "failure_count": 0,
             "stages_completed": {},
             "analytics_results": {},
-            "circuit_breaker_metrics": {},
-            "retry_metrics": {},
-            "error_summary": {},
         }
-
-    @retry_on_failure(max_retries=3, delay=1, backoff=2)
-    def get_db_connection(self):
-        """Get database connection from pool with circuit breaker protection."""
-        if not self.connection_pool:
-            raise Exception("Database connection pool not initialized")
-
-        # Check circuit breaker
-        if not self.circuit_breakers["database"]._can_attempt():
-            raise CircuitBreakerError("Database circuit breaker is open")
-
-        try:
-            conn = self.connection_pool.getconn()
-            if conn.closed:
-                self.connection_pool.putconn(conn)
-                conn = self.connection_pool.getconn()
-
-            # Circuit breaker success
-            self.circuit_breakers["database"]._on_success()
-            return conn
-
-        except Exception as e:
-            # Circuit breaker failure
-            self.circuit_breakers["database"]._on_failure(e)
-
-            self.error_logger.log_error(
-                e,
-                context={"operation": "get_db_connection", "pool_status": "active"},
-                stage="database_connection",
-                severity="error",
-            )
-            raise
-
-    def return_db_connection(self, conn):
-        """Return connection to pool."""
-        if self.connection_pool and conn:
-            try:
-                self.connection_pool.putconn(conn)
-            except Exception as e:
-                logger.error(f"Failed to return connection to pool: {e}")
-
-    def __del__(self):
-        """Cleanup connection pool on destruction."""
-        if hasattr(self, "connection_pool") and self.connection_pool:
-            try:
-                self.connection_pool.closeall()
-                logger.info("🔒 Database connection pool closed")
-            except Exception as e:
-                logger.error(f"Error closing connection pool: {e}")
 
     def _load_config(self) -> Dict:
         """Load daily pipeline configuration."""
         default_config = {
             "schedule": {
-                "download_time": "12:31",
+                "download_time": "06:25",
                 "relationships_time": "13:00",
                 "contextual_time": "13:30",
                 "form_scoring_time": "14:00",
@@ -291,257 +131,6 @@ class DailyPipelineOrchestrator:
         with open(status_file, "w") as f:
             json.dump(self.pipeline_status, f, indent=2, default=str)
 
-    def _save_status(self):
-        """Save current pipeline status with enhanced metrics."""
-        status_file = self.project_root / "logs" / "pipeline_status.json"
-        status_file.parent.mkdir(exist_ok=True)
-
-        # Collect circuit breaker metrics
-        self.pipeline_status["circuit_breaker_metrics"] = {
-            name: cb.get_metrics() for name, cb in self.circuit_breakers.items()
-        }
-
-        # Collect retry metrics
-        self.pipeline_status["retry_metrics"] = {
-            name: handler.get_metrics() for name, handler in self.retry_handlers.items()
-        }
-
-        # Get error summary
-        self.pipeline_status["error_summary"] = self.error_logger.get_error_summary(
-            hours=24
-        )
-
-        # Add configuration validation status
-        config_issues = self.config_manager.validate_current_config()
-        self.pipeline_status["config_validation"] = {
-            "valid": len(config_issues) == 0,
-            "issues": config_issues,
-            "last_validated": datetime.now().isoformat(),
-        }
-
-        with open(status_file, "w") as f:
-            json.dump(self.pipeline_status, f, indent=2, default=str)
-
-    def get_enhanced_health_check(self) -> dict:
-        """Enhanced health check with circuit breaker and configuration status."""
-        health_status = self.health_check()  # Get basic health check
-
-        # Add circuit breaker status
-        circuit_breaker_health = {}
-        for name, cb in self.circuit_breakers.items():
-            circuit_breaker_health[name] = {
-                "state": cb.state.value,
-                "failure_count": cb.failure_count,
-                "healthy": cb.state.value != "open",
-            }
-
-        health_status["circuit_breakers"] = circuit_breaker_health
-        health_status["circuit_breakers_healthy"] = all(
-            cb["healthy"] for cb in circuit_breaker_health.values()
-        )
-
-        # Add configuration validation status
-        config_issues = self.config_manager.validate_current_config()
-        health_status["configuration"] = {
-            "valid": len(config_issues) == 0,
-            "issues": config_issues,
-        }
-
-        # Update overall health status
-        health_status["overall"] = (
-            health_status["overall"]
-            and health_status["circuit_breakers_healthy"]
-            and health_status["configuration"]["valid"]
-        )
-
-        return health_status
-
-    def reload_configuration(self) -> bool:
-        """Reload configuration and update components."""
-        try:
-            old_config = self.config
-            success = self.config_manager.reload_config()
-
-            if success:
-                self.config = self.config_manager.get_config()
-
-                # Update circuit breaker thresholds if changed
-                if hasattr(old_config, "data_sources"):
-                    if (
-                        old_config.data_sources.circuit_breaker_threshold
-                        != self.config.data_sources.circuit_breaker_threshold
-                    ):
-
-                        for cb in self.circuit_breakers.values():
-                            cb.failure_threshold = (
-                                self.config.data_sources.circuit_breaker_threshold
-                            )
-
-                logger.info("✅ Configuration reloaded and applied")
-                return True
-            else:
-                logger.error("❌ Configuration reload failed")
-                return False
-
-        except Exception as e:
-            self.error_logger.log_error(
-                e,
-                context={"operation": "reload_configuration"},
-                stage="configuration_management",
-                severity="error",
-            )
-            return False
-
-    async def _run_subprocess_safely(
-        self, script_path: Path, args: list = None, timeout: int = None
-    ):
-        """Run subprocess with circuit breaker, retry, and comprehensive error handling."""
-        args = args or []
-        timeout = timeout or self.config.processing.max_processing_time_minutes * 60
-
-        # Determine which circuit breaker to use
-        script_name = script_path.name.lower()
-        if "downloader" in script_name:
-            circuit_breaker = self.circuit_breakers["auto_downloader"]
-            retry_handler = self.retry_handlers["external_scripts"]
-        elif "relationship" in script_name:
-            circuit_breaker = self.circuit_breakers["relationships_pipeline"]
-            retry_handler = self.retry_handlers["external_scripts"]
-        else:
-            circuit_breaker = self.circuit_breakers["analytics_scripts"]
-            retry_handler = self.retry_handlers["external_scripts"]
-
-        # Check circuit breaker before attempting
-        if not circuit_breaker._can_attempt():
-            error_msg = f"Circuit breaker for {script_path.name} is open"
-            await self.alert_manager.send_alert(
-                "circuit_breaker_open",
-                error_msg,
-                severity="warning",
-                context={"script": str(script_path)},
-            )
-            raise CircuitBreakerError(error_msg)
-
-        async def subprocess_operation():
-            try:
-                process = await asyncio.create_subprocess_exec(
-                    sys.executable,
-                    str(script_path),
-                    *args,
-                    stdout=asyncio.subprocess.PIPE,
-                    stderr=asyncio.subprocess.PIPE,
-                    cwd=self.project_root,
-                )
-
-                try:
-                    stdout, stderr = await asyncio.wait_for(
-                        process.communicate(), timeout=timeout
-                    )
-
-                    result = {
-                        "returncode": process.returncode,
-                        "stdout": stdout.decode(),
-                        "stderr": stderr.decode(),
-                    }
-
-                    if process.returncode == 0:
-                        circuit_breaker._on_success()
-                    else:
-                        raise subprocess.CalledProcessError(
-                            process.returncode, str(script_path), stderr.decode()
-                        )
-
-                    return result
-
-                except asyncio.TimeoutError:
-                    process.kill()
-                    await process.wait()
-                    timeout_error = TimeoutError(
-                        f"Script {script_path.name} timed out after {timeout}s"
-                    )
-                    circuit_breaker._on_failure(timeout_error)
-                    raise timeout_error
-
-            except Exception as e:
-                circuit_breaker._on_failure(e)
-
-                self.error_logger.log_error(
-                    e,
-                    context={
-                        "script": str(script_path),
-                        "args": args,
-                        "timeout": timeout,
-                        "circuit_breaker_state": circuit_breaker.state.value,
-                    },
-                    stage="subprocess_execution",
-                    severity="error",
-                )
-                raise
-
-        # Apply retry mechanism
-        try:
-            retryable_operation = await retry_handler(subprocess_operation)
-            return await retryable_operation()
-        except RetryExhaustedException as e:
-            await self.alert_manager.send_alert(
-                "subprocess_retry_exhausted",
-                f"Script {script_path.name} failed after all retry attempts",
-                severity="critical",
-                context={"script": str(script_path), "error": str(e)},
-            )
-            raise
-
-    def health_check(self) -> dict:
-        """Perform system health check."""
-        health_status = {
-            "database": False,
-            "file_system": False,
-            "memory": False,
-            "overall": False,
-        }
-
-        # Check database connectivity
-        try:
-            conn = self.get_db_connection()
-            with conn.cursor() as cur:
-                cur.execute("SELECT 1")
-                cur.fetchone()
-            health_status["database"] = True
-            self.return_db_connection(conn)
-        except Exception as e:
-            logger.error(f"Database health check failed: {e}")
-
-        # Check file system
-        try:
-            test_file = self.project_root / "health_check.tmp"
-            test_file.write_text("test")
-            test_file.unlink()
-            health_status["file_system"] = True
-        except Exception as e:
-            logger.error(f"File system health check failed: {e}")
-
-        # Check memory usage
-        try:
-            import psutil
-
-            memory_usage = psutil.virtual_memory().percent
-            health_status["memory"] = memory_usage < 90
-            health_status["memory_usage"] = memory_usage
-        except ImportError:
-            health_status["memory"] = True  # Assume OK if psutil not available
-        except Exception as e:
-            logger.error(f"Memory health check failed: {e}")
-
-        health_status["overall"] = all(
-            [
-                health_status["database"],
-                health_status["file_system"],
-                health_status["memory"],
-            ]
-        )
-
-        return health_status
-
     async def download_daily_data(self) -> Dict:
         """Stage 1: Download daily racing data from all sources."""
         logger.info("🚀 Starting daily data download...")
@@ -591,27 +180,21 @@ class DailyPipelineOrchestrator:
         return results
 
     def _count_new_records(self) -> int:
-        """Count records added in the last 24 hours using connection pool."""
-        conn = None
+        """Count records added in the last 24 hours."""
         try:
-            conn = self.get_db_connection()
-            with conn.cursor() as cur:
-                cur.execute(
+            with psycopg2.connect(**self.db_config) as conn:
+                with conn.cursor() as cur:
+                    cur.execute(
+                        """
+                        SELECT COUNT(*) 
+                        FROM race_results 
+                        WHERE created_at >= NOW() - INTERVAL '24 hours'
                     """
-                    SELECT COUNT(*) 
-                    FROM race_results 
-                    WHERE created_at >= NOW() - INTERVAL '24 hours'
-                """
-                )
-                count = cur.fetchone()[0]
-                logger.debug(f"Found {count} new records in last 24 hours")
-                return count
+                    )
+                    return cur.fetchone()[0]
         except Exception as e:
             logger.error(f"Failed to count new records: {e}")
             return 0
-        finally:
-            if conn:
-                self.return_db_connection(conn)
 
     async def process_data_relationships(self) -> Dict:
         """Stage 2: Process data relationships and assign realistic values."""
@@ -1625,7 +1208,7 @@ class DailyPipelineOrchestrator:
         try:
             # ===== MORNING DATA COLLECTION & PROCESSING =====
 
-            # Stage 1: Download Data (00:01)
+            # Stage 1: Download Data (04:00)
             logger.info("📥 Stage 1: Daily Data Download")
             download_results = await self.download_daily_data()
 
@@ -1977,7 +1560,7 @@ def main():
         print("  --status      Show detailed status")
         print("")
         print("Complete Pipeline Stages:")
-        print("📥 00:01 - Data Download")
+        print("📥 04:00 - Data Download")
         print("🔗 00:30 - Relationship Processing")
         print("🧠 01:00 - Contextual Analysis")
         print("📊 01:30 - Form Scoring")
@@ -1994,6 +1577,25 @@ def main():
         print("📊 18:00 - Results Analysis")
         print("🔧 19:00 - System Optimization")
         print("📋 20:00 - Next Day Preparation")
+
+    async def run_basic_pipeline(self):
+        """Run only the basic 3-stage pipeline."""
+        logger.info("🚀 Running basic pipeline (stages 1-3)...")
+
+        # Stage 1: Download Data
+        download_results = await self.download_daily_data()
+
+        # Stage 2: Process Relationships
+        if download_results["success"] or download_results["records_downloaded"] > 0:
+            relationships_results = await self.process_data_relationships()
+        else:
+            relationships_results = {"success": False, "errors": ["No new data"]}
+
+        # Stage 3: Contextual Analysis
+        analysis_results = await self.contextual_data_analysis()
+
+        logger.info("✅ Basic pipeline completed")
+        return [download_results, relationships_results, analysis_results]
 
 
 if __name__ == "__main__":
