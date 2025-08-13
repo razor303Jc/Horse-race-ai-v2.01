@@ -26,6 +26,8 @@ nav:
     - 17-Stage Dynamic Pipeline: operations/17-stage-dynamic-pipeline.md
     - Dynamic Scheduling: operations/dynamic-scheduling.md
     - Pipeline Timing & Allocation: operations/pipeline-timing.md
+    - Racing News Analyzer: operations/racing-news-analyzer.md
+    - Racing News Notifications: operations/racing-news-notifications.md
     - ML Processing: operations/ml-processing.md
     - Monitoring & Health: operations/monitoring.md
     - Security Auditing: operations/security.md

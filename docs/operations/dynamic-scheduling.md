@@ -1,11 +1,12 @@
 # ⚡ Dynamic Scheduling System
 
 !!! info "Core Technology"
-    The Dynamic Scheduling System is the heart of the 17-Stage Pipeline, automatically calculating optimal time allocation based on available windows.
+The Dynamic Scheduling System is the heart of the 17-Stage Pipeline, automatically calculating optimal time allocation based on available windows.
 
 ## 🎯 Scheduling Algorithm
 
 ### Time Window Calculation
+
 ```python
 # Core formula
 download_time = "06:25"  # Fixed from auto-downloader
@@ -17,10 +18,11 @@ available_window = pipeline_deadline - download_time
 ### Schedule Types
 
 #### 1. Optimal Schedule
+
 **Conditions**: Available time >= Required time + 30 minutes
 
 - Full duration for all stages
-- 2-minute buffers between phases  
+- 2-minute buffers between phases
 - Large safety margin (100+ minutes typical)
 - Maximum analytical accuracy
 
@@ -32,7 +34,8 @@ Buffer: 142 minutes (32% safety margin)
 Status: OPTIMAL
 ```
 
-#### 2. Tight Schedule  
+#### 2. Tight Schedule
+
 **Conditions**: Available time >= Required time (minimal buffer)
 
 - Full duration for all stages
@@ -42,13 +45,14 @@ Status: OPTIMAL
 
 ```yaml
 Example: 11:30 First Race
-Window: 305 minutes (06:25 → 11:15)  
+Window: 305 minutes (06:25 → 11:15)
 Required: 293 minutes
 Buffer: 12 minutes (4% safety margin)
 Status: TIGHT
 ```
 
 #### 3. Compressed Schedule
+
 **Conditions**: Available time < Required time
 
 - Intelligent stage compression
@@ -59,7 +63,7 @@ Status: TIGHT
 ```yaml
 Example: 08:00 First Race
 Window: 80 minutes (06:25 → 07:45)
-Required: 293 minutes  
+Required: 293 minutes
 Compression: 73% reduction needed
 Status: COMPRESSED
 ```
@@ -69,16 +73,19 @@ Status: COMPRESSED
 ### Stage Priority Classification
 
 #### Critical Stages (15 stages)
+
 - **Maximum compression**: 20%
 - **Protected functions**: Data validation, core analysis
 - **Quality preservation**: Essential accuracy maintained
 
-#### Scalable Stages (3 stages)  
+#### Scalable Stages (3 stages)
+
 - **Maximum compression**: 80%
 - **Adaptive functions**: ML training, Monte Carlo simulations
 - **Time vs accuracy**: Intelligent trade-offs
 
 #### Non-Critical Stages (2 stages)
+
 - **Maximum compression**: 90% or skip entirely
 - **Optional functions**: Report generation, documentation
 - **Graceful degradation**: Can be deferred or omitted
@@ -88,13 +95,13 @@ Status: COMPRESSED
 ```python
 def calculate_compression(available_time, required_time):
     compression_ratio = available_time / required_time
-    
+
     for stage in stages:
         if stage.scalable:
             # Aggressive compression for scalable stages
             new_duration = max(5, stage.duration * compression_ratio)
         elif stage.critical:
-            # Minimal compression for critical stages  
+            # Minimal compression for critical stages
             new_duration = max(
                 stage.duration * 0.8,  # Max 20% reduction
                 stage.duration * compression_ratio
@@ -109,16 +116,19 @@ def calculate_compression(available_time, required_time):
 ### Phase Buffer Management
 
 #### Optimal Mode
+
 - **Inter-phase buffers**: 2 minutes between phases
 - **Total buffer allocation**: 10 minutes (5 phases × 2 minutes)
 - **Safety margin**: Large buffer at completion
 
-#### Tight Mode  
+#### Tight Mode
+
 - **Inter-phase buffers**: 0 minutes
 - **Continuous execution**: Back-to-back stage execution
 - **Safety margin**: Minimal buffer at completion
 
 #### Compressed Mode
+
 - **Negative buffers**: Overlap prevention only
 - **Aggressive scheduling**: No safety margins
 - **Risk management**: Quality monitoring increased
@@ -137,7 +147,7 @@ def resolve_dependencies():
         'ml_model_training': ['feature_engineering', 'contextual_analysis'],
         # ... continue for all 17 stages
     }
-    
+
     # Topological sort for execution order
     return topological_sort(dependencies)
 ```
@@ -147,26 +157,29 @@ def resolve_dependencies():
 ### Multi-Source Detection Strategy
 
 #### Primary Sources
+
 1. **cards_data/races.csv** - Race card information
-2. **results_data/races.csv** - Historical race data  
+2. **results_data/races.csv** - Historical race data
 3. **racecard_details.csv** - Detailed race information
 
 #### Detection Process
+
 ```python
 def detect_first_race_time_enhanced():
     for source in data_sources:
         races = load_csv(source.path)
         today_races = filter_by_date(races, today)
-        
+
         if today_races:
             earliest_time = min(race.time for race in today_races)
             return earliest_time
-    
+
     # Fallback to default
     return datetime.strptime("14:00", "%H:%M")
 ```
 
 #### Format Flexibility
+
 - **Date parsing**: Multiple formats (YYYY-MM-DD, DD/MM/YYYY, etc.)
 - **Time parsing**: 24-hour, 12-hour with AM/PM
 - **Column detection**: Flexible column name matching
@@ -175,6 +188,7 @@ def detect_first_race_time_enhanced():
 ## ⚙️ Configuration Management
 
 ### Pipeline Configuration
+
 ```json
 {
   "schedule": {
@@ -194,6 +208,7 @@ def detect_first_race_time_enhanced():
 ```
 
 ### Dynamic Adjustments
+
 - **Real-time recalculation** when race times change
 - **Adaptive compression** based on available time
 - **Quality monitoring** with fallback strategies
@@ -202,17 +217,20 @@ def detect_first_race_time_enhanced():
 ## 📈 Performance Metrics
 
 ### Scheduling Efficiency
+
 - **Calculation time**: < 1 second for schedule generation
 - **Memory usage**: Minimal footprint (~50MB)
 - **Accuracy**: 100% successful schedule generation across all scenarios
 - **Reliability**: Automatic fallback and error recovery
 
 ### Quality Preservation
+
 - **Optimal schedules**: 100% accuracy preservation
-- **Tight schedules**: 95%+ accuracy preservation  
+- **Tight schedules**: 95%+ accuracy preservation
 - **Compressed schedules**: 80%+ accuracy preservation with intelligent trade-offs
 
 ### Time Window Coverage
+
 - **Minimum window**: 80 minutes (extreme compression)
 - **Typical window**: 300-500 minutes (optimal/tight)
 - **Maximum window**: 800+ minutes (evening races)
@@ -221,6 +239,7 @@ def detect_first_race_time_enhanced():
 ## 🔧 Operational Commands
 
 ### Schedule Generation
+
 ```bash
 # Generate dynamic schedule
 python3 -c "
@@ -233,6 +252,7 @@ print(f'Buffer: {schedule[\"timing_analysis\"][\"buffer_minutes\"]}min')
 ```
 
 ### Manual Time Testing
+
 ```bash
 # Test specific race time
 python3 -c "
@@ -246,27 +266,30 @@ print(f'Type: {schedule[\"timing_analysis\"][\"schedule_type\"]}')
 ```
 
 ### Schedule Inspection
+
 ```bash
 # View latest schedule
 cat logs/dynamic_17_stage_schedule.json | jq '.timing_analysis'
 
-# Monitor schedule generation  
+# Monitor schedule generation
 tail -f /tmp/daily_pipeline.log | grep "17-Stage"
 ```
 
 ## 🚀 Future Enhancements
 
 ### Planned Improvements
+
 - **Machine learning** for compression optimization
 - **Historical analysis** for better time estimation
 - **Weather integration** for timing adjustments
 - **Multi-track support** for complex race days
 
 ### Adaptive Features
+
 - **Load balancing** across multiple pipeline instances
 - **Resource scaling** based on computational demand
 - **Quality prediction** for compression decision making
 - **Performance learning** from historical executions
 
 !!! success "Production Status"
-    The Dynamic Scheduling System is production-ready with 100% test coverage and proven reliability across all race time scenarios.
+The Dynamic Scheduling System is production-ready with 100% test coverage and proven reliability across all race time scenarios.

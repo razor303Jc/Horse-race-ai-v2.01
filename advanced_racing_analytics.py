@@ -285,7 +285,7 @@ class AdvancedRacingAnalytics:
                 # Normalize time by distance (time per furlong equivalent)
                 time_data = time_data.copy()
                 time_data["distance_num"] = pd.to_numeric(
-                    time_data["distance"].str.extract("(\d+)")[0], errors="coerce"
+                    time_data["distance"].str.extract(r"(\d+)")[0], errors="coerce"
                 )
                 time_data = time_data.dropna(subset=["distance_num"])
 
@@ -337,9 +337,11 @@ class AdvancedRacingAnalytics:
                     .value_counts()
                     .to_dict(),
                     "average_rating": horse_power["power_rating"].mean(),
-                    "fastest_horse": horse_power.loc[
-                        horse_power["max_speed"].idxmax()
-                    ].to_dict(),
+                    "fastest_horse": (
+                        horse_power.loc[horse_power["max_speed"].idxmax()].to_dict()
+                        if not horse_power.empty and "max_speed" in horse_power.columns
+                        else {"error": "No speed data available"}
+                    ),
                 }
             else:
                 power_ratings = {
@@ -607,15 +609,31 @@ class AdvancedRacingAnalytics:
                 "avg_race_time": data["time_seconds"].mean(),
             }
 
-            # Top performers
+            # Top performers - with error handling for empty sequences
+            jockey_wins = data.groupby("jockey_name").apply(
+                lambda x: (x["finished_position"] == 1).sum()
+            )
+            trainer_wins = data.groupby("trainer_name").apply(
+                lambda x: (x["finished_position"] == 1).sum()
+            )
+            course_counts = data["course"].value_counts()
+
             summary["top_performers"] = {
-                "leading_jockey": data.groupby("jockey_name")
-                .apply(lambda x: (x["finished_position"] == 1).sum())
-                .idxmax(),
-                "leading_trainer": data.groupby("trainer_name")
-                .apply(lambda x: (x["finished_position"] == 1).sum())
-                .idxmax(),
-                "most_active_course": data["course"].value_counts().index[0],
+                "leading_jockey": (
+                    jockey_wins.idxmax()
+                    if not jockey_wins.empty and jockey_wins.max() > 0
+                    else "No winners found"
+                ),
+                "leading_trainer": (
+                    trainer_wins.idxmax()
+                    if not trainer_wins.empty and trainer_wins.max() > 0
+                    else "No winners found"
+                ),
+                "most_active_course": (
+                    course_counts.index[0]
+                    if not course_counts.empty
+                    else "No courses found"
+                ),
             }
 
             logger.info("Daily summary generated successfully")
@@ -870,7 +888,7 @@ class AdvancedRacingAnalytics:
             if not speed_data.empty:
                 # Calculate basic power metrics
                 speed_data["distance_num"] = pd.to_numeric(
-                    speed_data["distance"].str.extract("(\d+)")[0], errors="coerce"
+                    speed_data["distance"].str.extract(r"(\d+)")[0], errors="coerce"
                 )
                 speed_data = speed_data.dropna(subset=["distance_num"])
                 speed_data["speed_rating"] = (

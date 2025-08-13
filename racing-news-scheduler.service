@@ -1,0 +1,19 @@
+[Unit]
+Description=Racing News Analyzer Scheduler
+After=network.target
+Wants=network.target
+
+[Service]
+Type=simple
+User=jc
+Group=jc
+WorkingDirectory=/home/jc/Documents/Horse-race-ai-v2.01
+Environment=PATH=/usr/local/bin:/usr/bin:/bin
+ExecStart=/usr/bin/python3 /home/jc/Documents/Horse-race-ai-v2.01/news_scheduler.py
+Restart=always
+RestartSec=10
+StandardOutput=append:/var/log/racing-news-scheduler.log
+StandardError=append:/var/log/racing-news-scheduler.log
+
+[Install]
+WantedBy=multi-user.target

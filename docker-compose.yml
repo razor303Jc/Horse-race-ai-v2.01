@@ -340,6 +340,34 @@ services:
       - reports
       - analytics
 
+  # Racing News Analyzer with Ollama
+  news-analyzer:
+    build:
+      context: .
+      dockerfile: Dockerfile.news-analyzer
+    container_name: racing_news_analyzer
+    restart: unless-stopped
+    volumes:
+      - ./reports:/app/reports
+      - ./logs:/app/logs
+      - ./news_analysis.db:/app/news_analysis.db
+      - news_analyzer_data:/app/data
+    environment:
+      - OLLAMA_HOST=0.0.0.0:11434
+    ports:
+      - "11434:11434"  # Ollama API
+      - "8080:8080"    # Future web interface
+    networks:
+      - horse_racing_network
+    healthcheck:
+      test: ["CMD", "python3", "news_dashboard.py", "--status"]
+      interval: 5m
+      timeout: 30s
+      retries: 3
+      start_period: 2m
+    profiles:
+      - news-analyzer
+
 volumes:
   postgres_data:
     driver: local
@@ -350,6 +378,8 @@ volumes:
   ntfy_cache:
     driver: local
   ntfy_config:
+    driver: local
+  news_analyzer_data:
     driver: local
 
 networks:

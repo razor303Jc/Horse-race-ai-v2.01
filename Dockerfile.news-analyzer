@@ -1,0 +1,51 @@
+# News Analyzer Dockerfile
+FROM python:3.11-slim
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    curl \
+    procps \
+    cron \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Ollama
+RUN curl -fsSL https://ollama.ai/install.sh | sh
+
+# Set working directory
+WORKDIR /app
+
+# Copy application files
+COPY daily_news_analyzer.py .
+COPY news_scheduler.py .
+COPY news_dashboard.py .
+COPY news_analyzer_config.json .
+
+# Install Python dependencies
+RUN pip install --no-cache-dir requests beautifulsoup4 schedule
+
+# Create directories
+RUN mkdir -p reports/daily_news logs
+
+# Create startup script
+RUN echo '#!/bin/bash\n\
+# Start Ollama service\n\
+ollama serve &\n\
+sleep 10\n\
+\n\
+# Pull required model if not present\n\
+ollama pull llama3.1:8b\n\
+\n\
+# Start the news scheduler\n\
+python3 news_scheduler.py' > /app/start.sh
+
+RUN chmod +x /app/start.sh
+
+# Expose port for potential web interface
+EXPOSE 8080
+
+# Health check
+HEALTHCHECK --interval=5m --timeout=30s --start-period=1m --retries=3 \
+    CMD python3 news_dashboard.py --status || exit 1
+
+# Start the service
+CMD ["/app/start.sh"]

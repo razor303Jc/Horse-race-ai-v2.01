@@ -1,0 +1,30 @@
+database:
+  auto_backup: true
+  database: horse_racing_db
+  host: localhost
+  password: secure_password_123
+  port: 5433
+  retention_days: 30
+  update_sources:
+  - racing_data_api
+  - form_updates
+  - track_conditions
+  - jockey_trainer_stats
+  user: horse_racing
+monitoring:
+  email_notifications: false
+  enable_alerts: true
+  performance_tracking: true
+  slack_webhook: ''
+qwen:
+  auto_pull: true
+  backup_model: qwen2.5-coder:7b
+  check_interval_hours: 24
+  model_name: qwen2.5-coder:latest
+  ollama_host: localhost:11434
+  update_schedule: daily
+update_policies:
+  parallel_validation: true
+  require_confirmation: false
+  rollback_on_failure: true
+  test_new_model: true

@@ -1,0 +1,86 @@
+{
+    "analyzer_config": {
+        "model_name": "llama3.1:8b",
+        "fallback_models": ["qwen2.5-coder:7b", "jimscard/whiterabbit-neo:13b-q5_K_M"],
+        "database_path": "news_analysis.db",
+        "ollama_base_url": "http://localhost:11434",
+        "max_articles_per_run": 10,
+        "content_max_length": 5000,
+        "rate_limit_seconds": 2
+    },
+    "scraping_config": {
+        "news_sources": {
+            "racing_post": {
+                "url": "https://www.racingpost.com/news/",
+                "name": "Racing Post",
+                "selectors": {
+                    "article_links": "a[href*='/news/']",
+                    "content": ["article", ".article-content", ".story-content"]
+                }
+            },
+            "sky_sports": {
+                "url": "https://www.skysports.com/racing/news",
+                "name": "Sky Sports Racing",
+                "selectors": {
+                    "article_links": "a[href*='/racing/news/']",
+                    "content": [".sdc-article-body", ".article__body", ".story-body"]
+                }
+            },
+            "bbc_sport": {
+                "url": "https://www.bbc.co.uk/sport/horse-racing",
+                "name": "BBC Sport Horse Racing",
+                "selectors": {
+                    "article_links": "a[href*='/sport/horse-racing/']",
+                    "content": [".story-body__inner", ".article-body", "[data-component='text-block']"]
+                }
+            },
+            "sporting_life": {
+                "url": "https://www.sportinglife.com/racing/news",
+                "name": "Sporting Life Racing",
+                "selectors": {
+                    "article_links": "a[href*='/racing/news/']",
+                    "content": [".article-content", ".article-body", ".story-content"]
+                }
+            },
+            "at_the_races": {
+                "url": "https://www.attheraces.com/news",
+                "name": "At The Races",
+                "selectors": {
+                    "article_links": "a[href*='/news/']",
+                    "content": [".article-content", ".news-content", ".story-body"]
+                }
+            }
+        },
+        "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
+        "timeout_seconds": 30,
+        "retry_attempts": 3,
+        "max_articles_per_source": 5
+    },
+    "scheduling_config": {
+        "morning_analysis": "08:00",
+        "afternoon_analysis": "14:00", 
+        "evening_analysis": "20:00",
+        "health_check_interval": "hourly"
+    },
+    "analysis_prompts": {
+        "article_analysis": "Analyze this horse racing news article and extract key information focusing on horses, jockeys, trainers, race meetings, and market insights. Provide sentiment analysis and key topics.",
+        "daily_summary": "Create a comprehensive daily summary of horse racing news including key stories, market trends, upcoming races to watch, and overall sentiment.",
+        "sentiment_keywords": {
+            "positive": ["win", "success", "favorite", "strong", "improvement", "recovery"],
+            "negative": ["injury", "withdrawal", "disappointing", "concern", "setback", "problem"],
+            "neutral": ["change", "update", "announcement", "schedule", "entry", "declaration"]
+        }
+    },
+    "report_config": {
+        "output_directory": "reports/daily_news",
+        "report_format": "markdown",
+        "include_charts": false,
+        "max_stories_per_report": 5,
+        "max_trends_per_report": 3
+    },
+    "notification_config": {
+        "email_enabled": false,
+        "webhook_enabled": false,
+        "log_level": "INFO"
+    }
+}
