@@ -52,17 +52,17 @@ def main():
         result = subprocess.run(
             ["docker-compose", "ps"], capture_output=True, text=True
         )
-        
+
         # Also check all running docker containers for optimized pipeline
         docker_ps_result = subprocess.run(
             ["docker", "ps"], capture_output=True, text=True
         )
-        
+
         services_count = 0
         postgres_running = False
         redis_running = False
         pipeline_running = False
-        
+
         if result.returncode == 0:
             lines = result.stdout.strip().split("\n")
             services = [line for line in lines if "horse_racing" in line]
@@ -73,7 +73,7 @@ def main():
                 "postgres" in line and "Up" in line for line in services
             )
             redis_running = any("redis" in line and "Up" in line for line in services)
-        
+
         # Check for optimized pipeline manager in docker ps
         if docker_ps_result.returncode == 0:
             docker_lines = docker_ps_result.stdout.strip().split("\n")
@@ -91,7 +91,7 @@ def main():
 
         if not (postgres_running and redis_running):
             all_tests_passed = False
-            
+
     except Exception as e:
         print(f"❌ Docker test failed: {e}")
         all_tests_passed = False
