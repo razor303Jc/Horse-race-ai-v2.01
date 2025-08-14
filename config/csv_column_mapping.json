@@ -36,19 +36,19 @@
       "column_mapping": {
         "record_id": ["ID", "id"],
         "race_id": ["Race_ID", "race_id"],
-        "position": ["Place", "horse_number"],
+        "position": ["Place", "Horse_number"],
         "horse": "Name",
         "age": "Age",
         "weight": ["weight_uk", "weight"],
         "jockey": "jockey",
         "trainer": "trainer",
         "or_rating": "Horse_rate",
-        "ts": ["finish_time", "sectional_time_1"],
+        "ts": "finish_time",
         "rpr": null,
         "odds": ["SP", "odds", "odds_decimal"],
         "fav": "fav",
         "sp": "SP",
-        "extra": ["Timeform_comments", "Distance_btn", "Draw"]
+        "extra": ["gears", "Draw", "Country"]
       }
     },
     "horses": {
@@ -78,7 +78,8 @@
         "wins": "Wins",
         "runs": "Total_races",
         "win_rate": "Percentage_wins",
-        "prize_money": ["Percentage_placed", "Placed"],
+        "placed": "Placed",
+        "placed_rate": "Percentage_placed",
         "last_win": "UptoDate"
       }
     },
@@ -92,7 +93,8 @@
         "wins": "Wins",
         "runs": "Total_races",
         "win_rate": "Percentage_wins",
-        "prize_money": ["Percentage_placed", "Placed"],
+        "placed": "Placed",
+        "placed_rate": "Percentage_placed",
         "last_win": "UptoDate"
       }
     }
