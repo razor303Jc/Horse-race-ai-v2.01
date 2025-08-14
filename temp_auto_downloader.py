@@ -811,8 +811,9 @@ if __name__ == "__main__":
                     task.cancel()
         except Exception:
             pass  # Ignore cleanup errors
-        
+
         # Suppress specific asyncio warnings
         import warnings
+
         warnings.filterwarnings("ignore", message=".*Event loop is closed.*")
         warnings.filterwarnings("ignore", message=".*coroutine.*was never awaited.*")

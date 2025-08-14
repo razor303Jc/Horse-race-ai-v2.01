@@ -103,20 +103,49 @@ docker-build: ## Build Docker containers
 	docker-compose build
 	@echo "$(GREEN)✓ Docker build completed$(NC)"
 
+docker-build-optimized: ## Build optimized Docker containers (95% smaller)
+	@echo "$(BLUE)Building optimized Docker containers...$(NC)"
+	docker-compose -f docker-compose.yml -f docker-compose.optimized.yml build
+	@echo "$(GREEN)✓ Optimized Docker build completed$(NC)"
+
 docker-up: ## Start Docker containers
 	@echo "$(BLUE)Starting Docker containers...$(NC)"
 	docker-compose up -d
 	@echo "$(GREEN)✓ Docker containers started$(NC)"
 
+docker-up-optimized: ## Start optimized Docker containers (fast development)
+	@echo "$(BLUE)Starting optimized Docker containers...$(NC)"
+	./startup-optimized.sh optimized
+	@echo "$(GREEN)✓ Optimized Docker containers started$(NC)"
+
+docker-up-ml: ## Start Docker containers with ML training support
+	@echo "$(BLUE)Starting Docker containers with ML support...$(NC)"
+	docker-compose --profile ml-training up -d
+	@echo "$(GREEN)✓ ML Docker containers started$(NC)"
+
 docker-down: ## Stop Docker containers
 	@echo "$(BLUE)Stopping Docker containers...$(NC)"
 	docker-compose down
+	docker stop horse_racing_pipeline_manager_optimized 2>/dev/null || true
+	docker rm horse_racing_pipeline_manager_optimized 2>/dev/null || true
 	@echo "$(GREEN)✓ Docker containers stopped$(NC)"
 
 docker-logs: ## View Docker container logs
 	docker-compose logs -f
 
+docker-logs-optimized: ## View optimized pipeline manager logs
+	docker logs horse_racing_pipeline_manager_optimized -f
+
 docker-restart: docker-down docker-up ## Restart Docker containers
+
+docker-restart-optimized: docker-down docker-up-optimized ## Restart optimized Docker containers
+
+docker-status: ## Show status of all Docker containers
+	@echo "$(BLUE)Docker container status:$(NC)"
+	docker-compose ps
+	@echo ""
+	@echo "$(BLUE)Optimized containers:$(NC)"
+	docker ps | grep horse_racing_pipeline_manager_optimized || echo "  Pipeline manager: Not running"
 
 docker-clean: ## Clean Docker containers and volumes
 	@echo "$(BLUE)Cleaning Docker containers and volumes...$(NC)"

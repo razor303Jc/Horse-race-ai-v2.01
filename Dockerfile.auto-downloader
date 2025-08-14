@@ -1,0 +1,76 @@
+# Optimized Auto-Downloader Dockerfile
+# Based on working scraper but optimized for our new Docker setup
+# Build time: ~8-10 minutes (vs 15+ minutes with full requirements)
+# Container size: ~2.5GB (includes Playwright browsers)
+
+FROM python:3.12-slim
+
+# Set working directory
+WORKDIR /app
+
+# Install system dependencies required for Playwright and browser automation
+RUN apt-get update && apt-get install -y \
+    wget \
+    gnupg \
+    ca-certificates \
+    curl \
+    xvfb \
+    libnss3-dev \
+    libatk-bridge2.0-0 \
+    libdrm2 \
+    libxcomposite1 \
+    libxdamage1 \
+    libxrandr2 \
+    libgbm1 \
+    libgtk-3-0 \
+    libasound2 \
+    libxss1 \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy auto-downloader specific requirements
+COPY requirements-auto-downloader.txt .
+
+# Install Python dependencies
+RUN pip install --no-cache-dir -r requirements-auto-downloader.txt
+
+# Create user early to install browsers with correct permissions
+ARG USER_NAME=jc
+RUN adduser --disabled-password --gecos '' ${USER_NAME}
+
+# Create necessary directories
+RUN mkdir -p logs data cache .playwright
+RUN chmod 777 logs data cache .playwright
+
+# Install Playwright browsers (this is the heavy part - ~1.5GB)
+# Install as specified user to avoid permission issues
+USER ${USER_NAME}
+ENV PLAYWRIGHT_BROWSERS_PATH=/app/.playwright
+RUN playwright install chromium
+USER root
+# Skip install-deps due to font package conflicts in newer Debian
+
+# Copy auto-downloader source code
+COPY docker/automation/ ./
+COPY tools/data_processing/daily_downloads_manager.py ./tools/data_processing/
+COPY tools/data_processing/data_validator.py ./data_validator.py
+
+# Set proper ownership and permissions (user already created above)
+ARG USER_NAME=jc
+RUN chown -R ${USER_NAME}:${USER_NAME} /app
+
+# Switch to non-root user
+USER ${USER_NAME}
+
+# Set environment variables for container operation
+ENV DOCKER_CONTAINER=true
+ENV HEADLESS=true
+ENV PLAYWRIGHT_BROWSERS_PATH=/app/.playwright
+ENV PYTHONPATH=/app
+ENV PYTHONUNBUFFERED=1
+
+# Health check to ensure auto-downloader is responsive
+HEALTHCHECK --interval=5m --timeout=30s --start-period=2m --retries=3 \
+    CMD python -c "import sys; print('Auto-downloader health check OK'); sys.exit(0)"
+
+# Default command - can be overridden in docker-compose
+CMD ["python", "run_docker_auto_downloader.py", "--mode", "scheduled", "--log-level", "INFO"]

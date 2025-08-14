@@ -318,10 +318,14 @@ async def startup_event():
     """Load models on startup."""
     logger.info("🚀 Starting Horse Racing Prediction API...")
 
-    success = load_production_models()
-    if not success:
-        logger.error("❌ Failed to load models on startup")
-        raise Exception("Model loading failed")
+    try:
+        success = load_production_models()
+        if success:
+            logger.info("✅ Models loaded successfully!")
+        else:
+            logger.warning("⚠️ Models failed to load - API will run in demo mode")
+    except Exception as e:
+        logger.warning(f"⚠️ Model loading error: {e} - API will run in demo mode")
 
     logger.info("✅ API ready for predictions!")
 

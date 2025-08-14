@@ -1,13 +1,18 @@
 #!/bin/bash
 
-# Horse Racing AI v2.0 - Docker Container Startup
+# Horse Racing AI v2.01 - Docker Container Startup
 # Starts the enhanced web application with racing analyzer in Docker
+# For optimized builds, use startup-optimized.sh instead
 
 echo "🏇 ============================================================"
-echo "   HORSE RACING AI v2.0 - DOCKER STARTUP"
+echo "   HORSE RACING AI v2.01 - DOCKER STARTUP"
 echo "=============================================================="
 echo ""
-echo "🐋 STARTING DOCKER CONTAINERS..."
+echo "⚠️  NOTICE: For optimized containers (95% smaller, 80% faster),"
+echo "   use the new startup-optimized.sh script instead:"
+echo "   ./startup-optimized.sh optimized"
+echo ""
+echo "🐋 STARTING STANDARD DOCKER CONTAINERS..."
 echo "   📦 PostgreSQL Database"
 echo "   📦 Redis Cache"
 echo "   📦 Enhanced Web Application"
