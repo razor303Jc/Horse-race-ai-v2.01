@@ -1,0 +1,48 @@
+# Dockerfile for ML Models Service (Heavy Build - Only When Needed)
+# Build time: 15-25 minutes (only for ML training/prediction)
+
+FROM python:3.12
+
+# Set working directory
+WORKDIR /app
+
+# Install system dependencies for ML
+RUN apt-get update && apt-get install -y \
+    libpq-dev \
+    gcc \
+    g++ \
+    libblas-dev \
+    liblapack-dev \
+    libatlas-base-dev \
+    gfortran \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy ML requirements
+COPY requirements-ml-models.txt .
+
+# Install ML dependencies (this takes time but only when needed)
+RUN pip install --no-cache-dir -r requirements-ml-models.txt
+
+# Copy model training code
+COPY models/ ./models/
+COPY data/ ./data/
+COPY config/ ./config/
+
+# Create directories
+RUN mkdir -p logs trained_models && \
+    chmod 777 logs trained_models
+
+# Set Python path
+ENV PYTHONPATH=/app
+
+# Create non-root user
+RUN adduser --disabled-password --gecos '' mluser && \
+    chown -R mluser:mluser /app
+USER mluser
+
+# Health check
+HEALTHCHECK --interval=60s --timeout=30s --start-period=30s --retries=3 \
+    CMD python -c "import tensorflow; import torch; print('ML Ready')" || exit 1
+
+# Default command (model training)
+CMD ["python", "models/train_models.py"]

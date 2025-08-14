@@ -30,12 +30,23 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-# Performance logging setup
+# Performance logging setup with fallback
 performance_logger = logging.getLogger("performance")
-performance_handler = logging.FileHandler("logs/pipeline_performance.log")
-performance_formatter = logging.Formatter("%(asctime)s - PERF - %(message)s")
-performance_handler.setFormatter(performance_formatter)
-performance_logger.addHandler(performance_handler)
+try:
+    # Try to create logs directory if it doesn't exist
+    import os
+
+    os.makedirs("logs", exist_ok=True)
+    performance_handler = logging.FileHandler("logs/pipeline_performance.log")
+    performance_formatter = logging.Formatter("%(asctime)s - PERF - %(message)s")
+    performance_handler.setFormatter(performance_formatter)
+    performance_logger.addHandler(performance_handler)
+except (PermissionError, OSError):
+    # Fall back to console logging if file logging fails
+    performance_handler = logging.StreamHandler()
+    performance_formatter = logging.Formatter("%(asctime)s - PERF - %(message)s")
+    performance_handler.setFormatter(performance_formatter)
+    performance_logger.addHandler(performance_handler)
 performance_logger.setLevel(logging.INFO)
 
 

@@ -1,0 +1,8 @@
+# Optimized requirements for data-processing service
+# Only includes what's actually needed
+pandas>=2.1.0
+numpy>=1.25.0
+psycopg2-binary>=2.9.7
+sqlalchemy>=2.0.0
+python-dotenv>=1.0.0
+structlog>=23.2.0
