@@ -109,8 +109,8 @@ def check_downloaded_files():
     # Check common download locations
     download_locations = [
         Path("downloads/horseracedatabase"),
-        Path("data/horseracedatabase"),
-        Path("data/daily_downloads"),
+        Path("project_root / 'data' / horseracedatabase"),
+        Path("project_root / 'data' / daily_downloads"),
         Path.home() / "Downloads",
         Path.cwd(),
     ]

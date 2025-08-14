@@ -13,7 +13,7 @@ Validates downloaded horse racing data for:
 import csv
 import json
 import logging
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 from pathlib import Path
 from typing import Dict, List, Optional, Set, Tuple
 
@@ -158,7 +158,7 @@ class HorseRacingDataValidator:
 
         logger.info(f"✅ Date validation: Results={results_dates}, Cards={cards_dates}")
 
-    def _extract_dates_from_csv(self, csv_path: Path) -> Set[datetime.date]:
+    def _extract_dates_from_csv(self, csv_path: Path) -> Set[date]:
         """Extract unique dates from races CSV file"""
         dates = set()
 
@@ -354,8 +354,12 @@ class HorseRacingDataValidator:
         self.validation_results["checks_performed"].append("file_integrity")
 
         expected_files = {
-            "results": ["races/races.csv", "records/records.csv", "horses/horses.csv"],
-            "cards": ["races/races.csv", "racecard_details/racecard_details.html"],
+            "results": [
+                "races/races.csv",
+                "racecard_details/racecard_details.html",
+                "horses/horses.csv",
+            ],
+            "cards": ["races/races.csv", "records/records.csv"],
         }
 
         missing_files = []

@@ -13,6 +13,11 @@ import os
 import sys
 from pathlib import Path
 
+# Add project root to path
+project_root = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(project_root))
+from pathlib import Path
+
 # Set up Docker environment variables
 os.environ["DOCKER_CONTAINER"] = "true"
 os.environ["HEADLESS"] = "true"
@@ -79,10 +84,10 @@ def run_scheduled():
 
     import schedule
 
-    # Schedule for 06:25 daily (production schedule)
-    schedule.every().day.at("06:25").do(run_once)
+    # Schedule for 11:31 daily (production schedule)
+    schedule.every().day.at("11:31").do(run_once)
 
-    print("📅 Scheduled auto downloader for 06:25 daily")
+    print("📅 Scheduled auto downloader for 11:31 daily")
     print("🔄 Waiting for scheduled time...")
 
     while True:

@@ -20,6 +20,11 @@ import logging
 import os
 import random
 import sys
+from pathlib import Path
+
+# Add project root to path
+project_root = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(project_root))
 from collections import defaultdict
 from datetime import datetime
 from difflib import SequenceMatcher
@@ -28,7 +33,7 @@ from typing import Dict, List, Optional, Tuple
 import psycopg2
 
 # Configure comprehensive logging
-log_dir = os.path.join(os.path.dirname(__file__), "../../logs/data_pipeline")
+log_dir = os.path.join(os.path.dirname(__file__), "../../project_root / 'logs' / data_pipeline")
 os.makedirs(log_dir, exist_ok=True)
 
 logging.basicConfig(

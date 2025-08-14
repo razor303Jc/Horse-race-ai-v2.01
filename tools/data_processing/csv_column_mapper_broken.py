@@ -22,15 +22,15 @@ class ColumnMapper:
     def __init__(self):
         # Define column mappings for each table
         self.column_mappings = {
-        "data/daily_downloads/results_data/race_results/race_results.csv":
+        "project_root / 'data' / daily_downloads/results_project_root / 'data' / race_results/race_results.csv":
             "race_results",
-        "data/daily_downloads/results_data/horses/horses.csv": "horses",
-        "data/daily_downloads/results_data/jockeys_stats/jockeys_stats.csv":
+        "project_root / 'data' / daily_downloads/results_project_root / 'data' / horses/horses.csv": "horses",
+        "project_root / 'data' / daily_downloads/results_project_root / 'data' / jockeys_stats/jockeys_stats.csv":
             "jockey_stats",
-        "data/daily_downloads/results_data/trainers_stats/trainers_stats.csv":
+        "project_root / 'data' / daily_downloads/results_project_root / 'data' / trainers_stats/trainers_stats.csv":
             "trainer_stats",
-        "data/daily_downloads/cards_data/races/races.csv": "races_cards",
-        "data/daily_downloads/cards_data/racecard_details/racecard_details.csv":
+        "project_root / 'data' / daily_downloads/cards_project_root / 'data' / races/races.csv": "races_cards",
+        "project_root / 'data' / daily_downloads/cards_project_root / 'data' / racecard_details/racecard_details.csv":
             "racecard_details",
     }
 
@@ -203,10 +203,10 @@ def main():
     
     # Test with actual files
     test_files = {
-        "data/daily_downloads/results_data/records/records.csv": "race_results",
-        "data/daily_downloads/results_data/horses/horses.csv": "horses", 
-        "data/daily_downloads/results_data/jockeys_stats/jockeys_stats.csv": "jockey_stats",
-        "data/daily_downloads/results_data/trainers_stats/trainers_stats.csv": "trainer_stats",
+        "project_root / 'data' / daily_downloads/results_project_root / 'data' / records/records.csv": "race_results",
+        "project_root / 'data' / daily_downloads/results_project_root / 'data' / horses/horses.csv": "horses", 
+        "project_root / 'data' / daily_downloads/results_project_root / 'data' / jockeys_stats/jockeys_stats.csv": "jockey_stats",
+        "project_root / 'data' / daily_downloads/results_project_root / 'data' / trainers_stats/trainers_stats.csv": "trainer_stats",
     }
     
     for csv_file, table_name in test_files.items():

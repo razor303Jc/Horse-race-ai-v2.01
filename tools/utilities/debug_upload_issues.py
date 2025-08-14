@@ -32,7 +32,7 @@ async def debug_upload_issues():
     db_manager = DatabaseManager(database_url)
 
     # Find a sample CSV file
-    csv_files = list(Path("data/daily_downloads").rglob("records.csv"))
+    csv_files = list(Path("project_root / 'data' / daily_downloads").rglob("records.csv"))
     if not csv_files:
         print("❌ No records.csv files found")
         return

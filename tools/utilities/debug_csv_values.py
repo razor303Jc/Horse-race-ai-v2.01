@@ -22,8 +22,8 @@ def debug_csv_conversion():
     # Find the problematic CSV files
     import glob
 
-    records_files = glob.glob("data/**/records.csv", recursive=True)
-    racecard_files = glob.glob("data/**/racecard_details.csv", recursive=True)
+    records_files = glob.glob("project_root / 'data' / **/records.csv", recursive=True)
+    racecard_files = glob.glob("project_root / 'data' / **/racecard_details.csv", recursive=True)
 
     if not records_files:
         print("❌ No records.csv files found")

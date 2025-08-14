@@ -48,7 +48,7 @@ async def test_fixed_approach():
 
         if success:
             print("🎉 Download test successful!")
-            print("📁 Check data/daily_downloads for downloaded files")
+            print("📁 Check project_root / 'data' / daily_downloads for downloaded files")
             return True
         else:
             print("❌ Download test failed")
@@ -68,7 +68,7 @@ async def check_downloads():
     print("\n📁 Checking for downloaded files...")
 
     # Check default download location
-    download_dir = Path("data/daily_downloads")
+    download_dir = Path("project_root / 'data' / daily_downloads")
     if download_dir.exists():
         # Look for recent files (last 10 minutes)
         recent_files = []

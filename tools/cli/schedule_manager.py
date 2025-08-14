@@ -16,6 +16,11 @@ import re
 import subprocess
 import sys
 from pathlib import Path
+
+# Add project root to path
+project_root = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(project_root))
+from pathlib import Path
 from typing import Dict, List
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s - %(message)s")
@@ -32,8 +37,8 @@ class ScheduleManager:
     def get_config_files(self) -> List[Path]:
         """Get all configuration files."""
         patterns = [
-            "config/config/daily_pipeline_config*.json",
-            "config/daily_pipeline_config*.json",
+            "project_root / 'config' / project_root / 'config' / daily_pipeline_config*.json",
+            "project_root / 'config' / daily_pipeline_config*.json",
         ]
         files = []
         for pattern in patterns:

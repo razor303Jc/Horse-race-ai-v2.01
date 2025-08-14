@@ -174,7 +174,7 @@ async def download_file(session, url, file_name):
         async with session.get(url) as response:
             if response.status == 200:
                 # Create downloads directory
-                download_dir = Path("data/downloads")
+                download_dir = Path("project_root / 'data' / downloads")
                 download_dir.mkdir(parents=True, exist_ok=True)
 
                 file_path = download_dir / f"{file_name}.zip"

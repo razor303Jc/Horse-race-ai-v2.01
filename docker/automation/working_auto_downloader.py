@@ -16,6 +16,9 @@ import asyncio
 import json
 import logging
 import os
+
+# Import data management system
+import sys
 import zipfile
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -25,8 +28,15 @@ import aiofiles
 import aiohttp
 import requests  # Add requests for NTFY notifications
 
-# Import data validator
+# Import data validator and data manager
 from data_validator import HorseRacingDataValidator
+
+sys.path.append("/app/tools/data_processing")
+try:
+    from daily_downloads_manager import DailyDownloadsManager
+except ImportError:
+    # Fallback if not available
+    DailyDownloadsManager = None
 from dotenv import load_dotenv
 from playwright.async_api import (
     Browser,
@@ -642,14 +652,31 @@ class HorseRaceDatabaseDownloader:
     async def run(self) -> bool:
         """
         Main run method following the exact specified flow:
-        1. Go to https://horseracedatabase.com/my-account
-        2. Login with details in .env file
-        3. Type in input field like a human
-        4. Get session info
-        5. Click on the link https://horseracedatabase.com/my-account/downloads/
-        6. Use WooCommerce URLs with session cookies to download files
+        1. Pre-download cleanup and organization
+        2. Go to https://horseracedatabase.com/my-account
+        3. Login with details in .env file
+        4. Type in input field like a human
+        5. Get session info
+        6. Click on the link https://horseracedatabase.com/my-account/downloads/
+        7. Use WooCommerce URLs with session cookies to download files
+        8. Post-download data management and organization
         """
         try:
+            # Step 1: Pre-download data management
+            self.console.print("[cyan]🗂️ Step 1: Pre-download data management...[/cyan]")
+            if DailyDownloadsManager:
+                try:
+                    data_manager = DailyDownloadsManager()
+                    data_manager.integrate_with_auto_downloader()
+                    self.console.print(
+                        "[green]✅ Pre-download cleanup completed[/green]"
+                    )
+                except Exception as e:
+                    logger.warning(f"Data management warning: {e}")
+                    self.console.print(
+                        f"[yellow]⚠️ Data management warning: {e}[/yellow]"
+                    )
+
             await self.start_browser()
             if not self.context:
                 logger.error("❌ Failed to create browser context")
@@ -657,9 +684,9 @@ class HorseRaceDatabaseDownloader:
 
             page = await self.context.new_page()
 
-            # Step 1-4: Login to establish session cookies
+            # Steps 2-5: Login to establish session cookies
             self.console.print(
-                "[cyan]🔐 Steps 1-4: Login to establish session...[/cyan]"
+                "[cyan]🔐 Steps 2-5: Login to establish session...[/cyan]"
             )
             login_success = await self.login_to_site(page)
 
@@ -669,9 +696,9 @@ class HorseRaceDatabaseDownloader:
 
             self.console.print("[green]✅ Login successful[/green]")
 
-            # Step 5: Click on the downloads link
+            # Step 6: Click on the downloads link
             self.console.print(
-                "[cyan]📁 Step 5: Navigating to downloads page...[/cyan]"
+                "[cyan]📁 Step 6: Navigating to downloads page...[/cyan]"
             )
             try:
                 await page.goto("https://horseracedatabase.com/my-account/downloads/")
@@ -681,13 +708,50 @@ class HorseRaceDatabaseDownloader:
                 logger.warning(f"⚠️ Could not navigate to downloads page: {e}")
                 # Continue anyway as we have session cookies
 
-            # Step 6: Download data files using WooCommerce URLs with session cookies
+            # Step 7: Download data files using WooCommerce URLs with session cookies
             self.console.print(
-                "[cyan]📥 Step 6: Using WooCommerce URLs to download files...[/cyan]"
+                "[cyan]📥 Step 7: Using WooCommerce URLs to download files...[/cyan]"
             )
             download_success = await self.download_data_files()
 
             await page.close()
+
+            # Step 8: Post-download data management
+            if download_success and DailyDownloadsManager:
+                self.console.print(
+                    "[cyan]📊 Step 8: Post-download data organization...[/cyan]"
+                )
+                try:
+                    data_manager = DailyDownloadsManager()
+                    upload_files = data_manager.prepare_for_database_upload()
+
+                    # Log prepared files for database upload
+                    total_files = sum(len(files) for files in upload_files.values())
+                    self.console.print(
+                        f"[green]📤 Prepared {total_files} files for database upload[/green]"
+                    )
+
+                    # Save upload file list for database script
+                    upload_manifest = self.download_dir / "upload_manifest.json"
+                    import json
+
+                    with open(upload_manifest, "w") as f:
+                        json.dump(
+                            {k: [str(p) for p in v] for k, v in upload_files.items()},
+                            f,
+                            indent=2,
+                        )
+
+                    self.console.print(
+                        f"[blue]📋 Upload manifest saved: {upload_manifest}[/blue]"
+                    )
+
+                except Exception as e:
+                    logger.warning(f"Post-download management warning: {e}")
+                    self.console.print(
+                        f"[yellow]⚠️ Post-download management warning: {e}[/yellow]"
+                    )
+
             return download_success
 
         except Exception as e:

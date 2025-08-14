@@ -1,0 +1,100 @@
+{
+  "table_mappings": {
+    "races": {
+      "csv_files": [
+        "data/daily_downloads/cards_data/races/races.csv",
+        "data/daily_downloads/results_data/races/races.csv"
+      ],
+      "column_mapping": {
+        "race_id": "Race_ID",
+        "race_number": "race_number",
+        "race_time": "race_time",
+        "course_id": "course_id",
+        "course": "Course",
+        "race_type": "Race_type",
+        "date": "Date",
+        "race_name": "Race_name",
+        "class": "Class",
+        "years": "Years",
+        "distance": "Distance",
+        "surface": "Surface",
+        "prize": "Prize",
+        "runners_racecard": "Runners_racecard",
+        "runners": "Runners",
+        "draw": "Draw",
+        "ew_racecard": "EW_racecard",
+        "ew": "EW",
+        "places_ew_racecard": "Places_EW_racecard",
+        "places_ew": "Places_EW"
+      }
+    },
+    "records": {
+      "csv_files": [
+        "data/daily_downloads/cards_data/records/records.csv",
+        "data/daily_downloads/results_data/racecard_details/racecard_details.csv"
+      ],
+      "column_mapping": {
+        "record_id": ["ID", "id"],
+        "race_id": ["Race_ID", "race_id"],
+        "position": ["Place", "horse_number"],
+        "horse": "Name",
+        "age": "Age",
+        "weight": ["weight_uk", "weight"],
+        "jockey": "jockey",
+        "trainer": "trainer",
+        "or_rating": "Horse_rate",
+        "ts": ["finish_time", "sectional_time_1"],
+        "rpr": null,
+        "odds": ["SP", "odds", "odds_decimal"],
+        "fav": "fav",
+        "sp": "SP",
+        "extra": ["Timeform_comments", "Distance_btn", "Draw"]
+      }
+    },
+    "horses": {
+      "csv_files": [
+        "data/daily_downloads/cards_data/horses/horses.csv",
+        "data/daily_downloads/results_data/horses/horses.csv"
+      ],
+      "column_mapping": {
+        "horse_id": "id",
+        "horse_name": "name",
+        "age": "age",
+        "sex": "sex",
+        "color": "color",
+        "sire": "sire",
+        "dam": "dam",
+        "owner": "owner",
+        "breeder": ["dam_sire", "country"]
+      }
+    },
+    "jockeys_stats": {
+      "csv_files": [
+        "data/daily_downloads/cards_data/jockeys_stats/jockeys_stats.csv"
+      ],
+      "column_mapping": {
+        "jockey_id": "Jockey_ID",
+        "jockey_name": "Name",
+        "wins": "Wins",
+        "runs": "Total_races",
+        "win_rate": "Percentage_wins",
+        "prize_money": ["Percentage_placed", "Placed"],
+        "last_win": "UptoDate"
+      }
+    },
+    "trainers_stats": {
+      "csv_files": [
+        "data/daily_downloads/cards_data/trainers_stats/trainers_stats.csv"
+      ],
+      "column_mapping": {
+        "trainer_id": "Trainer_ID",
+        "trainer_name": "Name",
+        "wins": "Wins",
+        "runs": "Total_races",
+        "win_rate": "Percentage_wins",
+        "prize_money": ["Percentage_placed", "Placed"],
+        "last_win": "UptoDate"
+      }
+    }
+  }
+}

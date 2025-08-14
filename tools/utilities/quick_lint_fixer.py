@@ -8,6 +8,11 @@ import subprocess
 import sys
 from pathlib import Path
 
+# Add project root to path
+project_root = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(project_root))
+from pathlib import Path
+
 
 def fix_file_with_ai(file_path):
     """Fix lint errors in a specific file using Qwen2.5-Coder."""

@@ -24,6 +24,11 @@ import logging
 import re
 import subprocess
 import sys
+from pathlib import Path
+
+# Add project root to path
+project_root = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(project_root))
 from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
@@ -47,9 +52,9 @@ class AutoDownloaderScheduler:
     def _discover_config_files(self) -> List[Path]:
         """Discover all configuration files that might contain schedule settings."""
         config_patterns = [
-            "config/config/daily_pipeline_config*.json",
-            "config/daily_pipeline_config*.json",
-            "config/pipeline_config*.json",
+            "project_root / 'config' / project_root / 'config' / daily_pipeline_config*.json",
+            "project_root / 'config' / daily_pipeline_config*.json",
+            "project_root / 'config' / pipeline_config*.json",
         ]
 
         config_files = []
@@ -64,7 +69,7 @@ class AutoDownloaderScheduler:
             "tools/utilities/run_docker_auto_downloader.py",
             "docker/automation/run_docker_auto_downloader.py",
             "daily_pipeline_orchestrator.py",
-            "config/daily_pipeline_config_manager.py",
+            "project_root / 'config' / daily_pipeline_config_manager.py",
         ]
 
         return [

@@ -17,6 +17,11 @@ from difflib import SequenceMatcher
 from collections import defaultdict
 import re
 import sys
+from pathlib import Path
+
+# Add project root to path
+project_root = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(project_root))
 import os
 
 # Configure logging

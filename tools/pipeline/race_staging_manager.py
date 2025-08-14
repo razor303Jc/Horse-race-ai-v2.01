@@ -14,6 +14,11 @@ Key Features:
 
 import os
 import sys
+from pathlib import Path
+
+# Add project root to path
+project_root = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(project_root))
 import json
 import sqlite3
 import argparse
@@ -30,7 +35,7 @@ logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     handlers=[
-        logging.FileHandler("/tmp/race_staging_manager.log"),
+        logging.FileHandler("project_root / 'logs' / race_staging_manager.log"),
         logging.StreamHandler(sys.stdout)
     ]
 )
@@ -42,7 +47,7 @@ class RaceStagingManager:
 
     def __init__(self, config_file: Optional[str] = None):
         """Initialize race staging manager"""
-        config_path = "config/race_staging_config.json"
+        config_path = "project_root / 'config' / race_staging_config.json"
         self.config_file = Path(config_file) if config_file else Path(config_path)
         self.config = self._load_config()
         self.staging_status = {
@@ -55,7 +60,7 @@ class RaceStagingManager:
         }
         
         # Data directories
-        self.data_dir = Path("data/daily_downloads")
+        self.data_dir = Path("project_root / 'data' / daily_downloads")
         self.cards_dir = self.data_dir / "cards_data"
         self.database_path = Path("ai_strategies_corrected.db")
 

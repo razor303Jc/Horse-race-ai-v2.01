@@ -4,6 +4,11 @@ Test Qwen2.5's solution specifically on records.csv
 """
 
 import sys
+from pathlib import Path
+
+# Add project root to path
+project_root = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(project_root))
 
 sys.path.append("/home/jc/Documents/Horse-race-ai-v2.01")
 
@@ -19,7 +24,7 @@ def test_records_csv():
         print("=" * 60)
 
         df = solver.process_problematic_csv(
-            "data/horseracedatabase/results_data/records/records.csv", "race_results"
+            "project_root / 'data' / horseracedatabase/results_project_root / 'data' / records/records.csv", "race_results"
         )
 
         print(f"✅ SUCCESS: records.csv processed!")

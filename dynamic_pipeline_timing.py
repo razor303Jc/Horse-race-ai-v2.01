@@ -17,17 +17,26 @@ Date: August 13, 2025
 
 import json
 import logging
+import time
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
 import pandas as pd
 
-# Setup logging
+# Setup logging with performance tracking
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
+
+# Performance logging setup
+performance_logger = logging.getLogger("performance")
+performance_handler = logging.FileHandler("logs/pipeline_performance.log")
+performance_formatter = logging.Formatter("%(asctime)s - PERF - %(message)s")
+performance_handler.setFormatter(performance_formatter)
+performance_logger.addHandler(performance_handler)
+performance_logger.setLevel(logging.INFO)
 
 
 class PipelineTimeAllocator:
@@ -37,11 +46,39 @@ class PipelineTimeAllocator:
         self.config_path = config_path or Path("config/dynamic_pipeline_timing.json")
         self.project_root = Path(__file__).parent
 
-        # Full 17-Stage Pipeline Definitions with estimated durations and dependencies
+        # Performance tracking
+        self.performance_metrics = {
+            "phase_timings": {},
+            "stage_timings": {},
+            "total_allocation_time": 0,
+            "optimization_passes": 0,
+            "compression_events": 0,
+            "skipped_stages": 0,
+        }
+        self.phase_start_times = {}
+        self.stage_start_times = {}
+
+        # Allocation vs Actual comparison tracking
+        self.allocated_times = {}  # Stores allocated time for each stage/phase
+        self.allocation_comparison = {}  # Stores comparison results
+
+        # Time allocation modes
+        self.TIME_MODES = {
+            "OPTIMUM": "optimum_minutes",  # Best performance time
+            "STANDARD": "duration_minutes",  # Normal operation time
+            "MINIMUM": "minimum_minutes",  # Absolute minimum time
+            "COMPRESSED": "compressed",  # Dynamic compression
+            "NO_TIME": "no_time",  # No time allocated
+        }
+
+        # Full 17-Stage Pipeline Definitions with optimum/minimum/no-time allocations
         self.stage_definitions = {
             # Phase 1: Data Acquisition and Validation (25 minutes)
             "data_download": {
-                "duration_minutes": 5,
+                "duration_minutes": 5,  # Standard duration
+                "optimum_minutes": 8,  # Best performance time
+                "minimum_minutes": 3,  # Absolute minimum time
+                "no_time_action": "fail",  # Cannot be skipped
                 "description": "Download daily racing data",
                 "prerequisites": [],
                 "critical": True,
@@ -50,6 +87,9 @@ class PipelineTimeAllocator:
             },
             "data_validation": {
                 "duration_minutes": 3,
+                "optimum_minutes": 5,
+                "minimum_minutes": 2,
+                "no_time_action": "fail",  # Critical validation cannot be skipped
                 "description": "Validate downloaded data integrity and completeness",
                 "prerequisites": ["data_download"],
                 "critical": True,
@@ -108,6 +148,9 @@ class PipelineTimeAllocator:
             },
             "ml_model_training": {
                 "duration_minutes": 85,  # Reduced from 120 to fit 17 stages
+                "optimum_minutes": 120,  # Ideal time for full training
+                "minimum_minutes": 30,  # Quick training with limited data
+                "no_time_action": "basic",  # Use existing models if no time
                 "description": "Train/retrain ML models (RF, XGBoost, Neural Networks)",
                 "prerequisites": ["speed_analysis"],
                 "critical": True,
@@ -436,6 +479,556 @@ class PipelineTimeAllocator:
             remaining -= set(ready)
 
         return ordered
+
+    def start_phase_timing(self, phase_name: str) -> None:
+        """Start timing a pipeline phase"""
+        start_time = time.time()
+        self.phase_start_times[phase_name] = start_time
+        performance_logger.info(f"PHASE_START - {phase_name}")
+        logger.debug(f"⏱️ Started timing phase: {phase_name}")
+
+    def end_phase_timing(self, phase_name: str) -> float:
+        """End timing a pipeline phase and log results"""
+        end_time = time.time()
+        if phase_name in self.phase_start_times:
+            duration = end_time - self.phase_start_times[phase_name]
+            self.performance_metrics["phase_timings"][phase_name] = duration
+            performance_logger.info(f"PHASE_END - {phase_name} - {duration:.3f}s")
+            logger.info(f"⏱️ Phase {phase_name} completed in {duration:.3f}s")
+            return duration
+        else:
+            logger.warning(f"⚠️ Phase {phase_name} timing not started")
+            return 0.0
+
+    def start_stage_timing(self, stage_name: str) -> None:
+        """Start timing a pipeline stage"""
+        start_time = time.time()
+        self.stage_start_times[stage_name] = start_time
+        performance_logger.info(f"STAGE_START - {stage_name}")
+        logger.debug(f"⏱️ Started timing stage: {stage_name}")
+
+    def end_stage_timing(self, stage_name: str) -> float:
+        """End timing a pipeline stage and log results"""
+        end_time = time.time()
+        if stage_name in self.stage_start_times:
+            duration = end_time - self.stage_start_times[stage_name]
+            self.performance_metrics["stage_timings"][stage_name] = duration
+            performance_logger.info(f"STAGE_END - {stage_name} - {duration:.3f}s")
+            logger.info(f"⏱️ Stage {stage_name} completed in {duration:.3f}s")
+
+            # Compare with allocated time if available
+            self._compare_allocated_vs_actual(stage_name, duration, "stage")
+
+            return duration
+        else:
+            logger.warning(f"⚠️ Stage {stage_name} timing not started")
+            return 0.0
+
+    def set_allocated_time(
+        self, name: str, allocated_minutes: float, allocation_type: str = "stage"
+    ) -> None:
+        """Set the allocated time for a stage or phase"""
+        allocated_seconds = allocated_minutes * 60
+        self.allocated_times[name] = {
+            "allocated_seconds": allocated_seconds,
+            "allocated_minutes": allocated_minutes,
+            "type": allocation_type,
+            "timestamp": datetime.now().isoformat(),
+        }
+        performance_logger.info(
+            f"ALLOCATION_SET - {name} - {allocated_minutes:.2f}min - {allocation_type}"
+        )
+
+    def _compare_allocated_vs_actual(
+        self, name: str, actual_seconds: float, timing_type: str
+    ) -> None:
+        """Compare allocated time vs actual execution time"""
+        if name not in self.allocated_times:
+            return
+
+        allocated_data = self.allocated_times[name]
+        allocated_seconds = allocated_data["allocated_seconds"]
+        allocated_minutes = allocated_data["allocated_minutes"]
+        actual_minutes = actual_seconds / 60
+
+        # Calculate variance
+        variance_seconds = actual_seconds - allocated_seconds
+        variance_minutes = actual_minutes - allocated_minutes
+        variance_percentage = (
+            (variance_seconds / allocated_seconds) * 100 if allocated_seconds > 0 else 0
+        )  # Determine status
+        if abs(variance_percentage) <= 10:
+            status = "ON_TARGET"
+        elif variance_percentage > 10:
+            status = "OVER_ALLOCATED"
+        else:
+            status = "UNDER_ALLOCATED"
+
+        # Store comparison result
+        comparison_result = {
+            "allocated_minutes": allocated_minutes,
+            "actual_minutes": actual_minutes,
+            "variance_minutes": variance_minutes,
+            "variance_percentage": variance_percentage,
+            "status": status,
+            "type": timing_type,
+            "timestamp": datetime.now().isoformat(),
+        }
+
+        self.allocation_comparison[name] = comparison_result
+
+        # Log the comparison
+        performance_logger.info(
+            f"ALLOCATION_COMPARE - {name} - "
+            f"Allocated:{allocated_minutes:.2f}min - "
+            f"Actual:{actual_minutes:.2f}min - "
+            f"Variance:{variance_percentage:.1f}% - "
+            f"Status:{status}"
+        )
+
+        # Console log for significant variances
+        if abs(variance_percentage) > 25:
+            if variance_percentage > 0:
+                logger.warning(
+                    f"🟡 {name} took {actual_minutes:.2f}min "
+                    f"(allocated {allocated_minutes:.2f}min, "
+                    f"+{variance_percentage:.1f}% over)"
+                )
+            else:
+                logger.info(
+                    f"🟢 {name} completed in {actual_minutes:.2f}min "
+                    f"(allocated {allocated_minutes:.2f}min, "
+                    f"{abs(variance_percentage):.1f}% under)"
+                )
+
+    def get_allocation_summary(self) -> Dict:
+        """Get comprehensive allocation vs actual performance summary"""
+        summary = {
+            "total_comparisons": len(self.allocation_comparison),
+            "on_target": 0,
+            "over_allocated": 0,
+            "under_allocated": 0,
+            "average_variance": 0,
+            "total_allocated_time": 0,
+            "total_actual_time": 0,
+            "details": [],
+        }
+
+        if not self.allocation_comparison:
+            return summary
+
+        total_variance = 0
+        for name, comparison in self.allocation_comparison.items():
+            # Count status types
+            if comparison["status"] == "ON_TARGET":
+                summary["on_target"] += 1
+            elif comparison["status"] == "OVER_ALLOCATED":
+                summary["over_allocated"] += 1
+            else:
+                summary["under_allocated"] += 1
+
+            # Accumulate totals
+            summary["total_allocated_time"] += comparison["allocated_minutes"]
+            summary["total_actual_time"] += comparison["actual_minutes"]
+            total_variance += comparison["variance_percentage"]
+
+            # Add to details
+            summary["details"].append(
+                {
+                    "name": name,
+                    "allocated": comparison["allocated_minutes"],
+                    "actual": comparison["actual_minutes"],
+                    "variance_pct": comparison["variance_percentage"],
+                    "status": comparison["status"],
+                }
+            )
+
+        # Calculate averages
+        summary["average_variance"] = total_variance / len(self.allocation_comparison)
+        summary["total_variance_minutes"] = (
+            summary["total_actual_time"] - summary["total_allocated_time"]
+        )
+        summary["total_variance_percentage"] = (
+            (
+                (summary["total_actual_time"] - summary["total_allocated_time"])
+                / summary["total_allocated_time"]
+                * 100
+            )
+            if summary["total_allocated_time"] > 0
+            else 0
+        )
+
+        return summary
+
+    def log_allocation_performance(self, allocation_type: str, duration: float) -> None:
+        """Log allocation algorithm performance"""
+        self.performance_metrics["total_allocation_time"] += duration
+        self.performance_metrics["optimization_passes"] += 1
+
+        performance_logger.info(f"ALLOCATION - {allocation_type} - {duration:.3f}s")
+        logger.info(f"🔧 {allocation_type} allocation completed in {duration:.3f}s")
+
+    def log_compression_event(
+        self, compression_ratio: float, stages_affected: int
+    ) -> None:
+        """Log time compression events"""
+        self.performance_metrics["compression_events"] += 1
+
+        performance_logger.info(
+            f"COMPRESSION - ratio:{compression_ratio:.3f} - stages:{stages_affected}"
+        )
+        logger.warning(
+            f"🗜️ Time compression applied: {compression_ratio:.3f} ratio "
+            f"affecting {stages_affected} stages"
+        )
+
+    def generate_performance_report(self) -> Dict:
+        """Generate comprehensive performance report"""
+        report = {
+            "timestamp": datetime.now().isoformat(),
+            "phase_performance": {},
+            "stage_performance": {},
+            "allocation_performance": {
+                "total_time": self.performance_metrics["total_allocation_time"],
+                "average_time": (
+                    self.performance_metrics["total_allocation_time"]
+                    / max(1, self.performance_metrics["optimization_passes"])
+                ),
+                "optimization_passes": self.performance_metrics["optimization_passes"],
+                "compression_events": self.performance_metrics["compression_events"],
+            },
+            "efficiency_metrics": {},
+        }
+
+        # Phase performance analysis
+        for phase, duration in self.performance_metrics["phase_timings"].items():
+            phase_stages = [
+                name
+                for name, info in self.stage_definitions.items()
+                if info.get("phase") == phase
+            ]
+            stage_durations = [
+                self.performance_metrics["stage_timings"].get(stage, 0)
+                for stage in phase_stages
+            ]
+
+            report["phase_performance"][phase] = {
+                "duration": duration,
+                "stage_count": len(phase_stages),
+                "average_stage_time": (
+                    sum(stage_durations) / max(1, len(stage_durations))
+                ),
+                "fastest_stage": min(stage_durations) if stage_durations else 0,
+                "slowest_stage": max(stage_durations) if stage_durations else 0,
+            }
+
+        # Stage performance analysis
+        for stage, duration in self.performance_metrics["stage_timings"].items():
+            stage_info = self.stage_definitions.get(stage, {})
+            # Convert to seconds
+            expected_duration = stage_info.get("duration_minutes", 0) * 60
+
+            report["stage_performance"][stage] = {
+                "actual_duration": duration,
+                "expected_duration": expected_duration,
+                "performance_ratio": duration / max(0.1, expected_duration),
+                "phase": stage_info.get("phase", "unknown"),
+                "critical": stage_info.get("critical", False),
+            }
+
+        # Efficiency metrics
+        total_stage_time = sum(self.performance_metrics["stage_timings"].values())
+        total_phase_time = sum(self.performance_metrics["phase_timings"].values())
+
+        report["efficiency_metrics"] = {
+            "total_execution_time": total_stage_time,
+            "phase_overhead": total_phase_time - total_stage_time,
+            "average_stage_time": (
+                total_stage_time
+                / max(1, len(self.performance_metrics["stage_timings"]))
+            ),
+            "performance_variability": self._calculate_performance_variability(),
+            "bottleneck_stages": self._identify_bottleneck_stages(),
+        }
+
+        # Add allocation comparison analysis
+        allocation_summary = self.get_allocation_summary()
+        report["allocation_comparison"] = allocation_summary
+
+        return report
+
+    def _calculate_performance_variability(self) -> float:
+        """Calculate performance variability across stages"""
+        if not self.performance_metrics["stage_timings"]:
+            return 0.0
+
+        durations = list(self.performance_metrics["stage_timings"].values())
+        mean_duration = sum(durations) / len(durations)
+        variance = sum((d - mean_duration) ** 2 for d in durations) / len(durations)
+        return (variance**0.5) / mean_duration if mean_duration > 0 else 0.0
+
+    def _identify_bottleneck_stages(self) -> List[Dict]:
+        """Identify stages that are performance bottlenecks"""
+        bottlenecks = []
+
+        for stage, duration in self.performance_metrics["stage_timings"].items():
+            stage_info = self.stage_definitions.get(stage, {})
+            expected_duration = stage_info.get("duration_minutes", 0) * 60
+
+            if expected_duration > 0 and duration > expected_duration * 1.5:
+                bottlenecks.append(
+                    {
+                        "stage": stage,
+                        "actual_duration": duration,
+                        "expected_duration": expected_duration,
+                        "slowdown_factor": duration / expected_duration,
+                        "phase": stage_info.get("phase", "unknown"),
+                    }
+                )
+
+        return sorted(bottlenecks, key=lambda x: x["slowdown_factor"], reverse=True)
+
+    def save_performance_report(
+        self, report: Dict, filename: Optional[str] = None
+    ) -> None:
+        """Save performance report to file"""
+        if filename is None:
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            filename = f"logs/performance_report_{timestamp}.json"
+
+        Path(filename).parent.mkdir(parents=True, exist_ok=True)
+
+        with open(filename, "w") as f:
+            json.dump(report, f, indent=2, default=str)
+
+        performance_logger.info(f"REPORT_SAVED - {filename}")
+        logger.info(f"💾 Performance report saved to {filename}")
+
+    def reset_performance_metrics(self) -> None:
+        """Reset all performance tracking metrics"""
+        self.performance_metrics = {
+            "phase_timings": {},
+            "stage_timings": {},
+            "total_allocation_time": 0,
+            "optimization_passes": 0,
+            "compression_events": 0,
+            "skipped_stages": 0,
+        }
+        self.phase_start_times = {}
+        self.stage_start_times = {}
+
+        performance_logger.info("METRICS_RESET")
+        logger.info("🔄 Performance metrics reset")
+
+    def performance_context(self, name: str, context_type: str = "stage"):
+        """Context manager for automatic performance tracking"""
+        return PerformanceContext(self, name, context_type)
+
+    def calculate_optimal_duration(
+        self, stage_name: str, available_time: int, time_pressure: float
+    ) -> Tuple[int, str]:
+        """Calculate optimal duration for a stage based on time pressure"""
+        stage_info = self.stage_definitions[stage_name]
+
+        # Get timing options
+        optimum = stage_info.get(
+            "optimum_minutes", stage_info["duration_minutes"] * 1.5
+        )
+        standard = stage_info["duration_minutes"]
+        minimum = stage_info.get("minimum_minutes", max(1, standard // 2))
+
+        # Apply time pressure logic
+        if time_pressure < 0.7:  # Low pressure - use optimum
+            return int(optimum), "optimum"
+        elif time_pressure < 1.2:  # Normal pressure - use standard
+            return standard, "standard"
+        elif time_pressure < 2.0:  # High pressure - use minimum
+            return minimum, "minimum"
+        else:  # Critical pressure - compressed time
+            compressed = max(1, minimum // 2)
+            return compressed, "compressed"
+
+
+class PerformanceContext:
+    """Context manager for automatic timing of pipeline operations"""
+
+    def __init__(self, timing_manager, name: str, context_type: str = "stage"):
+        self.timing_manager = timing_manager
+        self.name = name
+        self.context_type = context_type
+
+    def __enter__(self):
+        if self.context_type == "phase":
+            self.timing_manager.start_phase_timing(self.name)
+        else:
+            self.timing_manager.start_stage_timing(self.name)
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        if self.context_type == "phase":
+            self.timing_manager.end_phase_timing(self.name)
+        else:
+            self.timing_manager.end_stage_timing(self.name)
+
+    # Move methods back to PipelineTimeAllocator class
+    def handle_no_time_stage(self, stage_name: str) -> Dict:
+        """Handle stage that gets zero time allocation"""
+        stage_info = self.stage_definitions[stage_name]
+
+        # Get timing options
+        optimum = stage_info.get(
+            "optimum_minutes", stage_info["duration_minutes"] * 1.5
+        )
+        standard = stage_info["duration_minutes"]
+        minimum = stage_info.get("minimum_minutes", max(1, standard // 2))
+
+        # Determine mode based on time pressure
+        if time_pressure <= 0.7:  # High pressure - 70% or less available time
+            if available_time < minimum:
+                # No time available - check action
+                no_time_action = stage_info.get("no_time_action", "skip")
+                if no_time_action == "fail":
+                    return minimum, "CRITICAL_MINIMUM"  # Must run minimum
+                elif no_time_action == "basic":
+                    return max(1, minimum // 2), "BASIC_ONLY"
+                else:  # skip
+                    return 0, "NO_TIME"
+            else:
+                return minimum, "MINIMUM"
+        elif time_pressure <= 1.0:  # Normal pressure - exactly enough time
+            return min(standard, available_time), "STANDARD"
+        else:  # Low pressure - more than enough time
+            return min(optimum, available_time), "OPTIMUM"
+
+    def handle_no_time_stage(self, stage_name: str) -> Dict:
+        """Handle stage with no time allocation"""
+        stage_info = self.stage_definitions[stage_name]
+        no_time_action = stage_info.get("no_time_action", "skip")
+
+        return {
+            "start_time": "SKIPPED",
+            "end_time": "SKIPPED",
+            "duration_minutes": 0,
+            "action": no_time_action,
+            "description": stage_info["description"],
+            "critical": stage_info.get("critical", False),
+            "skipped": True,
+            "reason": f"No time available - action: {no_time_action}",
+        }
+
+    def allocate_enhanced_schedule(
+        self, download_time: str = "06:01", first_race_time: Optional[datetime] = None
+    ) -> Dict:
+        """Enhanced allocation with optimum/minimum/no-time logic"""
+        logger.info(
+            "🎯 Creating enhanced schedule with optimum/minimum/no-time logic..."
+        )
+
+        # Calculate available time window
+        start_time, end_time, total_minutes = self.calculate_available_time_window(
+            download_time, first_race_time
+        )
+
+        # Calculate total required time and pressure
+        total_required = sum(
+            stage["duration_minutes"] for stage in self.stage_definitions.values()
+        )
+        time_pressure = total_minutes / total_required if total_required > 0 else 1.0
+
+        logger.info(
+            f"📊 Time pressure: {time_pressure:.2f} ({total_minutes}min available / {total_required}min required)"
+        )
+
+        current_time = start_time
+        stage_schedule = {}
+        remaining_time = total_minutes
+
+        # Get ordered stages
+        ordered_stages = self._resolve_dependencies()
+
+        for stage_name in ordered_stages:
+            stage_info = self.stage_definitions[stage_name]
+
+            # Handle fixed time stages
+            if "fixed_time" in stage_info:
+                stage_time = datetime.strptime(stage_info["fixed_time"], "%H:%M").time()
+                stage_datetime = datetime.combine(current_time.date(), stage_time)
+                duration = stage_info["duration_minutes"]
+                timing_mode = "FIXED"
+            else:
+                stage_datetime = current_time
+                duration, timing_mode = self.calculate_optimal_duration(
+                    stage_name, remaining_time, time_pressure
+                )
+
+            # Handle no-time stages
+            if duration == 0:
+                stage_schedule[stage_name] = self.handle_no_time_stage(stage_name)
+                continue
+
+            # Calculate end time
+            stage_end = stage_datetime + timedelta(minutes=duration)
+
+            stage_schedule[stage_name] = {
+                "start_time": stage_datetime.strftime("%H:%M"),
+                "end_time": stage_end.strftime("%H:%M"),
+                "duration_minutes": duration,
+                "timing_mode": timing_mode,
+                "description": stage_info["description"],
+                "critical": stage_info.get("critical", False),
+                "optimum_minutes": stage_info.get(
+                    "optimum_minutes", stage_info["duration_minutes"] * 1.5
+                ),
+                "minimum_minutes": stage_info.get(
+                    "minimum_minutes", max(1, stage_info["duration_minutes"] // 2)
+                ),
+                "no_time_action": stage_info.get("no_time_action", "skip"),
+            }
+
+            # Update time tracking
+            if "fixed_time" not in stage_info:
+                current_time = stage_end
+                remaining_time -= duration
+
+        # Calculate summary
+        allocated_time = sum(
+            stage.get("duration_minutes", 0) for stage in stage_schedule.values()
+        )
+        skipped_stages = sum(
+            1 for stage in stage_schedule.values() if stage.get("skipped", False)
+        )
+
+        return {
+            "schedule": stage_schedule,
+            "timing_analysis": {
+                "total_window_minutes": total_minutes,
+                "allocated_minutes": allocated_time,
+                "remaining_minutes": total_minutes - allocated_time,
+                "time_pressure": time_pressure,
+                "skipped_stages": skipped_stages,
+                "timing_modes_used": list(
+                    set(
+                        stage.get("timing_mode", "UNKNOWN")
+                        for stage in stage_schedule.values()
+                    )
+                ),
+                "compression_ratio": (
+                    allocated_time / total_required if total_required > 0 else 1.0
+                ),
+            },
+            "download_time": download_time,
+            "first_race_time": (
+                first_race_time.strftime("%H:%M")
+                if first_race_time
+                else "Auto-detected"
+            ),
+            "enhanced_features": {
+                "optimum_allocation": time_pressure > 1.2,
+                "minimum_allocation": time_pressure < 0.7,
+                "no_time_handling": skipped_stages > 0,
+                "dynamic_compression": time_pressure < 1.0,
+            },
+        }
 
     def calculate_17_stage_allocation(
         self, download_time: str = "06:25", first_race_time: Optional[datetime] = None
@@ -840,6 +1433,51 @@ def main():
 
         allocator.print_schedule_summary(allocation)
         allocator.save_schedule_config(allocation)
+
+    # Demonstrate enhanced allocation logic
+    print(f"\n🚀 Enhanced Allocation Logic Demo")
+    print("=" * 50)
+
+    enhanced_scenarios = [
+        ("14:15", "Normal time pressure"),
+        ("12:00", "High time pressure - minimum allocation"),
+        ("10:30", "Extreme time pressure - some stages skipped"),
+        ("18:00", "Low time pressure - optimum allocation"),
+    ]
+
+    for race_time_str, description in enhanced_scenarios:
+        print(f"\n🎯 Enhanced Scenario: {description}")
+        print("-" * 40)
+
+        race_time = datetime.strptime(race_time_str, "%H:%M").time()
+        simulated_race_datetime = datetime.combine(datetime.now().date(), race_time)
+
+        # Use enhanced allocation
+        enhanced_allocation = allocator.allocate_enhanced_schedule(
+            download_time="06:01", first_race_time=simulated_race_datetime
+        )
+
+        # Print enhanced summary
+        print(f"⏰ Time Window: 06:01 → {race_time_str}")
+        print(
+            f"📊 Time Pressure: {enhanced_allocation['timing_analysis']['time_pressure']:.2f}"
+        )
+        print(
+            f"🎯 Modes Used: {', '.join(enhanced_allocation['timing_analysis']['timing_modes_used'])}"
+        )
+        print(
+            f"⏭️ Skipped Stages: {enhanced_allocation['timing_analysis']['skipped_stages']}"
+        )
+
+        # Show a few example stages
+        for stage_name, stage_info in list(enhanced_allocation["schedule"].items())[:3]:
+            if stage_info.get("skipped", False):
+                print(f"   ⏭️ {stage_name}: SKIPPED ({stage_info['reason']})")
+            else:
+                mode = stage_info.get("timing_mode", "STANDARD")
+                print(
+                    f"   ⏰ {stage_name}: {stage_info['duration_minutes']}min ({mode})"
+                )
 
 
 if __name__ == "__main__":

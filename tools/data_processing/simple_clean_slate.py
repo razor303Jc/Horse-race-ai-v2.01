@@ -9,6 +9,11 @@ import os
 import sys
 from pathlib import Path
 
+# Add project root to path
+project_root = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(project_root))
+from pathlib import Path
+
 import psycopg2
 
 # Add the project directory to the path
@@ -52,12 +57,12 @@ class SimpleCleanSlateUploader:
 
         # File mappings
         self.file_mappings = {
-            "data/horseracedatabase/results_data/records/records.csv": "race_results",
-            "data/horseracedatabase/cards_data/racecard_details/racecard_details.csv": "racecard_details",
-            "data/horseracedatabase/results_data/horses/horses.csv": "horses",
-            "data/horseracedatabase/cards_data/races/races.csv": "races_cards",
-            "data/horseracedatabase/results_data/jockeys_stats/jockeys_stats.csv": "jockey_stats",
-            "data/horseracedatabase/results_data/trainers_stats/trainers_stats.csv": "trainer_stats",
+            "project_root / 'data' / horseracedatabase/results_project_root / 'data' / records/records.csv": "race_results",
+            "project_root / 'data' / horseracedatabase/cards_project_root / 'data' / racecard_details/racecard_details.csv": "racecard_details",
+            "project_root / 'data' / horseracedatabase/results_project_root / 'data' / horses/horses.csv": "horses",
+            "project_root / 'data' / horseracedatabase/cards_project_root / 'data' / races/races.csv": "races_cards",
+            "project_root / 'data' / horseracedatabase/results_project_root / 'data' / jockeys_stats/jockeys_stats.csv": "jockey_stats",
+            "project_root / 'data' / horseracedatabase/results_project_root / 'data' / trainers_stats/trainers_stats.csv": "trainer_stats",
         }
 
     def get_connection(self):

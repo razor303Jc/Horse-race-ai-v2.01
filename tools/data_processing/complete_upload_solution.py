@@ -9,6 +9,11 @@ import os
 import sys
 from pathlib import Path
 
+# Add project root to path
+project_root = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(project_root))
+from pathlib import Path
+
 import pandas as pd
 import psycopg2
 from psycopg2.extras import execute_values
@@ -29,12 +34,12 @@ DATABASE_CONFIG = {
 
 # CSV file paths
 CSV_FILES = {
-    "race_results": "data/horseracedatabase/results_data/records/records.csv",
-    "racecard_details": "data/horseracedatabase/cards_data/racecard_details/racecard_details.csv",
-    "horses": "data/horseracedatabase/results_data/horses/horses.csv",
-    "races_cards": "data/horseracedatabase/cards_data/races/races.csv",
-    "jockey_stats": "data/horseracedatabase/results_data/jockeys_stats/jockeys_stats.csv",
-    "trainer_stats": "data/horseracedatabase/results_data/trainers_stats/trainers_stats.csv",
+    "race_results": "project_root / 'data' / horseracedatabase/results_project_root / 'data' / records/records.csv",
+    "racecard_details": "project_root / 'data' / horseracedatabase/cards_project_root / 'data' / racecard_details/racecard_details.csv",
+    "horses": "project_root / 'data' / horseracedatabase/results_project_root / 'data' / horses/horses.csv",
+    "races_cards": "project_root / 'data' / horseracedatabase/cards_project_root / 'data' / races/races.csv",
+    "jockey_stats": "project_root / 'data' / horseracedatabase/results_project_root / 'data' / jockeys_stats/jockeys_stats.csv",
+    "trainer_stats": "project_root / 'data' / horseracedatabase/results_project_root / 'data' / trainers_stats/trainers_stats.csv",
 }
 
 # Configure logging

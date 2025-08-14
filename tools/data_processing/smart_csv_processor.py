@@ -188,7 +188,7 @@ def test_smart_processing():
     processor = SmartCSVProcessor()
 
     # Test with trainer stats
-    file_path = "data/horseracedatabase/results_data/trainers_stats/trainers_stats.csv"
+    file_path = "project_root / 'data' / horseracedatabase/results_project_root / 'data' / trainers_stats/trainers_stats.csv"
     df = processor.process_csv_smart(file_path, "trainer_stats")
 
     if df is not None:
