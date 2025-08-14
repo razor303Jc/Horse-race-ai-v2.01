@@ -89,7 +89,7 @@ RUN playwright install chromium
 # Set environment variables
 ENV PYTHONPATH=/app
 ENV PYTHONUNBUFFERED=1
-ENV FLASK_APP=app.py
+ENV FLASK_APP=docker/web_app/app.py
 ENV FLASK_ENV=production
 
 # Expose ports for web services

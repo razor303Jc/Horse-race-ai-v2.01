@@ -368,6 +368,60 @@ services:
     profiles:
       - news-analyzer
 
+  # Data Processing Service
+  data-processor:
+    build:
+      context: .
+      dockerfile: Dockerfile.data-processing
+    container_name: horse_racing_data_processor
+    environment:
+      DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/horse_racing_db
+      REDIS_URL: redis://:${REDIS_PASSWORD:-redis_password_123}@redis:6379/0
+      DEBUG: ${DEBUG:-false}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      PYTHONPATH: /app
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+      - ./cache:/app/cache
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - horse_racing_network
+    restart: unless-stopped
+    profiles:
+      - data-processing
+
+  # Pipeline Management Service
+  pipeline-manager:
+    build:
+      context: .
+      dockerfile: Dockerfile.pipeline-management
+    container_name: horse_racing_pipeline_manager
+    environment:
+      DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/horse_racing_db
+      REDIS_URL: redis://:${REDIS_PASSWORD:-redis_password_123}@redis:6379/0
+      DEBUG: ${DEBUG:-false}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      PYTHONPATH: /app
+    volumes:
+      - ./logs:/app/logs
+      - ./config:/app/config
+      - ./cache:/app/cache
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - horse_racing_network
+    restart: unless-stopped
+    profiles:
+      - pipeline-management
+
 volumes:
   postgres_data:
     driver: local

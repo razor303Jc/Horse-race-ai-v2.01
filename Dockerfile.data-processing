@@ -1,0 +1,40 @@
+# Data Processing Container
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    curl \
+    postgresql-client \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy requirements
+COPY requirements.txt .
+COPY requirements-auto-downloader.txt .
+
+# Install Python dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r requirements-auto-downloader.txt
+
+# Copy data processing scripts
+COPY docker/data_processing/ ./data_processing/
+COPY tools/ ./tools/
+COPY config/ ./config/
+COPY src/ ./src/
+
+# Set environment variables
+ENV PYTHONPATH=/app
+ENV PYTHONUNBUFFERED=1
+
+# Create directories
+RUN mkdir -p /app/data /app/logs /app/cache
+
+# Create non-root user
+RUN groupadd -r dataprocessor && useradd -r -g dataprocessor -m dataprocessor
+RUN chown -R dataprocessor:dataprocessor /app
+
+USER dataprocessor
+
+# Default command
+CMD ["python", "data_processing/clean_upload.py"]
