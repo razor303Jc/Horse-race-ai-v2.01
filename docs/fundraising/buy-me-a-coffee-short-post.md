@@ -78,7 +78,7 @@ You're not just supporting software - you're **investing in the future of racing
 
 **Ready to revolutionize horse racing with AI?**
 
-**[☕ Support Us Here!](https://buymeacoffee.com/horseracingai)**
+**[☕ Support Us Here!](https://buymeacoffee.com/justindcrop)**
 
 _Even if you can't contribute financially, sharing this post helps immensely! Thank you for being part of our journey! 🏇🤖_
 

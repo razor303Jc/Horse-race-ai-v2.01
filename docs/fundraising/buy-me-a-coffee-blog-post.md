@@ -158,7 +158,7 @@ Our system has already demonstrated:
 
 Click the button below to buy us a coffee and join our journey toward revolutionizing horse racing AI!
 
-**[☕ Buy Me A Coffee](https://buymeacoffee.com/horseracingai)**
+**[☕ Buy Me A Coffee](https://buymeacoffee.com/justindcrop)**
 
 ### 🔗 **Stay Connected**
 
