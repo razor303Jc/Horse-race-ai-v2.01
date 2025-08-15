@@ -8,22 +8,28 @@ echo "=========================================================="
 # Set working directory
 cd "$(dirname "$0")"
 
-# Install integrated requirements
-echo "📦 Installing integrated requirements..."
-pip install -r requirements-integrated.txt
+# Install integrated requirements (optional - skip if externally managed)
+echo "📦 Checking requirements..."
+if pip install --dry-run redis > /dev/null 2>&1; then
+    echo "📦 Installing integrated requirements..."
+    pip install -r requirements-integrated.txt
+else
+    echo "⚠️ Skipping pip install (externally managed environment)"
+fi
 
 # Verify Python path setup
 echo "🐍 Setting up Python paths..."
-export PYTHONPATH="${PYTHONPATH}:$(pwd)"
-export PYTHONPATH="${PYTHONPATH}:$(pwd)/ml_training"
-export PYTHONPATH="${PYTHONPATH}:$(pwd)/monitoring"
-export PYTHONPATH="${PYTHONPATH}:$(pwd)/error_handling"
-export PYTHONPATH="${PYTHONPATH}:$(pwd)/caching"
-export PYTHONPATH="${PYTHONPATH}:$(pwd)/database"
+current_dir=$(pwd)
+export PYTHONPATH="${PYTHONPATH}:${current_dir}"
+export PYTHONPATH="${PYTHONPATH}:${current_dir}/ml_training"
+export PYTHONPATH="${PYTHONPATH}:${current_dir}/monitoring"
+export PYTHONPATH="${PYTHONPATH}:${current_dir}/error_handling"
+export PYTHONPATH="${PYTHONPATH}:${current_dir}/caching"
+export PYTHONPATH="${PYTHONPATH}:${current_dir}/database"
 
 # Test integration
 echo "🧪 Running integration tests..."
-python test_integration.py
+python3 test_integration.py
 
 if [ $? -eq 0 ]; then
     echo "✅ Integration tests passed!"

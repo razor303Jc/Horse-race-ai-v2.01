@@ -137,7 +137,7 @@ class AlertManager:
                     self.create_alert(
                         "memory_critical",
                         "CRITICAL",
-                        f"Memory usage high: {snapshot.memory_percent:.1f}%",
+                        f"Memory usage critically high: {snapshot.memory_percent:.1f}%",
                         {"memory_percent": snapshot.memory_percent},
                         "Restart services or increase memory",
                     )
@@ -236,7 +236,7 @@ class AdvancedPerformanceMonitor:
                 self.alert_manager.create_alert(
                     f"performance_{stage}",
                     "WARNING",
-                    f"Stage {stage} degraded by {time_increase*100:.1f}%",
+                    f"Stage {stage} performance degraded by {time_increase*100:.1f}%",
                     {
                         "current": metric.processing_time,
                         "baseline": baseline.processing_time,

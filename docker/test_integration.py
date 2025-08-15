@@ -4,13 +4,14 @@
 Tests all Phase 1 & 2 components in Docker environment
 """
 
-import sys
 import os
+import sys
 from pathlib import Path
 
 # Add Docker paths
 docker_root = Path(__file__).parent
 sys.path.insert(0, str(docker_root))
+
 
 def test_ml_training():
     """Test ML training integration"""
@@ -24,6 +25,7 @@ def test_ml_training():
         print(f"❌ ML Training: {e}")
         return False
 
+
 def test_monitoring():
     """Test monitoring integration"""
     try:
@@ -34,6 +36,7 @@ def test_monitoring():
     except Exception as e:
         print(f"❌ Monitoring: {e}")
         return False
+
 
 def test_error_handling():
     """Test error handling integration"""
@@ -46,6 +49,7 @@ def test_error_handling():
         print(f"❌ Error Handling: {e}")
         return False
 
+
 def test_caching():
     """Test caching integration"""
     try:
@@ -56,6 +60,7 @@ def test_caching():
     except Exception as e:
         print(f"❌ Caching: {e}")
         return False
+
 
 def test_database():
     """Test database integration"""
@@ -68,34 +73,36 @@ def test_database():
         print(f"❌ Database: {e}")
         return False
 
+
 def main():
     """Run all integration tests"""
     print("🚀 Docker Integration Test Suite")
     print("=" * 50)
-    
+
     tests = [
         test_ml_training,
         test_monitoring,
         test_error_handling,
         test_caching,
-        test_database
+        test_database,
     ]
-    
+
     results = []
     for test in tests:
         results.append(test())
-    
+
     print("\n📊 TEST RESULTS:")
     passed = sum(results)
     total = len(results)
     print(f"✅ Passed: {passed}/{total}")
-    
+
     if passed == total:
         print("🎉 ALL TESTS PASSED - Docker integration successful!")
     else:
         print(f"⚠️ {total - passed} tests failed - check configuration")
-    
+
     return passed == total
+
 
 if __name__ == "__main__":
     main()
