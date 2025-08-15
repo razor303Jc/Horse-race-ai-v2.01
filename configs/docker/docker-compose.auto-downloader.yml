@@ -2,7 +2,9 @@ version: '3.8'
 
 services:
   auto-downloader:
-    image: horse-racing-auto-downloader:optimized
+    build:
+      context: .
+      dockerfile: Dockerfile
     container_name: horserace-auto-downloader
     environment:
       - DOCKER_CONTAINER=true
@@ -29,42 +31,8 @@ services:
       # Timezone data
       - /etc/localtime:/etc/localtime:ro
     networks:
-      - horse_racing_network
-      - traefik
+      - horserace-network
     restart: unless-stopped
-    
-    # Enhanced startup command with better error handling
-    command: ["python", "run_docker_auto_downloader.py", "--mode", "scheduled", "--log-level", "INFO"]
-    
-    # Improved health check
-    healthcheck:
-      test: ["CMD", "python", "-c", "print('OK')"]
-      interval: 5m
-      timeout: 30s
-      retries: 3
-      start_period: 2m
-    
-    # Traefik labels for web access
-    labels:
-      - "traefik.enable=true"
-      - "traefik.docker.network=traefik-dev"
-      
-      # HTTP Routes for Auto-Downloader Dashboard
-      - "traefik.http.routers.auto-downloader-http.rule=Host(`downloader.horse-racing.${DOMAIN:-localhost}`)"
-      - "traefik.http.routers.auto-downloader-http.entrypoints=http"
-      - "traefik.http.routers.auto-downloader-http.service=auto-downloader"
-      
-      # HTTPS Routes for Auto-Downloader Dashboard  
-      - "traefik.http.routers.auto-downloader.rule=Host(`downloader.horse-racing.${DOMAIN:-localhost}`)"
-      - "traefik.http.routers.auto-downloader.entrypoints=websecure"
-      - "traefik.http.routers.auto-downloader.tls.certresolver=letsencrypt"
-      - "traefik.http.routers.auto-downloader.service=auto-downloader"
-      
-      # Service configuration (if it exposes a web interface)
-      - "traefik.http.services.auto-downloader.loadbalancer.server.port=8080"
-      
-      # Optional: Add authentication middleware
-      # - "traefik.http.routers.auto-downloader.middlewares=auth@file"
     
     # Enhanced startup command with better error handling
     command: ["python", "run_docker_auto_downloader.py", "--mode", "scheduled", "--log-level", "INFO"]
@@ -101,8 +69,8 @@ services:
   # Test service for manual runs  
   auto-downloader-test:
     build:
-      context: ../..
-      dockerfile: Dockerfile.auto-downloader
+      context: .
+      dockerfile: Dockerfile
     container_name: horserace-auto-downloader-test
     environment:
       - DOCKER_CONTAINER=true

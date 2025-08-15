@@ -800,20 +800,3 @@ if __name__ == "__main__":
         console.print("[yellow]⚠️ Interrupted by user[/yellow]")
     except Exception as e:
         console.print(f"[red]❌ Fatal error: {e}[/red]")
-    finally:
-        # Clean up any remaining async tasks to prevent warnings
-        try:
-            loop = asyncio.get_event_loop()
-            if loop.is_running():
-                # Cancel all remaining tasks
-                pending = asyncio.all_tasks(loop)
-                for task in pending:
-                    task.cancel()
-        except Exception:
-            pass  # Ignore cleanup errors
-
-        # Suppress specific asyncio warnings
-        import warnings
-
-        warnings.filterwarnings("ignore", message=".*Event loop is closed.*")
-        warnings.filterwarnings("ignore", message=".*coroutine.*was never awaited.*")

@@ -5,59 +5,6 @@
 version: "3.8"
 
 services:
-  # PostgreSQL Database - Primary database for main operations
-  postgres:
-    image: postgres:15-alpine
-    container_name: horse_racing_postgres
-    environment:
-      POSTGRES_DB: horse_racing_db
-      POSTGRES_USER: horse_racing
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-secure_password_123}
-      PGDATA: /var/lib/postgresql/data/pgdata
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./docker/postgres/init:/docker-entrypoint-initdb.d
-    ports:
-      - "5433:5432"  # Use different port to avoid conflicts
-    networks:
-      - horse_racing_network
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U horse_racing -d horse_racing_db"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    deploy:
-      resources:
-        limits:
-          memory: 512M
-        reservations:
-          memory: 256M
-
-  # Redis for caching and session management
-  redis:
-    image: redis:7-alpine
-    container_name: horse_racing_redis
-    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-redis_password_123}
-    volumes:
-      - redis_data:/data
-    ports:
-      - "6380:6379"  # Use different port to avoid conflicts
-    networks:
-      - horse_racing_network
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
-      interval: 10s
-      timeout: 3s
-      retries: 5
-    deploy:
-      resources:
-        limits:
-          memory: 256M
-        reservations:
-          memory: 128M
-
   # Optimized Pipeline Manager (3-minute build vs 15+ minutes)
   pipeline-manager:
     build:
@@ -67,26 +14,13 @@ services:
       - PYTHONPATH=/app:/app/pipeline_management
       - LOG_LEVEL=INFO
       - ENABLE_FILE_LOGGING=false  # Disable file logging to avoid permission issues
-      - DATABASE_URL=postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/horse_racing_db
-      - REDIS_URL=redis://:${REDIS_PASSWORD:-redis_password_123}@redis:6379/0
     restart: "no"  # Disable restart for development
-    depends_on:
-      - postgres
-      - redis
-    networks:
-      - horse_racing_network
     healthcheck:
-      test: ["CMD", "python", "-c", "print('OK')"]
+      test: ["CMD", "python", "-c", "import pipeline_management.dynamic_pipeline_timing; print('OK')"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 10s
-    deploy:
-      resources:
-        limits:
-          memory: 256M
-        reservations:
-          memory: 128M
 
   # Optimized Data Processor (4-minute build vs 15+ minutes)  
   data-processor:
@@ -96,31 +30,13 @@ services:
     environment:
       - PYTHONPATH=/app:/app/data_processing
       - LOG_LEVEL=INFO
-      - DB_HOST=postgres
-      - DB_NAME=horse_racing_db
-      - DB_USER=horse_racing
-      - DB_PASSWORD=${POSTGRES_PASSWORD:-secure_password_123}
-      - DB_PORT=5432
-      - DATABASE_URL=postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/horse_racing_db
-      - REDIS_URL=redis://:${REDIS_PASSWORD:-redis_password_123}@redis:6379/0
     restart: "no"
-    depends_on:
-      - postgres
-      - redis
-    networks:
-      - horse_racing_network
     healthcheck:
       test: ["CMD", "python", "-c", "import data_processing.complete_csv_processor; print('OK')"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 10s
-    deploy:
-      resources:
-        limits:
-          memory: 512M
-        reservations:
-          memory: 256M
 
   # Optimized React App (4-minute build vs 15+ minutes)
   horse-racing-ai:
@@ -130,18 +46,9 @@ services:
     environment:
       - PYTHONPATH=/app
       - LOG_LEVEL=INFO
-      - DATABASE_URL=postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/horse_racing_db
-      - REDIS_URL=redis://:${REDIS_PASSWORD:-redis_password_123}@redis:6379/0
     restart: "no"
-    depends_on:
-      - postgres
-      - redis
-    networks:
-      - horse_racing_network
-    ports:
-      - "8000:8000"
     healthcheck:
-      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/').read()"]
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -153,79 +60,24 @@ services:
         reservations:
           memory: 256M
 
-  # Optimized Auto-Downloader (Browser-based downloader)
-  auto-downloader:
-    image: horse-racing-auto-downloader:optimized
-    container_name: horserace-auto-downloader
-    environment:
-      - DOCKER_CONTAINER=true
-      - HEADLESS=true
-      - PLAYWRIGHT_BROWSERS_PATH=/app/.playwright
-      - TZ=Europe/London
-      - LOG_LEVEL=INFO
-      # Disable file logging for consistency with other optimized services
-      - ENABLE_FILE_LOGGING=false
-      # Suppress asyncio warnings from Playwright cleanup
-      - PYTHONWARNINGS=ignore::RuntimeWarning:asyncio
-      - PYTHONASYNCIODEBUG=0
-      # Database configuration
-      - HORSERACE_DB_USERNAME=${HORSERACE_DB_USERNAME}
-      - HORSERACE_DB_PASSWORD=${HORSERACE_DB_PASSWORD}
-      - DB_HOST=horse_racing_postgres
-      - DB_NAME=horse_racing_db
-      - DB_PORT=5432
-      - DATABASE_URL=postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@horse_racing_postgres:5432/horse_racing_db
-      # Download URLs for WooCommerce integration
-      - HORSERACE_DB_RESULTS_URL=${HORSERACE_DB_RESULTS_URL}
-      - HORSERACE_DB_CARDS_URL=${HORSERACE_DB_CARDS_URL}
-    volumes:
-      - ./data:/app/data
-      - ./logs:/app/logs
-      - ./cache:/app/cache
-      - /dev/shm:/dev/shm
-    networks:
-      - horse_racing_network
-      - traefik
-    restart: "no"  # Disable restart for development
-    command: ["python", "run_docker_auto_downloader.py", "--mode", "scheduled", "--log-level", "INFO"]
+  # Optimized Pipeline Manager Service  
+  pipeline-manager:
+    build:
+      context: .
+      dockerfile: Dockerfile.pipeline-management-optimized
+    # Faster restart policy for development
+    restart: "no"
+    # Override health check for faster startup
     healthcheck:
-      test: ["CMD", "python", "-c", "print('Auto-downloader OK')"]
-      interval: 5m
-      timeout: 30s
-      retries: 3
-      start_period: 2m
-    labels:
-      - "traefik.enable=true"
-      - "traefik.docker.network=traefik-dev"
-      - "traefik.http.routers.auto-downloader.rule=Host(`downloader.horse-racing.${DOMAIN:-localhost}`)"
-      - "traefik.http.routers.auto-downloader.entrypoints=websecure"
-      - "traefik.http.routers.auto-downloader.tls.certresolver=letsencrypt"
-      - "traefik.http.routers.auto-downloader.service=auto-downloader"
-      - "traefik.http.services.auto-downloader.loadbalancer.server.port=8080"
-    profiles:
-      - auto-downloader  # Only start when specifically requested
+      test: ["CMD", "python", "-c", "import pipeline_management.dynamic_pipeline_timing"]
+      interval: 30s
+      timeout: 10s
+      start_period: 5s
+      retries: 2
+    # Add build-time optimizations
     deploy:
       resources:
         limits:
-          memory: 3G
-          cpus: '1.5'
+          memory: 256M
         reservations:
-          memory: 1G
-          cpus: '0.5'
-    security_opt:
-      - seccomp:unconfined
-    shm_size: 2gb
-
-volumes:
-  postgres_data:
-    driver: local
-  redis_data:
-    driver: local
-
-networks:
-  horse_racing_network:
-    driver: bridge
-    name: horse_racing_network
-  traefik:
-    external: true
-    name: traefik-dev
+          memory: 128M
