@@ -107,7 +107,7 @@ def main():
             "Dockerfile.web-optimized",
             "config/complete_17_stage_config.json",
             "config/complete_csv_column_mapping.json",
-            "17_STAGE_PIPELINE_PLANNING.md",
+            "docs/operations/17_STAGE_PIPELINE_PLANNING.md",
         ]
 
         missing_files = []
