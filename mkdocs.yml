@@ -33,6 +33,11 @@ nav:
     - Security Auditing: operations/security.md
     - NTFY Notifications: operations/notifications.md
     - Performance Tuning: operations/performance.md
+  - Pipeline Visualization:
+    - Pipeline Overview: implementation/pipeline-overview.md
+    - Pipeline Expansion Roadmap: implementation/PIPELINE_EXPANSION_ROADMAP.md
+    - Live Racing Integration: implementation/LIVE_RACING_INTEGRATION_PLAN.md
+    - Visual Charts: implementation/pipeline-charts.md
   - Reports & Analytics:
     - Pipeline Overview: reports/pipeline-overview.md
     - Data Volume Analysis: reports/data-analysis.md
@@ -46,16 +51,8 @@ nav:
     - Power Ratings: analytics/power-ratings.md
     - Speed Analysis: analytics/speed-analysis.md
     - Pace Analysis: analytics/pace-analysis.md
-    - Performance Trends: analytics/performance-trends.md
-    - Comparative Analysis: analytics/comparative-analysis.md
-    - Value Betting Insights: analytics/value-betting.md
   - Live Monitoring:
     - System Dashboard: monitoring/system-dashboard.md
-    - Pipeline Status: monitoring/pipeline-status.md
-    - Performance Metrics: monitoring/performance-metrics.md
-    - Error Tracking: monitoring/error-tracking.md
-    - Health Checks: monitoring/health-checks.md
-    - Alert Management: monitoring/alert-management.md
   - Development:
     - Setup: development/setup.md
     - Docker Development: development/docker-dev.md
@@ -63,22 +60,11 @@ nav:
     - Code Review: development/code-review.md
     - Logging Standards: development/logging.md
     - Error Handling: development/error-handling.md
-  - Reports & Analytics:
-    - System Health Dashboard: reports/system-health.md
-    - Security Audit Reports: reports/security-audits.md
-    - Performance Metrics: reports/performance.md
-    - Data Quality Reports: reports/data-quality.md
-    - Pipeline Reports: reports/pipeline-reports.md
-    - Error Analysis: reports/error-analysis.md
   - Documentation:
     - Complete Implementation: documentation/IMPLEMENTATION_COMPLETE.md
     - Development Journey: documentation/COMPLETE_DEVELOPMENT_JOURNEY.md
     - ML Implementation: documentation/ML_IMPLEMENTATION_COMPLETE.md
-    - Monte Carlo: documentation/MONTE_CARLO_IMPLEMENTATION_COMPLETE.md
-    - 17-Stage Dynamic Pipeline: documentation/17-STAGE-DYNAMIC-PIPELINE.md
-    - Dynamic Timing System: documentation/DYNAMIC-TIMING-SYSTEM.md
-    - Production Deployment: documentation/PRODUCTION-DEPLOYMENT.md
-    - Integration Testing: documentation/INTEGRATION-TESTING.md
+    - Monte Carlo Implementation: documentation/MONTE_CARLO_IMPLEMENTATION_COMPLETE.md
     - Next Phase Roadmap: documentation/NEXT_PHASE_ROADMAP.md
     - Docker Reference: documentation/DOCKER_QUICK_REFERENCE.md
     - Auto Downloader Guide: documentation/ENHANCED_AUTO_DOWNLOAD_COMPLETE.md

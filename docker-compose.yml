@@ -289,6 +289,7 @@ services:
       - ./trained_models:/docs/trained_models
     networks:
       - horse_racing_network
+      - traefik
     restart: unless-stopped
     command: serve --dev-addr=0.0.0.0:8000
     environment:
@@ -301,16 +302,28 @@ services:
       - POSTGRES_PASSWORD=secure_password_123
     depends_on:
       - postgres
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
     labels:
       - "traefik.enable=true"
+      - "traefik.docker.network=traefik-dev"
+      
+      # HTTP Documentation Routes
+      - "traefik.http.routers.horse-racing-docs-http.rule=Host(`docs.horse-racing.${DOMAIN:-localhost}`)"
+      - "traefik.http.routers.horse-racing-docs-http.entrypoints=http"
+      - "traefik.http.routers.horse-racing-docs-http.service=horse-racing-docs"
+      
+      # HTTPS Documentation Routes
       - "traefik.http.routers.horse-racing-docs.rule=Host(`docs.horse-racing.${DOMAIN:-localhost}`)"
       - "traefik.http.routers.horse-racing-docs.entrypoints=websecure"
       - "traefik.http.routers.horse-racing-docs.tls.certresolver=letsencrypt"
       - "traefik.http.routers.horse-racing-docs.service=horse-racing-docs"
+      
+      # Service configuration
       - "traefik.http.services.horse-racing-docs.loadbalancer.server.port=8000"
-    profiles:
-      - dev
-      - docs
 
   # Reports and Analytics Service
   reports:

@@ -67,6 +67,7 @@ def main():
             "horse-racing-ai": "horse-race-ai-v201_horse-racing-ai_1",
             "ntfy": "horse_racing_ntfy",
             "auto-downloader": "horserace-auto-downloader",
+            "mkdocs": "horse_racing_docs",
         }
 
         service_status = {}
