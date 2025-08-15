@@ -7,6 +7,7 @@
 **CURRENT STATE**: ~2 lines of test data vs. production needs of thousands of races
 
 **IMPACT**: Without proper data volume, we cannot verify:
+
 - ❌ ML Training consolidation (needs 10,000+ races)
 - ❌ 109x caching improvement (needs repeated queries)
 - ❌ Database optimization (needs complex workloads)
