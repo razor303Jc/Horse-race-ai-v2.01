@@ -21,7 +21,7 @@ def main():
     try:
         config_file = Path("config/complete_17_stage_config.json")
         if config_file.exists():
-            with open(config_file) as f:
+            with open(config_file, encoding="utf-8") as f:
                 config = json.load(f)
             stages = config.get("stages", [])
             print(f"✅ Configuration loaded: {len(stages)} stages found")
@@ -53,46 +53,62 @@ def main():
             ["docker-compose", "ps"], capture_output=True, text=True
         )
 
-        # Also check all running docker containers for optimized pipeline
+        # Also check all running containers for services that might be
+        # running from separate compose files
         docker_ps_result = subprocess.run(
             ["docker", "ps"], capture_output=True, text=True
         )
 
+        # Expected services with their check patterns
+        expected_services = {
+            "postgres": "horse_racing_postgres",
+            "redis": "horse_racing_redis",
+            "pipeline-manager": "horse-race-ai-v201_pipeline-manager_1",
+            "horse-racing-ai": "horse-race-ai-v201_horse-racing-ai_1",
+            "ntfy": "horse_racing_ntfy",
+            "auto-downloader": "horserace-auto-downloader",
+        }
+
+        service_status = {}
         services_count = 0
-        postgres_running = False
-        redis_running = False
-        pipeline_running = False
 
+        # Check docker-compose services first
         if result.returncode == 0:
-            lines = result.stdout.strip().split("\n")
-            services = [line for line in lines if "horse_racing" in line]
-            services_count += len(services)
+            output = result.stdout
 
-            # Check specific core services
-            postgres_running = any(
-                "postgres" in line and "Up" in line for line in services
-            )
-            redis_running = any("redis" in line and "Up" in line for line in services)
+            for service_name, container_pattern in expected_services.items():
+                service_running = container_pattern in output and "Up" in output
+                service_status[service_name] = service_running
+                if service_running:
+                    services_count += 1
 
-        # Check for optimized pipeline manager in docker ps
+        # For services not found in docker-compose, check docker ps
         if docker_ps_result.returncode == 0:
-            docker_lines = docker_ps_result.stdout.strip().split("\n")
-            pipeline_running = any(
-                "horse_racing_pipeline_manager_optimized" in line and "Up" in line
-                for line in docker_lines
-            )
-            if pipeline_running:
-                services_count += 1
+            docker_output = docker_ps_result.stdout
 
-        print(f"✅ Docker services running: {services_count} services")
-        print(f'  PostgreSQL: {"✅" if postgres_running else "❌"}')
-        print(f'  Redis: {"✅" if redis_running else "❌"}')
-        print(f'  Pipeline Manager: {"✅" if pipeline_running else "❌"}')
+            for service_name, container_pattern in expected_services.items():
+                if not service_status.get(service_name, False):
+                    # Check if it's running as a standalone container
+                    service_running = container_pattern in docker_output
+                    if service_running:
+                        service_status[service_name] = True
+                        services_count += 1
 
-        if not (postgres_running and redis_running):
+        services_total = len(expected_services)
+        print(f"✅ Docker services running: {services_count}/{services_total}")
+        for service_name, is_running in service_status.items():
+            status_icon = "✅" if is_running else "❌"
+            print(f"  {service_name.title()}: {status_icon}")
+
+        # Core services that must be running
+        core_services = ["postgres", "redis", "pipeline-manager", "auto-downloader"]
+        core_running = all(service_status.get(svc, False) for svc in core_services)
+
+        if not core_running:
+            print("❌ Core services must be running")
             all_tests_passed = False
 
-    except Exception as e:
+    except (subprocess.CalledProcessError, OSError) as e:
         print(f"❌ Docker test failed: {e}")
         all_tests_passed = False
 
@@ -128,7 +144,13 @@ def main():
     # Test 4: Pipeline timing analysis
     print("\n⏱️ Testing Pipeline Timing...")
     try:
+        # Re-check config file exists for this test
+        config_file = Path("config/complete_17_stage_config.json")
         if config_file.exists():
+            with open(config_file, encoding="utf-8") as f:
+                config = json.load(f)
+            stages = config.get("stages", [])
+
             total_duration = 0
             critical_stages = 0
             optional_stages = 0
@@ -141,14 +163,11 @@ def main():
                 else:
                     optional_stages += 1
 
-            print(
-                f"✅ Total pipeline duration: {total_duration} minutes ({total_duration/60:.1f} hours)"
-            )
-            print(
-                f"✅ Critical stages: {critical_stages}, Optional stages: {optional_stages}"
-            )
+            hours = total_duration / 60
+            print(f"✅ Total duration: {total_duration} min ({hours:.1f} hrs)")
+            print(f"✅ Critical: {critical_stages}, Optional: {optional_stages}")
 
-            if total_duration > 0 and total_duration < 1440:  # Between 0 and 24 hours
+            if 0 < total_duration < 1440:  # Between 0 and 24 hours
                 print("✅ Pipeline duration is reasonable")
             else:
                 print("❌ Pipeline duration is unreasonable")
@@ -156,7 +175,7 @@ def main():
         else:
             print("❌ Cannot test timing - config file missing")
             all_tests_passed = False
-    except Exception as e:
+    except (FileNotFoundError, json.JSONDecodeError, KeyError) as e:
         print(f"❌ Timing test failed: {e}")
         all_tests_passed = False
 
