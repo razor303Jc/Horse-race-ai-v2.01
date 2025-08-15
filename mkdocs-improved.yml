@@ -1,0 +1,264 @@
+site_name: Horse Racing AI v2.0
+site_description: Advanced AI-powered horse racing handicapping system with machine learning, real-time analytics, and automated data processing
+site_author: Horse Racing AI Team
+site_url: https://docs.horse-racing.localhost
+
+# Repository
+repo_name: Horse-race-handicaping-ai/Horse-race-ai-v2.0
+repo_url: https://github.com/Horse-race-handicaping-ai/Horse-race-ai-v2.0
+edit_uri: edit/main/docs/
+
+# Improved Navigation Structure
+nav:
+  - Home: index.md
+  
+  # Getting Started - Clear onboarding path
+  - Getting Started:
+    - Overview: getting-started/overview.md
+    - Quick Start: getting-started/quickstart.md
+    - Installation: getting-started/installation.md
+    - Docker Setup: getting-started/docker.md
+    - First Predictions: getting-started/first-predictions.md
+  
+  # User Guide - For end users
+  - User Guide:
+    - Web Dashboard: user-guide/web-interface.md
+    - Making Predictions: user-guide/predictions.md
+    - Understanding Results: user-guide/interpreting-results.md
+    - API Usage: user-guide/api-reference.md
+    - Best Practices: user-guide/best-practices.md
+    - Troubleshooting: user-guide/troubleshooting.md
+  
+  # System Architecture - For technical users
+  - Architecture:
+    - System Overview: architecture/system-overview.md
+    - Data Pipeline: architecture/data-pipeline.md
+    - ML Models: architecture/ml-models.md
+    - Web Application: architecture/web-app.md
+    - Database Design: architecture/database.md
+    - Security: architecture/security.md
+  
+  # Operations - For administrators
+  - Operations:
+    - Deployment: operations/deployment.md
+    - Monitoring: operations/monitoring.md
+    - Data Management: operations/data-management.md
+    - Performance Tuning: operations/performance.md
+    - Backup & Recovery: operations/backup-recovery.md
+    - Health Checks: operations/health-checks.md
+  
+  # Analytics & Reports - For analysis
+  - Analytics:
+    - Performance Metrics: analytics/performance-metrics.md
+    - Model Accuracy: analytics/model-accuracy.md
+    - Betting Analysis: analytics/betting-analysis.md
+    - Data Quality: analytics/data-quality.md
+    - Live Dashboards: analytics/live-dashboards.md
+  
+  # Development - For developers
+  - Development:
+    - Setup: development/setup.md
+    - Contributing: development/contributing.md
+    - Code Standards: development/code-standards.md
+    - Testing: development/testing.md
+    - Debugging: development/debugging.md
+    - Release Process: development/release-process.md
+  
+  # Reference - Technical reference
+  - Reference:
+    - API Documentation: reference/api.md
+    - Configuration: reference/configuration.md
+    - CLI Commands: reference/cli.md
+    - Environment Variables: reference/environment.md
+    - Database Schema: reference/database-schema.md
+    - Changelog: reference/changelog.md
+
+# Enhanced Theme Configuration
+theme:
+  name: material
+  language: en
+  palette:
+    # Light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: blue
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    # Dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: blue
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  
+  features:
+    # Navigation
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.expand
+    - navigation.path
+    - navigation.top
+    - navigation.indexes
+    - navigation.tracking
+    
+    # Search
+    - search.highlight
+    - search.share
+    - search.suggest
+    
+    # Table of contents
+    - toc.follow
+    - toc.integrate
+    
+    # Content
+    - content.code.copy
+    - content.code.annotate
+    - content.action.edit
+    - content.action.view
+    - content.tabs.link
+    
+    # Header
+    - header.autohide
+  
+  icon:
+    repo: fontawesome/brands/github
+    edit: material/pencil
+    view: material/eye
+
+# Enhanced Extensions
+markdown_extensions:
+  # Python Markdown
+  - abbr
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - toc:
+      permalink: true
+      slugify: !!python/object/apply:pymdownx.slugs.slugify
+        kwds:
+          case: lower
+  
+  # PyMdown Extensions
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.caret
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+      auto_title: true
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.magiclink:
+      normalize_issue_symbols: true
+      repo_url_shorthand: true
+      user: Horse-race-handicaping-ai
+      repo: Horse-race-ai-v2.0
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+  - pymdownx.snippets:
+      check_paths: true
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+      combine_header_slug: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde
+
+# Enhanced Plugins
+plugins:
+  - search:
+      separator: '[\s\-,:!=\[\]()"/]+|(?!\b)(?=[A-Z][a-z])|\.(?!\d)|&[lg]t;'
+      lang: en
+  - macros:
+      verbose: true
+      include_yaml:
+        - docs/data/config.yml
+  - table-reader
+  - tags:
+      tags_file: reference/tags.md
+  
+  # Uncomment when git integration is needed
+  # - git-revision-date-localized:
+  #     enable_creation_date: true
+  #     type: timeago
+  # - git-committers:
+  #     repository: Horse-race-handicaping-ai/Horse-race-ai-v2.0
+  #     branch: main
+
+# Enhanced Extra Configuration
+extra:
+  # Analytics (add your tracking ID if needed)
+  # analytics:
+  #   provider: google
+  #   property: G-XXXXXXXXXX
+  
+  # Social links
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/Horse-race-handicaping-ai/Horse-race-ai-v2.0
+      name: GitHub Repository
+    - icon: fontawesome/brands/docker
+      link: https://hub.docker.com/r/horse-racing-ai
+      name: Docker Hub
+    - icon: fontawesome/solid/envelope
+      link: mailto:team@horse-racing-ai.com
+      name: Contact Us
+  
+  # Version information
+  version:
+    provider: mike
+    default: latest
+  
+  # Status information
+  status:
+    new: Recently added
+    deprecated: Deprecated
+  
+  # Turn off MkDocs generator notice
+  generator: false
+
+# Enhanced Copyright
+copyright: |
+  Copyright &copy; 2024 Horse Racing AI Team. 
+  Built with <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">Material for MkDocs</a>
+
+# Watch configuration
+watch:
+  - docs/
+  - mkdocs.yml
+  - docs/data/
+
+# Validation settings
+validation:
+  nav:
+    omitted_files: warn
+    not_found: warn
+    absolute_links: info
+  links:
+    not_found: warn
+    absolute_links: warn
+    unrecognized_links: warn
+
+# Additional configurations
+use_directory_urls: true
+strict: false
+dev_addr: 0.0.0.0:8000
