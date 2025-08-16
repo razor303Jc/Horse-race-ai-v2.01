@@ -46,7 +46,7 @@ services:
   horse-racing-ai:
     build:
       context: .
-      dockerfile: Dockerfile.react
+      dockerfile: docker/dockerfiles/Dockerfile.react
     container_name: horse_racing_react_app
     environment:
       # Database configuration
@@ -272,7 +272,7 @@ services:
   mkdocs:
     build:
       context: .
-      dockerfile: Dockerfile.mkdocs
+      dockerfile: docker/dockerfiles/Dockerfile.mkdocs
     container_name: horse_racing_docs
     ports:
       - "8001:8000"
@@ -281,7 +281,7 @@ services:
       - ./mkdocs.yml:/docs/mkdocs.yml
       - ./documentation:/docs/docs/documentation
       - ./README.md:/docs/docs/index.md
-      - ./requirements.txt:/docs/docs/requirements.txt
+      - ./docker/requirements/requirements.txt:/docs/docs/requirements.txt
       - ./pyproject.toml:/docs/docs/pyproject.toml
       - ./reports:/docs/docs/reports
       - ./tools:/docs/tools
@@ -329,7 +329,7 @@ services:
   reports:
     build:
       context: .
-      dockerfile: Dockerfile.reports
+      dockerfile: docker/dockerfiles/Dockerfile.reports
     container_name: horse_racing_reports
     environment:
       DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/horse_racing_db
@@ -357,7 +357,7 @@ services:
   news-analyzer:
     build:
       context: .
-      dockerfile: Dockerfile.news-analyzer
+      dockerfile: docker/dockerfiles/Dockerfile.news-analyzer
     container_name: racing_news_analyzer
     restart: unless-stopped
     volumes:
@@ -385,7 +385,11 @@ services:
   data-processor:
     build:
       context: .
-      dockerfile: Dockerfile.data-processing
+      dockerfile: docker/dockerfiles/Dockerfile.data-optimized
+      args:
+        USER_NAME: ${USER_NAME:-jc}
+        USER_ID: ${USER_ID:-1000}
+        GROUP_ID: ${GROUP_ID:-1000}
     container_name: horse_racing_data_processor
     environment:
       DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/horse_racing_db
@@ -408,11 +412,138 @@ services:
     profiles:
       - data-processing
 
+  # Auto-Downloader Service (Integrated from separate docker-compose)
+  auto-downloader:
+    build:
+      context: .
+      dockerfile: docker/dockerfiles/Dockerfile
+      args:
+        USER_NAME: ${USER_NAME:-jc}
+        USER_ID: ${USER_ID:-1000}
+        GROUP_ID: ${GROUP_ID:-1000}
+    container_name: horserace-auto-downloader
+    environment:
+      - DOCKER_CONTAINER=true
+      - HEADLESS=true
+      - PLAYWRIGHT_BROWSERS_PATH=/app/.playwright
+      - TZ=Europe/London
+      - LOG_LEVEL=INFO
+      # WooCommerce credentials (from .env file)
+      - HORSERACE_DB_USERNAME=${HORSERACE_DB_USERNAME}
+      - HORSERACE_DB_PASSWORD=${HORSERACE_DB_PASSWORD}
+      - HORSERACE_DB_RESULTS_URL=${HORSERACE_DB_RESULTS_URL}
+      - HORSERACE_DB_CARDS_URL=${HORSERACE_DB_CARDS_URL}
+      # Enhanced error handling
+      - PYTHONUNBUFFERED=1
+      - PYTHONDONTWRITEBYTECODE=1
+      # Database integration
+      - DATABASE_URL=postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/horse_racing_db
+      - REDIS_URL=redis://:${REDIS_PASSWORD:-redis_password_123}@redis:6379/0
+    volumes:
+      # Persistent data storage
+      - ./data:/app/data
+      - ./logs:/app/logs
+      - ./cache:/app/cache
+      # Browser and system optimization
+      - /tmp:/tmp
+      - /dev/shm:/dev/shm
+      # Timezone data
+      - /etc/localtime:/etc/localtime:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - horse_racing_network
+    restart: unless-stopped
+    
+    # Enhanced startup command with better error handling
+    command: ["python", "run_docker_auto_downloader.py", "--mode", "scheduled", "--log-level", "INFO"]
+    
+    # Improved health check
+    healthcheck:
+      test: ["CMD", "python", "-c", "import sys; sys.path.append('/app'); from src.automation.docker_config import validate_docker_setup; exit(0 if validate_docker_setup() else 1)"]
+      interval: 5m
+      timeout: 30s
+      retries: 3
+      start_period: 2m
+    
+    # Resource limits optimized for browser operation
+    deploy:
+      resources:
+        limits:
+          memory: 3G  # Increased for browser operations
+          cpus: '1.5'  # Increased for better performance
+        reservations:
+          memory: 1G   # Increased base reservation
+          cpus: '0.5'
+
+    # Enhanced security and operation
+    security_opt:
+      - seccomp:unconfined  # Required for Chrome/Chromium in containers
+    
+    # Browser optimization
+    shm_size: 2gb  # Important for browser stability
+    
+    # Ensure proper shutdown handling
+    stop_grace_period: 30s
+    stop_signal: SIGTERM
+    
+    profiles:
+      - data-processing
+
+  # Test service for manual auto-downloader runs  
+  auto-downloader-test:
+    build:
+      context: .
+      dockerfile: docker/dockerfiles/Dockerfile
+      args:
+        USER_NAME: ${USER_NAME:-jc}
+        USER_ID: ${USER_ID:-1000}
+        GROUP_ID: ${GROUP_ID:-1000}
+    container_name: horserace-auto-downloader-test
+    environment:
+      - DOCKER_CONTAINER=true
+      - HEADLESS=true
+      - PLAYWRIGHT_BROWSERS_PATH=/app/.playwright
+      - TZ=UTC
+      - LOG_LEVEL=DEBUG
+      - HORSERACE_DB_USERNAME=${HORSERACE_DB_USERNAME}
+      - HORSERACE_DB_PASSWORD=${HORSERACE_DB_PASSWORD}
+      - HORSERACE_DB_RESULTS_URL=${HORSERACE_DB_RESULTS_URL}
+      - HORSERACE_DB_CARDS_URL=${HORSERACE_DB_CARDS_URL}
+      - DATABASE_URL=postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/horse_racing_db
+      - REDIS_URL=redis://:${REDIS_PASSWORD:-redis_password_123}@redis:6379/0
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+      - ./cache:/app/cache
+      - /tmp:/tmp
+      - /dev/shm:/dev/shm
+      - /etc/localtime:/etc/localtime:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - horse_racing_network
+    # Run once and exit for testing
+    command: ["python", "run_docker_auto_downloader.py", "--mode", "once", "--log-level", "DEBUG"]
+    profiles:
+      - test
+    shm_size: 2gb
+    security_opt:
+      - seccomp:unconfined
+    stop_grace_period: 30s
+    stop_signal: SIGTERM
+
   # Pipeline Management Service
   pipeline-manager:
     build:
       context: .
-      dockerfile: Dockerfile.pipeline-management
+      dockerfile: docker/dockerfiles/Dockerfile.pipeline-management
     container_name: horse_racing_pipeline_manager
     environment:
       DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/horse_racing_db
@@ -439,7 +570,11 @@ services:
   ml-models:
     build:
       context: .
-      dockerfile: Dockerfile.ml-models
+      dockerfile: docker/dockerfiles/Dockerfile.ml-models
+      args:
+        USER_NAME: ${USER_NAME:-jc}
+        USER_ID: ${USER_ID:-1000}
+        GROUP_ID: ${GROUP_ID:-1000}
     container_name: horse_racing_early_morning_ml
     environment:
       # Database and cache
@@ -495,6 +630,8 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+      auto-downloader:
+        condition: service_healthy
     networks:
       - horse_racing_network
     restart: unless-stopped
@@ -513,7 +650,11 @@ services:
   realtime-processor:
     build:
       context: .
-      dockerfile: Dockerfile.ml-models  # Same base as ML models
+      dockerfile: docker/dockerfiles/Dockerfile.ml-models  # Same base as ML models
+      args:
+        USER_NAME: ${USER_NAME:-jc}
+        USER_ID: ${USER_ID:-1000}
+        GROUP_ID: ${GROUP_ID:-1000}
     container_name: horse_racing_realtime_processor
     environment:
       DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/horse_racing_db

@@ -47,7 +47,7 @@ class PipelineMonitor:
                     "docker",
                     "ps",
                     "--filter",
-                    "name=horserace-auto-downloader",
+                    "name=horse_racing_auto_downloader_clean",
                     "--format",
                     "{{.Status}}",
                 ],
@@ -146,7 +146,13 @@ class PipelineMonitor:
         """Get latest container logs."""
         try:
             result = subprocess.run(
-                ["docker", "logs", "horserace-auto-downloader", "--tail", str(lines)],
+                [
+                    "docker",
+                    "logs",
+                    "horse_racing_auto_downloader_clean",
+                    "--tail",
+                    str(lines),
+                ],
                 capture_output=True,
                 text=True,
                 check=True,

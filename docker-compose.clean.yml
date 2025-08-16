@@ -1,0 +1,454 @@
+version: '3.8'
+
+services:
+  # =============================================================================
+  # INFRASTRUCTURE SERVICES
+  # =============================================================================
+  
+  # PostgreSQL Database - Single source of truth for all data
+  postgres:
+    image: postgres:15
+    container_name: horse_racing_postgres_clean
+    environment:
+      POSTGRES_DB: horse_racing_db
+      POSTGRES_USER: horse_racing
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-secure_password_123}
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --lc-collate=C --lc-ctype=C"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/schemas:/docker-entrypoint-initdb.d
+    networks:
+      - horse_racing_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U horse_racing -d horse_racing_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    ports:
+      - "5434:5432"
+
+  # Redis Cache - Shared caching layer for all services
+  redis:
+    image: redis:7-alpine
+    container_name: horse_racing_redis_clean
+    command: redis-server --requirepass ${REDIS_PASSWORD:-redis_password_123}
+    volumes:
+      - redis_data:/data
+    networks:
+      - horse_racing_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    ports:
+      - "6380:6379"
+
+  # =============================================================================
+  # CORE APPLICATION SERVICES
+  # =============================================================================
+
+  # Web Application - Main UI and API
+  web-app:
+    build:
+      context: .
+      dockerfile: docker/dockerfiles/Dockerfile.web-optimized
+      args:
+        USER_NAME: ${USER_NAME:-jc}
+        USER_ID: ${USER_ID:-1000}
+        GROUP_ID: ${GROUP_ID:-1000}
+    container_name: horse_racing_web_app_clean
+    environment:
+      DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/horse_racing_db
+      REDIS_URL: redis://:${REDIS_PASSWORD:-redis_password_123}@redis:6379/0
+      PYTHONPATH: /app
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      # Web-specific environment
+      NODE_ENV: ${NODE_ENV:-production}
+      API_PORT: 8000
+      WEB_PORT: 3000
+    volumes:
+      - ./src:/app/src
+      - ./templates:/app/templates
+      - ./api:/app/api
+      - ./logs:/app/logs:rw
+    # Remove direct port exposure - use Traefik instead
+    expose:
+      - "8000"  # API
+      - "3000"  # Web UI
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - horse_racing_network
+      - traefik-dev  # Connect to Traefik network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    labels:
+      # Traefik configuration
+      - "traefik.enable=true"
+      # API service (port 8000)
+      - "traefik.http.routers.horserace-api.rule=Host(`horserace-api.local`)"
+      - "traefik.http.routers.horserace-api.service=horserace-api"
+      - "traefik.http.services.horserace-api.loadbalancer.server.port=8000"
+      # Web UI service (port 3000)
+      - "traefik.http.routers.horserace-web.rule=Host(`horserace.local`)"
+      - "traefik.http.routers.horserace-web.service=horserace-web"
+      - "traefik.http.services.horserace-web.loadbalancer.server.port=3000"
+
+  # Data Pipeline Service - Handles all data ingestion, processing, and validation
+  data-pipeline:
+    build:
+      context: .
+      dockerfile: docker/dockerfiles/Dockerfile.pipeline-optimized
+      args:
+        USER_NAME: ${USER_NAME:-jc}
+        USER_ID: ${USER_ID:-1000}
+        GROUP_ID: ${GROUP_ID:-1000}
+    container_name: horse_racing_data_pipeline_clean
+    environment:
+      DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/horse_racing_db
+      REDIS_URL: redis://:${REDIS_PASSWORD:-redis_password_123}@redis:6379/0
+      PYTHONPATH: /app
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      # Pipeline-specific configuration
+      PIPELINE_MODE: production
+      AUTO_DOWNLOAD_ENABLED: "true"
+      VALIDATION_ENABLED: "true"
+      UPLOAD_ENABLED: "true"
+      RACE_CARD_AUTOMATION: "true"
+      TIMING_OPTIMIZATION: "true"
+      PIPELINE_START_BUFFER_MINUTES: 10
+      PIPELINE_END_BUFFER_MINUTES: 5
+    volumes:
+      - ./data:/app/data:rw
+      - ./config:/app/config:ro
+      - ./scripts:/app/scripts:ro
+      - ./tools:/app/tools:ro
+      - ./logs:/app/logs:rw
+      - ./cache:/app/cache:rw
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - horse_racing_network
+    restart: unless-stopped
+    # Main pipeline coordinator
+    command: ["python", "/app/tools/pipeline_coordinator.py"]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import redis; r=redis.Redis(host='redis', port=6379, password='${REDIS_PASSWORD:-redis_password_123}', decode_responses=True); print('Pipeline Status:', r.get('pipeline:status') or 'Ready')"]
+      interval: 60s
+      timeout: 30s
+      retries: 3
+
+  # Early Morning ML Training Service - Dedicated ML training in off-hours
+  ml-trainer:
+    build:
+      context: .
+      dockerfile: docker/dockerfiles/Dockerfile.ml-models
+      args:
+        USER_NAME: ${USER_NAME:-jc}
+        USER_ID: ${USER_ID:-1000}
+        GROUP_ID: ${GROUP_ID:-1000}
+    container_name: horse_racing_ml_trainer_clean
+    environment:
+      DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/horse_racing_db
+      REDIS_URL: redis://:${REDIS_PASSWORD:-redis_password_123}@redis:6379/0
+      PYTHONPATH: /app
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      # Early Morning ML Training Configuration
+      ML_TRAINING_START_TIME: ${ML_TRAINING_START_TIME:-00:30}
+      ML_TRAINING_END_TIME: ${ML_TRAINING_END_TIME:-04:00}
+      ML_TRAINING_WINDOW_MINUTES: ${ML_TRAINING_WINDOW_MINUTES:-210}
+      ML_MAX_CYCLES: ${ML_MAX_CYCLES:-8}
+      ML_CYCLE_DURATION_MINUTES: ${ML_CYCLE_DURATION_MINUTES:-25}
+      ML_BUFFER_MINUTES: ${ML_BUFFER_MINUTES:-5}
+      ML_MAX_RETRIES: ${ML_MAX_RETRIES:-3}
+      ML_TIMEOUT_SECONDS: ${ML_TIMEOUT_SECONDS:-1800}
+      # ML-specific paths
+      MODELS_PATH: /app/models
+      TRAINED_MODELS_PATH: /app/trained_models
+      ML_CACHE_PATH: /app/ml_cache
+      # Pipeline integration
+      PIPELINE_INTEGRATION_ENABLED: "true"
+      PIPELINE_CHECK_DOWNLOAD_STATUS: "true"
+    volumes:
+      - ./models:/app/models:rw
+      - ./trained_models:/app/trained_models:rw
+      - ./docker/ml_training:/app/docker/ml_training:ro
+      - ./tools:/app/tools:ro
+      - ./data:/app/data:ro  # Read-only access to data
+      - ./logs:/app/logs:rw
+      - ./ml_cache:/app/ml_cache:rw
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - horse_racing_network
+    restart: unless-stopped
+    # Early morning ML training with pipeline integration
+    command: ["python", "/app/docker/ml_training/pipeline_integration.py"]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import sys; sys.path.append('/app/docker/ml_training'); from pipeline_integration import EarlyMorningPipelineIntegration; integration = EarlyMorningPipelineIntegration(); print('ML Training System Ready')"]
+      interval: 120s
+      timeout: 30s
+      start_period: 60s
+      retries: 3
+
+  # =============================================================================
+  # OPTIONAL/SUPPORT SERVICES
+  # =============================================================================
+
+  # Auto-Downloader Service - Dedicated automated data collection
+  auto-downloader:
+    build:
+      context: .
+      dockerfile: docker/dockerfiles/Dockerfile.auto-downloader
+      args:
+        USER_NAME: ${USER_NAME:-jc}
+        USER_ID: ${USER_ID:-1000}
+        GROUP_ID: ${GROUP_ID:-1000}
+    container_name: horse_racing_auto_downloader_clean
+    environment:
+      DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/horse_racing_db
+      REDIS_URL: redis://:${REDIS_PASSWORD:-redis_password_123}@redis:6379/0
+      PYTHONPATH: /app
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      # Auto-downloader specific
+      DOCKER_CONTAINER: "true"
+      HEADLESS: "true"
+      PLAYWRIGHT_BROWSERS_PATH: /app/.playwright
+      TZ: Europe/London
+      # WooCommerce credentials
+      HORSERACE_DB_USERNAME: ${HORSERACE_DB_USERNAME}
+      HORSERACE_DB_PASSWORD: ${HORSERACE_DB_PASSWORD}
+      HORSERACE_DB_RESULTS_URL: ${HORSERACE_DB_RESULTS_URL}
+      HORSERACE_DB_CARDS_URL: ${HORSERACE_DB_CARDS_URL}
+      # Enhanced error handling
+      PYTHONUNBUFFERED: "1"
+      PYTHONDONTWRITEBYTECODE: "1"
+    volumes:
+      - ./data:/app/data:rw
+      - ./logs:/app/logs:rw
+      - ./cache:/app/cache:rw
+      - /tmp:/tmp
+      - /dev/shm:/dev/shm
+      - /etc/localtime:/etc/localtime:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - horse_racing_network
+    restart: unless-stopped
+    # Enhanced startup with better error handling
+    command: ["python", "run_docker_auto_downloader.py", "--mode", "scheduled", "--log-level", "INFO"]
+    # Browser optimization
+    shm_size: 2gb
+    security_opt:
+      - seccomp:unconfined
+    # Resource limits optimized for browser operation
+    deploy:
+      resources:
+        limits:
+          memory: 3G
+          cpus: '1.5'
+        reservations:
+          memory: 1G
+          cpus: '0.5'
+    healthcheck:
+      test: ["CMD", "python", "-c", "import sys; sys.path.append('/app'); from src.automation.docker_config import validate_docker_setup; exit(0 if validate_docker_setup() else 1)"]
+      interval: 5m
+      timeout: 30s
+      retries: 3
+      start_period: 2m
+    profiles:
+      - auto-downloader  # Optional service, enable with --profile auto-downloader
+
+  # Documentation Service - Public facing via Traefik
+  docs:
+    build:
+      context: .
+      dockerfile: docker/dockerfiles/Dockerfile.mkdocs
+    container_name: horse_racing_docs
+    volumes:
+      - ./docs:/docs/docs:ro
+      - ./documentation:/docs/documentation:ro
+      - ./mkdocs-clean.yml:/docs/mkdocs.yml:ro
+    # Remove port conflict - use Traefik instead
+    expose:
+      - "8000"  # MkDocs internal port
+    networks:
+      - horse_racing_network
+      - traefik-dev  # Connect to Traefik network
+    restart: unless-stopped  # Keep running for public access
+    profiles:
+      - docs
+    labels:
+      # Traefik configuration
+      - "traefik.enable=true"
+      - "traefik.http.routers.horserace-docs.rule=Host(`horserace-docs.local`)"
+      - "traefik.http.routers.horserace-docs.service=horserace-docs"
+      - "traefik.http.services.horserace-docs.loadbalancer.server.port=8000"
+
+  # News Analysis Service - Optional AI-powered news analysis
+  news-analyzer:
+    build:
+      context: .
+      dockerfile: docker/dockerfiles/Dockerfile.news-analyzer
+    container_name: horse_racing_news_analyzer
+    environment:
+      DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/horse_racing_db
+      OLLAMA_HOST: 0.0.0.0:11434
+    volumes:
+      - ./logs:/app/logs:rw
+      - ./news_analysis.db:/app/news_analysis.db:rw
+      - news_analyzer_data:/app/data:rw
+    ports:
+      - "11434:11434"  # Ollama API
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - horse_racing_network
+    restart: "no"  # Resource intensive - run on demand
+    profiles:
+      - news-analyzer
+
+  # Reports Generator - Optional on-demand reporting
+  reports:
+    build:
+      context: .
+      dockerfile: docker/dockerfiles/Dockerfile.reports
+    container_name: horse_racing_reports
+    environment:
+      DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/horse_racing_db
+      REDIS_URL: redis://:${REDIS_PASSWORD:-redis_password_123}@redis:6379/0
+      PYTHONPATH: /app
+      REPORTS_OUTPUT: /app/reports
+    volumes:
+      - ./reports:/app/reports:rw
+      - ./data:/app/data:ro  # Read-only access to data
+      - ./tools:/app/tools:ro
+      - ./experiments:/app/experiments:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - horse_racing_network
+    restart: "no"  # Run on demand
+    profiles:
+      - reports
+
+  # =============================================================================
+  # ADMIN/MONITORING SERVICES
+  # =============================================================================
+
+  # PostgreSQL Admin Interface
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: horse_racing_pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@horseracing.local
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-admin_password_123}
+      PGADMIN_LISTEN_PORT: 80
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    ports:
+      - "8081:80"
+    depends_on:
+      - postgres
+    networks:
+      - horse_racing_network
+    restart: unless-stopped
+    profiles:
+      - admin
+
+  # Notification Service
+  ntfy:
+    image: binwiederhier/ntfy
+    container_name: horse_racing_ntfy
+    command:
+      - serve
+      - --cache-file
+      - /var/cache/ntfy/cache.db
+      - --auth-file
+      - /var/lib/ntfy/auth.db
+      - --auth-default-access
+      - deny-all
+    environment:
+      - NTFY_BASE_URL=http://localhost:8082
+      - NTFY_UPSTREAM_BASE_URL=https://ntfy.sh
+      - NTFY_LISTEN_HTTP=:80
+      - NTFY_AUTH_DEFAULT_ACCESS=deny-all
+    volumes:
+      - ntfy_cache:/var/cache/ntfy
+      - ntfy_config:/var/lib/ntfy
+    ports:
+      - "8082:80"
+    networks:
+      - horse_racing_network
+    restart: unless-stopped
+    profiles:
+      - notifications
+
+# =============================================================================
+# VOLUMES AND NETWORKS
+# =============================================================================
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  pgadmin_data:
+    driver: local
+  ntfy_cache:
+    driver: local
+  ntfy_config:
+    driver: local
+  news_analyzer_data:
+    driver: local
+
+networks:
+  horse_racing_network:
+    driver: bridge
+    name: horse_racing_network
+  traefik-dev:
+    external: true
+    name: traefik-dev
+
+# =============================================================================
+# DEPLOYMENT PROFILES
+# =============================================================================
+# Usage Examples:
+# 
+# Core services only:
+# docker-compose up postgres redis web-app data-pipeline ml-trainer
+#
+# With documentation:
+# docker-compose --profile docs up
+#
+# With admin tools:
+# docker-compose --profile admin up
+#
+# Full development setup:
+# docker-compose --profile docs --profile admin --profile reports up
+#
+# Production minimal:
+# docker-compose up postgres redis web-app data-pipeline ml-trainer

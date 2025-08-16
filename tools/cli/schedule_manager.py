@@ -37,8 +37,8 @@ class ScheduleManager:
     def get_config_files(self) -> List[Path]:
         """Get all configuration files."""
         patterns = [
-            "project_root / 'config' / project_root / 'config' / daily_pipeline_config*.json",
-            "project_root / 'config' / daily_pipeline_config*.json",
+            "config/daily_pipeline_config*.json",
+            "config/config/daily_pipeline_config*.json",
         ]
         files = []
         for pattern in patterns:
@@ -48,9 +48,9 @@ class ScheduleManager:
     def get_schedule_files(self) -> List[Path]:
         """Get Python files with schedule definitions."""
         files = [
+            "run_docker_auto_downloader.py",  # Root file used by Docker
             "tools/utilities/run_docker_auto_downloader.py",
             "docker/automation/run_docker_auto_downloader.py",
-            "daily_pipeline_orchestrator.py",
         ]
         return [
             self.project_root / f for f in files if (self.project_root / f).exists()
@@ -212,12 +212,12 @@ class ScheduleManager:
 
             # Stop and remove
             subprocess.run(
-                ["docker", "stop", "horserace-auto-downloader"],
+                ["docker", "stop", "horse_racing_auto_downloader_clean"],
                 check=True,
                 capture_output=True,
             )
             subprocess.run(
-                ["docker", "rm", "horserace-auto-downloader"],
+                ["docker", "rm", "horse_racing_auto_downloader_clean"],
                 check=True,
                 capture_output=True,
             )
@@ -226,7 +226,7 @@ class ScheduleManager:
             cmd = [
                 "docker-compose",
                 "-f",
-                "docker-compose.auto-downloader.yml",
+                "docker-compose.clean.yml",
                 "up",
                 "-d",
                 "auto-downloader",
@@ -275,7 +275,7 @@ class ScheduleManager:
                     "docker",
                     "ps",
                     "--filter",
-                    "name=horserace-auto-downloader",
+                    "name=horse_racing_auto_downloader_clean",
                     "--format",
                     "{{.Names}}",
                 ],
@@ -283,7 +283,7 @@ class ScheduleManager:
                 text=True,
                 check=True,
             )
-            if "horserace-auto-downloader" in result.stdout:
+            if "horse_racing_auto_downloader_clean" in result.stdout:
                 print("\n🐳 Container: ✅ Running")
             else:
                 print("\n🐳 Container: ❌ Not running")

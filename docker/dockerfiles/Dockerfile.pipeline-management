@@ -1,0 +1,45 @@
+# Pipeline Management Service Dockerfile
+FROM python:3.12-slim
+
+# Set working directory
+WORKDIR /app
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    libpq-dev \
+    gcc \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy pipeline management requirements
+COPY docker/requirements/requirements-pipeline-management-optimized.txt .
+
+# Install Python dependencies (optimized set)
+RUN pip install --no-cache-dir -r requirements-pipeline-management-optimized.txt
+
+# Copy pipeline management code
+COPY docker/pipeline_management/ ./pipeline_management/
+COPY config/ ./config/
+COPY tools/ ./tools/
+
+# Create logs directory with proper permissions
+RUN mkdir -p logs && chmod 777 logs
+
+# Set Python path
+ENV PYTHONPATH=/app
+
+# Create non-root user for security using environment variable
+ARG USER_NAME=jc
+ARG USER_ID=1000
+ARG GROUP_ID=1000
+
+RUN groupadd -g ${GROUP_ID} ${USER_NAME} && \
+    useradd -u ${USER_ID} -g ${GROUP_ID} -m -s /bin/bash ${USER_NAME} && \
+    chown -R ${USER_NAME}:${USER_NAME} /app
+USER ${USER_NAME}
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD python -c "import pipeline_management.simple_pipeline_manager; print('Pipeline Manager Ready')" || exit 1
+
+# Default command
+CMD ["python", "pipeline_management/simple_pipeline_manager.py"]

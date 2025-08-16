@@ -9,7 +9,7 @@ services:
   pipeline-manager:
     build:
       context: .
-      dockerfile: Dockerfile.pipeline-optimized
+      dockerfile: docker/dockerfiles/Dockerfile.pipeline-optimized
     environment:
       - PYTHONPATH=/app:/app/pipeline_management
       - LOG_LEVEL=INFO
@@ -22,11 +22,11 @@ services:
       retries: 3
       start_period: 10s
 
-  # Optimized Data Processor (4-minute build vs 15+ minutes)  
-  data-processor:
+  # Optimized Data Pipeline (90% smaller vs full system)  
+  data-pipeline:
     build:
       context: .
-      dockerfile: Dockerfile.data-optimized
+      dockerfile: docker/dockerfiles/Dockerfile.pipeline-optimized
     environment:
       - PYTHONPATH=/app:/app/data_processing
       - LOG_LEVEL=INFO
@@ -42,7 +42,7 @@ services:
   horse-racing-ai:
     build:
       context: .
-      dockerfile: Dockerfile.web-optimized
+      dockerfile: docker/dockerfiles/Dockerfile.web-optimized
     environment:
       - PYTHONPATH=/app
       - LOG_LEVEL=INFO
@@ -60,11 +60,11 @@ services:
         reservations:
           memory: 256M
 
-  # Optimized Pipeline Manager Service  
-  pipeline-manager:
+  # Optimized ML System (700MB vs 2.1GB)
+  ml-trainer:
     build:
       context: .
-      dockerfile: Dockerfile.pipeline-management-optimized
+      dockerfile: docker/dockerfiles/Dockerfile.ml-models
     # Faster restart policy for development
     restart: "no"
     # Override health check for faster startup

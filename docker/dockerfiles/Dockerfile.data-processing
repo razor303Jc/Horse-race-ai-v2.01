@@ -1,0 +1,48 @@
+# Data Processing Dockerfile
+# Optimized for data download, processing, and validation
+FROM python:3.12-slim
+
+# Build arguments for user management
+ARG USER_NAME=jc
+ARG USER_ID=1000
+ARG GROUP_ID=1000
+
+# Set working directory
+WORKDIR /app
+
+# Install system dependencies for data processing
+RUN apt-get update && apt-get install -y \
+    curl \
+    wget \
+    unzip \
+    postgresql-client \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy and install Python dependencies
+COPY docker/requirements/requirements-data-processing-optimized.txt ./requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy application code
+COPY src/ ./src/
+COPY scripts/ ./scripts/
+COPY tools/ ./tools/
+COPY config/ ./config/
+
+# Create necessary directories
+RUN mkdir -p data logs cache && \
+    chmod 777 data logs cache
+
+# Create user with same UID/GID as host user
+RUN groupadd -g ${GROUP_ID} ${USER_NAME} && \
+    useradd -r -u ${USER_ID} -g ${USER_NAME} -d /app -s /bin/bash ${USER_NAME} && \
+    chown -R ${USER_NAME}:${USER_NAME} /app
+
+# Switch to non-root user
+USER ${USER_NAME}
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD python -c "import psycopg2; print('Data processing service healthy')" || exit 1
+
+# Default command
+CMD ["python", "scripts/data_processor.py"]

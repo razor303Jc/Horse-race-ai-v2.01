@@ -12,6 +12,10 @@ pandas>=2.0.0
 psycopg2-binary>=2.9.0
 sqlalchemy>=2.0.0
 
+# Machine learning model support
+joblib>=1.3.0
+scikit-learn>=1.3.0
+
 # CORS for web app
 fastapi-cors>=0.0.6
 

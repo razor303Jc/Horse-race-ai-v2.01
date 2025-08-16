@@ -1,11 +1,15 @@
 # Additional requirements for respectful auto downloader
 playwright>=1.40.0
+playwright-stealth>=1.0.6
 schedule>=1.2.0
 aiofiles>=23.2.1
 structlog>=23.2.0
 psutil>=5.9.0
 aiohttp>=3.8.0
 requests>=2.31.0
+
+# NOTE: After installing playwright, run: playwright install chromium --with-deps
+# This is handled in the Dockerfile but browsers need to be installed separately
 
 # Data processing
 pandas>=2.0.0

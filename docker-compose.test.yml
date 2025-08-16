@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  # Web Application - Main UI and API
+  web-app:
+    build:
+      context: .
+      dockerfile: docker/dockerfiles/Dockerfile.web-optimized
+      args:
+        USER_NAME: ${USER_NAME:-jc}
+        USER_ID: ${USER_ID:-1000}
+        GROUP_ID: ${GROUP_ID:-1000}
+    container_name: horse_racing_web_app_test
+    environment:
+      DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@host.docker.internal:5433/horse_racing_db
+      REDIS_URL: redis://:${REDIS_PASSWORD:-redis_password_123}@host.docker.internal:6380/0
+      PYTHONPATH: /app
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      # Web-specific environment
+      NODE_ENV: ${NODE_ENV:-production}
+      API_PORT: 8000
+      WEB_PORT: 3000
+    volumes:
+      - ./src:/app/src
+      - ./templates:/app/templates
+      - ./api:/app/api
+      - ./logs:/app/logs:rw
+    ports:
+      - "8002:8000"  # API (using different port to avoid conflicts)
+      - "3002:3000"  # Web UI (using different port to avoid conflicts)
+    networks:
+      - horse_racing_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+networks:
+  horse_racing_network:
+    external: true

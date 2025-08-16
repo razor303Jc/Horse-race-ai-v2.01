@@ -54,11 +54,16 @@ COPY . .
 RUN mkdir -p /app/data /app/cache /app/logs && \
     chmod 755 /app/data /app/cache /app/logs
 
-# Create non-root user for security
-RUN useradd --create-home --shell /bin/bash scraper && \
-    chown -R scraper:scraper /app
+# Create non-root user for security using environment variable
+ARG USER_NAME=jc
+ARG USER_ID=1000
+ARG GROUP_ID=1000
 
-USER scraper
+RUN groupadd -g ${GROUP_ID} ${USER_NAME} && \
+    useradd -u ${USER_ID} -g ${GROUP_ID} -m -s /bin/bash ${USER_NAME} && \
+    chown -R ${USER_NAME}:${USER_NAME} /app
+
+USER ${USER_NAME}
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \

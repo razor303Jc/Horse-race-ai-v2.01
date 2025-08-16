@@ -3,8 +3,12 @@ version: '3.8'
 services:
   auto-downloader:
     build:
-      context: .
-      dockerfile: Dockerfile
+      context: ../../
+      dockerfile: docker/dockerfiles/Dockerfile
+      args:
+        USER_NAME: ${USER_NAME:-jc}
+        USER_ID: ${USER_ID:-1000}
+        GROUP_ID: ${GROUP_ID:-1000}
     container_name: horserace-auto-downloader
     environment:
       - DOCKER_CONTAINER=true
@@ -69,8 +73,12 @@ services:
   # Test service for manual runs  
   auto-downloader-test:
     build:
-      context: .
-      dockerfile: Dockerfile
+      context: ../../
+      dockerfile: docker/dockerfiles/Dockerfile
+      args:
+        USER_NAME: ${USER_NAME:-jc}
+        USER_ID: ${USER_ID:-1000}
+        GROUP_ID: ${GROUP_ID:-1000}
     container_name: horserace-auto-downloader-test
     environment:
       - DOCKER_CONTAINER=true
