@@ -1,0 +1,31 @@
+                                            Table "public.races"
+       Column       |            Type             | Collation | Nullable |              Default              
+--------------------+-----------------------------+-----------+----------+-----------------------------------
+ id                 | integer                     |           | not null | nextval('races_id_seq'::regclass)
+ race_id            | text                        |           |          | 'none'::text
+ race_number        | integer                     |           |          | 0
+ race_time          | text                        |           |          | 'none'::text
+ course_id          | integer                     |           |          | 0
+ course             | text                        |           |          | 'none'::text
+ race_type          | text                        |           |          | 'none'::text
+ date               | text                        |           |          | 'none'::text
+ race_name          | text                        |           |          | 'none'::text
+ class              | text                        |           |          | 'none'::text
+ years              | text                        |           |          | 'none'::text
+ distance           | text                        |           |          | 'none'::text
+ surface            | text                        |           |          | 'none'::text
+ prize              | text                        |           |          | 'none'::text
+ runners_racecard   | integer                     |           |          | 0
+ runners            | integer                     |           |          | 0
+ draw               | integer                     |           |          | 0
+ ew_racecard        | integer                     |           |          | 0
+ ew                 | integer                     |           |          | 0
+ places_ew_racecard | integer                     |           |          | 0
+ places_ew          | integer                     |           |          | 0
+ created_at         | timestamp without time zone |           |          | CURRENT_TIMESTAMP
+ updated_at         | timestamp without time zone |           |          | CURRENT_TIMESTAMP
+Indexes:
+    "races_pkey" PRIMARY KEY, btree (id)
+    "idx_races_date" btree (date)
+    "idx_races_race_id" btree (race_id)
+

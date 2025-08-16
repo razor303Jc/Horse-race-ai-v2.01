@@ -40,7 +40,10 @@ from dynamic_pipeline_timing import PipelineTimeAllocator
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-    handlers=[logging.FileHandler("project_root / 'logs' / daily_pipeline.log"), logging.StreamHandler()],
+    handlers=[
+        logging.FileHandler("project_root / 'logs' / daily_pipeline.log"),
+        logging.StreamHandler(),
+    ],
 )
 logger = logging.getLogger(__name__)
 
@@ -64,7 +67,7 @@ class DailyPipelineOrchestrator:
         # Database connection
         self.db_config = {
             "host": "localhost",
-            "port": 5433,
+            "port": 5434,
             "database": "horse_racing_db",
             "user": "horse_racing",
             "password": os.getenv("POSTGRES_PASSWORD", "secure_password_123"),

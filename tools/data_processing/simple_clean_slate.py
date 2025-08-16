@@ -39,7 +39,7 @@ class SimpleCleanSlateUploader:
         # Database connection parameters
         self.db_params = {
             "host": "localhost",
-            "port": 5433,
+            "port": 5434,
             "database": "horse_racing_db",
             "user": "horse_racing",
             "password": "secure_password_123",

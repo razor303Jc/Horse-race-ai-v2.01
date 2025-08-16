@@ -1,4 +1,5 @@
 # 🤖 Building the World's Most Advanced Horse Racing AI: Live Training in Progress!
+<!-- 🔒 PROTECTED FILE: DO NOT MOVE FROM ROOT - See .keep-in-root for details -->
 
 _Supporting breakthrough AI development that's revolutionizing sports prediction - watch the training happen in real-time!_
 

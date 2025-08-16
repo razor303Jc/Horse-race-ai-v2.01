@@ -1,4 +1,5 @@
 # Docker File Structure Organization - COMPLETED
+<!-- 🔒 PROTECTED FILE: DO NOT MOVE FROM ROOT - See .keep-in-root for details -->
 
 ## Summary of Changes
 

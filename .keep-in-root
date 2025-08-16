@@ -1,0 +1,33 @@
+# 📌 KEEP IN ROOT - DO NOT MOVE
+# Critical files that must remain in the project root directory
+
+This file serves as a marker to prevent these critical documentation files from being moved during cleanup or reorganization:
+
+## 🔒 Protected Root Files:
+- MICROSERVICES_CLEANUP_COMPLETE
+- BUT_ME_A_COFFEE.md  
+- DOCKER_STRUCTURE_ORGANIZATION_COMPLETE
+- COMPREHENSIVE_PIPELINE_ARCHITECTURE.md
+
+## 📋 Reasons to Keep in Root:
+1. **Visibility**: These files provide immediate project status and architecture overview
+2. **Documentation**: Core project documentation should be easily accessible
+3. **Status Markers**: Completion markers help track major milestones
+4. **Quick Reference**: Root-level placement ensures fast access for developers
+
+## ⚠️ Warning:
+DO NOT move, delete, or relocate these files without updating:
+- Build scripts
+- Documentation references
+- CI/CD pipelines
+- Developer onboarding guides
+
+## 🛡️ Protection Rules:
+- Keep all files listed above in project root
+- Update this file if adding new protected files
+- Maintain clear naming conventions
+- Preserve file content integrity
+
+---
+*File created: 2025-08-16*  
+*Purpose: Protect critical root documentation files*

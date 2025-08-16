@@ -1,4 +1,5 @@
 # Docker Microservices Cleanup - COMPLETED
+<!-- 🔒 PROTECTED FILE: DO NOT MOVE FROM ROOT - See .keep-in-root for details -->
 
 ## Problem Resolution Summary
 
