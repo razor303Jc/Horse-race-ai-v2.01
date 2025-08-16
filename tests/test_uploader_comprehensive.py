@@ -42,16 +42,16 @@ except ImportError:
     # Create mock functions if import fails
     def convert_uk_weight(weight_str):
         return 0.0
-    
+
     def convert_fav_position(fav_str):
         return 0
-    
+
     def clean_data_value(value, column_name, data_type):
         return value
-    
+
     def get_column_types(table_name):
         return {"integer": [], "float": [], "string": []}
-    
+
     def upload_csv_file(file_path, table_name):
         return False
 
@@ -132,7 +132,7 @@ class TestDataConversionFunctions(unittest.TestCase):
         self.assertAlmostEqual(
             clean_data_value("9-7", "weight_uk", "float"), 9.5, places=2
         )
-        
+
         # Test fav column
         self.assertEqual(clean_data_value("1st", "fav", "integer"), 1)
         self.assertEqual(clean_data_value("3rd", "fav", "integer"), 3)
@@ -144,7 +144,7 @@ class TestColumnTypes(unittest.TestCase):
     def test_get_column_types_structure(self):
         """Test that get_column_types returns proper structure"""
         column_types = get_column_types("races")
-        
+
         self.assertIsInstance(column_types, dict)
         self.assertIn("integer", column_types)
         self.assertIn("float", column_types)
@@ -153,7 +153,7 @@ class TestColumnTypes(unittest.TestCase):
     def test_get_column_types_races(self):
         """Test column types for races table"""
         column_types = get_column_types("races")
-        
+
         # Check some known integer columns
         integer_cols = column_types["integer"]
         self.assertIn("race_number", integer_cols)
@@ -162,12 +162,12 @@ class TestColumnTypes(unittest.TestCase):
     def test_get_column_types_records(self):
         """Test column types for records table"""
         column_types = get_column_types("records")
-        
+
         # Check some known integer columns
         integer_cols = column_types["integer"]
         self.assertIn("Horse_number", integer_cols)
         self.assertIn("Place", integer_cols)
-        
+
         # Check some known float columns
         float_cols = column_types["float"]
         self.assertIn("weight_uk", float_cols)
@@ -187,6 +187,7 @@ class TestDatabaseIntegration(unittest.TestCase):
     def tearDown(self):
         """Clean up test environment"""
         import shutil
+
         if Path(self.test_data_dir).exists():
             shutil.rmtree(self.test_data_dir)
 
@@ -200,7 +201,7 @@ class TestDatabaseIntegration(unittest.TestCase):
             "race_date": ["2025-08-15", "2025-08-15", "2025-08-15"],
             "race_time": ["14:30", "15:00", "15:30"],
         }
-        
+
         records_data = {
             "id": [1, 2, 3],
             "Horse_number": [1, 2, 3],
@@ -209,49 +210,49 @@ class TestDatabaseIntegration(unittest.TestCase):
             "fav": ["1st", "2nd", "3rd"],
             "SP": ["2.5", "3.0", "4.5"],
         }
-        
+
         # Create test CSV files
         races_df = pd.DataFrame(races_data)
         records_df = pd.DataFrame(records_data)
-        
+
         races_file = Path(self.test_data_dir) / "races.csv"
         records_file = Path(self.test_data_dir) / "records.csv"
-        
+
         races_df.to_csv(races_file, index=False)
         records_df.to_csv(records_file, index=False)
-        
+
         return races_file, records_file
 
-    @patch('safe_upload_all.psycopg2.connect')
+    @patch("safe_upload_all.psycopg2.connect")
     def test_upload_csv_file_success(self, mock_connect):
         """Test successful CSV file upload"""
         # Set up mocks
         mock_connect.return_value = self.mock_conn
         self.mock_cursor.fetchone.return_value = (10,)  # Mock successful inserts
-        
+
         # Create test data
         races_file, _ = self.test_create_test_csv_data()
-        
+
         # Test upload
         result = upload_csv_file(str(races_file), "races")
-        
+
         # Verify
         self.assertTrue(result)
         mock_connect.assert_called_once()
         self.mock_cursor.execute.assert_called()
 
-    @patch('safe_upload_all.psycopg2.connect')
+    @patch("safe_upload_all.psycopg2.connect")
     def test_upload_csv_file_connection_error(self, mock_connect):
         """Test CSV upload with connection error"""
         # Set up mock to raise exception
         mock_connect.side_effect = psycopg2.Error("Connection failed")
-        
+
         # Create test data
         races_file, _ = self.test_create_test_csv_data()
-        
+
         # Test upload
         result = upload_csv_file(str(races_file), "races")
-        
+
         # Verify
         self.assertFalse(result)
 
@@ -334,11 +335,11 @@ def run_unit_tests():
     """Run only unit tests (no database required)"""
     print("🧪 Running Unit Tests for Upload System")
     print("=" * 50)
-    
+
     # Create test suite excluding integration tests
     loader = unittest.TestLoader()
     suite = unittest.TestSuite()
-    
+
     # Add unit test classes
     suite.addTests(loader.loadTestsFromTestCase(TestDataConversionFunctions))
     suite.addTests(loader.loadTestsFromTestCase(TestColumnTypes))
@@ -346,11 +347,11 @@ def run_unit_tests():
     suite.addTests(loader.loadTestsFromTestCase(TestDataValidation))
     suite.addTests(loader.loadTestsFromTestCase(TestErrorHandling))
     suite.addTests(loader.loadTestsFromTestCase(TestPerformance))
-    
+
     # Run tests
     runner = unittest.TextTestRunner(verbosity=2)
     result = runner.run(suite)
-    
+
     # Report results
     if result.wasSuccessful():
         print("\n✅ All unit tests passed!")
@@ -364,17 +365,26 @@ def run_integration_tests():
     """Run integration tests (requires database)"""
     print("🔗 Running Integration Tests for Upload System")
     print("=" * 50)
-    
+
     # These tests require actual database connection
     # Run them separately with pytest
     import subprocess
-    
+
     try:
-        result = subprocess.run([
-            "python", "-m", "pytest", __file__ + "::TestEndToEndIntegration",
-            "-v", "-m", "integration"
-        ], capture_output=True, text=True)
-        
+        result = subprocess.run(
+            [
+                "python",
+                "-m",
+                "pytest",
+                __file__ + "::TestEndToEndIntegration",
+                "-v",
+                "-m",
+                "integration",
+            ],
+            capture_output=True,
+            text=True,
+        )
+
         if result.returncode == 0:
             print("✅ Integration tests passed!")
             return True
@@ -383,7 +393,7 @@ def run_integration_tests():
             print(result.stdout)
             print(result.stderr)
             return False
-            
+
     except FileNotFoundError:
         print("⚠️  pytest not available, skipping integration tests")
         return True
@@ -392,28 +402,30 @@ def run_integration_tests():
 if __name__ == "__main__":
     print("🚀 Horse Racing Data Uploader Test Suite")
     print("=" * 60)
-    
+
     # Run unit tests
     unit_success = run_unit_tests()
-    
+
     print("\n" + "=" * 60)
-    
+
     # Ask user if they want to run integration tests
-    run_integration = input("Run integration tests? (requires database) [y/N]: ").lower() == 'y'
-    
+    run_integration = (
+        input("Run integration tests? (requires database) [y/N]: ").lower() == "y"
+    )
+
     if run_integration:
         integration_success = run_integration_tests()
     else:
         print("Skipping integration tests")
         integration_success = True
-    
+
     # Final summary
     print("\n" + "=" * 60)
     print("📊 TEST SUMMARY")
     print("=" * 60)
     print(f"Unit Tests: {'✅ PASSED' if unit_success else '❌ FAILED'}")
     print(f"Integration Tests: {'✅ PASSED' if integration_success else '❌ FAILED'}")
-    
+
     if unit_success and integration_success:
         print("\n🎉 ALL TESTS PASSED! Upload system is ready.")
         sys.exit(0)

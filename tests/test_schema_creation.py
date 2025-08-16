@@ -28,15 +28,16 @@ class TestSchemaCreation(unittest.TestCase):
         self.mock_cursor = Mock()
         self.mock_conn.cursor.return_value = self.mock_cursor
 
-    @patch('create_proper_schema.psycopg2.connect')
+    @patch("create_proper_schema.psycopg2.connect")
     def test_schema_creation_success(self, mock_connect):
         """Test successful schema creation"""
         # Set up mocks
         mock_connect.return_value = self.mock_conn
-        
+
         # Import and test
         try:
             import create_proper_schema
+
             # If module imports successfully, schema creation logic exists
             self.assertTrue(True)
         except ImportError:
@@ -46,21 +47,26 @@ class TestSchemaCreation(unittest.TestCase):
         """Test that table definitions are properly defined"""
         try:
             import create_proper_schema
+
             # Check if main function exists
-            self.assertTrue(hasattr(create_proper_schema, 'main') or 
-                          hasattr(create_proper_schema, 'create_schema') or
-                          hasattr(create_proper_schema, 'create_tables'))
+            self.assertTrue(
+                hasattr(create_proper_schema, "main")
+                or hasattr(create_proper_schema, "create_schema")
+                or hasattr(create_proper_schema, "create_tables")
+            )
         except ImportError:
             self.skip("create_proper_schema module not available")
 
-    @patch('create_proper_schema.psycopg2.connect')
+    @patch("create_proper_schema.psycopg2.connect")
     def test_schema_creation_connection_error(self, mock_connect):
         """Test schema creation with connection error"""
         import psycopg2
+
         mock_connect.side_effect = psycopg2.Error("Connection failed")
-        
+
         try:
             import create_proper_schema
+
             # Test should handle connection errors gracefully
             self.assertTrue(True)
         except ImportError:
