@@ -435,6 +435,113 @@ services:
     profiles:
       - pipeline-management
 
+  # Early Morning ML Training Service
+  ml-models:
+    build:
+      context: .
+      dockerfile: Dockerfile.ml-models
+    container_name: horse_racing_early_morning_ml
+    environment:
+      # Database and cache
+      DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/horse_racing_db
+      REDIS_URL: redis://:${REDIS_PASSWORD:-redis_password_123}@redis:6379/0
+      PYTHONPATH: /app
+      
+      # Early Morning ML Training Configuration
+      ML_TRAINING_START_TIME: ${ML_TRAINING_START_TIME:-00:30}
+      ML_TRAINING_END_TIME: ${ML_TRAINING_END_TIME:-04:00}
+      ML_TRAINING_WINDOW_MINUTES: ${ML_TRAINING_WINDOW_MINUTES:-210}
+      ML_MAX_CYCLES: ${ML_MAX_CYCLES:-8}
+      ML_CYCLE_DURATION_MINUTES: ${ML_CYCLE_DURATION_MINUTES:-25}
+      ML_BUFFER_MINUTES: ${ML_BUFFER_MINUTES:-5}
+      ML_MAX_RETRIES: ${ML_MAX_RETRIES:-3}
+      ML_TIMEOUT_SECONDS: ${ML_TIMEOUT_SECONDS:-1800}
+      
+      # Logging and monitoring
+      ML_LOG_LEVEL: ${ML_LOG_LEVEL:-INFO}
+      ML_PERFORMANCE_TRACKING: ${ML_PERFORMANCE_TRACKING:-true}
+      ML_DETAILED_METRICS: ${ML_DETAILED_METRICS:-true}
+      ML_MONITORING_ENABLED: ${ML_MONITORING_ENABLED:-true}
+      
+      # Docker paths
+      DATA_PATH: /app/data
+      MODELS_PATH: /app/models
+      LOGS_PATH: /app/logs
+      CACHE_PATH: /app/cache
+      REPORTS_PATH: /app/reports
+      
+      # Pipeline integration
+      PIPELINE_AUTO_START: ${PIPELINE_AUTO_START:-true}
+      PIPELINE_CHECK_DOWNLOAD_STATUS: ${PIPELINE_CHECK_DOWNLOAD_STATUS:-true}
+      PIPELINE_INTEGRATION_ENABLED: ${PIPELINE_INTEGRATION_ENABLED:-true}
+      
+      # Legacy compatibility
+      ML_TRAINING_MODE: early_morning
+      MODEL_SAVE_PATH: /app/trained_models
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+    volumes:
+      - ./tools:/app/tools
+      - ./docker:/app/docker
+      - ./logs:/app/logs
+      - ./config:/app/config
+      - ./data:/app/data
+      - ./trained_models:/app/trained_models
+      - ./results:/app/results
+      - ./reports:/app/reports
+      - ./models:/app/models
+      - ./cache:/app/cache
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - horse_racing_network
+    restart: unless-stopped
+    profiles:
+      - ml-training
+    # Early morning ML training with pipeline integration
+    command: ["python", "/app/docker/ml_training/pipeline_integration.py"]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import sys; sys.path.append('/app/docker/ml_training'); from pipeline_integration import EarlyMorningPipelineIntegration; integration = EarlyMorningPipelineIntegration(); print('ML Training System Ready')"]
+      interval: 60s
+      timeout: 30s
+      start_period: 30s
+      retries: 3
+
+  # Real-time Processing Monitor
+  realtime-processor:
+    build:
+      context: .
+      dockerfile: Dockerfile.ml-models  # Same base as ML models
+    container_name: horse_racing_realtime_processor
+    environment:
+      DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/horse_racing_db
+      REDIS_URL: redis://:${REDIS_PASSWORD:-redis_password_123}@redis:6379/0
+      PYTHONPATH: /app
+      MONITORING_INTERVAL: ${MONITORING_INTERVAL:-300}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+    volumes:
+      - ./tools:/app/tools
+      - ./logs:/app/logs
+      - ./config:/app/config
+      - ./data:/app/data
+      - ./results:/app/results
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      ml-models:
+        condition: service_started
+    networks:
+      - horse_racing_network
+    restart: unless-stopped
+    profiles:
+      - realtime-processing
+    # Monitor for new data and trigger ML training
+    command: ["python", "/app/tools/realtime_processor.py"]
+
 volumes:
   postgres_data:
     driver: local

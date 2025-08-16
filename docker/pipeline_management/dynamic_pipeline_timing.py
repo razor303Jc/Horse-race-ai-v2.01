@@ -93,7 +93,7 @@ class PipelineTimeAllocator:
                 "description": "Download daily racing data",
                 "prerequisites": [],
                 "critical": True,
-                "fixed_time": "05:00",  # Fixed schedule from auto-downloader
+                "fixed_time": "00:01",  # Fixed schedule from auto-downloader
                 "phase": "data_acquisition",
             },
             "data_validation": {
@@ -120,29 +120,42 @@ class PipelineTimeAllocator:
                 "critical": True,
                 "phase": "data_acquisition",
             },
-            # Phase 2: Feature Engineering and Analysis (45 minutes)
+            # Phase 2: Early Morning ML Training (210 minutes) - 00:30 to 04:00
             "feature_engineering": {
                 "duration_minutes": 18,
                 "description": "Extract and engineer features for ML models",
                 "prerequisites": ["data_relationships"],
                 "critical": True,
-                "phase": "feature_engineering",
+                "phase": "early_ml_training",
             },
+            "ml_model_training": {
+                "duration_minutes": 210,  # 3.5 hours in early morning (00:30-04:00)
+                "optimum_minutes": 210,  # Full 3.5 hour window available
+                "minimum_minutes": 120,  # Minimum 2 hours if needed
+                "no_time_action": "basic",  # Use existing models if no time
+                "description": "Train/retrain ML models (RF, XGBoost, Neural Networks) in early morning",
+                "prerequisites": ["feature_engineering"],
+                "critical": True,
+                "scalable": True,  # Can be shortened if time is limited
+                "phase": "early_ml_training",
+                "fixed_time_window": "00:30-04:00",  # Early morning training window
+            },
+            # Phase 3: Data Processing and Analysis (continued after ML training)
             "contextual_analysis": {
                 "duration_minutes": 15,
                 "description": "Generate contextual analysis and insights",
-                "prerequisites": ["feature_engineering"],
+                "prerequisites": ["ml_model_training"],  # Now depends on ML training
                 "critical": True,
-                "phase": "feature_engineering",
+                "phase": "data_processing",
             },
             "form_scoring": {
                 "duration_minutes": 12,
                 "description": "Calculate detailed form scores and ratings",
                 "prerequisites": ["contextual_analysis"],
                 "critical": True,
-                "phase": "feature_engineering",
+                "phase": "data_processing",
             },
-            # Phase 3: Advanced Analytics (120 minutes)
+            # Phase 4: Advanced Analytics (85 minutes) - Now without ML training
             "power_ratings": {
                 "duration_minutes": 20,
                 "description": "Generate power ratings and speed figures",
@@ -157,22 +170,11 @@ class PipelineTimeAllocator:
                 "critical": True,
                 "phase": "advanced_analytics",
             },
-            "ml_model_training": {
-                "duration_minutes": 85,  # Reduced from 120 to fit 17 stages
-                "optimum_minutes": 120,  # Ideal time for full training
-                "minimum_minutes": 30,  # Quick training with limited data
-                "no_time_action": "basic",  # Use existing models if no time
-                "description": "Train/retrain ML models (RF, XGBoost, Neural Networks)",
-                "prerequisites": ["speed_analysis"],
-                "critical": True,
-                "scalable": True,  # Can be shortened if time is limited
-                "phase": "advanced_analytics",
-            },
-            # Phase 4: Simulation and Optimization (50 minutes)
+            # Phase 5: Simulation and Optimization (50 minutes)
             "monte_carlo_simulations": {
                 "duration_minutes": 30,  # Reduced from 45
                 "description": "Run Monte Carlo simulations for race outcomes",
-                "prerequisites": ["ml_model_training"],
+                "prerequisites": ["speed_analysis"],  # Changed from ml_model_training
                 "critical": True,
                 "scalable": True,
                 "phase": "simulation",
@@ -287,6 +289,10 @@ class PipelineTimeAllocator:
             )
             first_race_time = default_race_time
             logger.warning(f"⚠️ Using default first race time: 14:00")
+        elif isinstance(first_race_time, str):
+            # Convert string time to datetime object
+            first_race_dt = datetime.strptime(first_race_time, "%H:%M").time()
+            first_race_time = datetime.combine(datetime.now().date(), first_race_dt)
 
         # Calculate pipeline completion deadline (15 minutes before first race)
         pipeline_deadline = first_race_time - timedelta(minutes=prep_minutes)

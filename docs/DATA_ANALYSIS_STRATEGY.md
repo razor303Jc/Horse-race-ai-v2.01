@@ -55,7 +55,7 @@ daily_targets = {
 - ✅ Check Race_ID uniqueness
 - ✅ Validate numeric fields (Distance, Prize, Runners)
 
-#### **Data Enrichment Strategy** ✅ **UPDATED BASED ON DATABASE ANALYSIS**
+#### **Data Enrichment Strategy** ✅ **UPDATED FOR 50-CYCLE SESSIONS**
 
 **🎉 DISCOVERY**: Production database contains **12,965+ records** across 5 tables!
 
@@ -73,6 +73,33 @@ daily_targets = {
 - **418 new horse records** with performance data
 - **6,600+ updated jockey stats**
 - **4,260+ updated trainer stats**
+
+**🚀 NEW ML TRAINING CONFIGURATION**:
+
+- **50 cycles per session** (5 batches of 10 cycles)
+- **2000 total sessions** for comprehensive training
+- **100,000 total cycles** (50 x 2000)
+- **~1.5 minutes per session** (optimized timing)
+- **Review after each session** for continuous improvement
+
+**Timing Analysis**:
+
+```
+📊 SINGLE SESSION (50 cycles):
+   Pure Training: 79.5 seconds (1.33 minutes)
+   Batch Overhead: 10.0 seconds
+   Total Session: 89.5 seconds (1.49 minutes)
+
+⏰ TRAINING EFFICIENCY:
+   Sessions per hour: 40.2
+   Cycles per hour: 2,010
+   Progress per hour: 2.0% of total goal
+
+🎯 FULL CAMPAIGN (2000 sessions):
+   Total Time: ~49.7 hours (2.1 days)
+   Total Cycles: 100,000
+   Records processed: ~13.65 million
+```
 
 **Immediate Enrichment Actions**:
 
@@ -166,13 +193,14 @@ growth_config = {
 - **Day 1-4**: Reach 10,000+ race target
 - **Day 5-7**: Full system validation with production volume
 
-### **Performance Validation Targets**
+### **Performance Validation Targets** ✅ **UPDATED FOR 50-CYCLE SESSIONS**
 
-| Data Volume  | ML Training | Caching Hit Rate | DB Query Time | System Load |
-| ------------ | ----------- | ---------------- | ------------- | ----------- |
-| 1,000 races  | ~15 min     | 30%              | <50ms         | Baseline    |
-| 5,000 races  | ~45 min     | 60%              | <30ms         | 2x load     |
-| 10,000 races | ~90 min     | 80%              | <20ms         | 4x load     |
+| Training Volume | Session Time | Sessions/Hour | Cycles/Hour | Review Frequency   |
+| --------------- | ------------ | ------------- | ----------- | ------------------ |
+| 50 cycles       | ~1.5 min     | 40 sessions   | 2,010       | Each session       |
+| 500 cycles      | ~15 min      | 12.5 sessions | 2,010       | Every 10 sessions  |
+| 5,000 cycles    | ~2.5 hours   | 100 sessions  | 2,010       | Every 100 sessions |
+| 100,000 cycles  | ~50 hours    | 2000 sessions | 2,010       | Final report       |
 
 ---
 

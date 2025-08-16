@@ -4,8 +4,9 @@ Automated ML Training Cycle Manager
 Horse Racing AI v2.02
 
 Runs ML training in cycles of 10, then reviews performance.
-Total target: 100 cycles (10 batches of 10 cycles each).
-Measures and tracks ML model performance improvements.
+Total target: 10 cycles per session, 1000 sessions total.
+Optimized for shorter review cycles with comprehensive performance tracking.
+Features race_id format compatibility and real-time processing.
 """
 
 import asyncio
@@ -79,7 +80,7 @@ class BatchSummary:
 class MLTrainingCycleManager:
     """Manages automated ML training cycles with performance measurement"""
 
-    def __init__(self):
+    def __init__(self, adaptive_config: Optional[Dict] = None):
         self.db_config = {
             "host": "localhost",
             "port": 5433,
@@ -88,11 +89,16 @@ class MLTrainingCycleManager:
             "password": "secure_password_123",
         }
 
+        # Default configuration
         self.cycles_completed = 0
         self.batches_completed = 0
-        self.target_cycles = 100
-        self.cycles_per_batch = 10
-        self.target_batches = 10
+        self.target_cycles = 10  # 10 cycles per session
+        self.cycles_per_batch = 10  # Single batch of 10 cycles
+        self.target_batches = 1000  # 1000 sessions total
+
+        # Apply adaptive configuration if provided
+        if adaptive_config:
+            self.apply_adaptive_config(adaptive_config)
 
         self.metrics_history: List[TrainingMetrics] = []
         self.batch_summaries: List[BatchSummary] = []
@@ -106,6 +112,28 @@ class MLTrainingCycleManager:
         Path("logs/ml_cycles").mkdir(parents=True, exist_ok=True)
         Path("results/ml_performance").mkdir(parents=True, exist_ok=True)
 
+    def apply_adaptive_config(self, adaptive_config: Dict):
+        """Apply adaptive configuration from pipeline integration"""
+        logger.info("🔧 Applying adaptive ML training configuration")
+
+        # Update cycles based on adaptive config
+        if "cycles_per_session" in adaptive_config:
+            self.target_cycles = adaptive_config["cycles_per_session"]
+            self.cycles_per_batch = adaptive_config["cycles_per_session"]
+            logger.info(f"   Cycles per session: {self.target_cycles}")
+
+        # Update timing if provided
+        if "wait_between_cycles" in adaptive_config:
+            self.wait_between_cycles = adaptive_config["wait_between_cycles"]
+            logger.info(f"   Wait between cycles: {self.wait_between_cycles}s")
+
+        # Store adaptive config for reference
+        self.adaptive_config = adaptive_config
+        logger.info(f"   Strategy: {adaptive_config.get('strategy', 'default')}")
+        logger.info(
+            f"   Allocated time: {adaptive_config.get('allocated_time_minutes', 'default')} min"
+        )
+
     def get_database_connection(self):
         """Get database connection"""
         return psycopg2.connect(**self.db_config)
@@ -115,7 +143,7 @@ class MLTrainingCycleManager:
         try:
             conn = self.get_database_connection()
 
-            # Get race data with records (handle race_id format: string vs float)
+            # Get race data with records (race_id format is now cleaned)
             query = """
             SELECT 
                 r.race_id, r.course, r.distance, r.race_type, r.surface,
@@ -123,7 +151,7 @@ class MLTrainingCycleManager:
                 rec.weight, rec.jockey, rec.trainer, rec.or_rating,
                 rec.ts, rec.rpr, rec.odds, rec.sp
             FROM races r
-            JOIN records rec ON r.race_id::integer = rec.race_id::float::integer
+            JOIN records rec ON r.race_id = rec.race_id
             WHERE rec.position IS NOT NULL 
             AND rec.position > 0
             ORDER BY r.date DESC

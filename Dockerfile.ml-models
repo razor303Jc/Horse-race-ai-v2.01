@@ -23,14 +23,17 @@ COPY requirements-ml-models.txt .
 # Install ML dependencies (this takes time but only when needed)
 RUN pip install --no-cache-dir -r requirements-ml-models.txt
 
-# Copy model training code
+# Copy model training code and tools
 COPY models/ ./models/
+COPY tools/ ./tools/
 COPY data/ ./data/
 COPY config/ ./config/
+COPY docker/ml_training/ ./docker/ml_training/
+COPY docker/pipeline_management/ ./docker/pipeline_management/
 
 # Create directories
-RUN mkdir -p logs trained_models && \
-    chmod 777 logs trained_models
+RUN mkdir -p logs trained_models results reports cache && \
+    chmod 777 logs trained_models results reports cache
 
 # Set Python path
 ENV PYTHONPATH=/app
@@ -44,5 +47,5 @@ USER mluser
 HEALTHCHECK --interval=60s --timeout=30s --start-period=30s --retries=3 \
     CMD python -c "import tensorflow; import torch; print('ML Ready')" || exit 1
 
-# Default command (model training)
-CMD ["python", "models/train_models.py"]
+# Default command (early morning ML training system)
+CMD ["python", "/app/docker/ml_training/pipeline_integration.py"]
