@@ -338,7 +338,9 @@ class PipelineOrchestrator:
 
             if result.returncode == 0:
                 logger.info("✅ Phase 5: Model validation completed successfully")
-                logger.info(f"Validation output: {result.stdout[-500:]}")  # Last 500 chars
+                logger.info(
+                    f"Validation output: {result.stdout[-500:]}"
+                )  # Last 500 chars
                 return True
             else:
                 logger.error(f"❌ Phase 5: Model validation failed")
