@@ -550,14 +550,14 @@ class HorseRaceDatabaseDownloader:
                 self.console.print("[red]❌ Failed to get session cookies[/red]")
                 return False
 
-            # Download results data
+            # Download results data (FIXED: results_url contains cards data, so extract to cards_data)
             results_success = await self.download_file_with_session(
-                results_url, "results", cookies
+                results_url, "cards", cookies
             )
 
-            # Download cards data
+            # Download cards data (FIXED: cards_url contains results data, so extract to results_data)
             cards_success = await self.download_file_with_session(
-                cards_url, "cards", cookies
+                cards_url, "results", cookies
             )
 
             # Send completion notification

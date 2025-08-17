@@ -16,6 +16,7 @@ import aiohttp
 async def test_woocommerce_urls():
     """Test both URLs to see if they return different data"""
 
+    # CORRECTED URLs based on user's identification
     results_url = "https://horseracedatabase.com/?download_file=17605&order=wc_order_CdJf7udYlJDk3&email=justin.d.crooke%40gmail.com&key=6e9e40dd-781e-45fa-8f14-dc54734dd36f"
     cards_url = "https://horseracedatabase.com/?download_file=17605&order=wc_order_CdJf7udYlJDk3&email=justin.d.crooke%40gmail.com&key=df4a1dc3-9b7b-4efb-9f32-1b69fffa534b"
 

@@ -281,7 +281,7 @@ class AutoDownloaderScheduler:
 
             # Stop container
             subprocess.run(
-                ["docker", "stop", "horserace-auto-downloader"],
+                ["docker", "stop", "horse_racing_auto_downloader_clean"],
                 check=True,
                 capture_output=True,
                 text=True,
@@ -289,7 +289,7 @@ class AutoDownloaderScheduler:
 
             # Remove container
             subprocess.run(
-                ["docker", "rm", "horserace-auto-downloader"],
+                ["docker", "rm", "horse_racing_auto_downloader_clean"],
                 check=True,
                 capture_output=True,
                 text=True,
@@ -300,7 +300,7 @@ class AutoDownloaderScheduler:
                 [
                     "docker-compose",
                     "-f",
-                    "docker-compose.auto-downloader.yml",
+                    "docker-compose.clean.yml",
                     "up",
                     "-d",
                     "auto-downloader",
@@ -324,7 +324,13 @@ class AutoDownloaderScheduler:
         try:
             # Check container logs for schedule confirmation
             result = subprocess.run(
-                ["docker", "logs", "horserace-auto-downloader", "--tail", "20"],
+                [
+                    "docker",
+                    "logs",
+                    "horse_racing_auto_downloader_clean",
+                    "--tail",
+                    "20",
+                ],
                 capture_output=True,
                 text=True,
                 check=True,
@@ -380,7 +386,7 @@ class AutoDownloaderScheduler:
                     "docker",
                     "ps",
                     "--filter",
-                    "name=horserace-auto-downloader",
+                    "name=horse_racing_auto_downloader_clean",
                     "--format",
                     "table {{.Names}}\t{{.Status}}",
                 ],
@@ -388,7 +394,7 @@ class AutoDownloaderScheduler:
                 text=True,
                 check=True,
             )
-            if "horserace-auto-downloader" in result.stdout:
+            if "horse_racing_auto_downloader_clean" in result.stdout:
                 print("   ✅ Container is running")
                 self.validate_container_schedule()
             else:
