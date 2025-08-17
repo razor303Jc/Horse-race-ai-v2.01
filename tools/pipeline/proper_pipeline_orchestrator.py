@@ -322,67 +322,65 @@ class PipelineOrchestrator:
                     self.enable_betting_integration()
 
     def run_model_validation(self) -> bool:
-        """Validate and organize trained models"""
-        logger.info("🔍 Validating and organizing trained models...")
+        """Run Phase 5: Model validation and organization"""
+        logger.info("🔍 Phase 5: Running model validation...")
 
         try:
-            # Run model validation script if it exists
-            validation_script = "/app/scripts/save_trained_models.py"
-            if Path(validation_script).exists():
-                result = subprocess.run(
-                    ["python", validation_script],
-                    capture_output=True,
-                    text=True,
-                    timeout=300,
-                )
+            # Use the dedicated Phase 5 model validator
+            validation_script = "/app/tools/pipeline/phase5_model_validator.py"
 
-                if result.returncode == 0:
-                    logger.info("✅ Model validation completed")
-                    return True
-                else:
-                    logger.warning(f"⚠️ Model validation warning: {result.stderr}")
-                    return True  # Continue even with warnings
-            else:
-                logger.info("📝 No model validation script found, skipping...")
+            result = subprocess.run(
+                ["python", validation_script],
+                capture_output=True,
+                text=True,
+                timeout=600,
+            )
+
+            if result.returncode == 0:
+                logger.info("✅ Phase 5: Model validation completed successfully")
+                logger.info(f"Validation output: {result.stdout[-500:]}")  # Last 500 chars
                 return True
+            else:
+                logger.error(f"❌ Phase 5: Model validation failed")
+                logger.error(f"Error: {result.stderr}")
+                return False
 
+        except subprocess.TimeoutExpired:
+            logger.error("❌ Phase 5: Model validation timed out")
+            return False
         except Exception as e:
-            logger.error(f"❌ Model validation failed: {e}")
+            logger.error(f"❌ Phase 5: Model validation exception: {e}")
             return False
 
     def start_prediction_service(self) -> bool:
-        """Start the prediction API service"""
-        logger.info("🔮 Starting Prediction API Service...")
+        """Run Phase 6: Start prediction API service"""
+        logger.info("🔮 Phase 6: Starting prediction service...")
 
         try:
-            # Check if prediction API exists
-            api_script = "/app/api/prediction_api.py"
-            if Path(api_script).exists():
-                # Start prediction service in background
-                subprocess.Popen(
-                    [
-                        "python",
-                        "-m",
-                        "uvicorn",
-                        "api.prediction_api:app",
-                        "--host",
-                        "0.0.0.0",
-                        "--port",
-                        "8000",
-                    ],
-                    cwd="/app",
-                    stdout=subprocess.PIPE,
-                    stderr=subprocess.PIPE,
-                )
+            # Use the simplified Phase 6 prediction service launcher
+            service_script = "/app/tools/pipeline/phase6_simple_prediction_service.py"
 
-                logger.info("✅ Prediction API service started on port 8000")
+            result = subprocess.run(
+                ["python", service_script],
+                capture_output=True,
+                text=True,
+                timeout=300,
+            )
+
+            if result.returncode == 0:
+                logger.info("✅ Phase 6: Prediction service started successfully")
+                logger.info(f"Service output: {result.stdout[-500:]}")  # Last 500 chars
                 return True
             else:
-                logger.warning("⚠️ Prediction API not found, skipping...")
-                return True
+                logger.error(f"❌ Phase 6: Prediction service startup failed")
+                logger.error(f"Error: {result.stderr}")
+                return False
 
+        except subprocess.TimeoutExpired:
+            logger.error("❌ Phase 6: Prediction service startup timed out")
+            return False
         except Exception as e:
-            logger.error(f"❌ Failed to start prediction service: {e}")
+            logger.error(f"❌ Phase 6: Prediction service exception: {e}")
             return False
 
     def start_web_interface(self) -> bool:
