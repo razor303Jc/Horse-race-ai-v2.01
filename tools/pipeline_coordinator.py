@@ -29,32 +29,39 @@ def setup_logging():
         format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
         handlers=[logging.StreamHandler()],
     )
-    
+
     logger = logging.getLogger(__name__)
-    
+
     try:
         # Ensure logs directory exists and is writable
         logs_dir = Path("/app/logs")
-        logs_dir.mkdir(parents=True, exist_ok=True)
-        
-        # Try to create log file
+        if not logs_dir.exists():
+            logs_dir.mkdir(parents=True, exist_ok=True)
+            print(f"📁 Created logs directory: {logs_dir}")
+
+        # Try to create a test file to check permissions
+        test_file = logs_dir / "test_permissions.tmp"
+        test_file.write_text("test")
+        test_file.unlink()  # Remove test file
+
+        # Create actual log file
         log_file = logs_dir / "pipeline_orchestrator.log"
-        log_file.touch(exist_ok=True)
-        
-        # Add file handler to the root logger
         file_handler = logging.FileHandler(str(log_file))
         file_handler.setFormatter(
-            logging.Formatter(
-                "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-            )
+            logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
         )
         logger.addHandler(file_handler)
         print(f"✅ Logging to file: {log_file}")
+
     except (PermissionError, OSError) as e:
         print(f"⚠️  Cannot write to log file: {e}")
-        print("📝 Continuing with console logging only")
-    
+        print("📝 Using console logging only - this is safe for Docker containers")
+        # For Docker containers, console logging is often preferred anyway
+        # as logs can be accessed via `docker logs <container>`
+
     return logger
+
+
 logger = setup_logging()
 
 
