@@ -14,7 +14,7 @@ from typing import Any, Dict, List, Optional
 
 import psycopg2
 import uvicorn
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
@@ -512,25 +512,57 @@ async def get_dashboard_data():
 # Static file serving for React app
 static_path = Path(__file__).parent / "dist"
 if static_path.exists():
+    # Mount the assets folder correctly
+    assets_path = static_path / "assets"
+    if assets_path.exists():
+        app.mount("/assets", StaticFiles(directory=str(assets_path)), name="assets")
+
+    # Mount other static files
     app.mount("/static", StaticFiles(directory=str(static_path)), name="static")
+
+
+def serve_react_app():
+    """Serve React app with appropriate CSP headers"""
+    static_path = Path(__file__).parent / "dist" / "index.html"
+    if static_path.exists():
+        with open(static_path, "r", encoding="utf-8") as f:
+            content = f.read()
+
+        # Create response with CSP headers that allow React/Vite to work
+        response = Response(
+            content=content,
+            media_type="text/html",
+            headers={
+                "Content-Security-Policy": (
+                    "default-src 'self'; "
+                    "script-src 'self' 'unsafe-eval' 'unsafe-inline'; "
+                    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
+                    "font-src 'self' 'unsafe-inline' data: https://fonts.gstatic.com; "
+                    "img-src 'self' data: https:; "
+                    "connect-src 'self' ws: wss: http: https:; "
+                    "object-src 'none'; "
+                    "base-uri 'self';"
+                )
+            },
+        )
+        return response
+    return {"message": "Horse Racing AI API - Build React app first"}
 
 
 @app.get("/")
 async def read_root():
     """Serve the React app"""
-    static_path = Path(__file__).parent / "dist" / "index.html"
-    if static_path.exists():
-        return FileResponse(str(static_path))
-    return {"message": "Horse Racing AI API - Build React app first"}
+    return serve_react_app()
 
 
 @app.get("/{path:path}")
 async def catch_all(path: str):
-    """Catch all routes for React Router"""
-    static_path = Path(__file__).parent / "dist" / "index.html"
-    if static_path.exists():
-        return FileResponse(str(static_path))
-    return {"message": "Horse Racing AI API"}
+    """Catch all routes for React Router - but only for non-asset paths"""
+    # Don't intercept asset requests
+    if path.startswith(("assets/", "static/", "api/")):
+        raise HTTPException(status_code=404, detail="Not found")
+
+    return serve_react_app()
 
 
 if __name__ == "__main__":

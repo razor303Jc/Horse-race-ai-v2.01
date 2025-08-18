@@ -21,9 +21,11 @@
     "@mui/material": "^5.14.20",
     "@mui/x-charts": "^8.10.0",
     "@types/node": "^20.10.0",
+    "@types/react-router-dom": "^5.3.3",
     "axios": "^1.6.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-router-dom": "^6.30.1",
     "recharts": "^2.15.4",
     "socket.io-client": "^4.7.4"
   },
@@ -33,17 +35,17 @@
     "@typescript-eslint/eslint-plugin": "^6.10.0",
     "@typescript-eslint/parser": "^6.10.0",
     "@vitejs/plugin-react": "^4.1.1",
+    "browser-sync": "^2.29.3",
+    "concurrently": "^8.2.2",
     "eslint": "^8.53.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.4",
-    "typescript": "^5.2.2",
-    "vite": "^5.0.0",
     "grunt": "^1.6.1",
-    "grunt-contrib-watch": "^1.1.0",
     "grunt-concurrent": "^3.0.0",
+    "grunt-contrib-watch": "^1.1.0",
     "grunt-shell": "^4.0.0",
     "live-server": "^1.2.2",
-    "concurrently": "^8.2.2",
-    "browser-sync": "^2.29.3"
+    "typescript": "^5.2.2",
+    "vite": "^5.0.0"
   }
 }

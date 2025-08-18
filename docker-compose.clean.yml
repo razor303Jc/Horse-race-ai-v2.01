@@ -74,7 +74,9 @@ services:
       - ./templates:/app/templates
       - ./api:/app/api
       - ./logs:/app/logs:rw
-    # Remove direct port exposure - use Traefik instead
+    # Temporary direct port mapping for testing
+    ports:
+      - "3000:8000"  # Map host port 3000 to container port 8000
     expose:
       - "8000"  # API
       - "3000"  # Web UI
@@ -99,10 +101,10 @@ services:
       - "traefik.http.routers.horserace-api.rule=Host(`horserace-api.local`)"
       - "traefik.http.routers.horserace-api.service=horserace-api"
       - "traefik.http.services.horserace-api.loadbalancer.server.port=8000"
-      # Web UI service (port 3000)
+      # Web UI service (also port 8000 - served by enhanced API server)
       - "traefik.http.routers.horserace-web.rule=Host(`horserace.local`)"
       - "traefik.http.routers.horserace-web.service=horserace-web"
-      - "traefik.http.services.horserace-web.loadbalancer.server.port=3000"
+      - "traefik.http.services.horserace-web.loadbalancer.server.port=8000"
 
   # Data Pipeline Service - Handles all data ingestion, processing, and validation
   data-pipeline:

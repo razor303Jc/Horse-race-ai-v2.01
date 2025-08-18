@@ -11,6 +11,7 @@ import {
   Sports,
   Storage 
 } from '@mui/icons-material'
+import './App.css'
 
 // Import all pages
 import Dashboard from './pages/Dashboard'
