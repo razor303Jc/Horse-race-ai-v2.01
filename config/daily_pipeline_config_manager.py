@@ -130,7 +130,7 @@ def create_default_config():
         "storage": {
             "database": {
                 "host": "localhost",
-                "port": 5433,
+                "port": 5432,
                 "name": "horse_racing_db",
                 "user": "horse_racing",
                 "backup_enabled": True,

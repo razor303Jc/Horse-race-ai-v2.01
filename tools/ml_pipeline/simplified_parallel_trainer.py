@@ -103,7 +103,7 @@ class SimplifiedParallelTrainer:
             # Connect to database (benefits from Priority 2A optimization)
             conn = psycopg2.connect(
                 host="localhost",
-                port=5433,
+                port=5432,
                 database="horse_racing_db",
                 user="horse_racing",
                 password="secure_password_123",

@@ -44,7 +44,7 @@ class RaceCardValidationFixer:
         self.data_dir = project_root / "data" / "daily_downloads"
         self.db_config = {
             "host": "localhost",
-            "port": 5433,
+            "port": 5432,
             "database": "horse_racing_db",
             "user": "horse_racing",
             "password": "secure_password_123",
@@ -328,7 +328,7 @@ sys.path.insert(0, str(project_root))
 # Database configuration
 DB_CONFIG = {
     "host": "localhost",
-    "port": 5433,
+    "port": 5432,
     "database": "horse_racing_db",
     "user": "horse_racing",
     "password": "secure_password_123",

@@ -10,7 +10,7 @@ def get_db_connection():
     """Get database connection with correct credentials"""
     return psycopg2.connect(
         host="localhost",
-        port=5433,
+        port=5432,
         database="horse_racing_db",
         user="horse_racing",
         password="secure_password_123",

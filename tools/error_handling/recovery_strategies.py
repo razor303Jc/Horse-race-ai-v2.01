@@ -620,7 +620,7 @@ if __name__ == "__main__":
     print("\n📊 Testing Database Recovery...")
     db_config = {
         "host": "localhost",
-        "port": 5433,
+        "port": 5432,
         "database": "horse_racing_db",
         "user": "horse_racing",
         "password": "secure_password_123",

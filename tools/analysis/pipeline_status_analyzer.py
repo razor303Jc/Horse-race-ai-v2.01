@@ -66,7 +66,7 @@ class PipelineStatusAnalyzer:
 
         # Check auto-downloader schedule
         print("1. Auto-Downloader Triggers:")
-        print("   ✅ Fixed Schedule: 15:15 daily (recently updated)")
+        print("   ✅ Fixed Schedule: 00:01 daily (recently updated)")
         print("   ✅ WooCommerce Integration: Working")
         print("   ✅ Processing Logic: Fixed (backwards issue resolved)")
 
@@ -76,7 +76,7 @@ class PipelineStatusAnalyzer:
         if config_file.exists():
             with open(config_file) as f:
                 config = json.load(f)
-                download_time = config.get("schedule", {}).get("download_time", "15:15")
+                download_time = config.get("schedule", {}).get("download_time", "00:01")
                 pipeline_time = self.calculate_pipeline_time(download_time)
                 print(f"   📅 Calculated start: {pipeline_time} (10min after download)")
                 print(f"   🎯 Trigger type: Time-based sequential")
@@ -99,7 +99,7 @@ class PipelineStatusAnalyzer:
 
         print("Stage 1: Data Download")
         if (data_dir / "results_data").exists() and (data_dir / "cards_data").exists():
-            print("   ✅ COMPLETED - Data downloaded at 15:15")
+            print("   ✅ COMPLETED - Data downloaded at 00:01")
             print("   ✅ Results data: August 17, 2025")
             print("   ✅ Cards data: August 16, 2025")
             print("   ✅ Processing logic: Fixed and working correctly")

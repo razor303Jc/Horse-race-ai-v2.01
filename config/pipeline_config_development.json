@@ -3,7 +3,7 @@
   "debug_mode": true,
   "log_level": "DEBUG",
   "schedule": {
-    "download_time": "06:01",
+    "download_time": "00:01",
     "relationships_time": "00:30",
     "contextual_time": "01:00",
     "form_scoring_time": "01:30",

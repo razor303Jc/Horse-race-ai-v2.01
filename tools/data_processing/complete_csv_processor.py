@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Complete CSV Processor - Port 5433
+Complete CSV Processor - Port 5432
 Maps ALL CSV columns to database with proper NULL handling
 """
 
@@ -22,17 +22,17 @@ class CompleteCsvProcessor:
         self.cursor = None
 
     def connect_to_database(self):
-        """Connect to PostgreSQL database with correct port 5433"""
+        """Connect to PostgreSQL database with correct port 5432"""
         try:
             self.conn = psycopg2.connect(
                 host="localhost",
-                port="5433",  # Correct port
+                port="5432",  # Correct port
                 database="horse_racing_db",
                 user="horse_racing",
                 password="secure_password_123",
             )
             self.cursor = self.conn.cursor()
-            print("✅ Connected to database (port 5433)")
+            print("✅ Connected to database (port 5432)")
             return True
         except Exception as e:
             print(f"❌ Database connection failed: {e}")
@@ -172,7 +172,7 @@ class CompleteCsvProcessor:
 
 def main():
     """Main function"""
-    print("🏇 Complete CSV Processor - Port 5433")
+    print("🏇 Complete CSV Processor - Port 5432")
     print("=" * 50)
 
     processor = CompleteCsvProcessor()

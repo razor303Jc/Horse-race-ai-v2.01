@@ -551,7 +551,7 @@ def main():
         try:
             from .integrated_data_processor import IntegratedDataProcessor
 
-            database_url = "postgresql://horse_racing:secure_password_123@localhost:5433/horse_racing_db"
+            database_url = "postgresql://horse_racing:secure_password_123@localhost:5432/horse_racing_db"
             processor = IntegratedDataProcessor(database_url)
 
             if processor.connect_database():

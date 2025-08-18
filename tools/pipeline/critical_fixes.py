@@ -94,7 +94,7 @@ def retry_on_failure(max_retries=3, delay=1, backoff=2):
         # Database connection pool
         self.db_config = {
             "host": "localhost",
-            "port": 5433,
+            "port": 5432,
             "database": "horse_racing_db",
             "user": "horse_racing",
             "password": os.getenv("POSTGRES_PASSWORD", "secure_password_123"),

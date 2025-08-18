@@ -1,0 +1,467 @@
+{
+  "session_start": "2025-08-17T19:23:18.763108",
+  "container_status": {
+    "horse_racing_auto_downloader_clean": {
+      "status": "running",
+      "health": "healthy",
+      "started_at": "2025-08-17T18",
+      "timestamp": "2025-08-17T19:25:37.070993"
+    },
+    "horse_racing_data_pipeline_clean": {
+      "status": "running",
+      "health": "unhealthy",
+      "started_at": "2025-08-17T17",
+      "timestamp": "2025-08-17T19:25:37.070993"
+    },
+    "horse_racing_ml_trainer_clean": {
+      "status": "running",
+      "health": "healthy",
+      "started_at": "2025-08-17T17",
+      "timestamp": "2025-08-17T19:25:37.070993"
+    },
+    "horse_racing_postgres_clean": {
+      "status": "running",
+      "health": "healthy",
+      "started_at": "2025-08-17T17",
+      "timestamp": "2025-08-17T19:25:37.070993"
+    },
+    "horse_racing_redis_clean": {
+      "status": "running",
+      "health": "healthy",
+      "started_at": "2025-08-17T17",
+      "timestamp": "2025-08-17T19:25:37.070993"
+    },
+    "horse_racing_web_app_clean": {
+      "status": "running",
+      "health": "unhealthy",
+      "started_at": "2025-08-17T17",
+      "timestamp": "2025-08-17T19:25:37.070993"
+    }
+  },
+  "process_timings": {
+    "data_download": [
+      {
+        "timestamp": "2025-08-17T19:23:18.896563",
+        "activity_count": 0,
+        "is_active": false,
+        "is_completed": false,
+        "has_errors": false,
+        "processing_duration": null,
+        "log_lines": 1,
+        "recent_activity": ""
+      },
+      {
+        "timestamp": "2025-08-17T19:23:41.979116",
+        "activity_count": 0,
+        "is_active": false,
+        "is_completed": false,
+        "has_errors": false,
+        "processing_duration": null,
+        "log_lines": 1,
+        "recent_activity": ""
+      },
+      {
+        "timestamp": "2025-08-17T19:24:04.999916",
+        "activity_count": 0,
+        "is_active": false,
+        "is_completed": false,
+        "has_errors": false,
+        "processing_duration": null,
+        "log_lines": 1,
+        "recent_activity": ""
+      },
+      {
+        "timestamp": "2025-08-17T19:24:28.060093",
+        "activity_count": 0,
+        "is_active": false,
+        "is_completed": false,
+        "has_errors": false,
+        "processing_duration": null,
+        "log_lines": 1,
+        "recent_activity": ""
+      },
+      {
+        "timestamp": "2025-08-17T19:24:51.090067",
+        "activity_count": 0,
+        "is_active": false,
+        "is_completed": false,
+        "has_errors": false,
+        "processing_duration": null,
+        "log_lines": 1,
+        "recent_activity": ""
+      },
+      {
+        "timestamp": "2025-08-17T19:25:14.157247",
+        "activity_count": 0,
+        "is_active": false,
+        "is_completed": false,
+        "has_errors": false,
+        "processing_duration": null,
+        "log_lines": 1,
+        "recent_activity": ""
+      },
+      {
+        "timestamp": "2025-08-17T19:25:37.235705",
+        "activity_count": 0,
+        "is_active": false,
+        "is_completed": false,
+        "has_errors": false,
+        "processing_duration": null,
+        "log_lines": 1,
+        "recent_activity": ""
+      }
+    ],
+    "preprocessing": [
+      {
+        "timestamp": "2025-08-17T19:23:18.896563",
+        "activity_count": 0,
+        "is_active": false,
+        "is_completed": false,
+        "has_errors": false,
+        "processing_duration": null,
+        "log_lines": 1,
+        "recent_activity": ""
+      },
+      {
+        "timestamp": "2025-08-17T19:23:41.979116",
+        "activity_count": 0,
+        "is_active": false,
+        "is_completed": false,
+        "has_errors": false,
+        "processing_duration": null,
+        "log_lines": 1,
+        "recent_activity": ""
+      },
+      {
+        "timestamp": "2025-08-17T19:24:04.999916",
+        "activity_count": 0,
+        "is_active": false,
+        "is_completed": false,
+        "has_errors": false,
+        "processing_duration": null,
+        "log_lines": 1,
+        "recent_activity": ""
+      },
+      {
+        "timestamp": "2025-08-17T19:24:28.060093",
+        "activity_count": 0,
+        "is_active": false,
+        "is_completed": false,
+        "has_errors": false,
+        "processing_duration": null,
+        "log_lines": 1,
+        "recent_activity": ""
+      },
+      {
+        "timestamp": "2025-08-17T19:24:51.090067",
+        "activity_count": 0,
+        "is_active": false,
+        "is_completed": false,
+        "has_errors": false,
+        "processing_duration": null,
+        "log_lines": 1,
+        "recent_activity": ""
+      },
+      {
+        "timestamp": "2025-08-17T19:25:14.157247",
+        "activity_count": 0,
+        "is_active": false,
+        "is_completed": false,
+        "has_errors": false,
+        "processing_duration": null,
+        "log_lines": 1,
+        "recent_activity": ""
+      },
+      {
+        "timestamp": "2025-08-17T19:25:37.235705",
+        "activity_count": 0,
+        "is_active": false,
+        "is_completed": false,
+        "has_errors": false,
+        "processing_duration": null,
+        "log_lines": 1,
+        "recent_activity": ""
+      }
+    ],
+    "ml_training": [
+      {
+        "timestamp": "2025-08-17T19:23:18.896563",
+        "activity_count": 0,
+        "is_active": false,
+        "is_completed": false,
+        "has_errors": false,
+        "processing_duration": null,
+        "log_lines": 1,
+        "recent_activity": ""
+      },
+      {
+        "timestamp": "2025-08-17T19:23:41.979116",
+        "activity_count": 0,
+        "is_active": false,
+        "is_completed": false,
+        "has_errors": false,
+        "processing_duration": null,
+        "log_lines": 1,
+        "recent_activity": ""
+      },
+      {
+        "timestamp": "2025-08-17T19:24:04.999916",
+        "activity_count": 0,
+        "is_active": false,
+        "is_completed": false,
+        "has_errors": false,
+        "processing_duration": null,
+        "log_lines": 1,
+        "recent_activity": ""
+      },
+      {
+        "timestamp": "2025-08-17T19:24:28.060093",
+        "activity_count": 0,
+        "is_active": false,
+        "is_completed": false,
+        "has_errors": false,
+        "processing_duration": null,
+        "log_lines": 1,
+        "recent_activity": ""
+      },
+      {
+        "timestamp": "2025-08-17T19:24:51.090067",
+        "activity_count": 0,
+        "is_active": false,
+        "is_completed": false,
+        "has_errors": false,
+        "processing_duration": null,
+        "log_lines": 1,
+        "recent_activity": ""
+      },
+      {
+        "timestamp": "2025-08-17T19:25:14.157247",
+        "activity_count": 0,
+        "is_active": false,
+        "is_completed": false,
+        "has_errors": false,
+        "processing_duration": null,
+        "log_lines": 1,
+        "recent_activity": ""
+      },
+      {
+        "timestamp": "2025-08-17T19:25:37.235705",
+        "activity_count": 0,
+        "is_active": false,
+        "is_completed": false,
+        "has_errors": false,
+        "processing_duration": null,
+        "log_lines": 1,
+        "recent_activity": ""
+      }
+    ],
+    "database": [
+      {
+        "timestamp": "2025-08-17T19:23:18.896563",
+        "activity_count": 0,
+        "is_active": false,
+        "is_completed": false,
+        "has_errors": false,
+        "processing_duration": null,
+        "log_lines": 1,
+        "recent_activity": ""
+      },
+      {
+        "timestamp": "2025-08-17T19:23:41.979116",
+        "activity_count": 0,
+        "is_active": false,
+        "is_completed": false,
+        "has_errors": false,
+        "processing_duration": null,
+        "log_lines": 1,
+        "recent_activity": ""
+      },
+      {
+        "timestamp": "2025-08-17T19:24:04.999916",
+        "activity_count": 0,
+        "is_active": false,
+        "is_completed": false,
+        "has_errors": false,
+        "processing_duration": null,
+        "log_lines": 1,
+        "recent_activity": ""
+      },
+      {
+        "timestamp": "2025-08-17T19:24:28.060093",
+        "activity_count": 0,
+        "is_active": false,
+        "is_completed": false,
+        "has_errors": false,
+        "processing_duration": null,
+        "log_lines": 1,
+        "recent_activity": ""
+      },
+      {
+        "timestamp": "2025-08-17T19:24:51.090067",
+        "activity_count": 0,
+        "is_active": false,
+        "is_completed": false,
+        "has_errors": false,
+        "processing_duration": null,
+        "log_lines": 1,
+        "recent_activity": ""
+      },
+      {
+        "timestamp": "2025-08-17T19:25:14.157247",
+        "activity_count": 0,
+        "is_active": false,
+        "is_completed": false,
+        "has_errors": false,
+        "processing_duration": null,
+        "log_lines": 1,
+        "recent_activity": ""
+      },
+      {
+        "timestamp": "2025-08-17T19:25:37.235705",
+        "activity_count": 0,
+        "is_active": false,
+        "is_completed": false,
+        "has_errors": false,
+        "processing_duration": null,
+        "log_lines": 1,
+        "recent_activity": ""
+      }
+    ],
+    "web_app": [
+      {
+        "timestamp": "2025-08-17T19:23:18.896563",
+        "activity_count": 0,
+        "is_active": false,
+        "is_completed": false,
+        "has_errors": false,
+        "processing_duration": null,
+        "log_lines": 1,
+        "recent_activity": ""
+      },
+      {
+        "timestamp": "2025-08-17T19:23:41.979116",
+        "activity_count": 0,
+        "is_active": false,
+        "is_completed": false,
+        "has_errors": false,
+        "processing_duration": null,
+        "log_lines": 1,
+        "recent_activity": ""
+      },
+      {
+        "timestamp": "2025-08-17T19:24:04.999916",
+        "activity_count": 0,
+        "is_active": false,
+        "is_completed": false,
+        "has_errors": false,
+        "processing_duration": null,
+        "log_lines": 1,
+        "recent_activity": ""
+      },
+      {
+        "timestamp": "2025-08-17T19:24:28.060093",
+        "activity_count": 0,
+        "is_active": false,
+        "is_completed": false,
+        "has_errors": false,
+        "processing_duration": null,
+        "log_lines": 1,
+        "recent_activity": ""
+      },
+      {
+        "timestamp": "2025-08-17T19:24:51.090067",
+        "activity_count": 0,
+        "is_active": false,
+        "is_completed": false,
+        "has_errors": false,
+        "processing_duration": null,
+        "log_lines": 1,
+        "recent_activity": ""
+      },
+      {
+        "timestamp": "2025-08-17T19:25:14.157247",
+        "activity_count": 0,
+        "is_active": false,
+        "is_completed": false,
+        "has_errors": false,
+        "processing_duration": null,
+        "log_lines": 1,
+        "recent_activity": ""
+      },
+      {
+        "timestamp": "2025-08-17T19:25:37.235705",
+        "activity_count": 0,
+        "is_active": false,
+        "is_completed": false,
+        "has_errors": false,
+        "processing_duration": null,
+        "log_lines": 1,
+        "recent_activity": ""
+      }
+    ]
+  },
+  "resource_usage": [
+    {
+      "timestamp": "2025-08-17T19:23:18.985127",
+      "cpu_info": "%Cpu(s):  5.7 us,  1.4 sy,  0.0 ni, 92.9 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st",
+      "memory_info": "               total        used        free      shared  buff/cache   available\nMem:           15869       12331         740         395        3523        3538\nSwap:           8191        5573        2618\n",
+      "disk_info": "Filesystem      Size  Used Avail Use% Mounted on\n/dev/nvme0n1p2  468G  198G  247G  45% /\n",
+      "docker_stats": "CONTAINER                            CPU %     MEM USAGE / LIMIT\nhorse_racing_auto_downloader_clean   0.00%     308.8MiB / 3GiB\nhorse_racing_data_pipeline_clean     0.46%     58.22MiB / 15.5GiB\nhorse_racing_ml_trainer_clean        0.00%     12.1MiB / 15.5GiB\nhorse_racing_postgres_clean          0.00%     27.8MiB / 15.5GiB\nhorse_racing_redis_clean             0.88%     2.199MiB / 15.5GiB\nhorse_racing_web_app_clean           0.14%     12.86MiB / 15.5GiB\n"
+    },
+    {
+      "timestamp": "2025-08-17T19:23:42.054667",
+      "cpu_info": "%Cpu(s):  2.4 us,  1.8 sy,  0.0 ni, 95.8 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st",
+      "memory_info": "               total        used        free      shared  buff/cache   available\nMem:           15869       12252         814         388        3520        3617\nSwap:           8191        5569        2622\n",
+      "disk_info": "Filesystem      Size  Used Avail Use% Mounted on\n/dev/nvme0n1p2  468G  198G  247G  45% /\n",
+      "docker_stats": "CONTAINER                            CPU %     MEM USAGE / LIMIT\nhorse_racing_auto_downloader_clean   0.00%     308.8MiB / 3GiB\nhorse_racing_data_pipeline_clean     0.00%     58.22MiB / 15.5GiB\nhorse_racing_ml_trainer_clean        0.00%     12.1MiB / 15.5GiB\nhorse_racing_postgres_clean          0.00%     27.8MiB / 15.5GiB\nhorse_racing_redis_clean             1.28%     2.445MiB / 15.5GiB\nhorse_racing_web_app_clean           0.19%     12.86MiB / 15.5GiB\n"
+    },
+    {
+      "timestamp": "2025-08-17T19:24:05.078779",
+      "cpu_info": "%Cpu(s):  9.8 us,  4.0 sy,  0.0 ni, 86.1 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st",
+      "memory_info": "               total        used        free      shared  buff/cache   available\nMem:           15869       12415         651         388        3521        3454\nSwap:           8191        5569        2622\n",
+      "disk_info": "Filesystem      Size  Used Avail Use% Mounted on\n/dev/nvme0n1p2  468G  198G  247G  45% /\n",
+      "docker_stats": "CONTAINER                            CPU %     MEM USAGE / LIMIT\nhorse_racing_auto_downloader_clean   0.00%     308.8MiB / 3GiB\nhorse_racing_data_pipeline_clean     0.00%     58.22MiB / 15.5GiB\nhorse_racing_ml_trainer_clean        0.00%     12.1MiB / 15.5GiB\nhorse_racing_postgres_clean          0.00%     27.8MiB / 15.5GiB\nhorse_racing_redis_clean             0.99%     2.195MiB / 15.5GiB\nhorse_racing_web_app_clean           0.15%     12.86MiB / 15.5GiB\n"
+    },
+    {
+      "timestamp": "2025-08-17T19:24:28.152794",
+      "cpu_info": "%Cpu(s):  9.6 us,  2.6 sy,  0.0 ni, 87.8 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st",
+      "memory_info": "               total        used        free      shared  buff/cache   available\nMem:           15869       12440         598         404        3563        3428\nSwap:           8191        5508        2683\n",
+      "disk_info": "Filesystem      Size  Used Avail Use% Mounted on\n/dev/nvme0n1p2  468G  198G  247G  45% /\n",
+      "docker_stats": "CONTAINER                            CPU %     MEM USAGE / LIMIT\nhorse_racing_auto_downloader_clean   0.00%     308.8MiB / 3GiB\nhorse_racing_data_pipeline_clean     0.00%     58.22MiB / 15.5GiB\nhorse_racing_ml_trainer_clean        0.00%     12.1MiB / 15.5GiB\nhorse_racing_postgres_clean          0.00%     27.8MiB / 15.5GiB\nhorse_racing_redis_clean             4.17%     2.203MiB / 15.5GiB\nhorse_racing_web_app_clean           0.11%     12.86MiB / 15.5GiB\n"
+    },
+    {
+      "timestamp": "2025-08-17T19:24:51.161218",
+      "cpu_info": "%Cpu(s): 13.4 us,  3.5 sy,  0.0 ni, 81.7 id,  1.4 wa,  0.0 hi,  0.0 si,  0.0 st",
+      "memory_info": "               total        used        free      shared  buff/cache   available\nMem:           15869       12144         893         401        3561        3724\nSwap:           8191        5505        2686\n",
+      "disk_info": "Filesystem      Size  Used Avail Use% Mounted on\n/dev/nvme0n1p2  468G  198G  247G  45% /\n",
+      "docker_stats": "CONTAINER                            CPU %     MEM USAGE / LIMIT\nhorse_racing_auto_downloader_clean   0.00%     308.8MiB / 3GiB\nhorse_racing_data_pipeline_clean     0.00%     58.22MiB / 15.5GiB\nhorse_racing_ml_trainer_clean        0.00%     12.1MiB / 15.5GiB\nhorse_racing_postgres_clean          0.00%     27.8MiB / 15.5GiB\nhorse_racing_redis_clean             1.50%     2.195MiB / 15.5GiB\nhorse_racing_web_app_clean           0.20%     12.86MiB / 15.5GiB\n"
+    },
+    {
+      "timestamp": "2025-08-17T19:25:14.240975",
+      "cpu_info": "%Cpu(s): 12.6 us,  2.2 sy,  0.0 ni, 85.2 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st",
+      "memory_info": "               total        used        free      shared  buff/cache   available\nMem:           15869       12384         651         406        3567        3484\nSwap:           8191        5505        2686\n",
+      "disk_info": "Filesystem      Size  Used Avail Use% Mounted on\n/dev/nvme0n1p2  468G  198G  247G  45% /\n",
+      "docker_stats": "CONTAINER                            CPU %     MEM USAGE / LIMIT\nhorse_racing_auto_downloader_clean   0.00%     308.8MiB / 3GiB\nhorse_racing_data_pipeline_clean     0.00%     58.22MiB / 15.5GiB\nhorse_racing_ml_trainer_clean        0.00%     12.1MiB / 15.5GiB\nhorse_racing_postgres_clean          0.00%     27.8MiB / 15.5GiB\nhorse_racing_redis_clean             1.04%     2.445MiB / 15.5GiB\nhorse_racing_web_app_clean           0.17%     12.86MiB / 15.5GiB\n"
+    },
+    {
+      "timestamp": "2025-08-17T19:25:37.301405",
+      "cpu_info": "%Cpu(s):  1.8 us,  3.0 sy,  0.0 ni, 95.2 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st",
+      "memory_info": "               total        used        free      shared  buff/cache   available\nMem:           15869       12303         732         398        3560        3565\nSwap:           8191        5505        2686\n",
+      "disk_info": "Filesystem      Size  Used Avail Use% Mounted on\n/dev/nvme0n1p2  468G  198G  247G  45% /\n",
+      "docker_stats": "CONTAINER                            CPU %     MEM USAGE / LIMIT\nhorse_racing_auto_downloader_clean   0.00%     308.8MiB / 3GiB\nhorse_racing_data_pipeline_clean     0.00%     58.22MiB / 15.5GiB\nhorse_racing_ml_trainer_clean        0.00%     12.1MiB / 15.5GiB\nhorse_racing_postgres_clean          0.00%     27.8MiB / 15.5GiB\nhorse_racing_redis_clean             1.25%     2.195MiB / 15.5GiB\nhorse_racing_web_app_clean           0.19%     12.86MiB / 15.5GiB\n"
+    }
+  ],
+  "pipeline_progress": {
+    "timestamp": "2025-08-17T19:25:40.155658",
+    "stage_status": {
+      "data_download": "idle",
+      "preprocessing": "idle",
+      "ml_training": "idle",
+      "database": "idle",
+      "web_app": "idle"
+    },
+    "overall_health": "idle",
+    "bottlenecks": [],
+    "recommendations": []
+  }
+}

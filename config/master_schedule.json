@@ -1,40 +1,47 @@
 {
   "metadata": {
-    "generated_at": "2025-08-14T06:28:01.735985",
-    "download_time": "06:01",
+    "generated_at": "2025-08-17T18:21:00.000000",
+    "download_time": "20:00",
     "first_race_time": "14:00",
     "total_races": 1,
     "race_times": [
       "14:00"
     ],
     "total_window_minutes": 464,
-    "schedule_type": "normal"
+    "schedule_type": "fresh_start"
   },
   "pipeline_stages": {
     "data_download": {
-      "start_time": "05:00",
-      "end_time": "05:05",
+      "start_time": "20:00",
+      "end_time": "20:05",
       "duration_minutes": 5,
-      "description": "Download daily racing data",
+      "description": "Download daily racing data with fresh start",
       "critical": true
     },
     "data_validation": {
-      "start_time": "06:01",
-      "end_time": "06:04",
+      "start_time": "19:25",
+      "end_time": "19:28",
       "duration_minutes": 3,
       "description": "Validate downloaded data integrity and completeness",
       "critical": true
     },
+    "enhanced_preprocessing": {
+      "start_time": "19:28",
+      "end_time": "19:40",
+      "duration_minutes": 12,
+      "description": "Enhanced CSV data cleaning and format standardization",
+      "critical": true
+    },
     "data_preprocessing": {
-      "start_time": "06:04",
-      "end_time": "06:16",
+      "start_time": "19:40",
+      "end_time": "19:52",
       "duration_minutes": 12,
       "description": "Clean and preprocess race data",
       "critical": true
     },
     "data_relationships": {
-      "start_time": "06:16",
-      "end_time": "06:24",
+      "start_time": "19:52",
+      "end_time": "20:00",
       "duration_minutes": 8,
       "description": "Process data relationships and linkages",
       "critical": true

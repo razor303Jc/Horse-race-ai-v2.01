@@ -134,16 +134,24 @@ class PipelineOrchestrator:
         if self.run_csv_import():
             self.mark_stage_complete("csv_import", "Database import successful")
 
-            # Stage 3: Data Preprocessing
-            if self.run_data_preprocessing():
+            # Stage 2.5: Enhanced Data Preprocessing (NEW)
+            if self.run_enhanced_preprocessing():
                 self.mark_stage_complete(
-                    "data_preprocessing", "Data relationships processed"
+                    "enhanced_preprocessing", "Data cleaning and formatting completed"
                 )
 
-                # Stage 4: Trigger ML Pipeline
-                self.trigger_ml_pipeline()
+                # Stage 3: Data Preprocessing
+                if self.run_data_preprocessing():
+                    self.mark_stage_complete(
+                        "data_preprocessing", "Data relationships processed"
+                    )
+
+                    # Stage 4: Trigger ML Pipeline
+                    self.trigger_ml_pipeline()
+                else:
+                    logger.error("❌ Data preprocessing failed")
             else:
-                logger.error("❌ Data preprocessing failed")
+                logger.error("❌ Enhanced preprocessing failed")
         else:
             logger.error("❌ CSV import failed")
 
@@ -188,6 +196,37 @@ class PipelineOrchestrator:
             return False
         except Exception as e:
             logger.error(f"❌ CSV import exception: {e}")
+            return False
+
+    def run_enhanced_preprocessing(self) -> bool:
+        """Run enhanced CSV data preprocessing and cleaning"""
+        logger.info("🧹 Stage 2.5: Starting Enhanced Data Preprocessing...")
+
+        try:
+            # Import and run enhanced preprocessing pipeline
+            result = subprocess.run(
+                [
+                    "python",
+                    "/app/enhanced_preprocessing_pipeline.py",
+                ],
+                capture_output=True,
+                text=True,
+                timeout=900,  # 15 minutes for preprocessing
+            )
+
+            if result.returncode == 0:
+                logger.info("✅ Enhanced data preprocessing completed")
+                logger.info(f"Preprocessing output: {result.stdout}")
+                return True
+            else:
+                logger.error(f"❌ Enhanced preprocessing failed: {result.stderr}")
+                return False
+
+        except subprocess.TimeoutExpired:
+            logger.error("❌ Enhanced preprocessing timed out")
+            return False
+        except Exception as e:
+            logger.error(f"❌ Enhanced preprocessing exception: {e}")
             return False
 
     def run_data_preprocessing(self) -> bool:

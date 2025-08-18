@@ -21,7 +21,7 @@ from psycopg2.extras import execute_values
 # Database configuration
 DATABASE_CONFIG = {
     "host": "localhost",
-    "port": 5433,
+    "port": 5432,
     "database": "horse_racing_db",
     "user": "horse_racing",
     "password": "secure_password_123",

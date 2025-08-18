@@ -3,7 +3,7 @@
 🚀 Manual Pipeline Trigger
 =========================
 
-Manually trigger pipeline stages after successful 15:15 download
+Manually trigger pipeline stages after successful 00:01 download
 """
 
 import sys
@@ -17,14 +17,14 @@ from tools.pipeline.event_driven_orchestrator import EventDrivenPipelineOrchestr
 
 
 def main():
-    print("🚀 Manual Pipeline Trigger - Post 15:15 Download")
+    print("🚀 Manual Pipeline Trigger - Post 00:01 Download")
     print("=" * 50)
 
     orchestrator = EventDrivenPipelineOrchestrator()
 
-    # Manually mark data_download as complete since it happened at 15:15
+    # Manually mark data_download as complete since it happened at 00:01
     orchestrator.completed_stages.add("data_download")
-    print("✅ Marked data_download as completed (15:15 success)")
+    print("✅ Marked data_download as completed (00:01 success)")
 
     # Start monitoring
     orchestrator.start_monitoring()

@@ -90,7 +90,7 @@ class AutoDownloaderMonitor:
                 latest[name] = {"file": "Directory not found", "modified": "N/A"}
         return latest
 
-    def time_until_trigger(self, target_time="15:15"):
+    def time_until_trigger(self, target_time="00:01"):
         """Calculate time until next trigger"""
         now = datetime.now()
         target = datetime.strptime(target_time, "%H:%M").replace(
@@ -109,7 +109,7 @@ class AutoDownloaderMonitor:
         print("=" * 60)
 
         # Schedule info
-        print(f"⏰ Next trigger: 15:15 (in {self.time_until_trigger()})")
+        print(f"⏰ Next trigger: 00:01 (in {self.time_until_trigger()})")
 
         # Container status
         status = self.get_container_status()
