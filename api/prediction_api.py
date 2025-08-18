@@ -55,6 +55,9 @@ app = FastAPI(
     redoc_url="/redoc",
 )
 
+# Setup templates
+templates = Jinja2Templates(directory="/app/templates")
+
 # Global variables for model and encoders
 ensemble_model = None
 label_encoders = None
@@ -148,16 +151,35 @@ def load_production_models():
     global ensemble_model, label_encoders, model_metadata, model_timestamp
 
     try:
-        # Find the latest model timestamp
-        models_dir = Path.cwd() / "trained_models" / "priority_3a"
+        # Check multiple potential model locations
+        model_paths = [
+            Path("/app/models"),  # Docker mounted path
+            Path("/app/trained_models/priority_3a"),  # Legacy path
+            Path.cwd() / "models",  # Local models
+            Path.cwd() / "trained_models" / "priority_3a",  # Original path
+        ]
 
-        if not models_dir.exists():
+        models_dir = None
+        for path in model_paths:
+            if path.exists():
+                models_dir = path
+                logger.info(f"Found models directory: {models_dir}")
+                break
+
+        if models_dir is None:
             raise FileNotFoundError("Models directory not found - creating placeholder")
 
         # Find the most recent ensemble model
         ensemble_files = list(models_dir.glob("ensemble_*.joblib"))
         if not ensemble_files:
-            raise FileNotFoundError("No ensemble model files found")
+            # Try alternative patterns
+            ensemble_files = list(models_dir.glob("*ensemble*.joblib"))
+        if not ensemble_files:
+            # Try any .joblib file
+            ensemble_files = list(models_dir.glob("*.joblib"))
+
+        if not ensemble_files:
+            raise FileNotFoundError("No model files found")
 
         latest_ensemble = max(ensemble_files, key=lambda x: x.stat().st_mtime)
         model_timestamp = latest_ensemble.stem.split("_")[-1]
@@ -535,6 +557,56 @@ async def read_root(request: Request):
     return HTMLResponse(content=html_content)
 
 
+@app.get("/dashboard", response_class=HTMLResponse)
+async def dashboard(request: Request):
+    """Serve the enhanced dashboard page."""
+    return templates.TemplateResponse("enhanced_dashboard.html", {"request": request})
+
+
+@app.get("/analyzer", response_class=HTMLResponse)
+async def racing_analyzer(request: Request):
+    """Serve the racing analyzer page."""
+    return templates.TemplateResponse("racing_analyzer.html", {"request": request})
+
+
+@app.get("/analytics", response_class=HTMLResponse)
+async def live_analytics(request: Request):
+    """Serve the live analytics page."""
+    return templates.TemplateResponse("live_analytics.html", {"request": request})
+
+
+@app.get("/races", response_class=HTMLResponse)
+async def race_cards(request: Request):
+    """Serve the race cards page."""
+    return templates.TemplateResponse("race_cards.html", {"request": request})
+
+
+@app.get("/race/{race_id}", response_class=HTMLResponse)
+async def race_details(request: Request, race_id: str):
+    """Serve the race details page."""
+    return templates.TemplateResponse(
+        "race_details.html", {"request": request, "race_id": race_id}
+    )
+
+
+@app.get("/database", response_class=HTMLResponse)
+async def database_management(request: Request):
+    """Serve the database management page."""
+    return templates.TemplateResponse("database_management.html", {"request": request})
+
+
+@app.get("/health")
+async def health_check():
+    """Health check endpoint for container monitoring."""
+    status = "healthy" if ensemble_model is not None else "unhealthy"
+    return {
+        "status": status,
+        "timestamp": datetime.now().isoformat(),
+        "models_loaded": ensemble_model is not None,
+        "version": "1.0.0",
+    }
+
+
 @app.post("/predict/horse", response_model=PredictionResponse)
 async def predict_horse(horse_data: HorseData):
     """Predict win probability for a single horse."""
@@ -675,6 +747,26 @@ async def get_model_status():
         )
 
 
+# Import and include betting router
+try:
+    import sys
+
+    sys.path.append("/app")
+    from betting_api import betting_router
+
+    app.include_router(betting_router)
+    logger.info("✅ Betting API router included")
+except Exception as e:
+    logger.warning(f"❌ Failed to include betting router: {e}")
+
+
+if __name__ == "__main__":
+    print("🚀 Starting Horse Racing Prediction API...")
+    print("📊 Interactive interface: http://localhost:8000")
+    print("📖 API documentation: http://localhost:8000/docs")
+    uvicorn.run(app, host="0.0.0.0", port=8000)
+
+
 @app.get("/health")
 async def health_check():
     """Simple health check endpoint."""
@@ -693,12 +785,19 @@ if __name__ == "__main__":
 # Import and include betting router
 try:
     import sys
+
     sys.path.append("/app")
     from betting_api import betting_router
+
     app.include_router(betting_router)
     logger.info("✅ Betting API router included")
 except Exception as e:
     logger.warning(f"❌ Failed to include betting router: {e}")
+
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=8000)
+
 
 # Health check endpoint
 @app.get("/health")
@@ -708,5 +807,5 @@ async def health_check():
         "status": "healthy",
         "timestamp": datetime.now().isoformat(),
         "betting_api": "integrated",
-        "models_loaded": ensemble_model is not None
+        "models_loaded": ensemble_model is not None,
     }

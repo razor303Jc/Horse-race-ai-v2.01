@@ -1,0 +1,812 @@
+[
+  {
+    "timestamp": "2025-08-17T17:31:32.986074",
+    "session_id": 1,
+    "avg_accuracy": 0.6100439581932322,
+    "best_accuracy": 0.6452485822492452,
+    "total_duration": 17.534967,
+    "session_improvement": 0.058179640793432186,
+    "cycles_completed": 10
+  },
+  {
+    "timestamp": "2025-08-17T17:31:54.081290",
+    "session_id": 2,
+    "avg_accuracy": 0.6174390258035112,
+    "best_accuracy": 0.6491047760253051,
+    "total_duration": 18.091771,
+    "session_improvement": 0.044642368470165006,
+    "cycles_completed": 10
+  },
+  {
+    "timestamp": "2025-08-17T17:32:15.326311",
+    "session_id": 3,
+    "avg_accuracy": 0.6126610848527041,
+    "best_accuracy": 0.6470412494123969,
+    "total_duration": 18.242633,
+    "session_improvement": 0.06046589923371082,
+    "cycles_completed": 10
+  },
+  {
+    "timestamp": "2025-08-17T17:32:35.800979",
+    "session_id": 4,
+    "avg_accuracy": 0.6114717548965192,
+    "best_accuracy": 0.6369151748590091,
+    "total_duration": 17.472129,
+    "session_improvement": 0.0599750139617693,
+    "cycles_completed": 10
+  },
+  {
+    "timestamp": "2025-08-17T17:32:56.545097",
+    "session_id": 5,
+    "avg_accuracy": 0.6198759653343247,
+    "best_accuracy": 0.6336792847126961,
+    "total_duration": 17.740726,
+    "session_improvement": 0.024035235054863713,
+    "cycles_completed": 10
+  },
+  {
+    "timestamp": "2025-08-17T17:33:16.732897",
+    "session_id": 6,
+    "avg_accuracy": 0.6086146681746389,
+    "best_accuracy": 0.6274050472062083,
+    "total_duration": 17.182012,
+    "session_improvement": 0.02898697757160107,
+    "cycles_completed": 10
+  },
+  {
+    "timestamp": "2025-08-17T17:33:37.167325",
+    "session_id": 7,
+    "avg_accuracy": 0.6160678468810346,
+    "best_accuracy": 0.6363379239993339,
+    "total_duration": 17.429145,
+    "session_improvement": 0.01897597629143577,
+    "cycles_completed": 10
+  },
+  {
+    "timestamp": "2025-08-17T17:33:57.668645",
+    "session_id": 8,
+    "avg_accuracy": 0.6092438777249317,
+    "best_accuracy": 0.6637731020246084,
+    "total_duration": 17.49424,
+    "session_improvement": 0.07769113970791253,
+    "cycles_completed": 10
+  },
+  {
+    "timestamp": "2025-08-17T17:34:18.317623",
+    "session_id": 9,
+    "avg_accuracy": 0.6091017004741132,
+    "best_accuracy": 0.6331561171363683,
+    "total_duration": 17.644842,
+    "session_improvement": 0.020379966840967656,
+    "cycles_completed": 10
+  },
+  {
+    "timestamp": "2025-08-17T17:34:37.922238",
+    "session_id": 10,
+    "avg_accuracy": 0.6145340282379215,
+    "best_accuracy": 0.6375792041397129,
+    "total_duration": 16.599151,
+    "session_improvement": 0.0643724814182558,
+    "cycles_completed": 10
+  },
+  {
+    "timestamp": "2025-08-17T17:34:58.900217",
+    "session_id": 11,
+    "avg_accuracy": 0.6229570000099593,
+    "best_accuracy": 0.6576268561339595,
+    "total_duration": 17.966459,
+    "session_improvement": 0.05410564031731502,
+    "cycles_completed": 10
+  },
+  {
+    "timestamp": "2025-08-17T17:35:19.741137",
+    "session_id": 12,
+    "avg_accuracy": 0.6211107721116106,
+    "best_accuracy": 0.656631828006438,
+    "total_duration": 17.834213,
+    "session_improvement": 0.05162318155525214,
+    "cycles_completed": 10
+  },
+  {
+    "timestamp": "2025-08-17T17:35:39.190807",
+    "session_id": 13,
+    "avg_accuracy": 0.6146670330886386,
+    "best_accuracy": 0.6522771482835477,
+    "total_duration": 16.442024,
+    "session_improvement": 0.04575493073391501,
+    "cycles_completed": 10
+  },
+  {
+    "timestamp": "2025-08-17T17:35:59.336809",
+    "session_id": 14,
+    "avg_accuracy": 0.6108033380113074,
+    "best_accuracy": 0.650805251434177,
+    "total_duration": 17.137885,
+    "session_improvement": 0.030276763834437892,
+    "cycles_completed": 10
+  },
+  {
+    "timestamp": "2025-08-17T17:36:20.231748",
+    "session_id": 15,
+    "avg_accuracy": 0.6043680675582229,
+    "best_accuracy": 0.6300385264711652,
+    "total_duration": 17.890198,
+    "session_improvement": 0.031657908123023604,
+    "cycles_completed": 10
+  },
+  {
+    "timestamp": "2025-08-17T17:36:41.148808",
+    "session_id": 16,
+    "avg_accuracy": 0.6163241921501836,
+    "best_accuracy": 0.6510416014026534,
+    "total_duration": 17.911902,
+    "session_improvement": 0.024135318245533277,
+    "cycles_completed": 10
+  },
+  {
+    "timestamp": "2025-08-17T17:37:01.630438",
+    "session_id": 17,
+    "avg_accuracy": 0.6052946044248527,
+    "best_accuracy": 0.6298406358271538,
+    "total_duration": 17.473173,
+    "session_improvement": 0.025908486643448247,
+    "cycles_completed": 10
+  },
+  {
+    "timestamp": "2025-08-17T17:37:21.913599",
+    "session_id": 18,
+    "avg_accuracy": 0.6175351531252239,
+    "best_accuracy": 0.6678714919952882,
+    "total_duration": 17.277675,
+    "session_improvement": 0.07473253261584467,
+    "cycles_completed": 10
+  },
+  {
+    "timestamp": "2025-08-17T17:37:40.889109",
+    "session_id": 19,
+    "avg_accuracy": 0.6205674407021812,
+    "best_accuracy": 0.6913584416444035,
+    "total_duration": 15.970922,
+    "session_improvement": 0.06719902560710589,
+    "cycles_completed": 10
+  },
+  {
+    "timestamp": "2025-08-17T17:38:00.756652",
+    "session_id": 20,
+    "avg_accuracy": 0.6106404555282079,
+    "best_accuracy": 0.6507318719632644,
+    "total_duration": 16.86408,
+    "session_improvement": 0.05470848774121462,
+    "cycles_completed": 10
+  },
+  {
+    "timestamp": "2025-08-17T17:38:21.546339",
+    "session_id": 21,
+    "avg_accuracy": 0.6157657908272407,
+    "best_accuracy": 0.6332890792311974,
+    "total_duration": 17.783793,
+    "session_improvement": 0.014420174892769366,
+    "cycles_completed": 10
+  },
+  {
+    "timestamp": "2025-08-17T17:38:41.768761",
+    "session_id": 22,
+    "avg_accuracy": 0.6278864253546119,
+    "best_accuracy": 0.6573444326745179,
+    "total_duration": 17.219595,
+    "session_improvement": 0.02931670383338103,
+    "cycles_completed": 10
+  },
+  {
+    "timestamp": "2025-08-17T17:39:02.858693",
+    "session_id": 23,
+    "avg_accuracy": 0.6180544735195946,
+    "best_accuracy": 0.696922960302027,
+    "total_duration": 18.085003,
+    "session_improvement": 0.08726524217455733,
+    "cycles_completed": 10
+  },
+  {
+    "timestamp": "2025-08-17T17:39:22.852692",
+    "session_id": 24,
+    "avg_accuracy": 0.6173457606859938,
+    "best_accuracy": 0.6536534338816314,
+    "total_duration": 16.988125,
+    "session_improvement": 0.055699623860172465,
+    "cycles_completed": 10
+  },
+  {
+    "timestamp": "2025-08-17T17:39:43.190479",
+    "session_id": 25,
+    "avg_accuracy": 0.6207817905962074,
+    "best_accuracy": 0.6526635523052188,
+    "total_duration": 17.3334,
+    "session_improvement": 0.051137146645116816,
+    "cycles_completed": 10
+  },
+  {
+    "timestamp": "2025-08-17T17:40:03.581326",
+    "session_id": 26,
+    "avg_accuracy": 0.6097983364031039,
+    "best_accuracy": 0.6337606652362553,
+    "total_duration": 17.383772,
+    "session_improvement": 0.03533935669613797,
+    "cycles_completed": 10
+  },
+  {
+    "timestamp": "2025-08-17T17:40:25.562132",
+    "session_id": 27,
+    "avg_accuracy": 0.615307599038238,
+    "best_accuracy": 0.6489437333936153,
+    "total_duration": 18.97596,
+    "session_improvement": 0.02614893579908173,
+    "cycles_completed": 10
+  },
+  {
+    "timestamp": "2025-08-17T17:40:46.482942",
+    "session_id": 28,
+    "avg_accuracy": 0.6167156662548565,
+    "best_accuracy": 0.6402081755122003,
+    "total_duration": 17.91639,
+    "session_improvement": 0.055915887624035876,
+    "cycles_completed": 10
+  },
+  {
+    "timestamp": "2025-08-17T17:41:06.081662",
+    "session_id": 29,
+    "avg_accuracy": 0.6154895232343774,
+    "best_accuracy": 0.660733199587294,
+    "total_duration": 16.592283,
+    "session_improvement": 0.0,
+    "cycles_completed": 10
+  },
+  {
+    "timestamp": "2025-08-17T17:41:26.424322",
+    "session_id": 30,
+    "avg_accuracy": 0.6101247278708215,
+    "best_accuracy": 0.6608155277788598,
+    "total_duration": 17.333811,
+    "session_improvement": 0.05847319607578605,
+    "cycles_completed": 10
+  },
+  {
+    "timestamp": "2025-08-17T17:41:46.207629",
+    "session_id": 31,
+    "avg_accuracy": 0.621178869436249,
+    "best_accuracy": 0.6523213487303646,
+    "total_duration": 16.76712,
+    "session_improvement": 0.037736226373228265,
+    "cycles_completed": 10
+  },
+  {
+    "timestamp": "2025-08-17T17:42:06.539595",
+    "session_id": 32,
+    "avg_accuracy": 0.6190099649436462,
+    "best_accuracy": 0.6547907470818239,
+    "total_duration": 17.327428,
+    "session_improvement": 0.03407304443139336,
+    "cycles_completed": 10
+  },
+  {
+    "timestamp": "2025-08-17T17:42:26.438447",
+    "session_id": 33,
+    "avg_accuracy": 0.6237835409285457,
+    "best_accuracy": 0.6642817617363335,
+    "total_duration": 16.89667,
+    "session_improvement": 0.03595254135175319,
+    "cycles_completed": 10
+  },
+  {
+    "timestamp": "2025-08-17T17:42:48.153042",
+    "session_id": 34,
+    "avg_accuracy": 0.6134140481007905,
+    "best_accuracy": 0.62763554220826,
+    "total_duration": 18.711679,
+    "session_improvement": 0.03802239596560153,
+    "cycles_completed": 10
+  },
+  {
+    "timestamp": "2025-08-17T17:43:08.335383",
+    "session_id": 35,
+    "avg_accuracy": 0.6124863995564431,
+    "best_accuracy": 0.6313164731163879,
+    "total_duration": 17.179199,
+    "session_improvement": 0.017456038349767056,
+    "cycles_completed": 10
+  },
+  {
+    "timestamp": "2025-08-17T17:43:30.133856",
+    "session_id": 36,
+    "avg_accuracy": 0.6219425175578188,
+    "best_accuracy": 0.6469270841907149,
+    "total_duration": 18.793229,
+    "session_improvement": 0.0,
+    "cycles_completed": 10
+  },
+  {
+    "timestamp": "2025-08-17T17:43:51.448433",
+    "session_id": 37,
+    "avg_accuracy": 0.6145083380434685,
+    "best_accuracy": 0.6506840426742204,
+    "total_duration": 18.310719,
+    "session_improvement": 0.04183612536424741,
+    "cycles_completed": 10
+  },
+  {
+    "timestamp": "2025-08-17T17:44:11.353564",
+    "session_id": 38,
+    "avg_accuracy": 0.6159719414601409,
+    "best_accuracy": 0.6382313024336408,
+    "total_duration": 16.901823,
+    "session_improvement": 0.012768267434632441,
+    "cycles_completed": 10
+  },
+  {
+    "timestamp": "2025-08-17T17:44:31.681709",
+    "session_id": 39,
+    "avg_accuracy": 0.6129045207479684,
+    "best_accuracy": 0.6663798136794059,
+    "total_duration": 17.322797,
+    "session_improvement": 0.08870918983686604,
+    "cycles_completed": 10
+  },
+  {
+    "timestamp": "2025-08-17T17:44:52.587894",
+    "session_id": 40,
+    "avg_accuracy": 0.6181827089659933,
+    "best_accuracy": 0.6726105248419848,
+    "total_duration": 17.900743,
+    "session_improvement": 0.06827024552780847,
+    "cycles_completed": 10
+  },
+  {
+    "timestamp": "2025-08-17T17:45:12.636434",
+    "session_id": 41,
+    "avg_accuracy": 0.6115990773948305,
+    "best_accuracy": 0.6518279583978279,
+    "total_duration": 17.036018,
+    "session_improvement": 0.0679660013218214,
+    "cycles_completed": 10
+  },
+  {
+    "timestamp": "2025-08-17T17:45:31.595813",
+    "session_id": 42,
+    "avg_accuracy": 0.6020768174225285,
+    "best_accuracy": 0.6312902691055569,
+    "total_duration": 15.954809,
+    "session_improvement": 0.0,
+    "cycles_completed": 10
+  },
+  {
+    "timestamp": "2025-08-17T17:45:51.418936",
+    "session_id": 43,
+    "avg_accuracy": 0.615588906961981,
+    "best_accuracy": 0.663763026405481,
+    "total_duration": 16.819119,
+    "session_improvement": 0.08812530425739662,
+    "cycles_completed": 10
+  },
+  {
+    "timestamp": "2025-08-17T17:46:12.513915",
+    "session_id": 44,
+    "avg_accuracy": 0.6326520794367894,
+    "best_accuracy": 0.656290011745009,
+    "total_duration": 18.092111,
+    "session_improvement": 0.038303706633088686,
+    "cycles_completed": 10
+  },
+  {
+    "timestamp": "2025-08-17T17:46:32.932842",
+    "session_id": 45,
+    "avg_accuracy": 0.6243980160798788,
+    "best_accuracy": 0.6870583806328925,
+    "total_duration": 17.414057,
+    "session_improvement": 0.08303955654285056,
+    "cycles_completed": 10
+  },
+  {
+    "timestamp": "2025-08-17T17:46:53.681229",
+    "session_id": 46,
+    "avg_accuracy": 0.629599401291267,
+    "best_accuracy": 0.6495202497062281,
+    "total_duration": 17.743653,
+    "session_improvement": 0.05309615006518542,
+    "cycles_completed": 10
+  },
+  {
+    "timestamp": "2025-08-17T17:47:14.558400",
+    "session_id": 47,
+    "avg_accuracy": 0.6070649525776758,
+    "best_accuracy": 0.6406274276001779,
+    "total_duration": 17.872458,
+    "session_improvement": 0.039828599092067485,
+    "cycles_completed": 10
+  },
+  {
+    "timestamp": "2025-08-17T17:47:34.811839",
+    "session_id": 48,
+    "avg_accuracy": 0.6168773137305552,
+    "best_accuracy": 0.6499917236342243,
+    "total_duration": 17.248969,
+    "session_improvement": 0.04446570472539879,
+    "cycles_completed": 10
+  },
+  {
+    "timestamp": "2025-08-17T17:47:55.042022",
+    "session_id": 49,
+    "avg_accuracy": 0.6153896990875078,
+    "best_accuracy": 0.6529070630314544,
+    "total_duration": 17.225411,
+    "session_improvement": 0.06828677447367915,
+    "cycles_completed": 10
+  },
+  {
+    "timestamp": "2025-08-17T17:48:16.769010",
+    "session_id": 50,
+    "avg_accuracy": 0.6173515381620365,
+    "best_accuracy": 0.6497034754195701,
+    "total_duration": 18.722349,
+    "session_improvement": 0.03243203956364027,
+    "cycles_completed": 10
+  },
+  {
+    "timestamp": "2025-08-17T17:48:36.735088",
+    "session_id": 51,
+    "avg_accuracy": 0.6146613215886034,
+    "best_accuracy": 0.6313719211134089,
+    "total_duration": 16.956614,
+    "session_improvement": 0.03034028912697173,
+    "cycles_completed": 10
+  },
+  {
+    "timestamp": "2025-08-17T17:48:56.746876",
+    "session_id": 52,
+    "avg_accuracy": 0.6189710834435002,
+    "best_accuracy": 0.6398170078123222,
+    "total_duration": 17.005543,
+    "session_improvement": 0.02474149009385529,
+    "cycles_completed": 10
+  },
+  {
+    "timestamp": "2025-08-17T17:49:16.801107",
+    "session_id": 53,
+    "avg_accuracy": 0.614440688275242,
+    "best_accuracy": 0.6512354419963102,
+    "total_duration": 17.049911,
+    "session_improvement": 0.02900036036834064,
+    "cycles_completed": 10
+  },
+  {
+    "timestamp": "2025-08-17T17:49:35.518935",
+    "session_id": 54,
+    "avg_accuracy": 0.6219330288539549,
+    "best_accuracy": 0.6393782665661055,
+    "total_duration": 15.714659,
+    "session_improvement": 0.023571452137964855,
+    "cycles_completed": 10
+  },
+  {
+    "timestamp": "2025-08-17T17:49:56.024292",
+    "session_id": 55,
+    "avg_accuracy": 0.6267937778860634,
+    "best_accuracy": 0.6684048836364932,
+    "total_duration": 17.500224,
+    "session_improvement": 0.059281336679319785,
+    "cycles_completed": 10
+  },
+  {
+    "timestamp": "2025-08-17T17:50:16.585478",
+    "session_id": 56,
+    "avg_accuracy": 0.6125894688398035,
+    "best_accuracy": 0.6615140604854557,
+    "total_duration": 17.55138,
+    "session_improvement": 0.07280653962572892,
+    "cycles_completed": 10
+  },
+  {
+    "timestamp": "2025-08-17T17:50:37.381488",
+    "session_id": 57,
+    "avg_accuracy": 0.60988878441535,
+    "best_accuracy": 0.641086708763692,
+    "total_duration": 17.79042,
+    "session_improvement": 0.05586502184660269,
+    "cycles_completed": 10
+  },
+  {
+    "timestamp": "2025-08-17T17:50:58.349130",
+    "session_id": 58,
+    "avg_accuracy": 0.6112359047024734,
+    "best_accuracy": 0.6417810526781335,
+    "total_duration": 17.961621,
+    "session_improvement": 0.05496323373985745,
+    "cycles_completed": 10
+  },
+  {
+    "timestamp": "2025-08-17T17:51:19.381716",
+    "session_id": 59,
+    "avg_accuracy": 0.6170774434002128,
+    "best_accuracy": 0.6577797984657825,
+    "total_duration": 18.0265,
+    "session_improvement": 0.029411991038055807,
+    "cycles_completed": 10
+  },
+  {
+    "timestamp": "2025-08-17T17:51:40.090267",
+    "session_id": 60,
+    "avg_accuracy": 0.6197142819346713,
+    "best_accuracy": 0.6542226921829966,
+    "total_duration": 17.701646,
+    "session_improvement": 0.025817259226370126,
+    "cycles_completed": 10
+  },
+  {
+    "timestamp": "2025-08-17T17:51:59.828977",
+    "session_id": 61,
+    "avg_accuracy": 0.6068963744265531,
+    "best_accuracy": 0.6507211088825969,
+    "total_duration": 16.729845,
+    "session_improvement": 0.08701422072018306,
+    "cycles_completed": 10
+  },
+  {
+    "timestamp": "2025-08-17T17:52:21.443225",
+    "session_id": 62,
+    "avg_accuracy": 0.620846353226379,
+    "best_accuracy": 0.6590502427677483,
+    "total_duration": 18.607985,
+    "session_improvement": 0.05576751927185997,
+    "cycles_completed": 10
+  },
+  {
+    "timestamp": "2025-08-17T17:52:43.185694",
+    "session_id": 63,
+    "avg_accuracy": 0.6237209474858406,
+    "best_accuracy": 0.6690571323658968,
+    "total_duration": 18.734313,
+    "session_improvement": 0.09059370781309228,
+    "cycles_completed": 10
+  },
+  {
+    "timestamp": "2025-08-17T17:53:04.122057",
+    "session_id": 64,
+    "avg_accuracy": 0.6125690091311637,
+    "best_accuracy": 0.6519218045264336,
+    "total_duration": 17.931105,
+    "session_improvement": 0.045570606442519646,
+    "cycles_completed": 10
+  },
+  {
+    "timestamp": "2025-08-17T17:53:24.216208",
+    "session_id": 65,
+    "avg_accuracy": 0.6177381409077372,
+    "best_accuracy": 0.6655728694403968,
+    "total_duration": 17.089773,
+    "session_improvement": 0.061881385256078225,
+    "cycles_completed": 10
+  },
+  {
+    "timestamp": "2025-08-17T17:53:44.454691",
+    "session_id": 66,
+    "avg_accuracy": 0.6203023228486323,
+    "best_accuracy": 0.660670243423137,
+    "total_duration": 17.235763,
+    "session_improvement": 0.07457761958868647,
+    "cycles_completed": 10
+  },
+  {
+    "timestamp": "2025-08-17T17:54:04.057061",
+    "session_id": 67,
+    "avg_accuracy": 0.6024584923659838,
+    "best_accuracy": 0.6274616748544009,
+    "total_duration": 16.598984,
+    "session_improvement": 0.013248511706791644,
+    "cycles_completed": 10
+  },
+  {
+    "timestamp": "2025-08-17T17:54:24.114601",
+    "session_id": 68,
+    "avg_accuracy": 0.6093567970047304,
+    "best_accuracy": 0.6257823698056517,
+    "total_duration": 17.053154,
+    "session_improvement": 0.04329613727702952,
+    "cycles_completed": 10
+  },
+  {
+    "timestamp": "2025-08-17T17:54:44.735757",
+    "session_id": 69,
+    "avg_accuracy": 0.6204597585342253,
+    "best_accuracy": 0.653961384407413,
+    "total_duration": 17.616021,
+    "session_improvement": 0.039805750792919814,
+    "cycles_completed": 10
+  },
+  {
+    "timestamp": "2025-08-17T17:55:05.090938",
+    "session_id": 70,
+    "avg_accuracy": 0.6208304752676492,
+    "best_accuracy": 0.6349850102435839,
+    "total_duration": 17.349674,
+    "session_improvement": 0.004434759686338108,
+    "cycles_completed": 10
+  },
+  {
+    "timestamp": "2025-08-17T17:55:26.457241",
+    "session_id": 71,
+    "avg_accuracy": 0.6115056958316518,
+    "best_accuracy": 0.6516858108693623,
+    "total_duration": 18.354828,
+    "session_improvement": 0.060976345720274105,
+    "cycles_completed": 10
+  },
+  {
+    "timestamp": "2025-08-17T17:55:46.947502",
+    "session_id": 72,
+    "avg_accuracy": 0.6193988245913847,
+    "best_accuracy": 0.6336715448399549,
+    "total_duration": 17.482046,
+    "session_improvement": 0.0,
+    "cycles_completed": 10
+  },
+  {
+    "timestamp": "2025-08-17T17:56:07.716903",
+    "session_id": 73,
+    "avg_accuracy": 0.6186716161087484,
+    "best_accuracy": 0.635112180047387,
+    "total_duration": 17.766774,
+    "session_improvement": 0.023492506270738178,
+    "cycles_completed": 10
+  },
+  {
+    "timestamp": "2025-08-17T17:56:29.051754",
+    "session_id": 74,
+    "avg_accuracy": 0.6190749064051324,
+    "best_accuracy": 0.690757389658402,
+    "total_duration": 18.328254,
+    "session_improvement": 0.0801797659351734,
+    "cycles_completed": 10
+  },
+  {
+    "timestamp": "2025-08-17T17:56:49.800929",
+    "session_id": 75,
+    "avg_accuracy": 0.6203043215615609,
+    "best_accuracy": 0.6524399183201951,
+    "total_duration": 17.741769,
+    "session_improvement": 0.0020103637585782153,
+    "cycles_completed": 10
+  },
+  {
+    "timestamp": "2025-08-17T17:57:10.012387",
+    "session_id": 76,
+    "avg_accuracy": 0.612391938268353,
+    "best_accuracy": 0.6553074959875452,
+    "total_duration": 17.208914,
+    "session_improvement": 0.06669526769375655,
+    "cycles_completed": 10
+  },
+  {
+    "timestamp": "2025-08-17T17:57:31.144425",
+    "session_id": 77,
+    "avg_accuracy": 0.606696082519985,
+    "best_accuracy": 0.6212181500959026,
+    "total_duration": 18.120865,
+    "session_improvement": 0.014269747587424608,
+    "cycles_completed": 10
+  },
+  {
+    "timestamp": "2025-08-17T17:57:52.063564",
+    "session_id": 78,
+    "avg_accuracy": 0.6014196703084764,
+    "best_accuracy": 0.6386463147394426,
+    "total_duration": 17.913803,
+    "session_improvement": 0.046104782729646354,
+    "cycles_completed": 10
+  },
+  {
+    "timestamp": "2025-08-17T17:58:12.971830",
+    "session_id": 79,
+    "avg_accuracy": 0.6240117118339781,
+    "best_accuracy": 0.6453246220056935,
+    "total_duration": 17.903864,
+    "session_improvement": 0.019545571128957273,
+    "cycles_completed": 10
+  },
+  {
+    "timestamp": "2025-08-17T17:58:32.681221",
+    "session_id": 80,
+    "avg_accuracy": 0.6156113833621384,
+    "best_accuracy": 0.6494783870436686,
+    "total_duration": 16.70694,
+    "session_improvement": 0.02448662754041564,
+    "cycles_completed": 10
+  },
+  {
+    "timestamp": "2025-08-17T17:58:53.042793",
+    "session_id": 81,
+    "avg_accuracy": 0.5979970795385424,
+    "best_accuracy": 0.617868474729523,
+    "total_duration": 17.352323,
+    "session_improvement": 0.013258452337827298,
+    "cycles_completed": 10
+  },
+  {
+    "timestamp": "2025-08-17T17:59:13.244325",
+    "session_id": 82,
+    "avg_accuracy": 0.6256948429603096,
+    "best_accuracy": 0.6633664152450954,
+    "total_duration": 17.197037,
+    "session_improvement": 0.0773174560349873,
+    "cycles_completed": 10
+  },
+  {
+    "timestamp": "2025-08-17T17:59:33.848443",
+    "session_id": 83,
+    "avg_accuracy": 0.6124402890793929,
+    "best_accuracy": 0.6385315736614536,
+    "total_duration": 17.599783,
+    "session_improvement": 0.020112970654337148,
+    "cycles_completed": 10
+  },
+  {
+    "timestamp": "2025-08-17T17:59:54.897454",
+    "session_id": 84,
+    "avg_accuracy": 0.6288384370669664,
+    "best_accuracy": 0.6520013190305014,
+    "total_duration": 18.046356,
+    "session_improvement": 0.04281187492308103,
+    "cycles_completed": 10
+  },
+  {
+    "timestamp": "2025-08-17T18:00:15.173033",
+    "session_id": 85,
+    "avg_accuracy": 0.6359405680605036,
+    "best_accuracy": 0.6675811228579589,
+    "total_duration": 17.270019,
+    "session_improvement": 0.07231161600984015,
+    "cycles_completed": 10
+  },
+  {
+    "timestamp": "2025-08-17T18:00:36.132038",
+    "session_id": 86,
+    "avg_accuracy": 0.6197800160036302,
+    "best_accuracy": 0.6537035201956753,
+    "total_duration": 17.95158,
+    "session_improvement": 0.06264901780912935,
+    "cycles_completed": 10
+  },
+  {
+    "timestamp": "2025-08-17T18:00:54.999131",
+    "session_id": 87,
+    "avg_accuracy": 0.6276525717269376,
+    "best_accuracy": 0.6594810335751154,
+    "total_duration": 15.862252,
+    "session_improvement": 0.031545766112727525,
+    "cycles_completed": 10
+  },
+  {
+    "timestamp": "2025-08-17T18:01:15.406857",
+    "session_id": 88,
+    "avg_accuracy": 0.610779631894881,
+    "best_accuracy": 0.6420068845292379,
+    "total_duration": 17.403343,
+    "session_improvement": 0.0423101585746285,
+    "cycles_completed": 10
+  },
+  {
+    "timestamp": "2025-08-17T18:01:35.690645",
+    "session_id": 89,
+    "avg_accuracy": 0.616336920772367,
+    "best_accuracy": 0.6461895192759961,
+    "total_duration": 17.281008,
+    "session_improvement": 0.01056802758598907,
+    "cycles_completed": 10
+  },
+  {
+    "timestamp": "2025-08-17T18:01:56.037097",
+    "session_id": 90,
+    "avg_accuracy": 0.6450410187769327,
+    "best_accuracy": 0.6775656162271718,
+    "total_duration": 17.343746,
+    "session_improvement": 0.04081349104627574,
+    "cycles_completed": 10
+  }
+]

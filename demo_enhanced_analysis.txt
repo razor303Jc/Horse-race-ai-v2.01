@@ -1,0 +1,25 @@
+V2.01 Enhanced Race Analysis Report
+==================================================
+Race ID: DEMO_ENHANCED_001
+Analysis Date: 2025-08-18 23:56
+Market Efficiency: 0.847
+Prediction Reliability: 0.976
+Consensus Quality: 0.836
+
+TOP PICKS:
+--------------------
+1. Lightning Strike (Score: 56.515)
+2. Wind Runner (Score: 56.171)
+3. Storm Chaser (Score: 54.416)
+
+BETTING OPPORTUNITIES:
+-------------------------
+• Thunder Bolt: High confidence - HIGH (Value: 0.916)
+
+DETAILED PREDICTIONS:
+-------------------------
+Horse           Pos  Rating  Prob   Conf   Bet Rec     
+Thunder Bolt    1    59.0    0.262  0.916  PLACE BET   
+Lightning Strike 2    56.5    0.222  1.000  PLACE BET   
+Wind Runner     3    56.2    0.224  1.000  PLACE BET   
+Storm Chaser    4    55.0    0.205  0.990  PLACE BET   

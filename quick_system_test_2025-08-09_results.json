@@ -1,0 +1,5 @@
+{
+  "status": "failed",
+  "error": "connection to server at \"localhost\" (127.0.0.1), port 5434 failed: FATAL:  password authentication failed for user \"horse_racing_test\"\n",
+  "duration": 0.029164
+}
