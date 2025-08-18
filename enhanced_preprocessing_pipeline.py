@@ -24,11 +24,7 @@ class EnhancedDataPreprocessor:
     """
 
     def __init__(self):
-        # Determine base path - use Docker path if available, otherwise local
-        if Path("/app").exists():
-            self.base_path = Path("/app")
-        else:
-            self.base_path = Path("/home/jc/Documents/Horse-race-ai-v2.02")
+        self.base_path = Path("/home/jc/Documents/Horse-race-ai-v2.02")
 
         # Define null-like values to handle
         self.null_values = [
@@ -347,61 +343,32 @@ class EnhancedDataPreprocessor:
             logger.error(f"❌ Error preprocessing {file_path}: {e}")
             raise
 
-    def process_all_csv_files(
-        self, input_dir: Optional[str] = None, output_dir: Optional[str] = None
+    def preprocess_all_csvs(
+        self, input_dir: Path, output_dir: Path
     ) -> Dict[str, pd.DataFrame]:
         """
-        Process all CSV files in a directory with enhanced preprocessing
+        Preprocess all CSV files in a directory
         """
-        # Use Docker paths if available
-        if input_dir is None:
-            if self.base_path == Path("/app"):
-                input_dir = "/app/data/daily_downloads"
-            else:
-                input_dir = str(self.base_path / "data" / "daily_downloads")
+        logger.info(f"🚀 Starting batch preprocessing: {input_dir} -> {output_dir}")
 
-        if output_dir is None:
-            if self.base_path == Path("/app"):
-                output_dir = "/app/data/processed"
-            else:
-                output_dir = str(self.base_path / "data" / "processed")
-
-        input_path = Path(input_dir)
-        output_path = Path(output_dir)
-
-        if not input_path.exists():
-            logger.error("❌ Input directory not found: %s", input_path)
-            return {}
-
-        # Create output directory
-        output_path.mkdir(parents=True, exist_ok=True)
-
-        processed_files = {}
-        csv_files = list(input_path.rglob("*.csv"))
-
-        if not csv_files:
-            logger.warning("⚠️ No CSV files found in %s", input_path)
-            return {}
-
-        logger.info("🔄 Processing %d CSV files...", len(csv_files))
+        results = {}
+        csv_files = list(input_dir.rglob("*.csv"))
 
         for csv_file in csv_files:
+            relative_path = csv_file.relative_to(input_dir)
+            output_file = output_dir / f"preprocessed_{relative_path}"
+
             try:
-                # Maintain directory structure in output
-                relative_path = csv_file.relative_to(input_path)
-                output_file = output_path / relative_path
-                output_file.parent.mkdir(parents=True, exist_ok=True)
-
                 preprocessed_df = self.preprocess_csv_file(csv_file, output_file)
-                processed_files[str(csv_file)] = preprocessed_df
-
-                logger.info("✅ Processed: %s", csv_file.name)
+                results[str(relative_path)] = preprocessed_df
 
             except Exception as e:
-                logger.error("❌ Failed to process %s: %s", csv_file, e)
+                logger.error(f"❌ Failed to preprocess {csv_file}: {e}")
+                results[str(relative_path)] = None
 
-        logger.info("🎉 Processing complete: %d files processed", len(processed_files))
-        return processed_files
+        self.print_preprocessing_summary()
+
+        return results
 
     def print_preprocessing_summary(self):
         """
@@ -431,18 +398,12 @@ def main():
     """
     preprocessor = EnhancedDataPreprocessor()
 
-    # Use appropriate paths based on environment
-    if preprocessor.base_path == Path("/app"):
-        # Running in Docker
-        input_dir = Path("/app/data/daily_downloads")
-        output_dir = Path("/app/data/preprocessed")
-    else:
-        # Running locally
-        input_dir = Path("/home/jc/Documents/Horse-race-ai-v2.02/data/daily_downloads")
-        output_dir = Path("/home/jc/Documents/Horse-race-ai-v2.02/data/preprocessed")
+    # Example: preprocess all CSV files
+    input_dir = Path("/home/jc/Documents/Horse-race-ai-v2.02/data/daily_downloads")
+    output_dir = Path("/home/jc/Documents/Horse-race-ai-v2.02/data/preprocessed")
 
     if input_dir.exists():
-        results = preprocessor.process_all_csv_files(str(input_dir), str(output_dir))
+        results = preprocessor.preprocess_all_csvs(input_dir, output_dir)
 
         # Show sample results
         for file_name, df in results.items():

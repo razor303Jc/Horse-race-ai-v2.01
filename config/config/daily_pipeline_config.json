@@ -5,11 +5,11 @@
     "description": "Complete daily pipeline from data download to contextual analysis"
   },
   "schedule": {
-    "download_time": "20:00",
-    "relationships_time": "20:30",
-    "analysis_time": "21:00",
-    "reporting_time": "22:00",
-    "cleanup_time": "23:00"
+    "download_time": "00:01",
+    "relationships_time": "00:30",
+    "analysis_time": "01:00",
+    "reporting_time": "02:00",
+    "cleanup_time": "03:00"
   },
   "data_sources": {
     "enabled": [

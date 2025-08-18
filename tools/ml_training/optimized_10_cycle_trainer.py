@@ -27,10 +27,6 @@ import numpy as np
 import pandas as pd
 import psycopg2
 
-# Import our performance monitor
-sys.path.append(os.path.join(os.path.dirname(__file__), "..", "monitoring"))
-from training_performance_monitor import TrainingPerformanceMonitor
-
 # Setup logging
 logging.basicConfig(
     level=logging.INFO,
@@ -80,7 +76,7 @@ class OptimizedMLTrainer:
     def __init__(self):
         self.db_config = {
             "host": "localhost",
-            "port": 5434,
+            "port": 5433,
             "database": "horse_racing_db",
             "user": "horse_racing",
             "password": "secure_password_123",
@@ -88,9 +84,9 @@ class OptimizedMLTrainer:
 
         # Training configuration
         self.cycles_per_session = 10
-        self.target_sessions = 500  # Updated for current training run
-        self.wait_between_cycles = 1.0  # Reduced wait for faster cycles
-        self.wait_between_sessions = 3.0  # Reduced wait between sessions
+        self.target_sessions = 1000
+        self.wait_between_cycles = 2.0  # Small wait in seconds
+        self.wait_between_sessions = 5.0  # Longer wait between sessions
 
         # Progress tracking
         self.sessions_completed = 0
@@ -102,13 +98,6 @@ class OptimizedMLTrainer:
         self.baseline_accuracy = 0.0
         self.global_best_accuracy = 0.0
         self.total_improvement = 0.0
-
-        # Initialize performance monitor
-        try:
-            self.monitor = TrainingPerformanceMonitor()
-        except:
-            self.monitor = None
-            logger.warning("⚠️  Performance monitor not available")
 
         # Create directories
         Path("logs").mkdir(exist_ok=True)
@@ -123,25 +112,22 @@ class OptimizedMLTrainer:
         try:
             conn = self.get_database_connection()
 
-            # Optimized query with actual database columns
+            # Optimized query with cleaned race_id format
             query = """
             SELECT 
                 r.race_id, r.course, r.distance, r.race_type, r.surface,
                 r.runners, r.prize, r.date,
                 rec.horse, rec.position, rec.age, rec.weight, 
-                rec.jockey, rec.trainer, rec.or_rating, 
-                rec.sp, rec.finish_time,
+                rec.jockey, rec.trainer, rec.or_rating, rec.ts, rec.rpr, 
+                rec.odds, rec.sp,
                 -- Additional features for better ML training
                 CASE WHEN rec.position = 1 THEN 1 ELSE 0 END as winner,
-                CASE WHEN rec.position <= 3 THEN 1 ELSE 0 END as placed,
-                -- Sprint race timing data (may be NULL for non-sprint races)
-                rec.speed_achieved_early_race,
-                rec.speed_achieved_mid_race,
-                rec.speed_achieved_finish_race
+                CASE WHEN rec.position <= 3 THEN 1 ELSE 0 END as placed
             FROM races r
             INNER JOIN records rec ON r.race_id = rec.race_id
             WHERE rec.position IS NOT NULL 
             AND rec.position > 0
+            AND r.date >= CURRENT_DATE - INTERVAL '30 days'
             ORDER BY r.date DESC, r.race_id, rec.position
             LIMIT 500
             """
@@ -223,21 +209,12 @@ class OptimizedMLTrainer:
             self.cycle_metrics.append(metrics)
             self.total_cycles_completed += 1
 
-            # Log cycle results with monitoring
-            if self.monitor:
-                self.monitor.log_cycle_performance(
-                    session_id,
-                    cycle,
-                    metrics.accuracy,
-                    metrics.duration_seconds,
-                    metrics.improvement,
-                )
-            else:
-                logger.info(
-                    f"   ✅ Cycle {cycle}: Accuracy={metrics.accuracy:.4f}, "
-                    f"Duration={metrics.duration_seconds:.2f}s, "
-                    f"Improvement={metrics.improvement:+.4f}"
-                )
+            # Log cycle results
+            logger.info(
+                f"   ✅ Cycle {cycle}: Accuracy={metrics.accuracy:.4f}, "
+                f"Duration={metrics.duration_seconds:.2f}s, "
+                f"Improvement={metrics.improvement:+.4f}"
+            )
 
             # Small wait between cycles for system stability
             if cycle < self.cycles_per_session:
@@ -315,10 +292,6 @@ class OptimizedMLTrainer:
             while self.sessions_completed < self.target_sessions:
                 self.sessions_completed += 1
 
-                # Log session start with monitoring
-                if self.monitor:
-                    self.monitor.log_session_start(self.sessions_completed)
-
                 # Run training session
                 summary = self.run_training_session(self.sessions_completed)
 
@@ -326,21 +299,11 @@ class OptimizedMLTrainer:
                     logger.error(f"❌ Session {self.sessions_completed} failed")
                     continue
 
-                # Log session summary with monitoring
-                if self.monitor:
-                    self.monitor.log_session_summary(
-                        self.sessions_completed,
-                        summary.avg_accuracy,
-                        summary.best_accuracy,
-                        summary.total_duration,
-                        summary.total_improvement,
-                    )
-
                 # Save progress every 10 sessions
                 if self.sessions_completed % 10 == 0:
                     self.save_progress()
                     logger.info(
-                        f"🎯 Progress: {self.sessions_completed}/{self.target_sessions} sessions completed "
+                        f"🎯 Progress: {self.sessions_completed}/1000 sessions completed "
                         f"({(self.sessions_completed/self.target_sessions)*100:.1f}%)"
                     )
 
@@ -357,11 +320,6 @@ class OptimizedMLTrainer:
             logger.error(f"❌ Training error: {e}")
         finally:
             self.save_progress()
-
-            # Final monitoring summary
-            if self.monitor:
-                self.monitor.final_summary()
-
             logger.info("🏁 Training session ended")
             logger.info(
                 f"📊 Final Stats: {self.sessions_completed} sessions, {self.total_cycles_completed} cycles"

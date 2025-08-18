@@ -55,26 +55,14 @@ class ModelValidator:
         model_extensions = ["*.joblib", "*.pkl", "*.model"]
         model_files = []
 
-        # Search in models directory recursively
         for pattern in model_extensions:
-            model_files.extend(self.models_dir.rglob(pattern))
+            model_files.extend(self.models_dir.glob(pattern))
 
-        # Filter for recent models (last 4 hours) or newly created
+        # Filter for recent models (last 4 hours)
         recent_threshold = time.time() - (4 * 3600)
-        recent_models = [
-            f
-            for f in model_files
-            if f.stat().st_mtime > recent_threshold and f.stat().st_size > 0
-        ]
+        recent_models = [f for f in model_files if f.stat().st_mtime > recent_threshold]
 
         logger.info(f"📊 Found {len(recent_models)} recently trained models")
-
-        # Log details about found models
-        for model in recent_models:
-            size_mb = model.stat().st_size / (1024 * 1024)
-            age_hours = (time.time() - model.stat().st_mtime) / 3600
-            logger.info(f"   📋 {model.name}: {size_mb:.1f}MB, {age_hours:.1f}h old")
-
         return recent_models
 
     def validate_model_file(self, model_path: Path) -> Dict:
@@ -167,11 +155,10 @@ class ModelValidator:
                     production_manifest["active_models"].append(model_id)
                     logger.info(f"✅ Deployed model: {production_name}")
 
-            # Save production manifest (make JSON-safe)
+            # Save production manifest
             manifest_path = self.production_dir / "production_manifest.json"
-            json_safe_manifest = self.make_json_safe(production_manifest)
             with open(manifest_path, "w") as f:
-                json.dump(json_safe_manifest, f, indent=2)
+                json.dump(production_manifest, f, indent=2)
 
             logger.info(
                 f"📋 Production manifest saved with {len(production_manifest['active_models'])} active models"
@@ -204,10 +191,9 @@ class ModelValidator:
                 ),
             }
 
-            # Save metadata (make JSON-safe)
-            json_safe_metadata = self.make_json_safe(metadata)
+            # Save metadata
             with open(self.metadata_file, "w") as f:
-                json.dump(json_safe_metadata, f, indent=2)
+                json.dump(metadata, f, indent=2)
 
             logger.info(
                 f"✅ Model metadata saved: {metadata['valid_models']}/{metadata['total_models']} models valid"
@@ -217,21 +203,6 @@ class ModelValidator:
         except Exception as e:
             logger.error(f"❌ Failed to create model metadata: {e}")
             return False
-
-    def make_json_safe(self, obj):
-        """Convert numpy types and other non-JSON types to JSON-safe types"""
-        if isinstance(obj, dict):
-            return {key: self.make_json_safe(value) for key, value in obj.items()}
-        elif isinstance(obj, list):
-            return [self.make_json_safe(item) for item in obj]
-        elif isinstance(obj, np.integer):
-            return int(obj)
-        elif isinstance(obj, np.floating):
-            return float(obj)
-        elif isinstance(obj, np.ndarray):
-            return obj.tolist()
-        else:
-            return obj
 
     def archive_training_artifacts(self) -> bool:
         """Archive training logs and temporary files"""

@@ -359,8 +359,8 @@ class PipelineOrchestrator:
         logger.info("🔮 Phase 6: Starting prediction service...")
 
         try:
-            # Use the simplified Phase 6 prediction service launcher
-            service_script = "/app/tools/pipeline/phase6_simple_prediction_service.py"
+            # Use the dedicated Phase 6 prediction service launcher
+            service_script = "/app/tools/pipeline/phase6_prediction_service.py"
 
             result = subprocess.run(
                 ["python", service_script],

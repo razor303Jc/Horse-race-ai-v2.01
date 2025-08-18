@@ -15,7 +15,7 @@ import psycopg2
 
 
 def main():
-    print("🚀 Quick CSV Import - Post 00:01 Download")
+    print("🚀 Quick CSV Import - Post 15:15 Download")
     print("=" * 50)
 
     # Database connection with correct credentials

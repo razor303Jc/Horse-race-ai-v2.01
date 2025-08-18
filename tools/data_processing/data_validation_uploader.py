@@ -45,7 +45,7 @@ class DataValidationUploader:
     def __init__(self):
         self.db_config = {
             "host": "localhost",
-            "port": 5432,
+            "port": 5433,
             "database": "horse_racing_db",
             "user": "horse_racing",
             "password": "secure_password_123",
