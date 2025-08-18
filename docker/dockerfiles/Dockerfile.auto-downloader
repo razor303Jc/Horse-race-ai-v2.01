@@ -45,9 +45,10 @@ RUN python -c "import os; os.environ['PLAYWRIGHT_BROWSERS_PATH']='/app/.playwrig
 
 # Copy application code
 COPY src/ ./src/
-COPY run_docker_auto_downloader.py .
-COPY working_auto_downloader.py .
-COPY data_validator.py .
+# Copy auto-downloader files from docker/automation directory
+COPY docker/automation/run_docker_auto_downloader.py .
+COPY docker/automation/working_auto_downloader.py .
+COPY docker/automation/data_validator.py .
 COPY config/ ./config/
 
 # Create directories

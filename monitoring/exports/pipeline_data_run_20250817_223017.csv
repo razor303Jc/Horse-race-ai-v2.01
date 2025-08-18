@@ -1,6 +1,0 @@
-run_id,stage_id,stage_name,phase,start_time,end_time,duration_seconds,records_processed,records_output,success,error_count,warning_count,data_quality_score,memory_usage_mb,cpu_usage_percent,throughput_records_per_sec,status,notes
-run_20250817_223017,data_download,Data Download,Data Acquisition,2025-08-17T22:30:17.797024,2025-08-17T22:30:18.304426,0.507402,1200,1200,1,0,0,98.5,150.0,65.0,2364.988707178923,COMPLETED,
-run_20250817_223017,data_validation,Data Validation,Data Acquisition,2025-08-17T22:30:18.330475,2025-08-17T22:30:18.837914,0.507439,1200,1180,1,0,0,97.2,150.0,65.0,2364.816263629717,COMPLETED,
-run_20250817_223017,enhanced_preprocessing,Enhanced Preprocessing,Data Processing,2025-08-17T22:30:18.864968,2025-08-17T22:30:19.372637,0.507669,1180,1150,1,0,0,96.8,150.0,65.0,2324.349132998075,COMPLETED,
-run_20250817_223017,feature_engineering,Feature Engineering,Analysis,2025-08-17T22:30:19.392862,2025-08-17T22:30:19.899945,0.507083,1150,1100,1,0,0,95.5,150.0,65.0,2267.873306736767,COMPLETED,
-run_20250817_223017,ml_model_training,ML Model Training,Machine Learning,2025-08-17T22:30:19.925029,2025-08-17T22:30:20.433100,0.508071,1100,800,1,0,0,94.2,150.0,65.0,2165.0517348953194,COMPLETED,
