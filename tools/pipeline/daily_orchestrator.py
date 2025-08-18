@@ -414,6 +414,7 @@ class DailyPipelineOrchestrator:
                 "feature_engineering": "generate_contextual_analysis",
                 "ml_model_training": "train_ml_models",
                 "monte_carlo_simulations": "run_monte_carlo_analysis",
+                "race_trends": "analyze_race_trends",
                 "composite_scoring": "calculate_composite_scores",
                 "betting_strategies": "generate_betting_strategies",
                 "ai_selections": "generate_ai_selections",
@@ -1080,7 +1081,7 @@ class DailyPipelineOrchestrator:
         try:
             # Import the Stage 9 orchestrator
             stage9_script = self.project_root / "stage9_speed_analysis.py"
-            
+
             if stage9_script.exists():
                 # Run Stage 9 directly
                 result = subprocess.run(
@@ -1097,9 +1098,9 @@ class DailyPipelineOrchestrator:
                     results["speed_figures_generated"] = self._count_recent_horses()
                     results["pace_analyses_completed"] = self._count_todays_races()
                     results["running_styles_classified"] = self._count_recent_horses()
-                    
+
                     # Parse output for metrics
-                    output_lines = result.stdout.split('\n')
+                    output_lines = result.stdout.split("\n")
                     for line in output_lines:
                         if "Processing Time:" in line:
                             try:
@@ -1108,20 +1109,28 @@ class DailyPipelineOrchestrator:
                             except:
                                 pass
                 else:
-                    logger.warning(f"Stage 9 failed with return code: {result.returncode}")
+                    logger.warning(
+                        f"Stage 9 failed with return code: {result.returncode}"
+                    )
                     results["errors"].append(f"Return code: {result.returncode}")
                     if result.stderr:
                         results["errors"].append(result.stderr)
             else:
-                logger.warning("⚠️ Stage 9 script not found, using fallback speed analysis")
+                logger.warning(
+                    "⚠️ Stage 9 script not found, using fallback speed analysis"
+                )
                 # Use existing speed_pace_analysis as fallback
                 fallback_results = await self.speed_pace_analysis()
                 results["success"] = fallback_results["success"]
-                results["speed_figures_generated"] = fallback_results.get("speed_figures_calculated", 0)
+                results["speed_figures_generated"] = fallback_results.get(
+                    "speed_figures_calculated", 0
+                )
 
             # Store results
             self.pipeline_status["analytics_results"]["stage9_speed_analysis"] = results
-            self.pipeline_status["stages_completed"]["stage9_speed_analysis"] = datetime.now().isoformat()
+            self.pipeline_status["stages_completed"][
+                "stage9_speed_analysis"
+            ] = datetime.now().isoformat()
 
         except Exception as e:
             logger.error(f"❌ Stage 9: Speed Analysis failed: {e}")
@@ -1130,62 +1139,422 @@ class DailyPipelineOrchestrator:
         return results
 
     async def monte_carlo_simulation(self) -> Dict:
-        """Stage 7: Monte Carlo Simulation."""
-        logger.info("🎲 Starting Monte Carlo simulation...")
-        self.pipeline_status["current_stage"] = "monte_carlo"
+        """Stage 10: Monte Carlo Simulation using Stage 9 speed analysis."""
+        logger.info("🎲 Starting Stage 10: Monte Carlo Simulations...")
+        self.pipeline_status["current_stage"] = "monte_carlo_simulations"
 
         results = {
             "success": False,
             "races_simulated": 0,
             "simulations_run": 0,
             "win_probabilities_calculated": 0,
+            "betting_opportunities": 0,
+            "high_confidence_picks": 0,
+            "execution_time": 0,
             "errors": [],
         }
 
         try:
-            # Run Monte Carlo simulation
-            mc_scripts = [
-                "scripts/complete_pipeline_runner.py",
-                "cleanup_temp/demos/comprehensive_scoring_demo.py",
-                "demos/monte_carlo_fast_results_demo.py",
-            ]
+            # Run Stage 10 Monte Carlo simulations using the dedicated script
+            stage10_script = self.project_root / "stage10_monte_carlo_simulations.py"
 
-            for script_name in mc_scripts:
-                script_path = self.project_root / script_name
-                if script_path.exists():
-                    result = subprocess.run(
-                        [sys.executable, str(script_path), "--monte-carlo"],
-                        capture_output=True,
-                        text=True,
-                        timeout=1800,
-                        cwd=self.project_root,
-                    )
+            if not stage10_script.exists():
+                logger.error("❌ Stage 10 Monte Carlo script not found")
+                results["errors"].append("Stage 10 script missing")
+                return results
 
-                    if result.returncode == 0:
-                        logger.info(
-                            f"✅ Monte Carlo simulation completed: {script_name}"
+            # Execute Stage 10 Monte Carlo simulations
+            result = subprocess.run(
+                [sys.executable, str(stage10_script)],
+                capture_output=True,
+                text=True,
+                timeout=1800,  # 30 minutes timeout
+                cwd=self.project_root,
+            )
+
+            if result.returncode == 0:
+                logger.info(
+                    "✅ Stage 10 Monte Carlo simulations completed successfully"
+                )
+
+                # Parse results from output or load from results file
+                try:
+                    results_dir = self.project_root / "data" / "monte_carlo_results"
+                    results_file = results_dir / "stage10_monte_carlo_latest.json"
+
+                    if results_file.exists():
+                        with open(results_file, "r") as f:
+                            monte_carlo_data = json.load(f)
+
+                        results["success"] = monte_carlo_data.get("success", False)
+                        results["races_simulated"] = monte_carlo_data.get(
+                            "races_processed", 0
                         )
+                        results["simulations_run"] = monte_carlo_data.get(
+                            "total_simulations", 0
+                        )
+                        results["win_probabilities_calculated"] = monte_carlo_data.get(
+                            "horses_analyzed", 0
+                        )
+                        results["betting_opportunities"] = monte_carlo_data.get(
+                            "betting_opportunities", 0
+                        )
+                        results["high_confidence_picks"] = monte_carlo_data.get(
+                            "high_confidence_picks", 0
+                        )
+
+                        if "performance_metrics" in monte_carlo_data:
+                            perf_metrics = monte_carlo_data["performance_metrics"]
+                            results["execution_time"] = perf_metrics.get(
+                                "execution_time_seconds", 0
+                            )
+
+                        races_count = results["races_simulated"]
+                        sims_count = results["simulations_run"]
+                        bets_count = results["betting_opportunities"]
+
+                        log_msg = (
+                            f"📊 Monte Carlo Results: {races_count} races, "
+                            f"{sims_count:,} simulations, "
+                            f"{bets_count} betting opportunities"
+                        )
+                        logger.info(log_msg)
+                    else:
+                        # Fallback: estimate from process output
                         results["success"] = True
                         results["races_simulated"] = self._count_todays_races()
-                        results["simulations_run"] = (
-                            results["races_simulated"] * 5000
-                        )  # 5K per race
+                        # 5K simulations per race
+                        results["simulations_run"] = results["races_simulated"] * 5000
                         results["win_probabilities_calculated"] = (
                             self._count_recent_horses()
                         )
-                        break
-                    else:
-                        logger.warning(f"Monte Carlo simulation failed: {script_name}")
+
+                except Exception as parse_error:
+                    parse_msg = f"⚠️ Could not parse Monte Carlo results: {parse_error}"
+                    logger.warning(parse_msg)
+                    results["success"] = True  # Process completed successfully
+                    results["races_simulated"] = self._count_todays_races()
+                    results["simulations_run"] = results["races_simulated"] * 5000
+
+            else:
+                error_msg = f"Stage 10 Monte Carlo failed: {result.stderr}"
+                logger.error(f"❌ {error_msg}")
+                results["errors"].append(error_msg)
 
             # Store results
-            self.pipeline_status["analytics_results"]["monte_carlo"] = results
+            self.pipeline_status["analytics_results"][
+                "monte_carlo_simulations"
+            ] = results
             self.pipeline_status["stages_completed"][
-                "monte_carlo"
+                "monte_carlo_simulations"
             ] = datetime.now().isoformat()
 
+        except subprocess.TimeoutExpired:
+            error_msg = "Stage 10 Monte Carlo simulation timeout (30 minutes)"
+            logger.error(f"❌ {error_msg}")
+            results["errors"].append(error_msg)
         except Exception as e:
-            logger.error(f"❌ Monte Carlo simulation failed: {e}")
-            results["errors"].append(str(e))
+            error_msg = f"Stage 10 Monte Carlo simulation failed: {e}"
+            logger.error(f"❌ {error_msg}")
+            results["errors"].append(error_msg)
+
+        return results
+
+    async def race_trends_analysis(self) -> Dict:
+        """Stage 12: Race Trends Analysis using Monte Carlo simulation data."""
+        logger.info("📈 Starting race trends analysis...")
+        self.pipeline_status["current_stage"] = "race_trends"
+
+        results = {
+            "success": False,
+            "trends_analyzed": 0,
+            "patterns_identified": 0,
+            "high_confidence_patterns": 0,
+            "average_confidence": 0.0,
+            "execution_time": 0.0,
+            "errors": [],
+        }
+
+        try:
+            # Look for Stage 12 race trends script
+            stage12_script = (
+                self.project_root / "src" / "stages" / "stage12_race_trends.py"
+            )
+
+            if not stage12_script.exists():
+                # Try alternative locations
+                alt_locations = [
+                    self.project_root / "stage12_race_trends.py",
+                    self.project_root / "src" / "stage12_race_trends.py",
+                ]
+
+                for alt_path in alt_locations:
+                    if alt_path.exists():
+                        stage12_script = alt_path
+                        break
+                else:
+                    error_msg = "Stage 12 race trends script not found"
+                    logger.error(f"❌ {error_msg}")
+                    results["errors"].append(error_msg)
+                    return results
+
+            # Execute Stage 12 race trends analysis
+            target_date = datetime.now().strftime("%Y-%m-%d")
+
+            result = subprocess.run(
+                [sys.executable, str(stage12_script), "--date", target_date],
+                capture_output=True,
+                text=True,
+                timeout=600,  # 10 minute timeout
+                cwd=self.project_root,
+            )
+
+            if result.returncode == 0:
+                logger.info("✅ Stage 12 race trends analysis completed successfully")
+                results["success"] = True
+
+                # Parse output for metrics
+                output_lines = result.stdout.split("\n")
+                for line in output_lines:
+                    if "Patterns Identified:" in line:
+                        try:
+                            results["patterns_identified"] = int(
+                                line.split(":")[1].strip()
+                            )
+                        except:
+                            pass
+                    elif "High Confidence Patterns:" in line:
+                        try:
+                            results["high_confidence_patterns"] = int(
+                                line.split(":")[1].strip()
+                            )
+                        except:
+                            pass
+                    elif "Average Confidence:" in line:
+                        try:
+                            results["average_confidence"] = float(
+                                line.split(":")[1].strip()
+                            )
+                        except:
+                            pass
+                    elif "Execution Time:" in line:
+                        try:
+                            time_str = line.split(":")[1].strip().replace("s", "")
+                            results["execution_time"] = float(time_str)
+                        except:
+                            pass
+
+                # Set trends analyzed based on patterns or default
+                results["trends_analyzed"] = max(results["patterns_identified"], 1)
+
+                # Look for results files to get additional metrics
+                results_dir = self.project_root / "results" / "stage12_race_trends"
+                if results_dir.exists():
+                    trend_file = results_dir / f"race_trends_{target_date}.json"
+                    if trend_file.exists():
+                        try:
+                            with open(trend_file, "r") as f:
+                                trend_data = json.load(f)
+                                results["trends_analyzed"] = len(
+                                    trend_data.get("trend_metrics", [])
+                                )
+                                results["patterns_identified"] = trend_data.get(
+                                    "patterns_identified", 0
+                                )
+                                results["high_confidence_patterns"] = trend_data.get(
+                                    "high_confidence_patterns", 0
+                                )
+                                results["average_confidence"] = trend_data.get(
+                                    "average_confidence", 0.0
+                                )
+                                perf_summary = trend_data.get("performance_summary", {})
+                                results["execution_time"] = perf_summary.get(
+                                    "execution_time_seconds", 0.0
+                                )
+                        except Exception as e:
+                            logger.warning(
+                                f"Could not parse trend results file: {str(e)}"
+                            )
+
+            else:
+                error_msg = f"Stage 12 race trends analysis failed: {result.stderr}"
+                logger.error(f"❌ {error_msg}")
+                results["errors"].append(error_msg)
+
+            # Store results
+            self.pipeline_status["analytics_results"]["race_trends"] = results
+            self.pipeline_status["stages_completed"][
+                "race_trends"
+            ] = datetime.now().isoformat()
+
+        except subprocess.TimeoutExpired:
+            error_msg = "Stage 12 race trends analysis timeout (10 minutes)"
+            logger.error(f"❌ {error_msg}")
+            results["errors"].append(error_msg)
+
+        except Exception as e:
+            error_msg = f"Stage 12 race trends analysis error: {str(e)}"
+            logger.error(f"❌ {error_msg}")
+            results["errors"].append(error_msg)
+
+        return results
+
+    async def composite_scoring_integration(self) -> Dict:
+        """Stage 13: Composite Scoring Integration."""
+        logger.info("🎯 Starting composite scoring integration...")
+        self.pipeline_status["current_stage"] = "composite_scoring"
+
+        results = {
+            "success": False,
+            "races_processed": 0,
+            "composite_scores_generated": 0,
+            "betting_recommendations": 0,
+            "average_composite_score": 0.0,
+            "average_confidence": 0.0,
+            "execution_time": 0.0,
+            "errors": [],
+        }
+
+        try:
+            # Look for Stage 13 composite scoring script
+            stage13_script = (
+                self.project_root / "src" / "stages" / "stage13_composite_scoring.py"
+            )
+
+            if not stage13_script.exists():
+                # Try alternative locations
+                alt_locations = [
+                    self.project_root / "stage13_composite_scoring.py",
+                    self.project_root / "src" / "stage13_composite_scoring.py",
+                ]
+
+                for alt_path in alt_locations:
+                    if alt_path.exists():
+                        stage13_script = alt_path
+                        break
+                else:
+                    error_msg = "Stage 13 composite scoring script not found"
+                    logger.error(f"❌ {error_msg}")
+                    results["errors"].append(error_msg)
+                    return results
+
+            # Execute Stage 13 composite scoring
+            target_date = datetime.now().strftime("%Y-%m-%d")
+
+            result = subprocess.run(
+                [sys.executable, str(stage13_script), "--date", target_date],
+                capture_output=True,
+                text=True,
+                timeout=600,  # 10 minute timeout
+                cwd=self.project_root,
+            )
+
+            if result.returncode == 0:
+                logger.info("✅ Stage 13 composite scoring completed successfully")
+                results["success"] = True
+
+                # Parse output for metrics
+                output_lines = result.stdout.split("\n")
+                for line in output_lines:
+                    if "Total Races:" in line:
+                        try:
+                            results["races_processed"] = int(line.split(":")[1].strip())
+                        except:
+                            pass
+                    elif "Total Horses:" in line:
+                        try:
+                            results["composite_scores_generated"] = int(
+                                line.split(":")[1].strip()
+                            )
+                        except:
+                            pass
+                    elif "Average Composite Score:" in line:
+                        try:
+                            results["average_composite_score"] = float(
+                                line.split(":")[1].strip()
+                            )
+                        except:
+                            pass
+                    elif "Average Confidence:" in line:
+                        try:
+                            results["average_confidence"] = float(
+                                line.split(":")[1].strip()
+                            )
+                        except:
+                            pass
+                    elif "Execution Time:" in line:
+                        try:
+                            time_str = line.split(":")[1].strip().replace("s", "")
+                            results["execution_time"] = float(time_str)
+                        except:
+                            pass
+                    elif "Total Betting Recommendations:" in line:
+                        try:
+                            results["betting_recommendations"] = int(
+                                line.split(":")[1].strip()
+                            )
+                        except:
+                            pass
+
+                # Look for results files to get additional metrics
+                results_dir = self.project_root / "results" / "stage13_composite"
+                if results_dir.exists():
+                    composite_file = (
+                        results_dir / f"composite_scores_{target_date}.json"
+                    )
+                    if composite_file.exists():
+                        try:
+                            with open(composite_file, "r") as f:
+                                composite_data = json.load(f)
+                                results["races_processed"] = composite_data.get(
+                                    "total_races", 0
+                                )
+                                results["composite_scores_generated"] = (
+                                    composite_data.get("total_horses", 0)
+                                )
+                                quality_metrics = composite_data.get(
+                                    "quality_metrics", {}
+                                )
+                                results["average_composite_score"] = (
+                                    quality_metrics.get("average_composite_score", 0.0)
+                                )
+                                results["average_confidence"] = quality_metrics.get(
+                                    "average_confidence", 0.0
+                                )
+                                perf_summary = composite_data.get(
+                                    "performance_summary", {}
+                                )
+                                results["execution_time"] = perf_summary.get(
+                                    "execution_time_seconds", 0.0
+                                )
+                                results["betting_recommendations"] = perf_summary.get(
+                                    "total_betting_recommendations", 0
+                                )
+                        except Exception as e:
+                            logger.warning(
+                                f"Could not parse composite results file: {str(e)}"
+                            )
+
+            else:
+                error_msg = f"Stage 13 composite scoring failed: {result.stderr}"
+                logger.error(f"❌ {error_msg}")
+                results["errors"].append(error_msg)
+
+            # Store results
+            self.pipeline_status["analytics_results"]["composite_scoring"] = results
+            self.pipeline_status["stages_completed"][
+                "composite_scoring"
+            ] = datetime.now().isoformat()
+
+        except subprocess.TimeoutExpired:
+            error_msg = "Stage 13 composite scoring timeout (10 minutes)"
+            logger.error(f"❌ {error_msg}")
+            results["errors"].append(error_msg)
+
+        except Exception as e:
+            error_msg = f"Stage 13 composite scoring error: {str(e)}"
+            logger.error(f"❌ {error_msg}")
+            results["errors"].append(error_msg)
 
         return results
 

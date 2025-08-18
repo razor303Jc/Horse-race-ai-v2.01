@@ -1,0 +1,121 @@
+{
+  "test_suite": "stage10_monte_carlo_integration",
+  "start_time": "2025-08-18T11:49:16.640708",
+  "tests_run": 7,
+  "tests_passed": 4,
+  "tests_failed": 3,
+  "test_results": [
+    {
+      "test_name": "standalone_execution",
+      "description": "Stage 10 Monte Carlo standalone execution",
+      "passed": false,
+      "execution_time": 8.845,
+      "details": {
+        "return_code": 0,
+        "execution_time_seconds": 8.845184803009033,
+        "success_indicators_found": 1,
+        "output_length": 337
+      },
+      "errors": []
+    },
+    {
+      "test_name": "pipeline_integration",
+      "description": "Stage 10 integration with pipeline orchestrator",
+      "passed": false,
+      "execution_time": 0,
+      "details": {},
+      "errors": [
+        "DailyOrchestrator not available"
+      ]
+    },
+    {
+      "test_name": "docker_compatibility",
+      "description": "Stage 10 execution in Docker containers",
+      "passed": false,
+      "execution_time": 0.158,
+      "details": {
+        "containers_available": 2,
+        "container_used": "horse_racing_data_pipeline_clean",
+        "docker_exit_code": 2,
+        "execution_time_seconds": 0.1584484577178955
+      },
+      "errors": [
+        "Docker exit code: 2"
+      ]
+    },
+    {
+      "test_name": "results_validation",
+      "description": "Validate Stage 10 results file structure and content",
+      "passed": true,
+      "execution_time": 0.0,
+      "details": {
+        "file_exists": true,
+        "file_size_bytes": 21975,
+        "required_fields_present": 9,
+        "races_processed": 3,
+        "total_simulations": 15000,
+        "race_analyses_count": 3,
+        "data_structure_valid": true
+      },
+      "errors": []
+    },
+    {
+      "test_name": "performance_benchmarks",
+      "description": "Stage 10 performance benchmark validation",
+      "passed": true,
+      "execution_time": 0.0,
+      "details": {
+        "execution_time_seconds": 7.27,
+        "simulations_per_second": 2063.0,
+        "total_simulations": 15000,
+        "benchmarks_passed": 3,
+        "benchmarks": {
+          "execution_under_30min": true,
+          "min_simulations_per_sec": true,
+          "total_simulations_reasonable": true
+        }
+      },
+      "errors": []
+    },
+    {
+      "test_name": "monte_carlo_statistics",
+      "description": "Validate Monte Carlo statistical properties",
+      "passed": true,
+      "execution_time": 0.0,
+      "details": {
+        "races_analyzed": 3,
+        "races_with_valid_probabilities": 3,
+        "probability_distribution_valid": true,
+        "has_betting_recommendations": true,
+        "has_confidence_intervals": true,
+        "average_probability_sum": 1.0
+      },
+      "errors": []
+    },
+    {
+      "test_name": "betting_recommendations",
+      "description": "Validate betting recommendation quality and logic",
+      "passed": true,
+      "execution_time": 0.0,
+      "details": {
+        "total_recommendations": 6,
+        "high_quality_recommendations": 6,
+        "quality_rate": 1.0,
+        "total_betting_opportunities": 6,
+        "high_confidence_picks": 1,
+        "recommendations_per_race": 2.0
+      },
+      "errors": []
+    }
+  ],
+  "overall_success": false,
+  "execution_time": 9.01,
+  "summary": {
+    "success_rate_percent": 57.1,
+    "tests_passed": 4,
+    "tests_failed": 3,
+    "execution_time_seconds": 9.01,
+    "stage10_operational": false
+  },
+  "end_time": "2025-08-18T11:49:25.646316"
+}
