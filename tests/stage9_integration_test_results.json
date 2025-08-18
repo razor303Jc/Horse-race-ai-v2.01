@@ -1,0 +1,119 @@
+{
+  "timestamp": "2025-08-18T10:50:39.380069",
+  "tests_run": 7,
+  "tests_passed": 6,
+  "tests_failed": 1,
+  "test_details": [
+    {
+      "test_name": "Stage 9 Standalone Execution",
+      "success": true,
+      "execution_time": 0.535926342010498,
+      "details": {
+        "success": true,
+        "return_code": 0,
+        "indicators_found": 3,
+        "output_length": 317,
+        "has_json_output": false
+      },
+      "timestamp": "2025-08-18T10:50:39.916356"
+    },
+    {
+      "test_name": "Stage 9 Docker Compatibility",
+      "success": true,
+      "execution_time": 2.240851402282715,
+      "details": {
+        "success": true,
+        "container_results": {
+          "horse_racing_data_pipeline_clean": {
+            "success": true,
+            "return_code": 0,
+            "has_output": true
+          },
+          "horse_racing_ml_trainer_clean": {
+            "success": true,
+            "return_code": 0,
+            "has_output": true
+          }
+        },
+        "containers_tested": 2
+      },
+      "timestamp": "2025-08-18T10:50:42.157390"
+    },
+    {
+      "test_name": "Pipeline Integration",
+      "success": true,
+      "execution_time": 0.00086212158203125,
+      "details": {
+        "success": true,
+        "integration_indicators_found": 3,
+        "has_proper_sequence": true,
+        "orchestrator_size": 83799
+      },
+      "timestamp": "2025-08-18T10:50:42.158345"
+    },
+    {
+      "test_name": "Performance Benchmarks",
+      "success": true,
+      "execution_time": 1.7154788970947266,
+      "details": {
+        "success": true,
+        "average_execution_time": 0.5718111197153727,
+        "success_rate": 100.0,
+        "performance_rating": "excellent",
+        "within_target": true
+      },
+      "timestamp": "2025-08-18T10:50:43.873930"
+    },
+    {
+      "test_name": "Data Flow Validation",
+      "success": true,
+      "execution_time": 0.5338389873504639,
+      "details": {
+        "success": true,
+        "files_created": true,
+        "output_valid": true,
+        "new_files_count": 1,
+        "total_files": 7
+      },
+      "timestamp": "2025-08-18T10:50:44.407929"
+    },
+    {
+      "test_name": "Error Handling",
+      "success": false,
+      "execution_time": 0.0009336471557617188,
+      "details": {
+        "success": false,
+        "error_handling_patterns": 5,
+        "has_timeout_handling": false,
+        "has_fallback_data": true,
+        "has_graceful_degradation": true
+      },
+      "timestamp": "2025-08-18T10:50:44.409000"
+    },
+    {
+      "test_name": "17-Stage Pipeline Sequence",
+      "success": true,
+      "execution_time": 0.0005562305450439453,
+      "details": {
+        "success": true,
+        "stage_sequence_correct": true,
+        "has_17_stages": true,
+        "stage_count": 65,
+        "sequence_issues": []
+      },
+      "timestamp": "2025-08-18T10:50:44.409627"
+    }
+  ],
+  "performance_metrics": {
+    "average_execution_time": 0.5718111197153727,
+    "execution_times": [
+      0.5515305995941162,
+      0.5806064605712891,
+      0.5832962989807129
+    ],
+    "performance_rating": "excellent",
+    "within_target": true
+  },
+  "integration_status": "excellent",
+  "success_rate": 85.71428571428571
+}

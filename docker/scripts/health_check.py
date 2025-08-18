@@ -3,8 +3,8 @@
 Health check script for the web app container.
 Uses Python urllib instead of curl to avoid external dependencies.
 """
-import urllib.request
 import sys
+import urllib.request
 
 try:
     with urllib.request.urlopen("http://localhost:8000/health", timeout=5) as response:

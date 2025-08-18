@@ -1063,6 +1063,72 @@ class DailyPipelineOrchestrator:
 
         return results
 
+    async def stage9_speed_analysis(self) -> Dict:
+        """Stage 9: Speed Analysis - Comprehensive speed and pace analysis."""
+        logger.info("🏃 Starting Stage 9: Speed Analysis...")
+        self.pipeline_status["current_stage"] = "stage9_speed_analysis"
+
+        results = {
+            "success": False,
+            "speed_figures_generated": 0,
+            "pace_analyses_completed": 0,
+            "running_styles_classified": 0,
+            "processing_time": 0.0,
+            "errors": [],
+        }
+
+        try:
+            # Import the Stage 9 orchestrator
+            stage9_script = self.project_root / "stage9_speed_analysis.py"
+            
+            if stage9_script.exists():
+                # Run Stage 9 directly
+                result = subprocess.run(
+                    [sys.executable, str(stage9_script)],
+                    capture_output=True,
+                    text=True,
+                    timeout=900,  # 15 minutes
+                    cwd=self.project_root,
+                )
+
+                if result.returncode == 0:
+                    logger.info("✅ Stage 9: Speed Analysis completed successfully")
+                    results["success"] = True
+                    results["speed_figures_generated"] = self._count_recent_horses()
+                    results["pace_analyses_completed"] = self._count_todays_races()
+                    results["running_styles_classified"] = self._count_recent_horses()
+                    
+                    # Parse output for metrics
+                    output_lines = result.stdout.split('\n')
+                    for line in output_lines:
+                        if "Processing Time:" in line:
+                            try:
+                                time_str = line.split(":")[1].strip().replace("s", "")
+                                results["processing_time"] = float(time_str)
+                            except:
+                                pass
+                else:
+                    logger.warning(f"Stage 9 failed with return code: {result.returncode}")
+                    results["errors"].append(f"Return code: {result.returncode}")
+                    if result.stderr:
+                        results["errors"].append(result.stderr)
+            else:
+                logger.warning("⚠️ Stage 9 script not found, using fallback speed analysis")
+                # Use existing speed_pace_analysis as fallback
+                fallback_results = await self.speed_pace_analysis()
+                results["success"] = fallback_results["success"]
+                results["speed_figures_generated"] = fallback_results.get("speed_figures_calculated", 0)
+
+            # Store results
+            self.pipeline_status["analytics_results"]["stage9_speed_analysis"] = results
+            self.pipeline_status["stages_completed"]["stage9_speed_analysis"] = datetime.now().isoformat()
+
+        except Exception as e:
+            logger.error(f"❌ Stage 9: Speed Analysis failed: {e}")
+            results["errors"].append(str(e))
+
+        return results
+
     async def monte_carlo_simulation(self) -> Dict:
         """Stage 7: Monte Carlo Simulation."""
         logger.info("🎲 Starting Monte Carlo simulation...")
@@ -1655,32 +1721,32 @@ class DailyPipelineOrchestrator:
             logger.info("⚡ Stage 5: Power Ratings Calculation")
             power_results = await self.power_ratings_calculation()
 
-            # Stage 6: Speed Analysis & Pace Analytics (02:30)
-            logger.info("🏃 Stage 6: Speed & Pace Analysis")
-            speed_results = await self.speed_pace_analysis()
+            # Stage 9: Speed Analysis - Comprehensive speed and pace analysis (02:30)
+            logger.info("🏃 Stage 9: Speed Analysis")
+            speed_results = await self.stage9_speed_analysis()
 
             # ===== MORNING ADVANCED ANALYTICS =====
 
-            # Stage 7: Monte Carlo Simulation (03:00)
-            logger.info("🎲 Stage 7: Monte Carlo Simulation")
+            # Stage 10: Monte Carlo Simulation (03:00)
+            logger.info("🎲 Stage 10: Monte Carlo Simulation")
             monte_carlo_results = await self.monte_carlo_simulation()
 
-            # Stage 8: ML Model Training & Predictions (03:30)
-            logger.info("🤖 Stage 8: ML Model Training")
+            # Stage 11: ML Model Training & Predictions (03:30)
+            logger.info("🤖 Stage 11: ML Model Training")
             ml_results = await self.ml_model_training()
 
-            # Stage 9: Race Trends & Statistical Analysis (04:00)
-            logger.info("📈 Stage 9: Race Trends Analysis")
+            # Stage 12: Race Trends & Statistical Analysis (04:00)
+            logger.info("📈 Stage 12: Race Trends Analysis")
             trends_results = await self.race_trends_analysis()
 
             # ===== LATE MORNING INTEGRATION & REPORTING =====
 
-            # Stage 10: Composite Scoring Integration (04:30)
-            logger.info("🎯 Stage 10: Composite Scoring Integration")
+            # Stage 13: Composite Scoring Integration (04:30)
+            logger.info("🎯 Stage 13: Composite Scoring Integration")
             composite_results = await self.composite_scoring_integration()
 
-            # Stage 11: Advanced Betting Strategies (05:00)
-            logger.info("💰 Stage 11: Betting Strategies Analysis")
+            # Stage 14: Advanced Betting Strategies (05:00)
+            logger.info("💰 Stage 14: Betting Strategies Analysis")
             betting_results = await self.betting_strategies_analysis()
 
             # Stage 12: Report Generation & Documentation (05:30)
