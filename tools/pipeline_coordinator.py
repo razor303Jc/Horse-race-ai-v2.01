@@ -20,16 +20,42 @@ from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Optional
 
-# Setup logging
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-    handlers=[
-        logging.FileHandler("/app/logs/pipeline_orchestrator.log"),
-        logging.StreamHandler(),
-    ],
-)
-logger = logging.getLogger(__name__)
+
+def setup_logging():
+    """Setup logging with fallback if file writing fails"""
+    # Configure basic logging first
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+        handlers=[logging.StreamHandler()],
+    )
+    
+    logger = logging.getLogger(__name__)
+    
+    try:
+        # Ensure logs directory exists and is writable
+        logs_dir = Path("/app/logs")
+        logs_dir.mkdir(parents=True, exist_ok=True)
+        
+        # Try to create log file
+        log_file = logs_dir / "pipeline_orchestrator.log"
+        log_file.touch(exist_ok=True)
+        
+        # Add file handler to the root logger
+        file_handler = logging.FileHandler(str(log_file))
+        file_handler.setFormatter(
+            logging.Formatter(
+                "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+            )
+        )
+        logger.addHandler(file_handler)
+        print(f"✅ Logging to file: {log_file}")
+    except (PermissionError, OSError) as e:
+        print(f"⚠️  Cannot write to log file: {e}")
+        print("📝 Continuing with console logging only")
+    
+    return logger
+logger = setup_logging()
 
 
 class PipelineOrchestrator:
