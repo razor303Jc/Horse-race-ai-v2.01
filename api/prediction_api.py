@@ -689,3 +689,24 @@ if __name__ == "__main__":
     uvicorn.run(
         "prediction_api:app", host="0.0.0.0", port=8000, reload=True, log_level="info"
     )
+
+# Import and include betting router
+try:
+    import sys
+    sys.path.append("/app")
+    from betting_api import betting_router
+    app.include_router(betting_router)
+    logger.info("✅ Betting API router included")
+except Exception as e:
+    logger.warning(f"❌ Failed to include betting router: {e}")
+
+# Health check endpoint
+@app.get("/health")
+async def health_check():
+    """Health check endpoint for Docker health checks"""
+    return {
+        "status": "healthy",
+        "timestamp": datetime.now().isoformat(),
+        "betting_api": "integrated",
+        "models_loaded": ensemble_model is not None
+    }
