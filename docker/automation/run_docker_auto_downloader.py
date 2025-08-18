@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """
 Docker Auto Downloader Runner
-========================    # Schedule for 13:30 daily (production schedule)
-    schedule.every().day.at("13:30").do(run_once)
+========================    # Schedule for 15:45 daily (production schedule)
+    schedule.every().day.at("15:45").do(run_once)
 
-    print("📅 Scheduled auto downloader for 13:30 daily")
+    print("📅 Scheduled auto downloader for 15:45 daily")
 
 Runs the working auto downloader optimized for Docker containers.
 This script ensures proper Docker environment setup and configuration.
@@ -82,10 +82,10 @@ def run_scheduled():
 
     import schedule
 
-    # Schedule for 13:30 daily (live test #2 time)
-    schedule.every().day.at("13:30").do(run_once)
+    # Schedule for 15:45 daily (live test #2 time)
+    schedule.every().day.at("15:45").do(run_once)
 
-    print("📅 Scheduled auto downloader for 13:30 daily")
+    print("📅 Scheduled auto downloader for 15:45 daily")
     print("🔄 Waiting for scheduled time...")
 
     while True:
