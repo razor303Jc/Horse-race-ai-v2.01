@@ -167,10 +167,11 @@ class ModelValidator:
                     production_manifest["active_models"].append(model_id)
                     logger.info(f"✅ Deployed model: {production_name}")
 
-            # Save production manifest
+            # Save production manifest (make JSON-safe)
             manifest_path = self.production_dir / "production_manifest.json"
+            json_safe_manifest = self.make_json_safe(production_manifest)
             with open(manifest_path, "w") as f:
-                json.dump(production_manifest, f, indent=2)
+                json.dump(json_safe_manifest, f, indent=2)
 
             logger.info(
                 f"📋 Production manifest saved with {len(production_manifest['active_models'])} active models"
