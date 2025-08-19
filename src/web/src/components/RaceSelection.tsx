@@ -134,8 +134,8 @@ export const RaceSelection: React.FC = () => {
     });
   };
 
-  const getUniqueValues = (key: keyof RaceInfo) => {
-    return [...new Set(races.map(race => race[key]))].filter(Boolean);
+  const getUniqueValues = (key: keyof RaceInfo): string[] => {
+    return [...new Set(races.map(race => String(race[key])))].filter(Boolean);
   };
 
   if (selectedRaceId) {
@@ -218,7 +218,7 @@ export const RaceSelection: React.FC = () => {
                 >
                   <MenuItem value="all">All Tracks</MenuItem>
                   {getUniqueValues('track').map((track) => (
-                    <MenuItem key={track} value={track}>
+                    <MenuItem key={String(track)} value={track}>
                       {track}
                     </MenuItem>
                   ))}
@@ -249,6 +249,7 @@ export const RaceSelection: React.FC = () => {
           {filteredRaces.map((race) => (
             <Grid item xs={12} md={6} lg={4} key={race.id}>
               <Card
+                data-testid="race-card"
                 sx={{
                   height: '100%',
                   display: 'flex',

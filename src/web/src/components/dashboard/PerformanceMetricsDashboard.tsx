@@ -44,7 +44,7 @@ import {
     ShowChart,
     BarChart as BarChartIcon
 } from '@mui/icons-material';
-import { useStage8Performance } from '../hooks/useAPI';
+import { useStage8Performance } from '../../hooks/useAPI';
 
 interface PerformanceMetric {
     name: string;
@@ -76,7 +76,7 @@ export const PerformanceMetricsDashboard: React.FC = () => {
         if (!performance.recent_performance) return [];
         
         let cumulativePnl = 1000; // Starting balance
-        return performance.recent_performance.map((item, index) => {
+        return performance.recent_performance.map((item: any, index: number) => {
             cumulativePnl += item.pnl;
             return {
                 date: item.date,
@@ -334,7 +334,7 @@ export const PerformanceMetricsDashboard: React.FC = () => {
                     </Box>
                     
                     <ResponsiveContainer width="100%" height={400}>
-                        {renderChart()}
+                        <div>{renderChart()}</div>
                     </ResponsiveContainer>
                 </CardContent>
             </Card>
@@ -379,10 +379,8 @@ export const PerformanceMetricsDashboard: React.FC = () => {
                             <ResponsiveContainer width="100%" height={300}>
                                 <RadialBarChart cx="50%" cy="50%" innerRadius="20%" outerRadius="90%" data={riskDistribution}>
                                     <RadialBar 
-                                        minAngle={15} 
                                         label={{ position: 'insideStart', fill: '#fff' }}
                                         background 
-                                        clockWise 
                                         dataKey="value" 
                                     />
                                     <Legend iconSize={18} layout="horizontal" verticalAlign="bottom" />

@@ -750,9 +750,10 @@ except Exception as e:
 # Import and include live race tracking router
 try:
     import sys
+
     sys.path.append(os.path.join(os.path.dirname(__file__), "..", "src", "web"))
     from live_race_websocket import router as live_race_router
-    
+
     app.include_router(live_race_router, prefix="/api", tags=["live-racing"])
     logger.info("✅ Live race tracking router included")
 except Exception as e:

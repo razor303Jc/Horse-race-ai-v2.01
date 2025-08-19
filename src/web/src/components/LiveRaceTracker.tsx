@@ -219,7 +219,7 @@ export const LiveRaceTracker: React.FC<LiveRaceTrackerProps> = ({
               <Chip
                 label={raceData.status.toUpperCase()}
                 color={getStatusColor(raceData.status) as any}
-                size="large"
+                size="medium"
               />
               <Button
                 variant={isTracking ? "outlined" : "contained"}
