@@ -141,16 +141,24 @@ class PipelineOrchestrator:
         if self.run_csv_import():
             self.mark_stage_complete("csv_import", "Database import successful")
 
-            # Stage 3: Data Preprocessing
-            if self.run_data_preprocessing():
+            # Stage 2.5: Automated Data Quality Pipeline
+            if self.run_data_quality_pipeline():
                 self.mark_stage_complete(
-                    "data_preprocessing", "Data relationships processed"
+                    "data_quality", "Data validation and conversion successful"
                 )
 
-                # Stage 4: Trigger ML Pipeline
-                self.trigger_ml_pipeline()
+                # Stage 3: Data Preprocessing
+                if self.run_data_preprocessing():
+                    self.mark_stage_complete(
+                        "data_preprocessing", "Data relationships processed"
+                    )
+
+                    # Stage 4: Trigger ML Pipeline
+                    self.trigger_ml_pipeline()
+                else:
+                    logger.error("❌ Data preprocessing failed")
             else:
-                logger.error("❌ Data preprocessing failed")
+                logger.error("❌ Data quality pipeline failed")
         else:
             logger.error("❌ CSV import failed")
 
@@ -195,6 +203,34 @@ class PipelineOrchestrator:
             return False
         except Exception as e:
             logger.error(f"❌ CSV import exception: {e}")
+            return False
+
+    def run_data_quality_pipeline(self) -> bool:
+        """Run automated data quality pipeline with validation and conversion"""
+        logger.info("🔍 Stage 2.5: Starting Data Quality Pipeline...")
+
+        try:
+            # Run the automated data quality pipeline
+            result = subprocess.run(
+                ["python", "/app/tools/pipeline/automated_data_quality_pipeline.py"],
+                capture_output=True,
+                text=True,
+                timeout=600,  # 10 minutes for data quality checks
+            )
+
+            if result.returncode == 0:
+                logger.info("✅ Data quality pipeline completed successfully")
+                logger.info(f"📊 Output: {result.stdout[-500:]}")  # Last 500 chars
+                return True
+            else:
+                logger.error(f"❌ Data quality pipeline failed: {result.stderr}")
+                return False
+
+        except subprocess.TimeoutExpired:
+            logger.error("❌ Data quality pipeline timed out")
+            return False
+        except Exception as e:
+            logger.error(f"❌ Data quality pipeline exception: {e}")
             return False
 
     def run_data_preprocessing(self) -> bool:

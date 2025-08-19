@@ -39,7 +39,7 @@ app.add_middleware(
 DB_PARAMS = {
     "host": "postgres",  # Use Docker service name for internal network
     "port": 5432,  # Use internal PostgreSQL port
-    "database": "horse_racing_db", 
+    "database": "horse_racing_db",
     "user": "horse_racing",
     "password": "secure_password_123",
 }
@@ -89,11 +89,11 @@ async def get_database_stats():
 
         # Get table counts
         tables = [
-            "records",        # Changed from "race_results"
-            "races",          # Changed from "races_cards"
+            "records",  # Changed from "race_results"
+            "races",  # Changed from "races_cards"
             "horses",
-            "jockeys_stats",  # Changed from "jockey_stats" 
-            "trainers_stats", # Changed from "trainer_stats"
+            "jockeys_stats",  # Changed from "jockey_stats"
+            "trainers_stats",  # Changed from "trainer_stats"
         ]
         stats = {}
 
