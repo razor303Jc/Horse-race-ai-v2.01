@@ -727,7 +727,7 @@ async def main():
         print("📋 Available Data Sources:")
         sources = await exporter.get_available_data_sources()
         for source in sources[:5]:  # Show first 5
-            row_count = source.get('row_count', 'Unknown')
+            row_count = source.get("row_count", "Unknown")
             print(f"   - {source['display_name']}: {row_count} records")
 
         # Test CSV export
