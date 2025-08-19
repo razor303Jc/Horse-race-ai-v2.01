@@ -10,7 +10,8 @@ import {
   Schedule, 
   Sports,
   Storage,
-  LiveTv
+  LiveTv,
+  MonetizationOn
 } from '@mui/icons-material'
 
 // Import all pages
@@ -22,6 +23,7 @@ import RaceDetails from './pages/RaceDetails'
 import DatabaseManagement from './pages/DatabaseManagement'
 import ErrorPage from './pages/ErrorPage'
 import { RaceSelection } from './components/RaceSelection'
+import AdvancedBettingDashboard from './components/betting/AdvancedBettingDashboard'
 
 const theme = createTheme({
   palette: {
@@ -73,6 +75,9 @@ function App() {
                 <Button color="inherit" href="/live-racing" startIcon={<LiveTv />}>
                   Live Racing
                 </Button>
+                <Button color="inherit" href="/betting" startIcon={<MonetizationOn />}>
+                  Pro Betting
+                </Button>
                 <Button color="inherit" href="/cards" startIcon={<Schedule />}>
                   Race Cards
                 </Button>
@@ -93,6 +98,7 @@ function App() {
               <Route path="/analyzer" element={<RacingAnalyzer />} />
               <Route path="/live" element={<LiveAnalytics />} />
               <Route path="/live-racing" element={<RaceSelection />} />
+              <Route path="/betting" element={<AdvancedBettingDashboard />} />
               <Route path="/cards" element={<RaceCardsEnhanced />} />
               <Route path="/race/:id" element={<RaceDetails />} />
               <Route path="/database" element={<DatabaseManagement />} />

@@ -1,11 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import {
   Card,
   CardContent,
   Typography,
   Grid,
   Button,
-  Chip,
+  TextField,
+  Box,
+  Tabs,
+  Tab,
   Table,
   TableBody,
   TableCell,
@@ -13,26 +16,51 @@ import {
   TableHead,
   TableRow,
   Paper,
+  Chip,
   Alert,
+  Divider,
+  LinearProgress,
   Switch,
   FormControlLabel,
   Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
-  Slider,
-  Box,
-  LinearProgress,
-  CircularProgress
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  List,
+  ListItem,
+  ListItemText,
+  ListItemAvatar,
+  Avatar,
+  IconButton,
+  Tooltip
 } from '@mui/material';
 import {
   TrendingUp,
-  AccountBalance,
-  Security,
-  PlayArrow,
-  Stop,
-  Assessment
+  TrendingDown,
+  MonetizationOn,
+  Assessment,
+  Warning,
+  CheckCircle,
+  Error,
+  Timeline,
+  Speed,
+  Refresh as RefreshIcon,
+  Edit as EditIcon,
+  Delete as DeleteIcon,
+  Add as AddIcon,
+  PlayArrow as PlayIcon,
+  Pause as PauseIcon
 } from '@mui/icons-material';
+
+// Import our advanced betting components
+import AdvancedBettingSlip from './AdvancedBettingSlip';
+import ProfessionalStakeCalculator from './ProfessionalStakeCalculator';
+import BettingStrategyAnalyzer from './BettingStrategyAnalyzer';
+import BettingPortfolioManager from './BettingPortfolioManager';
 import { useBettingRecommendations, useStage8Performance } from '../../hooks/useAPI';
 import { BettingRecommendation } from '../../services/api';
 
