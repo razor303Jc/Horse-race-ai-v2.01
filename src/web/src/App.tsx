@@ -13,7 +13,8 @@ import {
   LiveTv,
   MonetizationOn,
   AccountCircle,
-  Settings
+  Settings,
+  Security
 } from '@mui/icons-material'
 
 // Import all pages
@@ -30,6 +31,7 @@ import UserManagementDashboard from './components/user/UserManagementDashboard'
 import PersonalizationEngine from './components/user/PersonalizationEngine'
 import SubscriptionManager from './components/user/SubscriptionManager'
 import UserSettings from './components/user/UserSettings'
+import SecurityCompliance from './components/security/SecurityCompliance'
 
 const theme = createTheme({
   palette: {
@@ -99,6 +101,9 @@ function App() {
                 <Button color="inherit" href="/user/settings" startIcon={<Settings />}>
                   Settings
                 </Button>
+                <Button color="inherit" href="/security" startIcon={<Security />}>
+                  Security
+                </Button>
               </Box>
             </Toolbar>
           </AppBar>
@@ -119,6 +124,8 @@ function App() {
               <Route path="/user/personalization" element={<PersonalizationEngine />} />
               <Route path="/user/subscription" element={<SubscriptionManager />} />
               <Route path="/user/settings" element={<UserSettings />} />
+              {/* Security & Compliance Routes */}
+              <Route path="/security" element={<SecurityCompliance />} />
               <Route path="/error" element={<ErrorPage />} />
               <Route path="*" element={<ErrorPage />} />
             </Routes>
