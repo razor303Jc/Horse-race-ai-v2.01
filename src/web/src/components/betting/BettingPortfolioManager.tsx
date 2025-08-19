@@ -376,7 +376,7 @@ export const BettingPortfolioManager: React.FC = () => {
     setPortfolioForm({
       name: portfolio.name,
       description: portfolio.description,
-      risk_level: portfolio.risk_level,
+      risk_level: portfolio.risk_level as 'moderate',
       max_daily_stake: portfolio.max_daily_stake,
       auto_staking: portfolio.auto_staking,
       strategies: portfolio.strategies

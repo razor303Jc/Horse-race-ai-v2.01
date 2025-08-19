@@ -145,8 +145,8 @@ export const AdvancedBettingSlip: React.FC = () => {
       id: `bet_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
       horseName: recommendation.horse_name,
       raceName: `${recommendation.venue} ${recommendation.race_time}`,
-      raceTime: recommendation.race_time,
-      venue: recommendation.venue,
+      raceTime: recommendation.race_time || '',
+      venue: recommendation.venue || '',
       odds: recommendation.current_odds,
       stake: recommendation.stake_recommendation,
       betType: 'win',
@@ -567,7 +567,7 @@ export const AdvancedBettingSlip: React.FC = () => {
                     variant="outlined"
                     onClick={createAccumulator}
                     disabled={betSlip.length < 2}
-                    startIcon={<Add />}
+                    startIcon={<AddIcon />}
                   >
                     Create Accumulator
                   </Button>

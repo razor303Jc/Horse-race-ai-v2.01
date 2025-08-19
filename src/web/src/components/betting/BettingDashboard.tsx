@@ -36,7 +36,9 @@ import {
   ListItemAvatar,
   Avatar,
   IconButton,
-  Tooltip
+  Tooltip,
+  CircularProgress,
+  Slider
 } from '@mui/material';
 import {
   TrendingUp,
@@ -53,7 +55,10 @@ import {
   Delete as DeleteIcon,
   Add as AddIcon,
   PlayArrow as PlayIcon,
-  Pause as PauseIcon
+  Pause as PauseIcon,
+  Security,
+  PlayArrow,
+  Stop
 } from '@mui/icons-material';
 
 // Import our advanced betting components

@@ -11,7 +11,9 @@ import {
   Sports,
   Storage,
   LiveTv,
-  MonetizationOn
+  MonetizationOn,
+  AccountCircle,
+  Settings
 } from '@mui/icons-material'
 
 // Import all pages
@@ -24,6 +26,10 @@ import DatabaseManagement from './pages/DatabaseManagement'
 import ErrorPage from './pages/ErrorPage'
 import { RaceSelection } from './components/RaceSelection'
 import AdvancedBettingDashboard from './components/betting/AdvancedBettingDashboard'
+import UserManagementDashboard from './components/user/UserManagementDashboard'
+import PersonalizationEngine from './components/user/PersonalizationEngine'
+import SubscriptionManager from './components/user/SubscriptionManager'
+import UserSettings from './components/user/UserSettings'
 
 const theme = createTheme({
   palette: {
@@ -87,6 +93,12 @@ function App() {
                 <Button color="inherit" href="/database" startIcon={<Storage />}>
                   Database
                 </Button>
+                <Button color="inherit" href="/user/dashboard" startIcon={<AccountCircle />}>
+                  My Account
+                </Button>
+                <Button color="inherit" href="/user/settings" startIcon={<Settings />}>
+                  Settings
+                </Button>
               </Box>
             </Toolbar>
           </AppBar>
@@ -102,6 +114,11 @@ function App() {
               <Route path="/cards" element={<RaceCardsEnhanced />} />
               <Route path="/race/:id" element={<RaceDetails />} />
               <Route path="/database" element={<DatabaseManagement />} />
+              {/* User Management Routes */}
+              <Route path="/user/dashboard" element={<UserManagementDashboard />} />
+              <Route path="/user/personalization" element={<PersonalizationEngine />} />
+              <Route path="/user/subscription" element={<SubscriptionManager />} />
+              <Route path="/user/settings" element={<UserSettings />} />
               <Route path="/error" element={<ErrorPage />} />
               <Route path="*" element={<ErrorPage />} />
             </Routes>
