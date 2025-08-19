@@ -37,9 +37,9 @@ app.add_middleware(
 
 # Database connection parameters
 DB_PARAMS = {
-    "host": "localhost",
-    "port": 5433,
-    "database": "horse_racing_db",
+    "host": "postgres",  # Use Docker service name for internal network
+    "port": 5432,  # Use internal PostgreSQL port
+    "database": "horse_racing_db", 
     "user": "horse_racing",
     "password": "secure_password_123",
 }
@@ -89,12 +89,11 @@ async def get_database_stats():
 
         # Get table counts
         tables = [
-            "race_results",
-            "racecard_details",
+            "records",        # Changed from "race_results"
+            "races",          # Changed from "races_cards"
             "horses",
-            "jockey_stats",
-            "trainer_stats",
-            "races_cards",
+            "jockeys_stats",  # Changed from "jockey_stats" 
+            "trainers_stats", # Changed from "trainer_stats"
         ]
         stats = {}
 
@@ -151,7 +150,7 @@ async def get_real_race_cards():
             rc.career_runs,
             rc.distance_record,
             rc.track_record
-        FROM racecard_details rc
+        FROM records rc
         WHERE rc.horse_name != '0' 
         AND rc.horse_name IS NOT NULL
         AND rc.win_odds IS NOT NULL
@@ -288,7 +287,7 @@ async def get_race_details(race_id: str):
             form,
             career_wins,
             career_runs
-        FROM racecard_details
+        FROM records
         WHERE race_id = %s AND horse_name != '0'
         ORDER BY CAST(win_odds AS NUMERIC) ASC;
         """

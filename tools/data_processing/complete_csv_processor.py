@@ -22,17 +22,17 @@ class CompleteCsvProcessor:
         self.cursor = None
 
     def connect_to_database(self):
-        """Connect to PostgreSQL database with correct port 5432"""
+        """Connect to PostgreSQL database with Docker configuration"""
         try:
             self.conn = psycopg2.connect(
                 host="localhost",
-                port="5432",  # Correct port
+                port="5434",  # Docker mapped port
                 database="horse_racing_db",
                 user="horse_racing",
                 password="secure_password_123",
             )
             self.cursor = self.conn.cursor()
-            print("✅ Connected to database (port 5432)")
+            print("✅ Connected to database (Docker port 5434)")
             return True
         except Exception as e:
             print(f"❌ Database connection failed: {e}")

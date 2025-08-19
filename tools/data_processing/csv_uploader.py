@@ -20,7 +20,7 @@ from psycopg2.extras import execute_values
 # Database configuration
 DATABASE_CONFIG = {
     "host": "localhost",
-    "port": 5432,
+    "port": 5434,  # Docker mapped port
     "database": "horse_racing_db",
     "user": "horse_racing",
     "password": "secure_password_123",
@@ -41,7 +41,9 @@ def find_latest_csv_files():
         )
 
     # Look for races.csv (race cards) in cards_data
-    races_files = list(downloads_dir.glob("cards_project_root / 'data' / races/races.csv"))
+    races_files = list(
+        downloads_dir.glob("cards_project_root / 'data' / races/races.csv")
+    )
     if races_files:
         csv_files["races_cards"] = str(
             max(races_files, key=lambda f: f.stat().st_mtime)
@@ -49,7 +51,9 @@ def find_latest_csv_files():
 
     # Look for racecard_details.csv
     racecard_files = list(
-        downloads_dir.glob("cards_project_root / 'data' / racecard_details/racecard_details.csv")
+        downloads_dir.glob(
+            "cards_project_root / 'data' / racecard_details/racecard_details.csv"
+        )
     )
     if racecard_files:
         csv_files["racecard_details"] = str(
