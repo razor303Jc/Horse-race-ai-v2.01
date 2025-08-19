@@ -180,8 +180,17 @@ class PipelineOrchestrator:
                                         "Contextual AI analysis active",
                                     )
 
-                                    # Stage 8: Legacy ML Pipeline (for compatibility)
-                                    self.trigger_ml_pipeline()
+                                    # Stage 8: Data Architecture Improvements
+                                    if self.run_data_architecture_improvements():
+                                        self.mark_stage_complete(
+                                            "data_architecture_improvements",
+                                            "Data architecture enhanced",
+                                        )
+
+                                        # Final Stage: Legacy ML Pipeline (for compatibility)
+                                        self.trigger_ml_pipeline()
+                                    else:
+                                        logger.error("❌ Data architecture improvements failed")
                                 else:
                                     logger.error("❌ Contextual AI enhancement failed")
                             else:
@@ -404,6 +413,33 @@ class PipelineOrchestrator:
             return False
         except Exception as e:
             logger.error(f"❌ Contextual AI enhancement exception: {e}")
+            return False
+
+    def run_data_architecture_improvements(self) -> bool:
+        """Run data architecture improvements system"""
+        logger.info("🏗️ Stage 8: Starting Data Architecture Improvements...")
+
+        try:
+            result = subprocess.run(
+                ["python", "/app/tools/pipeline/run_data_architecture_stage.py"],
+                capture_output=True,
+                text=True,
+                timeout=900,  # 15 minutes for comprehensive data architecture work
+            )
+
+            if result.returncode == 0:
+                logger.info("✅ Data architecture improvements completed successfully")
+                logger.info(f"🏗️ Output: {result.stdout[-500:]}")
+                return True
+            else:
+                logger.error(f"❌ Data architecture improvements failed: {result.stderr}")
+                return False
+
+        except subprocess.TimeoutExpired:
+            logger.error("❌ Data architecture improvements timed out")
+            return False
+        except Exception as e:
+            logger.error(f"❌ Data architecture improvements exception: {e}")
             return False
 
     def run_data_preprocessing(self) -> bool:
