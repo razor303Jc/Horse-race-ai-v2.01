@@ -1,6 +1,6 @@
 /**
  * Content Security Policy utilities
- * Provides environment-specific CSP configurations
+ * Provides environment-specific CSP configurations for development and production
  */
 
 export const getCSPHeader = (isDevelopment: boolean = process.env.NODE_ENV === 'development'): string => {
@@ -21,6 +21,11 @@ export const getCSPHeader = (isDevelopment: boolean = process.env.NODE_ENV === '
   // In development, we need to allow eval for Vite's HMR
   if (isDevelopment) {
     basePolicy['script-src'].push("'unsafe-eval'", "'unsafe-inline'");
+  } else {
+    // Production configuration: stricter security
+    // Remove 'unsafe-eval' and limit 'unsafe-inline' usage
+    basePolicy['script-src'].push('https://cdn.jsdelivr.net'); // Allow CDN if needed
+    basePolicy['style-src'] = ["'self'", 'https://fonts.googleapis.com']; // Remove unsafe-inline in production
   }
 
   // Convert policy object to CSP string

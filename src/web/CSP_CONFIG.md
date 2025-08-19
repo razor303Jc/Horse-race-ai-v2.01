@@ -1,6 +1,14 @@
-# Production CSP Configuration
+# Content Security Policy (CSP) Configuration Guide
 
-# For production deployments, use this more restrictive CSP header
+This document provides guidance for configuring Content Security Policy headers in production deployments of the Horse Racing AI v2.03 web application.
+
+## Overview
+
+Content Security Policy (CSP) is a security feature that helps prevent XSS attacks by controlling which resources the browser is allowed to load. Our application uses different CSP configurations for development and production environments.
+
+## Production CSP Configuration
+
+For production deployments, use this more restrictive CSP header that removes unsafe-eval:
 
 # Nginx configuration example:
 
