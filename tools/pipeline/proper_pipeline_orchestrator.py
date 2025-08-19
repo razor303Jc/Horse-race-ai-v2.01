@@ -173,8 +173,17 @@ class PipelineOrchestrator:
                                     "Automated betting system active",
                                 )
 
-                                # Stage 7: Legacy ML Pipeline (for compatibility)
-                                self.trigger_ml_pipeline()
+                                # Stage 7: Contextual AI Enhancement System
+                                if self.run_contextual_ai_enhancement():
+                                    self.mark_stage_complete(
+                                        "contextual_ai_enhancement",
+                                        "Contextual AI analysis active",
+                                    )
+
+                                    # Stage 8: Legacy ML Pipeline (for compatibility)
+                                    self.trigger_ml_pipeline()
+                                else:
+                                    logger.error("❌ Contextual AI enhancement failed")
                             else:
                                 logger.error("❌ Betting integration failed")
                         else:
@@ -370,6 +379,33 @@ class PipelineOrchestrator:
             logger.error(f"❌ Betting integration exception: {e}")
             return False
 
+    def run_contextual_ai_enhancement(self) -> bool:
+        """Run contextual AI enhancement system"""
+        logger.info("🧠 Stage 7: Starting Contextual AI Enhancement...")
+
+        try:
+            result = subprocess.run(
+                ["python", "/app/tools/pipeline/run_contextual_ai_stage.py"],
+                capture_output=True,
+                text=True,
+                timeout=600,  # 10 minutes for contextual AI analysis
+            )
+
+            if result.returncode == 0:
+                logger.info("✅ Contextual AI enhancement completed successfully")
+                logger.info(f"🧠 Output: {result.stdout[-500:]}")
+                return True
+            else:
+                logger.error(f"❌ Contextual AI enhancement failed: {result.stderr}")
+                return False
+
+        except subprocess.TimeoutExpired:
+            logger.error("❌ Contextual AI enhancement timed out")
+            return False
+        except Exception as e:
+            logger.error(f"❌ Contextual AI enhancement exception: {e}")
+            return False
+
     def run_data_preprocessing(self) -> bool:
         """Run data preprocessing and relationship building"""
         logger.info("🔄 Stage 3: Starting Data Preprocessing...")
@@ -483,15 +519,15 @@ class PipelineOrchestrator:
         if self.run_model_validation():
             self.mark_stage_complete("model_validation", "Models validated and saved")
 
-            # Stage 6: Start Prediction Service
+            # Stage 8: Start Prediction Service
             if self.start_prediction_service():
                 self.mark_stage_complete("prediction_service", "Prediction API active")
 
-                # Stage 7: Start Web Interface
+                # Stage 9: Start Web Interface
                 if self.start_web_interface():
                     self.mark_stage_complete("web_interface", "Web dashboard active")
 
-                    # Stage 8: Enable Betting Integration
+                    # Stage 10: Enable Betting Integration
                     self.enable_betting_integration()
 
     def run_model_validation(self) -> bool:
@@ -586,7 +622,7 @@ class PipelineOrchestrator:
 
     def enable_betting_integration(self):
         """Enable betting strategies and recommendations"""
-        logger.info("💰 Stage 8: Enabling Betting Integration...")
+        logger.info("💰 Stage 10: Enabling Betting Integration...")
 
         try:
             # Check if betting strategies exist
