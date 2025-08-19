@@ -30,73 +30,21 @@ import {
     TableRow,
     Typography
 } from '@mui/material';
-import React, { useEffect, useState } from 'react';
-
-interface Horse {
-    horse_name: string;
-    jockey_name: string;
-    trainer_name: string;
-    age: number;
-    weight_kg: number;
-    handicap_weight: number;
-    draw: number;
-    barrier: number;
-    form: string;
-    win_odds: string;
-    place_odds: string;
-    win_probability: number;
-    decimal_odds: number;
-    last_run_days: number;
-    career_record: string;
-    win_rate: number;
-    distance_record: string;
-    track_record: string;
-}
-
-interface RaceCard {
-    race_id: string;
-    horses: Horse[];
-    total_runners: number;
-}
-
-interface RaceCardsData {
-    total_races: number;
-    total_horses: number;
-    data_source: string;
-    timestamp: string;
-    races: RaceCard[];
-}
+import React, { useState } from 'react';
+import { useRealRaceCards } from './hooks/useAPI';
+import { RaceCard, Horse, RaceCardsData } from './services/api';
 
 const RealRaceCards: React.FC = () => {
-    const [raceCards, setRaceCards] = useState<RaceCardsData | null>(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+    // Use API hook for real data
+    const { 
+        data: raceCards, 
+        loading, 
+        error,
+        refetch 
+    } = useRealRaceCards();
+    
     const [selectedRace, setSelectedRace] = useState<RaceCard | null>(null);
     const [dialogOpen, setDialogOpen] = useState(false);
-
-    const fetchRaceCards = async () => {
-        try {
-            setLoading(true);
-            const response = await fetch('/api/real_race_cards');
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            const data = await response.json();
-            setRaceCards(data);
-            setError(null);
-        } catch (err) {
-            setError(err instanceof Error ? err.message : 'Failed to fetch race cards');
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    useEffect(() => {
-        fetchRaceCards();
-        // Refresh every 5 minutes
-        const interval = setInterval(fetchRaceCards, 5 * 60 * 1000);
-        return () => clearInterval(interval);
-    }, []);
 
     const getOddsColor = (probability: number) => {
         if (probability > 40) return '#4caf50'; // Green for favorites
@@ -129,7 +77,7 @@ const RealRaceCards: React.FC = () => {
         return (
             <Alert severity="error" sx={{ m: 2 }}>
                 Error loading race cards: {error}
-                <Button onClick={fetchRaceCards} sx={{ ml: 2 }}>Retry</Button>
+                <Button onClick={refetch} sx={{ ml: 2 }}>Retry</Button>
             </Alert>
         );
     }
@@ -138,7 +86,7 @@ const RealRaceCards: React.FC = () => {
         return (
             <Alert severity="info" sx={{ m: 2 }}>
                 No race card data available. Check database connection.
-                <Button onClick={fetchRaceCards} sx={{ ml: 2 }}>Refresh</Button>
+                <Button onClick={refetch} sx={{ ml: 2 }}>Refresh</Button>
             </Alert>
         );
     }
@@ -208,7 +156,7 @@ const RealRaceCards: React.FC = () => {
                     <AccordionSummary expandIcon={<ExpandMore />}>
                         <Box sx={{ display: 'flex', alignItems: 'center', width: '100%' }}>
                             <Typography variant="h6" sx={{ flexGrow: 1 }}>
-                                Race {race.race_id} - {race.total_runners} Runners
+                                Race {race.race_id} - {race.horses.length} Runners
                             </Typography>
                             <Chip 
                                 label={`${race.horses.length} entries`}
@@ -247,9 +195,9 @@ const RealRaceCards: React.FC = () => {
                                                 <Typography variant="subtitle2" fontWeight="bold">
                                                     {horse.horse_name}
                                                 </Typography>
-                                                {horse.draw && (
+                                                {horse.position && (
                                                     <Typography variant="caption" color="textSecondary">
-                                                        Draw: {horse.draw}
+                                                        Position: {horse.position}
                                                     </Typography>
                                                 )}
                                             </TableCell>
@@ -268,18 +216,13 @@ const RealRaceCards: React.FC = () => {
                                             <TableCell>{horse.age}yo</TableCell>
                                             <TableCell>
                                                 {horse.weight_kg}kg
-                                                {horse.handicap_weight && (
-                                                    <Typography variant="caption" display="block">
-                                                        H: {horse.handicap_weight}kg
-                                                    </Typography>
-                                                )}
                                             </TableCell>
                                             <TableCell>
                                                 <Chip
                                                     label={horse.win_odds}
                                                     size="small"
                                                     sx={{ 
-                                                        backgroundColor: getOddsColor(horse.win_probability),
+                                                        backgroundColor: getOddsColor(horse.win_probability || 0),
                                                         color: 'white',
                                                         fontWeight: 'bold'
                                                     }}
@@ -292,10 +235,10 @@ const RealRaceCards: React.FC = () => {
                                             </TableCell>
                                             <TableCell>
                                                 <Chip
-                                                    label={horse.form}
+                                                    label={horse.recent_form || 'N/A'}
                                                     size="small"
                                                     sx={{ 
-                                                        backgroundColor: getFormColor(horse.form),
+                                                        backgroundColor: getFormColor(horse.recent_form || ''),
                                                         color: 'white'
                                                     }}
                                                 />
@@ -303,9 +246,6 @@ const RealRaceCards: React.FC = () => {
                                             <TableCell>
                                                 <Typography variant="body2">
                                                     {horse.career_record}
-                                                </Typography>
-                                                <Typography variant="caption" color="textSecondary">
-                                                    {horse.win_rate}% SR
                                                 </Typography>
                                             </TableCell>
                                         </TableRow>
@@ -351,7 +291,7 @@ const RealRaceCards: React.FC = () => {
                                                 Field Size
                                             </Typography>
                                             <Typography variant="h4">
-                                                {selectedRace.total_runners}
+                                                {selectedRace.horses.length}
                                             </Typography>
                                         </CardContent>
                                     </Card>
@@ -399,7 +339,7 @@ const RealRaceCards: React.FC = () => {
             <Box sx={{ textAlign: 'center', mt: 3 }}>
                 <Button 
                     variant="contained" 
-                    onClick={fetchRaceCards}
+                    onClick={refetch}
                     startIcon={<Speed />}
                 >
                     Refresh Race Cards

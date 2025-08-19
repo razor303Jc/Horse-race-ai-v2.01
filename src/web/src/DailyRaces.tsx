@@ -25,10 +25,13 @@ import {
     TableRow,
     ToggleButton,
     ToggleButtonGroup,
-    Typography
+    Typography,
+    Alert
 } from '@mui/material';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
+import { useDailyRaces, useRaceCard } from './hooks/useAPI';
 
+// Use the types from the API service
 interface RaceData {
   race_id: string;
   meeting: string;
@@ -131,50 +134,24 @@ const formatCurrency = (amount: number) => {
 };
 
 export const DailyRaces: React.FC = () => {
-  const [data, setData] = useState<DailyRacesStats | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [selectedRaceCard, setSelectedRaceCard] = useState<RaceCardData | null>(null);
+  // Use API hooks instead of manual state management
+  const { data, loading, error, refetch } = useDailyRaces();
+  const [selectedRaceId, setSelectedRaceId] = useState<string | null>(null);
+  const { 
+    data: selectedRaceCard, 
+    loading: loadingRaceCard, 
+    error: raceCardError 
+  } = useRaceCard(selectedRaceId);
+  
   const [raceCardDialogOpen, setRaceCardDialogOpen] = useState(false);
-  const [loadingRaceCard, setLoadingRaceCard] = useState(false);
-  const [raceCardError, setRaceCardError] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState<string>('time');
   const [filterMeeting, setFilterMeeting] = useState<string>('all');
   const [filterType, setFilterType] = useState<string>('all');
   const [viewMode, setViewMode] = useState<string>('table');
 
-  useEffect(() => {
-    const fetchDailyRaces = async () => {
-      try {
-        const response = await fetch('/api/daily_races');
-        const racesData = await response.json();
-        setData(racesData);
-      } catch (error) {
-        console.error('Error fetching daily races:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchDailyRaces();
-  }, []);
-
-  const fetchRaceCard = async (raceId: string) => {
-    setLoadingRaceCard(true);
-    setRaceCardError(null);
-    
-    try {
-      const response = await fetch(`/api/race_details/${raceId}`);
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const raceCardData = await response.json();
-      setSelectedRaceCard(raceCardData);
-      setRaceCardDialogOpen(true);
-    } catch (error) {
-      setRaceCardError(error instanceof Error ? error.message : 'Failed to fetch race card');
-    } finally {
-      setLoadingRaceCard(false);
-    }
+  const fetchRaceCard = (raceId: string) => {
+    setSelectedRaceId(raceId);
+    setRaceCardDialogOpen(true);
   };
 
   const getOddsColor = (probability: number) => {
@@ -190,10 +167,27 @@ export const DailyRaces: React.FC = () => {
     return '#9e9e9e';
   };
 
+  // Show loading state
   if (loading) {
-    return <Typography>Loading daily races...</Typography>;
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', p: 3 }}>
+        <CircularProgress />
+        <Typography sx={{ ml: 2 }}>Loading daily races...</Typography>
+      </Box>
+    );
   }
 
+  // Show error state with retry option
+  if (error) {
+    return (
+      <Alert severity="error" sx={{ m: 2 }}>
+        Error loading daily races: {error}
+        <Button onClick={refetch} sx={{ ml: 2 }}>Retry</Button>
+      </Alert>
+    );
+  }
+
+  // Show no data state
   if (!data) {
     return <Typography>No race data available</Typography>;
   }

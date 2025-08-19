@@ -12,21 +12,73 @@ import {
     Grid,
     Typography,
     LinearProgress,
-    Chip
+    Chip,
+    CircularProgress,
+    Alert,
+    Button
 } from '@mui/material'
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts'
-
-const mockPerformanceData = [
-    { name: 'Mon', value: 65 },
-    { name: 'Tue', value: 78 },
-    { name: 'Wed', value: 82 },
-    { name: 'Thu', value: 76 },
-    { name: 'Fri', value: 88 },
-    { name: 'Sat', value: 95 },
-    { name: 'Sun', value: 92 }
-]
+import { useDailyRaces, useStage8Performance } from '../hooks/useAPI'
 
 export default function Dashboard() {
+    // Use API hooks for real data
+    const { 
+        data: racesData, 
+        loading: racesLoading, 
+        error: racesError,
+        refetch: refetchRaces 
+    } = useDailyRaces();
+    
+    const { 
+        performance, 
+        loading: performanceLoading, 
+        error: performanceError,
+        refetch: refetchPerformance 
+    } = useStage8Performance();
+
+    // Show loading state
+    if (racesLoading || performanceLoading) {
+        return (
+            <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
+                <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '400px' }}>
+                    <CircularProgress />
+                    <Typography variant="h6" sx={{ ml: 2 }}>Loading dashboard...</Typography>
+                </Box>
+            </Container>
+        );
+    }
+
+    // Show error state
+    if (racesError || performanceError) {
+        return (
+            <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
+                <Alert severity="error" sx={{ mb: 2 }}>
+                    Error loading dashboard data: {racesError || performanceError}
+                    <Button 
+                        onClick={() => {
+                            refetchRaces();
+                            refetchPerformance();
+                        }} 
+                        sx={{ ml: 2 }}
+                    >
+                        Retry
+                    </Button>
+                </Alert>
+            </Container>
+        );
+    }
+
+    // Prepare chart data from performance
+    const chartData = performance.recent_performance || [
+        { date: 'Mon', pnl: 65 },
+        { date: 'Tue', pnl: 78 },
+        { date: 'Wed', pnl: 82 },
+        { date: 'Thu', pnl: 76 },
+        { date: 'Fri', pnl: 88 },
+        { date: 'Sat', pnl: 95 },
+        { date: 'Sun', pnl: 92 }
+    ];
+
     return (
         <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
             <Typography variant="h3" component="h1" gutterBottom sx={{ mb: 4, fontWeight: 'bold' }}>
@@ -40,10 +92,10 @@ export default function Dashboard() {
                         <CardContent>
                             <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                                 <Assessment sx={{ mr: 1, fontSize: 30 }} />
-                                <Typography variant="h6">ML Models</Typography>
+                                <Typography variant="h6">Total Races</Typography>
                             </Box>
-                            <Typography variant="h4" sx={{ fontWeight: 'bold' }}>98.86%</Typography>
-                            <Typography variant="body2">AUC Performance</Typography>
+                            <Typography variant="h4" sx={{ fontWeight: 'bold' }}>{racesData?.total_races || 0}</Typography>
+                            <Typography variant="body2">Today's Schedule</Typography>
                         </CardContent>
                     </Card>
                 </Grid>
@@ -53,10 +105,10 @@ export default function Dashboard() {
                         <CardContent>
                             <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                                 <Speed sx={{ mr: 1, fontSize: 30 }} />
-                                <Typography variant="h6">Active Models</Typography>
+                                <Typography variant="h6">Win Rate</Typography>
                             </Box>
-                            <Typography variant="h4" sx={{ fontWeight: 'bold' }}>5</Typography>
-                            <Typography variant="body2">Ensemble Components</Typography>
+                            <Typography variant="h4" sx={{ fontWeight: 'bold' }}>{performance.win_rate.toFixed(1)}%</Typography>
+                            <Typography variant="body2">Model Performance</Typography>
                         </CardContent>
                     </Card>
                 </Grid>
@@ -66,10 +118,10 @@ export default function Dashboard() {
                         <CardContent>
                             <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                                 <TrendingUp sx={{ mr: 1, fontSize: 30 }} />
-                                <Typography variant="h6">Win Rate</Typography>
+                                <Typography variant="h6">ROI</Typography>
                             </Box>
-                            <Typography variant="h4" sx={{ fontWeight: 'bold' }}>76.2%</Typography>
-                            <Typography variant="body2">Today's Performance</Typography>
+                            <Typography variant="h4" sx={{ fontWeight: 'bold' }}>{performance.roi.toFixed(1)}%</Typography>
+                            <Typography variant="body2">Return on Investment</Typography>
                         </CardContent>
                     </Card>
                 </Grid>
@@ -79,10 +131,10 @@ export default function Dashboard() {
                         <CardContent>
                             <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                                 <Psychology sx={{ mr: 1, fontSize: 30 }} />
-                                <Typography variant="h6">AI Insights</Typography>
+                                <Typography variant="h6">Active Bets</Typography>
                             </Box>
-                            <Typography variant="h4" sx={{ fontWeight: 'bold' }}>24</Typography>
-                            <Typography variant="body2">Features Analyzed</Typography>
+                            <Typography variant="h4" sx={{ fontWeight: 'bold' }}>{performance.active_bets}</Typography>
+                            <Typography variant="body2">Current Positions</Typography>
                         </CardContent>
                     </Card>
                 </Grid>
@@ -95,14 +147,14 @@ export default function Dashboard() {
                         <Typography variant="h5" gutterBottom>Weekly Performance Trends</Typography>
                         <Box sx={{ height: 300 }}>
                             <ResponsiveContainer width="100%" height="100%">
-                                <AreaChart data={mockPerformanceData}>
+                                <AreaChart data={chartData}>
                                     <CartesianGrid strokeDasharray="3 3" />
-                                    <XAxis dataKey="name" />
+                                    <XAxis dataKey="date" />
                                     <YAxis />
                                     <Tooltip />
                                     <Area 
                                         type="monotone" 
-                                        dataKey="value" 
+                                        dataKey="pnl" 
                                         stroke="#667eea" 
                                         fill="url(#colorGradient)" 
                                     />
