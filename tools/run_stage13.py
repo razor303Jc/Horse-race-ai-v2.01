@@ -19,14 +19,14 @@ def run_stage13():
     """Run Stage 13 Code Quality and Structure pipeline"""
     print("🚀 Starting Stage 13: Code Quality and Structure")
     print("=" * 60)
-    
+
     pipeline = Stage13CodeQualityPipeline()
-    
+
     async def execute():
         try:
             print("📊 Running comprehensive code quality analysis...")
             report = await pipeline.run_complete_pipeline()
-            
+
             print("\n✅ Stage 13 Code Quality Pipeline COMPLETED")
             print("=" * 60)
             print(f"📈 Overall Quality Score: {report.overall_score}/100")
@@ -38,15 +38,15 @@ def run_stage13():
             print(f"⚠️ Critical Issues: {len(report.critical_issues)}")
             print(f"💡 Recommendations: {len(report.recommendations)}")
             print(f"🛣️ Improvement Roadmap: {len(report.improvement_roadmap)} phases")
-            
+
             print(f"\n📁 Reports saved to: {pipeline.reports_dir}")
-            
+
             return True
-            
+
         except Exception as e:
             print(f"\n❌ Stage 13 pipeline failed: {e}")
             return False
-    
+
     return asyncio.run(execute())
 
 

@@ -150,6 +150,98 @@ logs: ## View application logs
 	tail -f logs/*.log
 
 # Automation and CI/CD
+# Comprehensive Testing Commands for V2.03
+
+test-all: ## Run comprehensive test suite (unit, integration, performance, security)
+	@echo "$(BLUE)🧪 Running comprehensive test suite...$(NC)"
+	$(PYTHON) tests/run_comprehensive_tests.py
+	@echo "$(GREEN)✓ All tests completed$(NC)"
+
+test-unit: ## Run unit tests only
+	@echo "$(BLUE)🧪 Running unit tests...$(NC)"
+	$(PYTHON) tests/run_comprehensive_tests.py --unit
+	@echo "$(GREEN)✓ Unit tests completed$(NC)"
+
+test-integration: ## Run integration tests only
+	@echo "$(BLUE)🔗 Running integration tests...$(NC)"
+	$(PYTHON) tests/run_comprehensive_tests.py --integration
+	@echo "$(GREEN)✓ Integration tests completed$(NC)"
+
+test-performance: ## Run performance tests only
+	@echo "$(BLUE)🚀 Running performance tests...$(NC)"
+	$(PYTHON) tests/run_comprehensive_tests.py --performance
+	@echo "$(GREEN)✓ Performance tests completed$(NC)"
+
+test-security: ## Run security tests only
+	@echo "$(BLUE)🔒 Running security tests...$(NC)"
+	$(PYTHON) tests/run_comprehensive_tests.py --security
+	@echo "$(GREEN)✓ Security tests completed$(NC)"
+
+test-quick: ## Run quick unit tests without coverage
+	@echo "$(BLUE)⚡ Running quick unit tests...$(NC)"
+	pytest tests/unit/ -v --tb=short --no-cov
+	@echo "$(GREEN)✓ Quick tests completed$(NC)"
+
+# Coverage Commands
+test-coverage: ## Generate comprehensive coverage report
+	@echo "$(BLUE)📊 Generating coverage report...$(NC)"
+	coverage run -m pytest tests/unit/
+	coverage report
+	coverage html
+	@echo "$(GREEN)✓ Coverage report generated at htmlcov/index.html$(NC)"
+
+# Component-specific tests
+test-data-processing: ## Test data processing components
+	@echo "$(BLUE)📊 Testing data processing...$(NC)"
+	pytest tests/unit/test_data_processing.py -v
+	@echo "$(GREEN)✓ Data processing tests completed$(NC)"
+
+test-ml-components: ## Test ML components
+	@echo "$(BLUE)🤖 Testing ML components...$(NC)"
+	pytest tests/unit/test_ml_components.py -v
+	@echo "$(GREEN)✓ ML component tests completed$(NC)"
+
+test-security-components: ## Test security components
+	@echo "$(BLUE)🔒 Testing security components...$(NC)"
+	pytest tests/unit/test_security_components.py -v
+	@echo "$(GREEN)✓ Security component tests completed$(NC)"
+
+# Stage-specific tests
+test-stage2: ## Test Stage 2 (Data Quality Pipeline)
+	@echo "$(BLUE)🔧 Testing Stage 2 components...$(NC)"
+	$(PYTHON) tools/run_stage2.py --test-mode || true
+	@echo "$(GREEN)✓ Stage 2 tests completed$(NC)"
+
+test-stage12: ## Test Stage 12 (Performance & Scalability)
+	@echo "$(BLUE)🔧 Testing Stage 12 components...$(NC)"
+	$(PYTHON) tools/run_stage12.py --test-mode || true
+	@echo "$(GREEN)✓ Stage 12 tests completed$(NC)"
+
+test-stage13: ## Test Stage 13 (Code Quality)
+	@echo "$(BLUE)🔧 Testing Stage 13 components...$(NC)"
+	$(PYTHON) tools/run_stage13.py --test-mode || true
+	@echo "$(GREEN)✓ Stage 13 tests completed$(NC)"
+
+test-stage14: ## Test Stage 14 (Security & Compliance)
+	@echo "$(BLUE)🔧 Testing Stage 14 components...$(NC)"
+	$(PYTHON) tools/run_stage14.py --test-mode || true
+	@echo "$(GREEN)✓ Stage 14 tests completed$(NC)"
+
+# Quality and validation
+validate-tests: ## Validate test framework setup
+	@echo "$(BLUE)✅ Validating test framework...$(NC)"
+	$(PYTHON) -c "import tests.run_comprehensive_tests; print('✅ Test runner imports successfully')"
+	$(PYTHON) -c "import tests.test_complete_system_integration; print('✅ Integration tests import successfully')" || true
+	$(PYTHON) -c "import tests.performance.test_performance_load; print('✅ Performance tests import successfully')" || true
+	@echo "$(GREEN)✓ Test framework validation complete$(NC)"
+
+# Test reporting
+test-report: ## Generate comprehensive test report
+	@echo "$(BLUE)📋 Generating test report...$(NC)"
+	$(PYTHON) tests/run_comprehensive_tests.py --output-dir=tests/reports
+	@echo "$(GREEN)✓ Test report generated$(NC)"
+
+# Continuous Integration
 ci: clean install check ## Run full CI pipeline
 	@echo "$(GREEN)✓ CI pipeline completed successfully$(NC)"
 

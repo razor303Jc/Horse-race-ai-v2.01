@@ -31,9 +31,11 @@ import requests_mock
 import sqlite3
 import tempfile
 
+
 @dataclass
 class TestResult:
     """Comprehensive test result tracking"""
+
     module: str
     test_class: str
     test_method: str
@@ -42,9 +44,11 @@ class TestResult:
     error_message: Optional[str] = None
     coverage_percentage: Optional[float] = None
 
+
 @dataclass
 class TestSuite:
     """Test suite configuration and metadata"""
+
     name: str
     description: str
     modules: List[str]
@@ -52,9 +56,11 @@ class TestSuite:
     coverage_target: float
     priority: int
 
+
 @dataclass
 class TestMetrics:
     """Comprehensive test metrics tracking"""
+
     total_tests: int
     passed_tests: int
     failed_tests: int
@@ -65,78 +71,90 @@ class TestMetrics:
     execution_time: float
     performance_metrics: Dict[str, Any]
 
+
 class CodeAnalyzer:
     """Advanced code analysis for test generation"""
-    
+
     def __init__(self):
         self.logger = logging.getLogger(__name__)
-        
+
     def analyze_module(self, module_path: str) -> Dict[str, Any]:
         """Analyze Python module for test generation"""
         try:
-            with open(module_path, 'r', encoding='utf-8') as f:
+            with open(module_path, "r", encoding="utf-8") as f:
                 source = f.read()
-            
+
             tree = ast.parse(source)
             analysis = {
-                'classes': [],
-                'functions': [],
-                'imports': [],
-                'complexity': 0,
-                'test_coverage_needed': []
+                "classes": [],
+                "functions": [],
+                "imports": [],
+                "complexity": 0,
+                "test_coverage_needed": [],
             }
-            
+
             for node in ast.walk(tree):
                 if isinstance(node, ast.ClassDef):
                     class_info = {
-                        'name': node.name,
-                        'methods': [],
-                        'decorators': [d.id if hasattr(d, 'id') else str(d) for d in node.decorator_list],
-                        'lineno': node.lineno
+                        "name": node.name,
+                        "methods": [],
+                        "decorators": [
+                            d.id if hasattr(d, "id") else str(d)
+                            for d in node.decorator_list
+                        ],
+                        "lineno": node.lineno,
                     }
-                    
+
                     for item in node.body:
                         if isinstance(item, ast.FunctionDef):
                             method_info = {
-                                'name': item.name,
-                                'args': [arg.arg for arg in item.args.args],
-                                'decorators': [d.id if hasattr(d, 'id') else str(d) for d in item.decorator_list],
-                                'lineno': item.lineno,
-                                'is_async': isinstance(item, ast.AsyncFunctionDef)
+                                "name": item.name,
+                                "args": [arg.arg for arg in item.args.args],
+                                "decorators": [
+                                    d.id if hasattr(d, "id") else str(d)
+                                    for d in item.decorator_list
+                                ],
+                                "lineno": item.lineno,
+                                "is_async": isinstance(item, ast.AsyncFunctionDef),
                             }
-                            class_info['methods'].append(method_info)
-                    
-                    analysis['classes'].append(class_info)
-                
+                            class_info["methods"].append(method_info)
+
+                    analysis["classes"].append(class_info)
+
                 elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
-                    if not any(node.lineno >= cls['lineno'] for cls in analysis['classes']):
+                    if not any(
+                        node.lineno >= cls["lineno"] for cls in analysis["classes"]
+                    ):
                         func_info = {
-                            'name': node.name,
-                            'args': [arg.arg for arg in node.args.args],
-                            'decorators': [d.id if hasattr(d, 'id') else str(d) for d in node.decorator_list],
-                            'lineno': node.lineno,
-                            'is_async': isinstance(node, ast.AsyncFunctionDef)
+                            "name": node.name,
+                            "args": [arg.arg for arg in node.args.args],
+                            "decorators": [
+                                d.id if hasattr(d, "id") else str(d)
+                                for d in node.decorator_list
+                            ],
+                            "lineno": node.lineno,
+                            "is_async": isinstance(node, ast.AsyncFunctionDef),
                         }
-                        analysis['functions'].append(func_info)
-                
+                        analysis["functions"].append(func_info)
+
                 elif isinstance(node, (ast.Import, ast.ImportFrom)):
                     if isinstance(node, ast.Import):
                         for alias in node.names:
-                            analysis['imports'].append(alias.name)
+                            analysis["imports"].append(alias.name)
                     else:
-                        module = node.module or ''
+                        module = node.module or ""
                         for alias in node.names:
-                            analysis['imports'].append(f"{module}.{alias.name}")
-            
+                            analysis["imports"].append(f"{module}.{alias.name}")
+
             # Calculate complexity
-            analysis['complexity'] = self._calculate_complexity(tree)
-            
+            analysis["complexity"] = self._calculate_complexity(tree)
+
             return analysis
-            
+
         except Exception as e:
             self.logger.error(f"Error analyzing module {module_path}: {e}")
             return {}
-    
+
     def _calculate_complexity(self, tree: ast.AST) -> int:
         """Calculate cyclomatic complexity"""
         complexity = 1
@@ -147,15 +165,18 @@ class CodeAnalyzer:
                 complexity += len(node.values) - 1
         return complexity
 
+
 class TestGenerator:
     """Automated test generation based on code analysis"""
-    
+
     def __init__(self):
         self.logger = logging.getLogger(__name__)
-        
-    def generate_unit_tests(self, module_analysis: Dict[str, Any], module_name: str) -> str:
+
+    def generate_unit_tests(
+        self, module_analysis: Dict[str, Any], module_name: str
+    ) -> str:
         """Generate comprehensive unit tests for a module"""
-        
+
         test_code = f'''#!/usr/bin/env python3
 """
 Automatically generated unit tests for {module_name}
@@ -180,21 +201,23 @@ except ImportError as e:
     print(f"Warning: Could not import {module_name}: {{e}}")
 
 '''
-        
+
         # Generate tests for classes
-        for cls in module_analysis.get('classes', []):
+        for cls in module_analysis.get("classes", []):
             test_code += self._generate_class_tests(cls, module_name)
-        
+
         # Generate tests for functions
-        for func in module_analysis.get('functions', []):
+        for func in module_analysis.get("functions", []):
             test_code += self._generate_function_tests(func, module_name)
-        
+
         return test_code
-    
-    def _generate_class_tests(self, class_info: Dict[str, Any], module_name: str) -> str:
+
+    def _generate_class_tests(
+        self, class_info: Dict[str, Any], module_name: str
+    ) -> str:
         """Generate tests for a class"""
-        class_name = class_info['name']
-        
+        class_name = class_info["name"]
+
         test_code = f'''
 class Test{class_name}(unittest.TestCase):
     """Comprehensive tests for {class_name} class"""
@@ -217,19 +240,21 @@ class Test{class_name}(unittest.TestCase):
             self.skipTest(f"Could not initialize {class_name}: {{e}}")
     
 '''
-        
+
         # Generate tests for each method
-        for method in class_info.get('methods', []):
-            if not method['name'].startswith('_'):  # Skip private methods
+        for method in class_info.get("methods", []):
+            if not method["name"].startswith("_"):  # Skip private methods
                 test_code += self._generate_method_tests(method, class_name)
-        
+
         return test_code
-    
-    def _generate_method_tests(self, method_info: Dict[str, Any], class_name: str) -> str:
+
+    def _generate_method_tests(
+        self, method_info: Dict[str, Any], class_name: str
+    ) -> str:
         """Generate tests for a class method"""
-        method_name = method_info['name']
-        is_async = method_info.get('is_async', False)
-        
+        method_name = method_info["name"]
+        is_async = method_info.get("is_async", False)
+
         if is_async:
             return f'''
     async def test_{method_name}_async(self):
@@ -270,12 +295,14 @@ class Test{class_name}(unittest.TestCase):
         except Exception as e:
             self.skipTest(f"Could not test {method_name} with mock: {{e}}")
 '''
-    
-    def _generate_function_tests(self, func_info: Dict[str, Any], module_name: str) -> str:
+
+    def _generate_function_tests(
+        self, func_info: Dict[str, Any], module_name: str
+    ) -> str:
         """Generate tests for standalone functions"""
-        func_name = func_info['name']
-        is_async = func_info.get('is_async', False)
-        
+        func_name = func_info["name"]
+        is_async = func_info.get("is_async", False)
+
         if is_async:
             return f'''
 class Test{func_name.title()}(unittest.TestCase):
@@ -322,15 +349,18 @@ class Test{func_name.title()}(unittest.TestCase):
             self.skipTest(f"Could not test {func_name} with parameters: {{e}}")
 '''
 
+
 class PerformanceTestGenerator:
     """Generate performance and load tests"""
-    
+
     def __init__(self):
         self.logger = logging.getLogger(__name__)
-    
-    def generate_performance_tests(self, module_analysis: Dict[str, Any], module_name: str) -> str:
+
+    def generate_performance_tests(
+        self, module_analysis: Dict[str, Any], module_name: str
+    ) -> str:
         """Generate performance tests for critical functions"""
-        
+
         test_code = f'''#!/usr/bin/env python3
 """
 Performance tests for {module_name}
@@ -394,20 +424,20 @@ class PerformanceTests(unittest.TestCase):
         self.assertLess(memory_diff, self.memory_threshold, 
                        f"Memory usage {{memory_diff}}MB exceeds threshold {{self.memory_threshold}}MB")
 '''
-        
+
         # Add specific performance tests for each class and function
-        for cls in module_analysis.get('classes', []):
+        for cls in module_analysis.get("classes", []):
             test_code += self._generate_class_performance_tests(cls)
-        
-        for func in module_analysis.get('functions', []):
+
+        for func in module_analysis.get("functions", []):
             test_code += self._generate_function_performance_tests(func)
-        
+
         return test_code
-    
+
     def _generate_class_performance_tests(self, class_info: Dict[str, Any]) -> str:
         """Generate performance tests for class methods"""
-        class_name = class_info['name']
-        
+        class_name = class_info["name"]
+
         return f'''
     def test_{class_name.lower()}_performance(self):
         """Test {class_name} performance"""
@@ -455,11 +485,11 @@ class PerformanceTests(unittest.TestCase):
         except Exception as e:
             self.skipTest(f"Could not test {class_name} concurrency: {{e}}")
 '''
-    
+
     def _generate_function_performance_tests(self, func_info: Dict[str, Any]) -> str:
         """Generate performance tests for functions"""
-        func_name = func_info['name']
-        
+        func_name = func_info["name"]
+
         return f'''
     def test_{func_name}_performance(self):
         """Test {func_name} function performance"""
@@ -491,15 +521,16 @@ class PerformanceTests(unittest.TestCase):
             self.skipTest(f"Could not test {func_name} performance: {{e}}")
 '''
 
+
 class IntegrationTestGenerator:
     """Generate integration tests for module interactions"""
-    
+
     def __init__(self):
         self.logger = logging.getLogger(__name__)
-    
+
     def generate_integration_tests(self, modules: List[str]) -> str:
         """Generate integration tests between modules"""
-        
+
         test_code = f'''#!/usr/bin/env python3
 """
 Integration tests for Horse Racing AI V2.03 modules
@@ -642,18 +673,21 @@ class IntegrationTests(unittest.TestCase):
         except Exception as e:
             self.skipTest(f"Data flow integration test failed: {{e}}")
 '''
-        
+
         return test_code
+
 
 class SecurityTestGenerator:
     """Generate security and vulnerability tests"""
-    
+
     def __init__(self):
         self.logger = logging.getLogger(__name__)
-    
-    def generate_security_tests(self, module_analysis: Dict[str, Any], module_name: str) -> str:
+
+    def generate_security_tests(
+        self, module_analysis: Dict[str, Any], module_name: str
+    ) -> str:
         """Generate security tests for input validation and vulnerabilities"""
-        
+
         test_code = f'''#!/usr/bin/env python3
 """
 Security tests for {module_name}
@@ -814,54 +848,55 @@ class SecurityTests(unittest.TestCase):
                 # Should not be stored in plain text
                 self.assertTrue(True)  # Placeholder
 '''
-        
+
         return test_code
+
 
 class ComprehensiveTestFramework:
     """Main comprehensive test framework coordinator"""
-    
+
     def __init__(self, project_root: str = "/home/jc/Documents/Horse-race-ai-v2.03"):
         self.project_root = Path(project_root)
         self.test_dir = self.project_root / "tests" / "automated"
         self.test_dir.mkdir(parents=True, exist_ok=True)
-        
+
         # Initialize components
         self.code_analyzer = CodeAnalyzer()
         self.test_generator = TestGenerator()
         self.performance_generator = PerformanceTestGenerator()
         self.integration_generator = IntegrationTestGenerator()
         self.security_generator = SecurityTestGenerator()
-        
+
         # Test configuration
         self.test_suites = [
             TestSuite("unit", "Unit tests for all modules", [], ["unit"], 90.0, 1),
             TestSuite("integration", "Integration tests", [], ["integration"], 80.0, 2),
             TestSuite("performance", "Performance tests", [], ["performance"], 70.0, 3),
-            TestSuite("security", "Security tests", [], ["security"], 85.0, 2)
+            TestSuite("security", "Security tests", [], ["security"], 85.0, 2),
         ]
-        
+
         # Test metrics
         self.test_results: List[TestResult] = []
         self.coverage_data: Dict[str, float] = {}
-        
+
         # Setup logging
         logging.basicConfig(
             level=logging.INFO,
-            format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+            format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
             handlers=[
                 logging.FileHandler(self.project_root / "logs" / "test_framework.log"),
-                logging.StreamHandler()
-            ]
+                logging.StreamHandler(),
+            ],
         )
         self.logger = logging.getLogger(__name__)
-    
+
     def discover_modules(self) -> List[str]:
         """Discover all Python modules in the project"""
         modules = []
-        
+
         # Search in main source directories
         search_dirs = ["src", "tools", "api", "scripts"]
-        
+
         for search_dir in search_dirs:
             search_path = self.project_root / search_dir
             if search_path.exists():
@@ -869,76 +904,93 @@ class ComprehensiveTestFramework:
                     if not py_file.name.startswith("__") and py_file.name != "setup.py":
                         relative_path = py_file.relative_to(self.project_root)
                         modules.append(str(relative_path))
-        
+
         self.logger.info(f"Discovered {len(modules)} Python modules")
         return modules
-    
+
     def generate_all_tests(self) -> bool:
         """Generate comprehensive test suite for all modules"""
         try:
             modules = self.discover_modules()
-            
+
             self.logger.info("Starting comprehensive test generation...")
-            
+
             # Generate tests for each module
             for module_path in modules:
                 self.logger.info(f"Generating tests for {module_path}")
-                
+
                 try:
                     # Analyze module
                     full_path = self.project_root / module_path
                     analysis = self.code_analyzer.analyze_module(str(full_path))
-                    
+
                     if not analysis:
                         continue
-                    
+
                     # Generate unit tests
-                    unit_tests = self.test_generator.generate_unit_tests(analysis, module_path)
-                    unit_test_file = self.test_dir / f"test_{module_path.replace('/', '_').replace('.py', '_unit.py')}"
-                    
-                    with open(unit_test_file, 'w', encoding='utf-8') as f:
+                    unit_tests = self.test_generator.generate_unit_tests(
+                        analysis, module_path
+                    )
+                    unit_test_file = (
+                        self.test_dir
+                        / f"test_{module_path.replace('/', '_').replace('.py', '_unit.py')}"
+                    )
+
+                    with open(unit_test_file, "w", encoding="utf-8") as f:
                         f.write(unit_tests)
-                    
+
                     # Generate performance tests
-                    perf_tests = self.performance_generator.generate_performance_tests(analysis, module_path)
-                    perf_test_file = self.test_dir / f"test_{module_path.replace('/', '_').replace('.py', '_performance.py')}"
-                    
-                    with open(perf_test_file, 'w', encoding='utf-8') as f:
+                    perf_tests = self.performance_generator.generate_performance_tests(
+                        analysis, module_path
+                    )
+                    perf_test_file = (
+                        self.test_dir
+                        / f"test_{module_path.replace('/', '_').replace('.py', '_performance.py')}"
+                    )
+
+                    with open(perf_test_file, "w", encoding="utf-8") as f:
                         f.write(perf_tests)
-                    
+
                     # Generate security tests
-                    security_tests = self.security_generator.generate_security_tests(analysis, module_path)
-                    security_test_file = self.test_dir / f"test_{module_path.replace('/', '_').replace('.py', '_security.py')}"
-                    
-                    with open(security_test_file, 'w', encoding='utf-8') as f:
+                    security_tests = self.security_generator.generate_security_tests(
+                        analysis, module_path
+                    )
+                    security_test_file = (
+                        self.test_dir
+                        / f"test_{module_path.replace('/', '_').replace('.py', '_security.py')}"
+                    )
+
+                    with open(security_test_file, "w", encoding="utf-8") as f:
                         f.write(security_tests)
-                    
+
                     self.logger.info(f"Generated tests for {module_path}")
-                    
+
                 except Exception as e:
                     self.logger.error(f"Error generating tests for {module_path}: {e}")
                     continue
-            
+
             # Generate integration tests
-            integration_tests = self.integration_generator.generate_integration_tests(modules)
+            integration_tests = self.integration_generator.generate_integration_tests(
+                modules
+            )
             integration_test_file = self.test_dir / "test_integration.py"
-            
-            with open(integration_test_file, 'w', encoding='utf-8') as f:
+
+            with open(integration_test_file, "w", encoding="utf-8") as f:
                 f.write(integration_tests)
-            
+
             # Generate test runner
             self._generate_test_runner()
-            
+
             # Generate test configuration
             self._generate_test_config()
-            
+
             self.logger.info("Comprehensive test generation completed")
             return True
-            
+
         except Exception as e:
             self.logger.error(f"Error in test generation: {e}")
             return False
-    
+
     def _generate_test_runner(self):
         """Generate automated test runner script"""
         runner_code = f'''#!/usr/bin/env python3
@@ -1088,21 +1140,21 @@ if __name__ == "__main__":
     runner = TestRunner()
     runner.run_all_tests()
 '''
-        
+
         runner_file = self.test_dir / "run_all_tests.py"
-        with open(runner_file, 'w', encoding='utf-8') as f:
+        with open(runner_file, "w", encoding="utf-8") as f:
             f.write(runner_code)
-        
+
         # Make executable
         os.chmod(runner_file, 0o755)
-    
+
     def _generate_test_config(self):
         """Generate test configuration file"""
         config = {
             "test_framework": {
                 "name": "Comprehensive Test Framework",
                 "version": "1.0.0",
-                "generated": datetime.now().isoformat()
+                "generated": datetime.now().isoformat(),
             },
             "test_suites": [suite.__dict__ for suite in self.test_suites],
             "coverage_targets": {
@@ -1110,28 +1162,28 @@ if __name__ == "__main__":
                 "unit": 90.0,
                 "integration": 80.0,
                 "performance": 70.0,
-                "security": 85.0
+                "security": 85.0,
             },
             "test_settings": {
                 "timeout": 300,
                 "parallel_execution": True,
                 "max_workers": 4,
                 "retry_failed": True,
-                "generate_reports": True
+                "generate_reports": True,
             },
             "excluded_files": [
                 "__pycache__",
                 "*.pyc",
                 "test_*.py",
                 "setup.py",
-                "conftest.py"
-            ]
+                "conftest.py",
+            ],
         }
-        
+
         config_file = self.test_dir / "test_config.json"
-        with open(config_file, 'w', encoding='utf-8') as f:
+        with open(config_file, "w", encoding="utf-8") as f:
             json.dump(config, f, indent=2)
-    
+
     def run_tests(self, suite_name: Optional[str] = None) -> TestMetrics:
         """Run tests and return metrics"""
         try:
@@ -1139,88 +1191,97 @@ if __name__ == "__main__":
                 self.logger.info(f"Running {suite_name} test suite...")
             else:
                 self.logger.info("Running all test suites...")
-            
+
             # Run test runner
             runner_script = self.test_dir / "run_all_tests.py"
             if runner_script.exists():
-                result = subprocess.run([
-                    sys.executable, str(runner_script)
-                ], capture_output=True, text=True, timeout=600)
-                
-                self.logger.info(f"Test execution completed with code {result.returncode}")
-                
+                result = subprocess.run(
+                    [sys.executable, str(runner_script)],
+                    capture_output=True,
+                    text=True,
+                    timeout=600,
+                )
+
+                self.logger.info(
+                    f"Test execution completed with code {result.returncode}"
+                )
+
                 # Load and return metrics
                 return self._load_test_metrics()
             else:
                 self.logger.error("Test runner not found")
                 return TestMetrics(0, 0, 0, 0, 0, 0.0, {}, 0.0, {})
-                
+
         except Exception as e:
             self.logger.error(f"Error running tests: {e}")
             return TestMetrics(0, 0, 0, 0, 0, 0.0, {}, 0.0, {})
-    
+
     def _load_test_metrics(self) -> TestMetrics:
         """Load test metrics from results"""
         try:
             # Load test report
             report_file = self.test_dir / "test_report.json"
             coverage_file = self.test_dir / "coverage_report.json"
-            
+
             metrics = TestMetrics(0, 0, 0, 0, 0, 0.0, {}, 0.0, {})
-            
+
             if report_file.exists():
-                with open(report_file, 'r') as f:
+                with open(report_file, "r") as f:
                     report = json.load(f)
-                    
-                summary = report.get('summary', {})
-                metrics.passed_tests = summary.get('passed_suites', 0)
-                metrics.failed_tests = summary.get('failed_suites', 0)
-                metrics.total_tests = summary.get('total_suites', 0)
-            
+
+                summary = report.get("summary", {})
+                metrics.passed_tests = summary.get("passed_suites", 0)
+                metrics.failed_tests = summary.get("failed_suites", 0)
+                metrics.total_tests = summary.get("total_suites", 0)
+
             if coverage_file.exists():
-                with open(coverage_file, 'r') as f:
+                with open(coverage_file, "r") as f:
                     coverage_data = json.load(f)
                     metrics.module_coverage = coverage_data
-                    
+
                     # Calculate overall coverage
                     if coverage_data:
-                        metrics.total_coverage = sum(coverage_data.values()) / len(coverage_data)
-            
+                        metrics.total_coverage = sum(coverage_data.values()) / len(
+                            coverage_data
+                        )
+
             return metrics
-            
+
         except Exception as e:
             self.logger.error(f"Error loading test metrics: {e}")
             return TestMetrics(0, 0, 0, 0, 0, 0.0, {}, 0.0, {})
 
+
 def main():
     """Main test framework execution"""
     framework = ComprehensiveTestFramework()
-    
+
     print("🧪 Comprehensive Test Framework for Horse Racing AI V2.03")
     print("=" * 60)
-    
+
     # Generate all tests
     print("📝 Generating comprehensive test suite...")
     if framework.generate_all_tests():
         print("✅ Test generation completed successfully")
-        
+
         # Run tests
         print("🚀 Running all tests...")
         metrics = framework.run_tests()
-        
+
         # Display results
         print("📊 Test Results:")
         print(f"  Total Tests: {metrics.total_tests}")
         print(f"  Passed: {metrics.passed_tests}")
         print(f"  Failed: {metrics.failed_tests}")
         print(f"  Coverage: {metrics.total_coverage:.1f}%")
-        
+
         if metrics.failed_tests == 0:
             print("🎉 All tests passed!")
         else:
             print("⚠️  Some tests failed. Check test reports for details.")
     else:
         print("❌ Test generation failed")
+
 
 if __name__ == "__main__":
     main()
