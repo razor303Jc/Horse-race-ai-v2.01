@@ -15,12 +15,19 @@ import {
     Chip,
     CircularProgress,
     Alert,
-    Button
+    Button,
+    Tabs,
+    Tab
 } from '@mui/material'
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts'
 import { useDailyRaces, useStage8Performance } from '../hooks/useAPI'
+import { PerformanceMetricsDashboard } from '../components/dashboard/PerformanceMetricsDashboard'
+import { CustomizableDashboard } from '../components/dashboard/CustomizableDashboard'
+import { useState } from 'react'
 
 export default function Dashboard() {
+    const [activeTab, setActiveTab] = useState(0);
+    
     // Use API hooks for real data
     const { 
         data: racesData, 
@@ -85,6 +92,18 @@ export default function Dashboard() {
                 🏇 Enhanced Dashboard
             </Typography>
             
+            {/* Dashboard Tabs */}
+            <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
+                <Tabs value={activeTab} onChange={(_, newValue) => setActiveTab(newValue)} aria-label="dashboard tabs">
+                    <Tab label="🏠 Overview" />
+                    <Tab label="📊 Performance Analytics" />
+                    <Tab label="🎛️ Customizable View" />
+                </Tabs>
+            </Box>
+
+            {/* Tab Content */}
+            {activeTab === 0 && (
+                <Box>
             {/* Key Metrics Grid */}
             <Grid container spacing={3} sx={{ mb: 4 }}>
                 <Grid item xs={12} sm={6} md={3}>
@@ -200,6 +219,11 @@ export default function Dashboard() {
                     </Card>
                 </Grid>
             </Grid>
+            </Box>
+            )}
+
+            {activeTab === 1 && <PerformanceMetricsDashboard />}
+            {activeTab === 2 && <CustomizableDashboard />}
         </Container>
     )
 }

@@ -16,7 +16,7 @@ import {
 import Dashboard from './pages/Dashboard'
 import RacingAnalyzer from './pages/RacingAnalyzer'
 import LiveAnalytics from './pages/LiveAnalytics'
-import RaceCards from './pages/RaceCards'
+import RaceCardsEnhanced from './pages/RaceCardsEnhanced'
 import RaceDetails from './pages/RaceDetails'
 import DatabaseManagement from './pages/DatabaseManagement'
 import ErrorPage from './pages/ErrorPage'
@@ -87,7 +87,7 @@ function App() {
               <Route path="/dashboard" element={<Navigate to="/" replace />} />
               <Route path="/analyzer" element={<RacingAnalyzer />} />
               <Route path="/live" element={<LiveAnalytics />} />
-              <Route path="/cards" element={<RaceCards />} />
+              <Route path="/cards" element={<RaceCardsEnhanced />} />
               <Route path="/race/:id" element={<RaceDetails />} />
               <Route path="/database" element={<DatabaseManagement />} />
               <Route path="/error" element={<ErrorPage />} />
