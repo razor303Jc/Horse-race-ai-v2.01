@@ -190,7 +190,9 @@ class PipelineOrchestrator:
                                         # Final Stage: Legacy ML Pipeline (for compatibility)
                                         self.trigger_ml_pipeline()
                                     else:
-                                        logger.error("❌ Data architecture improvements failed")
+                                        logger.error(
+                                            "❌ Data architecture improvements failed"
+                                        )
                                 else:
                                     logger.error("❌ Contextual AI enhancement failed")
                             else:
@@ -432,7 +434,9 @@ class PipelineOrchestrator:
                 logger.info(f"🏗️ Output: {result.stdout[-500:]}")
                 return True
             else:
-                logger.error(f"❌ Data architecture improvements failed: {result.stderr}")
+                logger.error(
+                    f"❌ Data architecture improvements failed: {result.stderr}"
+                )
                 return False
 
         except subprocess.TimeoutExpired:
