@@ -1,6 +1,9 @@
 # Machine Learning requirements for AI models
 # Heavy packages only needed for ML training and prediction services
 
+# Database connectivity
+psycopg2-binary>=2.9.0
+
 # Core ML libraries
 tensorflow>=2.13.0
 torch>=2.0.0
