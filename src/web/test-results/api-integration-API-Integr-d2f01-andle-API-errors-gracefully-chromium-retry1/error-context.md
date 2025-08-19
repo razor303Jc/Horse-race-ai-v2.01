@@ -1,0 +1,160 @@
+# Page snapshot
+
+```yaml
+- banner:
+  - text: 🏇 Horse Racing AI v2.03
+  - link "Dashboard":
+    - /url: /
+  - link "AI Analyzer":
+    - /url: /analyzer
+  - link "Live Analytics":
+    - /url: /live
+  - link "Race Cards":
+    - /url: /cards
+  - link "Race Details":
+    - /url: /race/1
+  - link "Database":
+    - /url: /database
+- heading "🏇 Today's Race Cards" [level=1]
+- heading "Today's Races" [level=6]
+- heading "24" [level=3]
+- paragraph: Across 6 venues
+- heading "AI Predictions" [level=6]
+- heading "87%" [level=3]
+- paragraph: Accuracy Rate
+- heading "Total Prize Money" [level=6]
+- heading "£847K" [level=3]
+- paragraph: Today
+- heading "Active Runners" [level=6]
+- heading "287" [level=3]
+- paragraph: Horses
+- heading "Kempton Park" [level=5]
+- text: 14:30
+- heading "Handicap Stakes" [level=6]
+- paragraph: Distance
+- paragraph: 1m 2f
+- paragraph: Prize Money
+- paragraph: £15,000
+- paragraph: Field Size
+- paragraph: 12 runners
+- paragraph: Going
+- paragraph: Good to Firm
+- heading "Newmarket" [level=5]
+- text: 15:00
+- heading "Maiden Stakes" [level=6]
+- paragraph: Distance
+- paragraph: 7f
+- paragraph: Prize Money
+- paragraph: £8,500
+- paragraph: Field Size
+- paragraph: 14 runners
+- paragraph: Going
+- paragraph: Good
+- heading "Ascot" [level=5]
+- text: 15:30
+- heading "Listed Race" [level=6]
+- paragraph: Distance
+- paragraph: 1m 4f
+- paragraph: Prize Money
+- paragraph: £25,000
+- paragraph: Field Size
+- paragraph: 8 runners
+- paragraph: Going
+- paragraph: Soft
+- heading "Cheltenham" [level=5]
+- text: LIVE
+- heading "Novice Hurdle" [level=6]
+- paragraph: Distance
+- paragraph: 2m 1f
+- paragraph: Prize Money
+- paragraph: £12,000
+- paragraph: Field Size
+- paragraph: 10 runners
+- paragraph: Going
+- paragraph: Good to Soft
+- paragraph: Race in Progress
+- progressbar
+- heading "🌟 Featured Runners - Next Race" [level=5]
+- table:
+  - rowgroup:
+    - row "Horse Jockey Odds AI Confidence Recent Form Rating":
+      - columnheader "Horse":
+        - heading "Horse" [level=6]
+      - columnheader "Jockey":
+        - heading "Jockey" [level=6]
+      - columnheader "Odds":
+        - heading "Odds" [level=6]
+      - columnheader "AI Confidence":
+        - heading "AI Confidence" [level=6]
+      - columnheader "Recent Form":
+        - heading "Recent Form" [level=6]
+      - columnheader "Rating":
+        - heading "Rating" [level=6]
+  - rowgroup:
+    - row "1 Lightning Strike R. Moore 3/1 85 85% 1 1 2 1 1":
+      - cell "1 Lightning Strike":
+        - text: "1"
+        - paragraph: Lightning Strike
+      - cell "R. Moore":
+        - paragraph: R. Moore
+      - cell "3/1"
+      - cell "85 85%":
+        - progressbar
+        - paragraph: 85%
+      - cell "1 1 2 1 1"
+      - cell
+    - row "2 Thunder Bay W. Buick 5/2 78 78% 2 1 1 3 1":
+      - cell "2 Thunder Bay":
+        - text: "2"
+        - paragraph: Thunder Bay
+      - cell "W. Buick":
+        - paragraph: W. Buick
+      - cell "5/2"
+      - cell "78 78%":
+        - progressbar
+        - paragraph: 78%
+      - cell "2 1 1 3 1"
+      - cell
+    - row "3 Storm Chaser F. Dettori 4/1 72 72% 3 1 1 2 1":
+      - cell "3 Storm Chaser":
+        - text: "3"
+        - paragraph: Storm Chaser
+      - cell "F. Dettori":
+        - paragraph: F. Dettori
+      - cell "4/1"
+      - cell "72 72%":
+        - progressbar
+        - paragraph: 72%
+      - cell "3 1 1 2 1"
+      - cell
+    - row "4 Wind Walker J. Murphy 6/1 68 68% 1 2 3 1 2":
+      - cell "4 Wind Walker":
+        - text: "4"
+        - paragraph: Wind Walker
+      - cell "J. Murphy":
+        - paragraph: J. Murphy
+      - cell "6/1"
+      - cell "68 68%":
+        - progressbar
+        - paragraph: 68%
+      - cell "1 2 3 1 2"
+      - cell
+    - row "5 Rain Dance T. Marquand 8/1 65 65% 2 1 3 2 1":
+      - cell "5 Rain Dance":
+        - text: "5"
+        - paragraph: Rain Dance
+      - cell "T. Marquand":
+        - paragraph: T. Marquand
+      - cell "8/1"
+      - cell "65 65%":
+        - progressbar
+        - paragraph: 65%
+      - cell "2 1 3 2 1"
+      - cell
+- heading "76%" [level=4]
+- paragraph: Win Rate (Last 30 days)
+- heading "342" [level=4]
+- paragraph: Successful Predictions
+- heading "4.8" [level=4]
+- paragraph: Average Rating
+```

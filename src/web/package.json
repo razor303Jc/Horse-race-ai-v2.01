@@ -12,7 +12,14 @@
     "serve": "vite preview --port 5003 --host 0.0.0.0",
     "grunt": "grunt",
     "start:dev": "concurrently \"npm run dev\" \"cd ../.. && python src/web/api_server_enhanced.py\"",
-    "auto-reload": "grunt watch"
+    "auto-reload": "grunt watch",
+    "test": "playwright test",
+    "test:headed": "playwright test --headed",
+    "test:debug": "playwright test --debug",
+    "test:ui": "playwright test --ui",
+    "test:report": "playwright show-report",
+    "test:codegen": "playwright codegen",
+    "test:install": "playwright install"
   },
   "dependencies": {
     "@emotion/react": "^11.11.1",
@@ -34,6 +41,7 @@
     "socket.io-client": "^4.7.4"
   },
   "devDependencies": {
+    "@playwright/test": "^1.54.2",
     "@types/react": "^18.2.37",
     "@types/react-dom": "^18.2.15",
     "@typescript-eslint/eslint-plugin": "^6.10.0",
