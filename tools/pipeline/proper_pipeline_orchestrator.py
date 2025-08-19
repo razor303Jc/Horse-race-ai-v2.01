@@ -147,16 +147,42 @@ class PipelineOrchestrator:
                     "data_quality", "Data validation and conversion successful"
                 )
 
-                # Stage 3: Data Preprocessing
-                if self.run_data_preprocessing():
+                # Stage 3: Advanced Data Processing
+                if self.run_advanced_data_processing():
                     self.mark_stage_complete(
-                        "data_preprocessing", "Data relationships processed"
+                        "advanced_data_processing",
+                        "V2.01 advanced processing completed",
                     )
 
-                    # Stage 4: Trigger ML Pipeline
-                    self.trigger_ml_pipeline()
+                    # Stage 4: Enhanced ML Ensemble System
+                    if self.run_enhanced_ml_ensemble():
+                        self.mark_stage_complete(
+                            "enhanced_ml_ensemble", "V2.01 ensemble models deployed"
+                        )
+
+                        # Stage 5: Performance Tracking Integration
+                        if self.run_performance_tracking():
+                            self.mark_stage_complete(
+                                "performance_tracking", "Real-time monitoring active"
+                            )
+
+                            # Stage 6: Betting Integration System
+                            if self.run_betting_integration():
+                                self.mark_stage_complete(
+                                    "betting_integration",
+                                    "Automated betting system active",
+                                )
+
+                                # Stage 7: Legacy ML Pipeline (for compatibility)
+                                self.trigger_ml_pipeline()
+                            else:
+                                logger.error("❌ Betting integration failed")
+                        else:
+                            logger.error("❌ Performance tracking failed")
+                    else:
+                        logger.error("❌ Enhanced ML ensemble failed")
                 else:
-                    logger.error("❌ Data preprocessing failed")
+                    logger.error("❌ Advanced data processing failed")
             else:
                 logger.error("❌ Data quality pipeline failed")
         else:
@@ -231,6 +257,117 @@ class PipelineOrchestrator:
             return False
         except Exception as e:
             logger.error(f"❌ Data quality pipeline exception: {e}")
+            return False
+
+    def run_advanced_data_processing(self) -> bool:
+        """Run V2.01 advanced data processing pipeline"""
+        logger.info("🚀 Stage 3: Starting Advanced Data Processing...")
+
+        try:
+            result = subprocess.run(
+                [
+                    "python",
+                    "/app/tools/pipeline/advanced_data_processing_integration.py",
+                ],
+                capture_output=True,
+                text=True,
+                timeout=900,  # 15 minutes for advanced processing
+            )
+
+            if result.returncode == 0:
+                logger.info("✅ Advanced data processing completed successfully")
+                logger.info(f"📊 Output: {result.stdout[-500:]}")
+                return True
+            else:
+                logger.error(f"❌ Advanced data processing failed: {result.stderr}")
+                return False
+
+        except subprocess.TimeoutExpired:
+            logger.error("❌ Advanced data processing timed out")
+            return False
+        except Exception as e:
+            logger.error(f"❌ Advanced data processing exception: {e}")
+            return False
+
+    def run_enhanced_ml_ensemble(self) -> bool:
+        """Run V2.01 enhanced ML ensemble system"""
+        logger.info("🤖 Stage 4: Starting Enhanced ML Ensemble...")
+
+        try:
+            result = subprocess.run(
+                ["python", "/app/tools/pipeline/enhanced_ml_ensemble_integration.py"],
+                capture_output=True,
+                text=True,
+                timeout=1200,  # 20 minutes for ML training
+            )
+
+            if result.returncode == 0:
+                logger.info("✅ Enhanced ML ensemble completed successfully")
+                logger.info(f"📊 Output: {result.stdout[-500:]}")
+                return True
+            else:
+                logger.error(f"❌ Enhanced ML ensemble failed: {result.stderr}")
+                return False
+
+        except subprocess.TimeoutExpired:
+            logger.error("❌ Enhanced ML ensemble timed out")
+            return False
+        except Exception as e:
+            logger.error(f"❌ Enhanced ML ensemble exception: {e}")
+            return False
+
+    def run_performance_tracking(self) -> bool:
+        """Run real-time performance tracking system"""
+        logger.info("📊 Stage 5: Starting Performance Tracking...")
+
+        try:
+            result = subprocess.run(
+                ["python", "/app/tools/pipeline/performance_tracking_integration.py"],
+                capture_output=True,
+                text=True,
+                timeout=300,  # 5 minutes for performance tracking
+            )
+
+            if result.returncode == 0:
+                logger.info("✅ Performance tracking completed successfully")
+                logger.info(f"📊 Output: {result.stdout[-500:]}")
+                return True
+            else:
+                logger.error(f"❌ Performance tracking failed: {result.stderr}")
+                return False
+
+        except subprocess.TimeoutExpired:
+            logger.error("❌ Performance tracking timed out")
+            return False
+        except Exception as e:
+            logger.error(f"❌ Performance tracking exception: {e}")
+            return False
+
+    def run_betting_integration(self) -> bool:
+        """Run automated betting integration system"""
+        logger.info("🎯 Stage 6: Starting Betting Integration...")
+
+        try:
+            result = subprocess.run(
+                ["python", "/app/tools/pipeline/betting_pipeline_integration.py"],
+                capture_output=True,
+                text=True,
+                timeout=300,  # 5 minutes for betting integration
+            )
+
+            if result.returncode == 0:
+                logger.info("✅ Betting integration completed successfully")
+                logger.info(f"🎯 Output: {result.stdout[-500:]}")
+                return True
+            else:
+                logger.error(f"❌ Betting integration failed: {result.stderr}")
+                return False
+
+        except subprocess.TimeoutExpired:
+            logger.error("❌ Betting integration timed out")
+            return False
+        except Exception as e:
+            logger.error(f"❌ Betting integration exception: {e}")
             return False
 
     def run_data_preprocessing(self) -> bool:
