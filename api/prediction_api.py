@@ -595,18 +595,6 @@ async def database_management(request: Request):
     return templates.TemplateResponse("database_management.html", {"request": request})
 
 
-@app.get("/health")
-async def health_check():
-    """Health check endpoint for container monitoring."""
-    status = "healthy" if ensemble_model is not None else "unhealthy"
-    return {
-        "status": status,
-        "timestamp": datetime.now().isoformat(),
-        "models_loaded": ensemble_model is not None,
-        "version": "1.0.0",
-    }
-
-
 @app.post("/predict/horse", response_model=PredictionResponse)
 async def predict_horse(horse_data: HorseData):
     """Predict win probability for a single horse."""
@@ -759,44 +747,16 @@ try:
 except Exception as e:
     logger.warning(f"❌ Failed to include betting router: {e}")
 
-
-if __name__ == "__main__":
-    print("🚀 Starting Horse Racing Prediction API...")
-    print("📊 Interactive interface: http://localhost:8000")
-    print("📖 API documentation: http://localhost:8000/docs")
-    uvicorn.run(app, host="0.0.0.0", port=8000)
-
-
-@app.get("/health")
-async def health_check():
-    """Simple health check endpoint."""
-    return {"status": "healthy", "timestamp": datetime.now().isoformat()}
-
-
-if __name__ == "__main__":
-    print("🚀 Starting Horse Racing Prediction API...")
-    print("📊 Interactive interface: http://localhost:8000")
-    print("📖 API documentation: http://localhost:8000/docs")
-
-    uvicorn.run(
-        "prediction_api:app", host="0.0.0.0", port=8000, reload=True, log_level="info"
-    )
-
-# Import and include betting router
+# Import and include live race tracking router
 try:
     import sys
-
-    sys.path.append("/app")
-    from betting_api import betting_router
-
-    app.include_router(betting_router)
-    logger.info("✅ Betting API router included")
+    sys.path.append(os.path.join(os.path.dirname(__file__), "..", "src", "web"))
+    from live_race_websocket import router as live_race_router
+    
+    app.include_router(live_race_router, prefix="/api", tags=["live-racing"])
+    logger.info("✅ Live race tracking router included")
 except Exception as e:
-    logger.warning(f"❌ Failed to include betting router: {e}")
-
-
-if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    logger.warning(f"❌ Failed to include live race router: {e}")
 
 
 # Health check endpoint
@@ -807,5 +767,13 @@ async def health_check():
         "status": "healthy",
         "timestamp": datetime.now().isoformat(),
         "betting_api": "integrated",
+        "live_racing": "enabled",
         "models_loaded": ensemble_model is not None,
     }
+
+
+if __name__ == "__main__":
+    print("🚀 Starting Horse Racing Prediction API...")
+    print("📊 Interactive interface: http://localhost:8000")
+    print("📖 API documentation: http://localhost:8000/docs")
+    uvicorn.run(app, host="0.0.0.0", port=8000)

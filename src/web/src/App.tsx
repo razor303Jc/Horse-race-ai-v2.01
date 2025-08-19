@@ -9,7 +9,8 @@ import {
   Assessment, 
   Schedule, 
   Sports,
-  Storage 
+  Storage,
+  LiveTv
 } from '@mui/icons-material'
 
 // Import all pages
@@ -20,6 +21,7 @@ import RaceCardsEnhanced from './pages/RaceCardsEnhanced'
 import RaceDetails from './pages/RaceDetails'
 import DatabaseManagement from './pages/DatabaseManagement'
 import ErrorPage from './pages/ErrorPage'
+import { RaceSelection } from './components/RaceSelection'
 
 const theme = createTheme({
   palette: {
@@ -68,6 +70,9 @@ function App() {
                 <Button color="inherit" href="/live" startIcon={<Assessment />}>
                   Live Analytics
                 </Button>
+                <Button color="inherit" href="/live-racing" startIcon={<LiveTv />}>
+                  Live Racing
+                </Button>
                 <Button color="inherit" href="/cards" startIcon={<Schedule />}>
                   Race Cards
                 </Button>
@@ -87,6 +92,7 @@ function App() {
               <Route path="/dashboard" element={<Navigate to="/" replace />} />
               <Route path="/analyzer" element={<RacingAnalyzer />} />
               <Route path="/live" element={<LiveAnalytics />} />
+              <Route path="/live-racing" element={<RaceSelection />} />
               <Route path="/cards" element={<RaceCardsEnhanced />} />
               <Route path="/race/:id" element={<RaceDetails />} />
               <Route path="/database" element={<DatabaseManagement />} />
