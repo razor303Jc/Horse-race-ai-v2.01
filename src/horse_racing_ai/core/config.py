@@ -16,14 +16,25 @@ class DatabaseConfig:
     """Database configuration settings."""
 
     # Primary PostgreSQL database for main operations
-    url: str = "postgresql://horse_racing:password@localhost:5432/horse_racing_db"
+    url: str = os.getenv(
+        "DATABASE_URL",
+        "postgresql://horse_racing:secure_password_123@localhost:5434/horse_racing_db"
+    )
     echo: bool = False
     pool_size: int = 5
     max_overflow: int = 10
 
-    # SQLite for lightweight operations (caching, dev, etc.)
-    cache_url: str = "sqlite:///cache/cache.db"
-    dev_url: str = "sqlite:///dev/development.db"
+    # PostgreSQL cache database (removed SQLite dependencies)
+    cache_url: str = os.getenv(
+        "CACHE_DATABASE_URL",
+        "postgresql://horse_racing:secure_password_123@localhost:5434/"
+        "horse_racing_cache"
+    )
+    dev_url: str = os.getenv(
+        "DEV_DATABASE_URL",
+        "postgresql://horse_racing:secure_password_123@localhost:5434/"
+        "horse_racing_dev"
+    )
 
 
 @dataclass
