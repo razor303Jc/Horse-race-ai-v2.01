@@ -18,7 +18,7 @@ class DatabaseConfig:
     # Primary PostgreSQL database for main operations
     url: str = os.getenv(
         "DATABASE_URL",
-        "postgresql://horse_racing:secure_password_123@localhost:5434/horse_racing_db"
+        "postgresql://horse_racing:secure_password_123@localhost:5434/horse_racing_db",
     )
     echo: bool = False
     pool_size: int = 5
@@ -28,12 +28,12 @@ class DatabaseConfig:
     cache_url: str = os.getenv(
         "CACHE_DATABASE_URL",
         "postgresql://horse_racing:secure_password_123@localhost:5434/"
-        "horse_racing_cache"
+        "horse_racing_cache",
     )
     dev_url: str = os.getenv(
         "DEV_DATABASE_URL",
         "postgresql://horse_racing:secure_password_123@localhost:5434/"
-        "horse_racing_dev"
+        "horse_racing_dev",
     )
 
 
