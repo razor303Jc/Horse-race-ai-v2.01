@@ -1,0 +1,27 @@
+{
+  "advanced_metrics_enabled": true,
+  "metrics_generation": {
+    "current_races": true,
+    "historical_results": true,
+    "feature_engineering": true
+  },
+  "ml_training": {
+    "use_advanced_features": true,
+    "training_data_source": "consolidated",
+    "feature_selection": [
+      "power_rating",
+      "speed_figure",
+      "pace_rating",
+      "form_score",
+      "win_probability",
+      "age",
+      "weight",
+      "odds"
+    ]
+  },
+  "automation": {
+    "daily_generation": true,
+    "auto_retrain": true,
+    "performance_monitoring": true
+  }
+}
