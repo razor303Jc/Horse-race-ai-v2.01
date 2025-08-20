@@ -21,6 +21,7 @@ try:
     import pandas as pd
     import psycopg2
     from psycopg2.extras import DictCursor
+    from sqlalchemy import create_engine, text
     from sklearn.ensemble import RandomForestClassifier
     from sklearn.linear_model import LogisticRegression
     from sklearn.model_selection import train_test_split
@@ -91,33 +92,61 @@ class EarlyMorningPipelineIntegration:
             return False
 
     def check_database_connection(self):
-        """Check if database is accessible and has data"""
-        try:
-            conn = psycopg2.connect(**self.db_config)
-            cursor = conn.cursor()
+        """Check if database is accessible and has data with retry logic"""
+        max_retries = 3
+        for attempt in range(max_retries):
+            try:
+                # Use SQLAlchemy for consistency with load_training_data()
+                connection_string = (
+                    f"postgresql://{self.db_config['user']}:{self.db_config['password']}"
+                    f"@{self.db_config['host']}:{self.db_config['port']}"
+                    f"/{self.db_config['database']}"
+                )
 
-            cursor.execute("SELECT COUNT(*) FROM races")
-            race_count = cursor.fetchone()[0]
+                engine = create_engine(connection_string)
 
-            cursor.execute("SELECT COUNT(*) FROM records")
-            record_count = cursor.fetchone()[0]
+                # Test connection and get counts using text() for raw SQL
+                with engine.connect() as conn:
+                    result = conn.execute(text("SELECT COUNT(*) FROM races"))
+                    race_count = result.fetchone()[0]
 
-            conn.close()
+                    result = conn.execute(text("SELECT COUNT(*) FROM records"))
+                    record_count = result.fetchone()[0]
 
-            self.logger.info(f"📊 Database: {race_count} races, {record_count} records")
-            return race_count > 0 and record_count > 0
+                engine.dispose()
 
-        except Exception as e:
-            self.logger.error(f"❌ Database connection failed: {e}")
-            return False
+                self.logger.info(
+                    f"📊 Database: {race_count} races, {record_count} records"
+                )
+                return race_count > 0 and record_count > 0
+
+            except Exception as e:
+                self.logger.warning(
+                    f"⚠️ Database check attempt {attempt + 1}/{max_retries} failed: {e}"
+                )
+                if attempt < max_retries - 1:
+                    time.sleep(2)  # Wait 2 seconds before retry
+                else:
+                    self.logger.error(
+                        f"❌ Database connection failed after {max_retries} attempts"
+                    )
+                    return False
 
     def load_training_data(self):
         """Load training data from PostgreSQL database"""
         try:
-            conn = psycopg2.connect(**self.db_config)
+            # Create SQLAlchemy engine for pandas compatibility
+            # Build connection string for SQLAlchemy
+            connection_string = (
+                f"postgresql://{self.db_config['user']}:{self.db_config['password']}"
+                f"@{self.db_config['host']}:{self.db_config['port']}"
+                f"/{self.db_config['database']}"
+            )
+
+            engine = create_engine(connection_string)
 
             query = """
-            SELECT 
+            SELECT
                 r.race_id,
                 r.course,
                 r.distance,
@@ -138,8 +167,8 @@ class EarlyMorningPipelineIntegration:
             ORDER BY r.race_id, rec.position
             """
 
-            df = pd.read_sql_query(query, conn)
-            conn.close()
+            df = pd.read_sql_query(query, engine)
+            engine.dispose()
 
             self.logger.info(f"📊 Loaded {len(df)} training records")
             return df

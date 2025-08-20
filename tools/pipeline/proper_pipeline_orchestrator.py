@@ -213,9 +213,9 @@ class PipelineOrchestrator:
         logger.info("📊 Stage 2: Starting CSV Import...")
 
         try:
-            # Use the complete upload solution
+            # Use the fixed uploader with correct schema mapping
             result = subprocess.run(
-                ["python", "/app/tools/data_processing/corrected_uploader.py"],
+                ["python", "/app/tools/data_processing/fixed_uploader.py"],
                 capture_output=True,
                 text=True,
                 timeout=300,
@@ -228,10 +228,10 @@ class PipelineOrchestrator:
             else:
                 logger.error(f"❌ CSV import failed: {result.stderr}")
 
-                # Try alternative uploader
+                # Try alternative uploader as fallback
                 logger.info("🔄 Trying alternative CSV uploader...")
                 result = subprocess.run(
-                    ["python", "/app/tools/data_processing/database_uploader.py"],
+                    ["python", "/app/tools/data_processing/corrected_uploader.py"],
                     capture_output=True,
                     text=True,
                     timeout=300,

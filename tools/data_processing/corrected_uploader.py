@@ -11,8 +11,8 @@ from psycopg2.extras import execute_values
 
 # Database configuration
 DATABASE_CONFIG = {
-    "host": "localhost",
-    "port": 5434,
+    "host": "postgres",
+    "port": 5432,
     "database": "horse_racing_db",
     "user": "horse_racing",
     "password": "secure_password_123",
@@ -42,28 +42,71 @@ def create_correct_column_mapping(csv_columns, table_name):
 
     mappings = {
         "records": {
-            # CSV column -> Database column
+            # CSV column -> Database column (based on actual schema)
             "Race_ID": "race_id",
-            "Name": "horse_name",
-            "Jockey": "jockey_name",
-            "Trainer": "trainer_name",
-            "weight_uk": "horse_weight_kg",
-            "Age": "horse_age",
+            "Horse_number": "horse_number", 
+            "Place": "position",  # Changed from finished_position
             "Draw": "draw",
-            "Odds": "win_odds",
-            "Place": "finished_position",
             "Horse_ID": "horse_id",
+            "Country": "country",
+            "Name": "horse",  # Changed from horse_name
+            "Age": "age",  # Changed from horse_age
+            "weight_uk": "weight_uk",  # Correct column name
+            "OR": "or_rating",
+            "Jockey_ID": "jockey_id",
+            "Jockey": "jockey",
+            "Trainer_ID": "trainer_id", 
+            "Trainer": "trainer",
+            "Fav": "fav",
+            "SP": "sp",
         },
         "races": {
-            # CSV column -> Database column
+            # CSV column -> Database column (based on actual schema)
+            "Race_ID": "race_id",
             "race_number": "race_number",
             "race_time": "race_time",
+            "course_id": "course_id",
+            "Course": "course",
+def create_correct_column_mapping(csv_columns, table_name):
+    """Create mapping based on actual database schema"""
+
+    mappings = {
+        "records": {
+            # CSV column -> Database column (based on actual schema)
+            "Race_ID": "race_id",
+            "Horse_number": "horse_number", 
+            "Place": "position",  # Changed from finished_position
+            "Draw": "draw",
+            "Horse_ID": "horse_id",
+            "Country": "country",
+            "Name": "horse",  # Changed from horse_name
+            "Age": "age",  # Changed from horse_age
+            "weight_uk": "weight_uk",  # Correct column name
+            "OR": "or_rating",
+            "Jockey_ID": "jockey_id",
+            "Jockey": "jockey",
+            "Trainer_ID": "trainer_id", 
+            "Trainer": "trainer",
+            "Fav": "fav",
+            "SP": "sp",
+        },
+        "races": {
+            # CSV column -> Database column (based on actual schema)
+            "Race_ID": "race_id",
+            "race_number": "race_number",
+            "race_time": "race_time",
+            "course_id": "course_id",
             "Course": "course",
             "Race_type": "race_type",
-            "Date": "date",  # This is the important one!
+            "Date": "date",
             "Race_name": "race_name",
-            "Class": "class_level",
+            "Class": "class",  # Changed from class_level
             "Years": "years",
+            "Distance": "distance",
+            "Surface": "surface",
+            "Prize": "prize",
+            "Runners_racecard": "runners_racecard",
+            "Runners": "runners",
         },
     }
 
