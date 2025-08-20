@@ -3,6 +3,8 @@
 🎯 Production ML Model Training - Feature-Aligned Training System
 Trains production ML models that align with our current data pipeline
 
+Enhanced with comprehensive error handling, monitoring, and graceful failure recovery.
+
 This script addresses the feature mismatch issue by:
 1. Using the current data from ml_feature_preparation.py
 2. Training models with the exact feature set we have
@@ -13,11 +15,14 @@ Author: AI Assistant
 Date: August 11, 2025
 """
 
+import json
 import logging
+import sys
+import traceback
 import warnings
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List, Tuple, Optional
 
 import joblib
 import numpy as np
@@ -44,10 +49,46 @@ from sklearn.preprocessing import OneHotEncoder, StandardScaler
 
 warnings.filterwarnings("ignore")
 
-# Setup logging
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-)
+# Enhanced structured logging setup
+class MLTrainingFormatter(logging.Formatter):
+    """Custom formatter for ML training with performance metrics."""
+    
+    def format(self, record):
+        log_entry = {
+            "timestamp": datetime.utcnow().isoformat(),
+            "level": record.levelname,
+            "component": "ML_TRAINER",
+            "message": record.getMessage(),
+            "module": record.module,
+            "function": record.funcName
+        }
+        
+        if hasattr(record, 'metrics'):
+            log_entry["metrics"] = record.metrics
+            
+        if hasattr(record, 'model_info'):
+            log_entry["model_info"] = record.model_info
+            
+        if record.exc_info:
+            log_entry["exception"] = self.formatException(record.exc_info)
+            
+        return json.dumps(log_entry)
+
+# Configure enhanced logging
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
+# Console handler
+console_handler = logging.StreamHandler(sys.stdout)
+console_handler.setFormatter(MLTrainingFormatter())
+logger.addHandler(console_handler)
+
+# File handler for ML training logs
+log_file = Path(__file__).parent.parent / "logs" / "ml_training.log"
+log_file.parent.mkdir(exist_ok=True)
+file_handler = logging.FileHandler(log_file)
+file_handler.setFormatter(MLTrainingFormatter())
+logger.addHandler(file_handler)
 logger = logging.getLogger(__name__)
 
 
@@ -62,7 +103,7 @@ class ProductionMLTrainer:
         # Database connection
         self.db_config = {
             "host": "localhost",
-            "port": 5432,
+            "port": 5434,
             "database": "horse_racing_db",
             "user": "horse_racing",
             "password": "secure_password_123",
@@ -73,25 +114,31 @@ class ProductionMLTrainer:
         self.scaler = None
 
     def load_current_data(self) -> pd.DataFrame:
-        """Load data using the same query as ml_feature_preparation.py"""
+        """Load data using the actual database table structure"""
         logger.info("📊 Loading data from current pipeline...")
 
         query = """
             SELECT 
-                rr.*,
+                r.*,
                 js.wins as jockey_wins,
-                js.runs as jockey_runs,
-                js.win_percentage as jockey_win_pct,
+                js.total_races as jockey_runs,
+                js.percentage_wins as jockey_win_pct,
                 ts.wins as trainer_wins,
-                ts.runs as trainer_runs,
-                ts.win_percentage as trainer_win_pct
-            FROM race_results rr
-            LEFT JOIN jockey_stats js ON rr.jockey_name = js.jockey_name
-            LEFT JOIN trainer_stats ts ON rr.trainer_name = ts.trainer_name
-            WHERE rr.jockey_name != 'Unknown' 
-            AND rr.trainer_name != 'Unknown'
-            AND rr.course != 'Unknown'
-            ORDER BY rr.race_date DESC, rr.race_id
+                ts.total_races as trainer_runs,
+                ts.percentage_wins as trainer_win_pct,
+                ra.course,
+                ra.distance,
+                ra.date as race_date,
+                ra.prize as prize_money
+            FROM records r
+            LEFT JOIN jockeys_stats js ON r.jockey = js.jockey_name
+            LEFT JOIN trainers_stats ts ON r.trainer = ts.trainer_name
+            LEFT JOIN races ra ON r.race_id = ra.race_id
+            WHERE r.jockey != 'none' 
+            AND r.trainer != 'none'
+            AND r.position IS NOT NULL
+            AND r.sp > 0
+            ORDER BY r.id DESC
         """
 
         try:
@@ -107,40 +154,60 @@ class ProductionMLTrainer:
             raise
 
     def engineer_features(self, df: pd.DataFrame) -> pd.DataFrame:
-        """Engineer features exactly as in ml_feature_preparation.py"""
+        """Engineer features using actual database column structure"""
         logger.info("⚙️ Engineering features...")
 
-        # Clean and convert data types
-        df["win_odds"] = pd.to_numeric(df["win_odds"], errors="coerce")
-        df["horse_age"] = pd.to_numeric(df["horse_age"], errors="coerce")
-        df["horse_weight_kg"] = pd.to_numeric(df["horse_weight_kg"], errors="coerce")
-        df["draw"] = pd.to_numeric(df["draw"], errors="coerce")
-        df["finished_position"] = pd.to_numeric(
-            df["finished_position"], errors="coerce"
-        )
-        df["prize_money"] = pd.to_numeric(df["prize_money"], errors="coerce")
+        # Map database columns to expected ML feature names
+        df_features = df.copy()
 
-        # Fill missing values
-        df["win_odds"] = df["win_odds"].fillna(df["win_odds"].median())
-        df["horse_age"] = df["horse_age"].fillna(4)
-        df["horse_weight_kg"] = df["horse_weight_kg"].fillna(57)
-        df["draw"] = df["draw"].fillna(8)
-        df["prize_money"] = df["prize_money"].fillna(0)
-        df["jockey_win_pct"] = df["jockey_win_pct"].fillna(0)
-        df["trainer_win_pct"] = df["trainer_win_pct"].fillna(0)
+        # Clean and convert data types using actual column names
+        df_features["win_odds"] = pd.to_numeric(df_features["sp"], errors="coerce")
+        df_features["horse_age"] = pd.to_numeric(df_features["age"], errors="coerce")
+        df_features["horse_weight_kg"] = pd.to_numeric(
+            df_features["weight_kg"], errors="coerce"
+        ).fillna(60)
+        df_features["draw"] = pd.to_numeric(df_features["draw"], errors="coerce")
+        df_features["finished_position"] = pd.to_numeric(
+            df_features["position"], errors="coerce"
+        )
+        df_features["horse_name"] = df_features["horse"]
+        df_features["jockey_name"] = df_features["jockey"]
+        df_features["trainer_name"] = df_features["trainer"]
+
+        # Clean missing values
+        df_features = df_features.dropna(
+            subset=["win_odds", "horse_age", "draw", "finished_position"]
+        )
+        df_features = df_features[df_features["win_odds"] > 0]
+
+        # Fill missing stats with defaults
+        df_features["jockey_wins"] = df_features["jockey_wins"].fillna(0)
+        df_features["jockey_runs"] = df_features["jockey_runs"].fillna(1)
+        df_features["jockey_win_pct"] = df_features["jockey_win_pct"].fillna(0.05)
+        df_features["trainer_wins"] = df_features["trainer_wins"].fillna(0)
+        df_features["trainer_runs"] = df_features["trainer_runs"].fillna(1)
+        df_features["trainer_win_pct"] = df_features["trainer_win_pct"].fillna(0.05)
+
+        # Handle missing course/prize data
+        df_features["course"] = df_features["course"].fillna("Unknown")
+        df_features["prize_money"] = pd.to_numeric(
+            df_features["prize_money"], errors="coerce"
+        ).fillna(10000)
 
         # 1. ODDS-BASED FEATURES
-        df["log_odds"] = np.log(df["win_odds"] + 1)
-        df["implied_probability"] = 1 / df["win_odds"]
-        df["odds_rank"] = df.groupby("race_id")["win_odds"].rank()
-        df["is_favorite"] = (df["odds_rank"] == 1).astype(int)
+        df_features["log_odds"] = np.log(df_features["win_odds"] + 1)
+        df_features["implied_probability"] = 1 / df_features["win_odds"]
+        df_features["odds_rank"] = df_features.groupby("race_id")["win_odds"].rank()
+        df_features["is_favorite"] = (df_features["odds_rank"] == 1).astype(int)
 
         # 2. PERFORMANCE FEATURES
-        df["combined_performance"] = (df["jockey_win_pct"] + df["trainer_win_pct"]) / 2
+        df_features["combined_performance"] = (
+            df_features["jockey_win_pct"] + df_features["trainer_win_pct"]
+        ) / 2
 
         # 3. RACE CONTEXT FEATURES
         race_stats = (
-            df.groupby("race_id")
+            df_features.groupby("race_id")
             .agg(
                 {
                     "horse_name": "count",  # field_size
@@ -159,19 +226,21 @@ class ProductionMLTrainer:
             "avg_odds",
             "race_prize",
         ]
-        df = df.merge(race_stats, on="race_id", how="left")
+        df_features = df_features.merge(race_stats, on="race_id", how="left")
 
         # 4. POSITIONAL FEATURES
-        df["draw_percentile"] = df.groupby("race_id")["draw"].rank(pct=True)
-        df["weight_percentile"] = df.groupby("race_id")["horse_weight_kg"].rank(
+        df_features["draw_percentile"] = df_features.groupby("race_id")["draw"].rank(
             pct=True
         )
-        df["age_category"] = pd.cut(
-            df["horse_age"], bins=[0, 3, 5, 7, 15], labels=[0, 1, 2, 3]
-        )
+        df_features["weight_percentile"] = df_features.groupby("race_id")[
+            "horse_weight_kg"
+        ].rank(pct=True)
+        df_features["age_category"] = pd.cut(
+            df_features["horse_age"], bins=[0, 3, 5, 7, 15], labels=[0, 1, 2, 3]
+        ).astype(float)
 
         # 5. TARGET VARIABLE
-        df["is_winner"] = (df["finished_position"] == 1).astype(int)
+        df_features["is_winner"] = (df_features["finished_position"] == 1).astype(int)
 
         # Select final features for training
         feature_columns = [
@@ -196,15 +265,17 @@ class ProductionMLTrainer:
 
         # Ensure all features exist and are numeric
         for col in feature_columns:
-            if col not in df.columns:
+            if col not in df_features.columns:
                 logger.warning(f"Missing feature {col}, filling with 0")
-                df[col] = 0
-            df[col] = pd.to_numeric(df[col], errors="coerce").fillna(0)
+                df_features[col] = 0
+            df_features[col] = pd.to_numeric(df_features[col], errors="coerce").fillna(
+                0
+            )
 
         self.feature_names = feature_columns
         logger.info(f"✅ Feature engineering complete: {len(feature_columns)} features")
 
-        return df[feature_columns + ["is_winner", "race_id", "horse_name"]]
+        return df_features[feature_columns + ["is_winner", "race_id", "horse_name"]]
 
     def prepare_training_data(self, df: pd.DataFrame) -> Tuple[np.ndarray, np.ndarray]:
         """Prepare features and target for training."""

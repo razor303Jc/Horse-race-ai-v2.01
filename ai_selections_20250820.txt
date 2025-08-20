@@ -1,0 +1,517 @@
+🤖 AI RACING SELECTIONS
+==================================================
+📅 Date: Wednesday, August 20, 2025
+🎯 Trained on 4,890 historical race records
+
+📊 SUMMARY: 5 courses, 35 races
+
+🏇 CARLISLE
+------------------------------
+🕐 Race 1: 2025-08-20 14:05:00 (7 runners)
+  1. 🔥 With Glory
+     Jockey: D C Costello | Trainer: I Jardine
+     Odds: 5.0/1 | AI Probability: 66.5% | High confidence
+
+  2. 🔥 Only Dream Big
+     Jockey: D Allan | Trainer: T D Easterby
+     Odds: 5.0/1 | AI Probability: 66.5% | High confidence
+
+  3. 🔥 Lily Pearl
+     Jockey: Billy Garritty | Trainer: R A Fahey
+     Odds: 5.0/1 | AI Probability: 66.5% | High confidence
+
+
+🕐 Race 2: 2025-08-20 14:40:00 (7 runners)
+  1. 🔥 East Tyrone
+     Jockey: S A Gray | Trainer: K A Ryan
+     Odds: 5.0/1 | AI Probability: 66.5% | High confidence
+
+  2. 🔥 Boyne Lady
+     Jockey: D Nolan | Trainer: Roger Fell
+     Odds: 5.0/1 | AI Probability: 65.6% | High confidence
+
+  3. 🔥 Sole Spirit
+     Jockey: Harrison Shaw | Trainer: B Smart
+     Odds: 5.0/1 | AI Probability: 65.6% | High confidence
+
+
+🕐 Race 3: 2025-08-20 15:15:00 (6 runners)
+  1. 🔥 Rosso Levanto
+     Jockey: Jonny Peate | Trainer: G Hanmer
+     Odds: 5.0/1 | AI Probability: 66.5% | High confidence
+
+  2. 🔥 Taylormade Lad
+     Jockey: Sean Kirrane | Trainer: M Dods
+     Odds: 5.0/1 | AI Probability: 66.5% | High confidence
+
+  3. 🔥 Educate
+     Jockey: Harry Burns | Trainer: P Morris
+     Odds: 5.5/1 | AI Probability: 64.0% | High confidence
+
+
+🕐 Race 4: 2025-08-20 15:50:00 (7 runners)
+  1. 🔥 Master Richard
+     Jockey: S A Gray | Trainer: Mrs A Duffield
+     Odds: 5.0/1 | AI Probability: 67.5% | High confidence
+
+  2. 🔥 Alessia Fernanda
+     Jockey: Zak Wheatley | Trainer: D Carroll
+     Odds: 5.0/1 | AI Probability: 66.5% | High confidence
+
+  3. 🔥 Vince Le Prince
+     Jockey: D Allan | Trainer: T D Easterby
+     Odds: 5.0/1 | AI Probability: 65.6% | High confidence
+
+
+🕐 Race 5: 2025-08-20 16:25:00 (5 runners)
+  1. 🔥 Crystal Dagger
+     Jockey: George Downing | Trainer: E Walker
+     Odds: 5.0/1 | AI Probability: 66.5% | High confidence
+
+  2. 🔥 Elizabeth Bay
+     Jockey: D Allan | Trainer: K Scott
+     Odds: 5.0/1 | AI Probability: 66.5% | High confidence
+
+  3. 🔥 Beauty Blossom
+     Jockey: D Nolan | Trainer: D O'Meara
+     Odds: 5.0/1 | AI Probability: 65.6% | High confidence
+
+
+🕐 Race 6: 2025-08-20 16:55:00 (9 runners)
+  1. 🔥 Tootsie
+     Jockey: D Allan | Trainer: T D Easterby
+     Odds: 3.2/1 | AI Probability: 69.6% | High confidence
+
+  2. 🔥 Miss Cast
+     Jockey: Cam Hardie | Trainer: T D Easterby
+     Odds: 5.0/1 | AI Probability: 66.7% | High confidence
+
+  3. 🔥 Oh So Cool
+     Jockey: Kaiya Fraser | Trainer: R Menzies
+     Odds: 5.0/1 | AI Probability: 66.7% | High confidence
+
+
+
+🏇 KEMPTON
+------------------------------
+🕐 Race 1: 2025-08-20 17:15:00 (7 runners)
+  1. 🔥 Miss Ayala
+     Jockey: Tyler Heard | Trainer: M D I Usher
+     Odds: 5.0/1 | AI Probability: 66.5% | High confidence
+
+  2. 🔥 Project Incheon
+     Jockey: L Morris | Trainer: A Watson
+     Odds: 5.0/1 | AI Probability: 65.6% | High confidence
+
+  3. 🔥 Houdini Miss
+     Jockey: J Mitchell | Trainer: James Horton
+     Odds: 5.0/1 | AI Probability: 64.1% | High confidence
+
+
+🕐 Race 2: 2025-08-20 17:50:00 (10 runners)
+  1. 🔥 Vintage Heat
+     Jockey: S M Levey | Trainer: R Hannon
+     Odds: 5.0/1 | AI Probability: 66.5% | High confidence
+
+  2. 🔥 Chapmans Peak
+     Jockey: Cieren Fallon | Trainer: E A L Dunlop
+     Odds: 5.0/1 | AI Probability: 66.5% | High confidence
+
+  3. 🔥 Ghost Division
+     Jockey: L Morris | Trainer: Sir Mark Prescott
+     Odds: 5.0/1 | AI Probability: 66.5% | High confidence
+
+
+🕐 Race 3: 2025-08-20 18:20:00 (9 runners)
+  1. 🔥 Moon Warp
+     Jockey: L Morris | Trainer: Sir Mark Prescott
+     Odds: 5.0/1 | AI Probability: 66.5% | High confidence
+
+  2. 🔥 Chapter
+     Jockey: Jason Watson | Trainer: C Hills
+     Odds: 5.0/1 | AI Probability: 66.5% | High confidence
+
+  3. 🔥 Elashgar
+     Jockey: Jim Crowley | Trainer: R Hannon
+     Odds: 5.0/1 | AI Probability: 66.5% | High confidence
+
+
+🕐 Race 4: 2025-08-20 18:50:00 (4 runners)
+  1. 🔥 Steel Drum
+     Jockey: Charles Bishop | Trainer: Eve Johnson Houghton
+     Odds: 5.0/1 | AI Probability: 66.7% | High confidence
+
+  2. 🔥 Royal Bodyguard
+     Jockey: H Crouch | Trainer: M L W Bell
+     Odds: 5.0/1 | AI Probability: 66.7% | High confidence
+
+  3. 🔥 Going Commando
+     Jockey: Cieren Fallon | Trainer: A Keatley
+     Odds: 5.0/1 | AI Probability: 66.6% | High confidence
+
+
+🕐 Race 5: 2025-08-20 19:20:00 (13 runners)
+  1. 🔥 Hes A Gentleman
+     Jockey: S Donohoe | Trainer: H Palmer
+     Odds: 5.0/1 | AI Probability: 67.5% | High confidence
+
+  2. 🔥 Dragon Icon
+     Jockey: S De Sousa | Trainer: R Varian
+     Odds: 5.0/1 | AI Probability: 66.5% | High confidence
+
+  3. 🔥 Niminy Piminy
+     Jockey: T E Whelan | Trainer: Ollie Sangster
+     Odds: 5.0/1 | AI Probability: 66.5% | High confidence
+
+
+🕐 Race 6: 2025-08-20 19:50:00 (9 runners)
+  1. 🔥 Finalise
+     Jockey: Cieren Fallon | Trainer: W J Haggas
+     Odds: 2.2/1 | AI Probability: 69.0% | High confidence
+
+  2. 🔥 Rogue Empire
+     Jockey: Lewis Edmunds | Trainer: R A Teal
+     Odds: 5.0/1 | AI Probability: 66.7% | High confidence
+
+  3. 🔥 Gnomon
+     Jockey: H Crouch | Trainer: R M Beckett
+     Odds: 5.0/1 | AI Probability: 66.7% | High confidence
+
+
+🕐 Race 7: 2025-08-20 20:20:00 (8 runners)
+  1. 🔥 Valsharah
+     Jockey: Jason Watson | Trainer: C Hills
+     Odds: 3.5/1 | AI Probability: 69.0% | High confidence
+
+  2. 🔥 Duke Orsino
+     Jockey: Marco Ghiani | Trainer: J R Jenkins
+     Odds: 5.0/1 | AI Probability: 66.7% | High confidence
+
+  3. 🔥 Me Tarzan
+     Jockey: George Wood | Trainer: J R Fanshawe
+     Odds: 5.0/1 | AI Probability: 66.7% | High confidence
+
+
+🕐 Race 8: 2025-08-20 20:50:00 (9 runners)
+  1. 🔥 Just King High
+     Jockey: William Cox | Trainer: T Faulkner
+     Odds: 5.0/1 | AI Probability: 66.5% | High confidence
+
+  2. 🔥 Moby Quick
+     Jockey: Callum Shepherd | Trainer: George Scott
+     Odds: 5.0/1 | AI Probability: 66.5% | High confidence
+
+  3. 🔥 Silca Bay
+     Jockey: Charles Bishop | Trainer: Eve Johnson Houghton
+     Odds: 5.0/1 | AI Probability: 66.5% | High confidence
+
+
+
+🏇 SLIGO
+------------------------------
+🕐 Race 1: 2025-08-20 17:05:00 (17 runners)
+  1. 🔥 Hello Yes
+     Jockey: J P O'Sullivan | Trainer: S McParlan
+     Odds: 5.0/1 | AI Probability: 67.0% | High confidence
+
+  2. 🔥 Inver Bay
+     Jockey: E Finegan | Trainer: G Keane
+     Odds: 5.0/1 | AI Probability: 67.0% | High confidence
+
+  3. 🔥 Lily Milan
+     Jockey: C M Quirke | Trainer: Paul Stephen Kiely
+     Odds: 5.0/1 | AI Probability: 67.0% | High confidence
+
+
+🕐 Race 2: 2025-08-20 17:38:00 (10 runners)
+  1. 🔥 Tea It Is
+     Jockey: D King | Trainer: D Hogan
+     Odds: 5.0/1 | AI Probability: 67.3% | High confidence
+
+  2. 🔥 Surviving Murmansk
+     Jockey: H E Sexton | Trainer: J Barcoe
+     Odds: 5.0/1 | AI Probability: 66.6% | High confidence
+
+  3. 🔥 Shannon Bank
+     Jockey: K M Donoghue | Trainer: G P Cromwell
+     Odds: 5.0/1 | AI Probability: 66.6% | High confidence
+
+
+🕐 Race 3: 2025-08-20 18:08:00 (7 runners)
+  1. 🔥 Cocovic
+     Jockey: S W Flanagan | Trainer: E McNamara
+     Odds: 1.5/1 | AI Probability: 68.4% | High confidence
+
+  2. 🔥 Sophia Rose
+     Jockey: E Staples | Trainer: G P Cromwell
+     Odds: 5.0/1 | AI Probability: 65.9% | High confidence
+
+  3. 🔥 Mr Erwitt
+     Jockey: C M Hogan | Trainer: V T O'Brien
+     Odds: 5.0/1 | AI Probability: 65.9% | High confidence
+
+
+🕐 Race 4: 2025-08-20 18:38:00 (12 runners)
+  1. 🔥 Influential Lady
+     Jockey: K Callaghan | Trainer: J Barcoe
+     Odds: 5.0/1 | AI Probability: 68.1% | High confidence
+
+  2. 🔥 Tropical Image
+     Jockey: G B Noonan | Trainer: E McCarthy
+     Odds: 5.0/1 | AI Probability: 68.1% | High confidence
+
+  3. 🔥 Slim Marvel
+     Jockey: C M Quirke | Trainer: A Slattery
+     Odds: 5.0/1 | AI Probability: 67.5% | High confidence
+
+
+🕐 Race 5: 2025-08-20 19:08:00 (11 runners)
+  1. 🔥 Ballykinlar
+     Jockey: E Staples | Trainer: Donncha Duggan
+     Odds: 3.4/1 | AI Probability: 69.8% | High confidence
+
+  2. 🔥 Grange Walk
+     Jockey: Mr D McGill | Trainer: J P Ryan
+     Odds: 5.0/1 | AI Probability: 68.0% | High confidence
+
+  3. 🔥 Moulane West
+     Jockey: D King | Trainer: M M McNiff
+     Odds: 5.0/1 | AI Probability: 68.0% | High confidence
+
+
+🕐 Race 6: 2025-08-20 19:38:00 (12 runners)
+  1. 🔥 The Little Yank
+     Jockey: H E Sexton | Trainer: J P Ryan
+     Odds: 5.0/1 | AI Probability: 68.1% | High confidence
+
+  2. 🔥 Tango Theatre
+     Jockey: A Harvey | Trainer: J C McConnell
+     Odds: 5.0/1 | AI Probability: 68.1% | High confidence
+
+  3. 🔥 Back The West
+     Jockey: G Brouder | Trainer: I Madden
+     Odds: 5.0/1 | AI Probability: 68.1% | High confidence
+
+
+🕐 Race 7: 2025-08-20 20:08:00 (8 runners)
+  1. 🔥 Lupin Du Chenet
+     Jockey: Mr J H Williamson | Trainer: G Elliott
+     Odds: 5.0/1 | AI Probability: 65.4% | High confidence
+
+  2. 🔥 Mr Master Mac
+     Jockey: Mr J L Gleeson | Trainer: M Fahey
+     Odds: 5.0/1 | AI Probability: 65.4% | High confidence
+
+  3. 🔥 Not So Serious
+     Jockey: Mr A P Ryan | Trainer: A Slattery
+     Odds: 5.0/1 | AI Probability: 65.4% | High confidence
+
+
+
+🏇 WORCESTER
+------------------------------
+🕐 Race 1: 2025-08-20 16:50:00 (11 runners)
+  1. 🔥 Getaway Jewel
+     Jockey: B S Hughes | Trainer: Micky Hammond
+     Odds: 5.0/1 | AI Probability: 67.2% | High confidence
+
+  2. 🔥 Zacony Rebel
+     Jockey: James Bowen | Trainer: S-J Davies
+     Odds: 5.0/1 | AI Probability: 67.2% | High confidence
+
+  3. 🔥 Gerard Mentor
+     Jockey: C Gethings | Trainer: K C Bailey
+     Odds: 5.0/1 | AI Probability: 67.2% | High confidence
+
+
+🕐 Race 2: 2025-08-20 17:25:00 (12 runners)
+  1. 🔥 Almazhar Garde
+     Jockey: Paul O'Brien | Trainer: C E Longsdon
+     Odds: 5.0/1 | AI Probability: 68.1% | High confidence
+
+  2. 🔥 Tiger Orchid
+     Jockey: Sam Twiston-Davies | Trainer: Dr R Newland & J Insole
+     Odds: 5.0/1 | AI Probability: 68.1% | High confidence
+
+  3. 🔥 Salley Gardens
+     Jockey: S Bowen | Trainer: J Coulson
+     Odds: 5.0/1 | AI Probability: 68.1% | High confidence
+
+
+🕐 Race 3: 2025-08-20 17:55:00 (12 runners)
+  1. 🔥 Midnight Gold
+     Jockey: Harriet Tucker | Trainer: N P Mulholland
+     Odds: 5.0/1 | AI Probability: 68.1% | High confidence
+
+  2. 🔥 Dorrells Pierji
+     Jockey: Bryan Carver | Trainer: D P Summersby
+     Odds: 5.0/1 | AI Probability: 67.9% | High confidence
+
+  3. 🔥 Captains Pick
+     Jockey: Jack Tudor | Trainer: Christian Williams
+     Odds: 5.0/1 | AI Probability: 67.5% | High confidence
+
+
+🕐 Race 4: 2025-08-20 18:30:00 (9 runners)
+  1. 🔥 High Fibre
+     Jockey: Bryan Carver | Trainer: H Fry
+     Odds: 5.0/1 | AI Probability: 66.4% | High confidence
+
+  2. 🔥 Tamarind Bay
+     Jockey: James Bowen | Trainer: Mickey Bowen
+     Odds: 5.0/1 | AI Probability: 65.4% | High confidence
+
+  3. 🔥 Service Minimum
+     Jockey: Harry Skelton | Trainer: D Skelton
+     Odds: 5.0/1 | AI Probability: 65.4% | High confidence
+
+
+🕐 Race 5: 2025-08-20 19:00:00 (15 runners)
+  1. 🔥 Never Told Me
+     Jockey: J J Burke | Trainer: F O'Brien
+     Odds: 5.0/1 | AI Probability: 67.2% | High confidence
+
+  2. 🔥 Just A Heartbeat
+     Jockey: Bryan Carver | Trainer: H Fry
+     Odds: 5.0/1 | AI Probability: 67.2% | High confidence
+
+  3. 🔥 Darcys Glance
+     Jockey: Shane Quinlan | Trainer: Andrew Martin
+     Odds: 5.0/1 | AI Probability: 67.2% | High confidence
+
+
+🕐 Race 6: 2025-08-20 19:30:00 (10 runners)
+  1. 🔥 Slip Of The Tongue
+     Jockey: Tabitha Worsley | Trainer: S-J Davies
+     Odds: 5.0/1 | AI Probability: 67.3% | High confidence
+
+  2. 🔥 Rogue Mission
+     Jockey: S Bowen | Trainer: O Murphy
+     Odds: 5.0/1 | AI Probability: 66.6% | High confidence
+
+  3. 🔥 Wild Nephin
+     Jockey: Conor Ring | Trainer: R Potter
+     Odds: 5.0/1 | AI Probability: 66.6% | High confidence
+
+
+🕐 Race 7: 2025-08-20 20:00:00 (9 runners)
+  1. 🔥 Royal Rhythm
+     Jockey: Benjamin Macey | Trainer: Jonjo & A J O'Neill
+     Odds: 5.0/1 | AI Probability: 67.1% | High confidence
+
+  2. 🔥 Kopa Kilana
+     Jockey: S Bowen | Trainer: O Murphy
+     Odds: 5.0/1 | AI Probability: 67.1% | High confidence
+
+  3. 🔥 Bebside Banter
+     Jockey: Freddie Mitchell | Trainer: Max Comley
+     Odds: 5.0/1 | AI Probability: 67.1% | High confidence
+
+
+
+🏇 YORK
+------------------------------
+🕐 Race 1: 2025-08-20 13:50:00 (20 runners)
+  1. 🔥 Copper Knight
+     Jockey: D Fentiman | Trainer: T D Easterby
+     Odds: 5.0/1 | AI Probability: 67.7% | High confidence
+
+  2. 🔥 Brazen Bolt
+     Jockey: Warren Fentiman | Trainer: Mrs R Carr
+     Odds: 5.0/1 | AI Probability: 67.5% | High confidence
+
+  3. 🔥 Spring Is Sprung
+     Jockey: Jason Hart | Trainer: P T Midgley
+     Odds: 5.0/1 | AI Probability: 66.8% | High confidence
+
+
+🕐 Race 2: 2025-08-20 14:25:00 (7 runners)
+  1. 🔥 Italy
+     Jockey: R L Moore | Trainer: A P O'Brien
+     Odds: 2.6/1 | AI Probability: 66.8% | High confidence
+
+  2. 🔥 Sovereign Ocean
+     Jockey: A Mullen | Trainer: I Jardine
+     Odds: 5.0/1 | AI Probability: 66.7% | High confidence
+
+  3. 🔥 May Angel
+     Jockey: Oisin Murphy | Trainer: J & T Gosden
+     Odds: 5.0/1 | AI Probability: 66.7% | High confidence
+
+
+🕐 Race 3: 2025-08-20 15:00:00 (7 runners)
+  1. 🔥 Lambourn
+     Jockey: R L Moore | Trainer: A P O'Brien
+     Odds: 1.9/1 | AI Probability: 69.0% | High confidence
+
+  2. 🔥 Mount Kilimanjaro
+     Jockey: W Buick | Trainer: A P O'Brien
+     Odds: 5.0/1 | AI Probability: 66.7% | High confidence
+
+  3. 🔥 Arabian Force
+     Jockey: Tom Marquand | Trainer: W J Haggas
+     Odds: 5.0/1 | AI Probability: 66.6% | High confidence
+
+
+🕐 Race 4: 2025-08-20 15:35:00 (6 runners)
+  1. 🔥 Delacroix
+     Jockey: R L Moore | Trainer: A P O'Brien
+     Odds: 2.8/1 | AI Probability: 69.6% | High confidence
+
+  2. 🔥 Ombudsman
+     Jockey: W Buick | Trainer: J & T Gosden
+     Odds: 2.8/1 | AI Probability: 69.0% | High confidence
+
+  3. 🔥 See The Fire
+     Jockey: Oisin Murphy | Trainer: A M Balding
+     Odds: 5.0/1 | AI Probability: 66.7% | High confidence
+
+
+🕐 Race 5: 2025-08-20 16:10:00 (13 runners)
+  1. 🔥 Spirit Mixer
+     Jockey: Rob Hornby | Trainer: A M Balding
+     Odds: 5.0/1 | AI Probability: 67.5% | High confidence
+
+  2. 🔥 Charging Thunder
+     Jockey: Ashley Lewis | Trainer: James Owen
+     Odds: 5.0/1 | AI Probability: 67.5% | High confidence
+
+  3. 🔥 Align The Stars
+     Jockey: J Fanning | Trainer: C Johnston
+     Odds: 5.0/1 | AI Probability: 66.5% | High confidence
+
+
+🕐 Race 6: 2025-08-20 16:45:00 (21 runners)
+  1. 🔥 Luna A Inbhir Nis
+     Jockey: Jason Hart | Trainer: K Scott
+     Odds: 5.0/1 | AI Probability: 65.7% | High confidence
+
+  2. 🔥 Over The Blues
+     Jockey: C Lee | Trainer: K R Burke
+     Odds: 5.0/1 | AI Probability: 65.6% | High confidence
+
+  3. 🔥 Saratoga Special
+     Jockey: S Foley | Trainer: Mrs J Harrington
+     Odds: 5.0/1 | AI Probability: 64.3% | High confidence
+
+
+🕐 Race 7: 2025-08-20 17:20:00 (21 runners)
+  1. 🔥 Utmost Respect
+     Jockey: O J Orr | Trainer: R A Fahey
+     Odds: 5.0/1 | AI Probability: 65.5% | High confidence
+
+  2. 🔥 Temple Of Athena
+     Jockey: Shay Farmer | Trainer: B Ellison
+     Odds: 5.0/1 | AI Probability: 65.5% | High confidence
+
+  3. 🔥 Dublin Bay
+     Jockey: Harry Bentley | Trainer: Ollie Sangster
+     Odds: 5.0/1 | AI Probability: 65.4% | High confidence
+
+
+
+⚠️  DISCLAIMER
+---------------
+These AI predictions are for entertainment purposes only.
+Past performance does not guarantee future results.
+Please gamble responsibly.

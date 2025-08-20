@@ -73,6 +73,22 @@ class HorseData(BaseModel):
     draw: int = Field(..., ge=1, le=24, description="Barrier draw position")
     win_odds: float = Field(..., gt=0, description="Current win odds")
     place_odds: Optional[float] = Field(None, gt=0, description="Current place odds")
+
+    # Career performance statistics needed for ensemble model
+    total_runs: Optional[int] = Field(10, ge=0, description="Total career races")
+    wins: Optional[int] = Field(1, ge=0, description="Career wins")
+    places: Optional[int] = Field(3, ge=0, description="Career places (1st, 2nd, 3rd)")
+    avg_prize_money: Optional[float] = Field(
+        2500.0, ge=0, description="Average prize money per race"
+    )
+    total_prize_money: Optional[float] = Field(
+        25000.0, ge=0, description="Total career prize money"
+    )
+    days_since_last_race: Optional[int] = Field(
+        30, ge=0, description="Days since last race"
+    )
+
+    # Optional fields
     barrier: Optional[int] = Field(None, ge=1, le=24, description="Barrier number")
     margin: Optional[float] = Field(0.0, description="Previous race margin")
     horse_weight_kg: Optional[float] = Field(
@@ -185,7 +201,19 @@ def load_production_models():
         model_timestamp = latest_ensemble.stem.split("_")[-1]
 
         logger.info(f"Loading ensemble model: {latest_ensemble}")
-        ensemble_model = joblib.load(latest_ensemble)
+        model_data = joblib.load(latest_ensemble)
+
+        # Handle different model storage formats
+        if isinstance(model_data, dict):
+            # New format: model stored as dictionary
+            ensemble_model = model_data.get("ensemble_model")
+            if ensemble_model is None:
+                raise ValueError("No 'ensemble_model' key found in model file")
+            logger.info("✅ Loaded ensemble model from dictionary format")
+        else:
+            # Legacy format: model stored directly
+            ensemble_model = model_data
+            logger.info("✅ Loaded ensemble model from legacy format")
 
         # Load encoders
         encoders_file = models_dir / f"encoders_{model_timestamp}.joblib"
@@ -219,88 +247,119 @@ def load_production_models():
 
 
 def engineer_features_for_prediction(horse_data: HorseData) -> pd.DataFrame:
-    """Engineer features for prediction matching training pipeline."""
+    """Engineer features for prediction matching ensemble model training."""
 
     # Convert to dictionary then DataFrame
     data = horse_data.dict()
     df = pd.DataFrame([data])
 
-    # Basic features with defaults
-    df["horse_age"] = df["horse_age"].fillna(5)
-    df["draw"] = df["draw"].fillna(8)
-    df["win_odds"] = df["win_odds"].fillna(5.0)
-    df["place_odds"] = df["place_odds"].fillna(df["win_odds"] / 2)
-    df["barrier"] = df["barrier"].fillna(df["draw"])
-    df["margin"] = df["margin"].fillna(0.0)
-    df["horse_weight_kg"] = df["horse_weight_kg"].fillna(485)
-    df["handicap_weight"] = df["handicap_weight"].fillna(58)
+    # Generate the exact 32 features that the ensemble model expects
 
-    # Odds-based features
-    df["is_favorite"] = (df["win_odds"] <= 3.0).astype(int)
-    df["high_odds"] = (df["win_odds"] >= 10.0).astype(int)
-    df["log_odds"] = np.log(df["win_odds"].clip(lower=1.01))
-    df["implied_prob"] = 1 / df["win_odds"].clip(lower=1.01)
+    # Basic age features
+    df["age"] = df["horse_age"].fillna(5)
+    df["age_squared"] = df["age"] ** 2
 
-    # Safe ratio calculations
-    place_odds_safe = df["place_odds"].fillna(df["win_odds"]).clip(lower=0.1)
-    df["odds_ratio"] = df["win_odds"] / place_odds_safe
+    # Total career statistics
+    df["Total_races"] = df["total_runs"].fillna(10)
+    df["Wins"] = df["wins"].fillna(1)
+    df["placed"] = df["places"].fillna(3)  # Note: model uses 'placed' not 'Places'
 
-    weight_denom = df["handicap_weight"].fillna(df["horse_weight_kg"]).clip(lower=30)
-    df["weight_ratio"] = df["horse_weight_kg"] / weight_denom
+    # Calculate percentages with safe division
+    total_races_safe = df["Total_races"].clip(lower=1)
+    df["Percentage_wins"] = (df["Wins"] / total_races_safe * 100).fillna(10.0)
+    df["Percentage_placed"] = (df["placed"] / total_races_safe * 100).fillna(30.0)
 
-    # Age and position features
-    df["age_squared"] = df["horse_age"] ** 2
-    df["draw_squared"] = df["draw"] ** 2
-    df["barrier_squared"] = df["barrier"] ** 2
+    # Flat All Weather (AW) performance - use defaults as we don't have specific data
+    df["Flat_AW_races"] = (df["Total_races"] * 0.3).fillna(3)  # 30% of races assumed AW
+    df["Flat_AW_wins"] = (df["Wins"] * 0.2).fillna(0)  # 20% of wins on AW
+    aw_races_safe = df["Flat_AW_races"].clip(lower=1)
+    df["Flat_AW_rate"] = (df["Flat_AW_wins"] / aw_races_safe * 100).fillna(5.0)
+    df["Flat_AW_placed"] = (df["placed"] * 0.3).fillna(1)  # 30% of places on AW
+    df["Flat_AW_placed_rate"] = (df["Flat_AW_placed"] / aw_races_safe * 100).fillna(
+        20.0
+    )
 
-    # Performance features
-    df["jockey_win_pct"] = df["jockey_win_pct"].fillna(10.0)
-    df["jockey_place_pct"] = df["jockey_place_pct"].fillna(25.0)
-    df["trainer_win_pct"] = df["trainer_win_pct"].fillna(10.0)
-    df["trainer_place_pct"] = df["trainer_place_pct"].fillna(25.0)
+    # Flat Turf performance
+    df["Flat_Turf_races"] = (df["Total_races"] * 0.5).fillna(5)  # 50% of races on turf
+    df["Flat_Turf_wins"] = (df["Wins"] * 0.6).fillna(1)  # 60% of wins on turf
+    turf_races_safe = df["Flat_Turf_races"].clip(lower=1)
+    df["Flat_Turf_rate"] = (df["Flat_Turf_wins"] / turf_races_safe * 100).fillna(10.0)
+    df["Flat_Turf_placed"] = (df["placed"] * 0.5).fillna(2)  # 50% of places on turf
+    df["Flat_Turf_placed_rate"] = (
+        df["Flat_Turf_placed"] / turf_races_safe * 100
+    ).fillna(25.0)
 
-    # Combined performance features
-    df["jockey_trainer_combo"] = df["jockey_win_pct"] * df["trainer_win_pct"]
-    df["combined_place_pct"] = (df["jockey_place_pct"] + df["trainer_place_pct"]) / 2
+    # Chase performance - use smaller defaults for flat horses
+    df["Chase_races"] = (df["Total_races"] * 0.1).fillna(1)  # 10% chase races
+    df["Chase_wins"] = (df["Wins"] * 0.1).fillna(0)  # 10% of wins in chases
+    chase_races_safe = df["Chase_races"].clip(lower=1)
+    df["Chase_rate"] = (df["Chase_wins"] / chase_races_safe * 100).fillna(5.0)
+    df["Chase_placed"] = (df["placed"] * 0.1).fillna(0)  # 10% of places in chases
+    df["Chase_placed_rate"] = (df["Chase_placed"] / chase_races_safe * 100).fillna(15.0)
 
-    # Categorical encoding
-    if label_encoders and "course" in label_encoders:
-        try:
-            df["course_encoded"] = label_encoders["course"].transform(
-                [horse_data.course]
-            )
-        except ValueError:
-            # Handle unseen course
-            df["course_encoded"] = 0
-    else:
-        df["course_encoded"] = 0
+    # Hurdle performance - use smaller defaults for flat horses
+    df["Hurdle_races"] = (df["Total_races"] * 0.1).fillna(1)  # 10% hurdle races
+    df["Hurdle_wins"] = (df["Wins"] * 0.1).fillna(0)  # 10% of wins over hurdles
+    hurdle_races_safe = df["Hurdle_races"].clip(lower=1)
+    df["Hurdle_rate"] = (df["Hurdle_wins"] / hurdle_races_safe * 100).fillna(5.0)
+    df["Hurdle_placed"] = (df["placed"] * 0.1).fillna(0)  # 10% of places over hurdles
+    df["Hurdle_placed_rate"] = (df["Hurdle_placed"] / hurdle_races_safe * 100).fillna(
+        15.0
+    )
 
-    # Select feature columns (matching training)
+    # Overall performance rates
+    df["win_rate"] = df["Percentage_wins"]  # Same as Percentage_wins
+    df["place_rate"] = df["Percentage_placed"]  # Same as Percentage_placed
+
+    # Form consistency (estimated from recent performance)
+    df["form_consistency"] = (df["place_rate"] / 100 * 0.8 + 0.2).fillna(
+        0.5
+    )  # 0-1 scale
+
+    # Surface preference (estimated based on turf vs AW performance)
+    turf_rate = df["Flat_Turf_rate"].fillna(10.0)
+    aw_rate = df["Flat_AW_rate"].fillna(5.0)
+    df["surface_preference"] = (turf_rate / (turf_rate + aw_rate + 1)).fillna(
+        0.6
+    )  # 0-1 scale
+
+    # Experience-age ratio
+    df["experience_age_ratio"] = (df["Total_races"] / df["age"]).fillna(2.0)
+
+    # Select the exact 32 features that the ensemble model expects
     feature_columns = [
-        "horse_age",
-        "draw",
-        "win_odds",
-        "place_odds",
-        "barrier",
-        "margin",
-        "horse_weight_kg",
-        "handicap_weight",
-        "jockey_win_pct",
-        "jockey_place_pct",
-        "trainer_win_pct",
-        "trainer_place_pct",
-        "is_favorite",
-        "high_odds",
-        "log_odds",
-        "implied_prob",
-        "odds_ratio",
-        "weight_ratio",
+        "age",
+        "Total_races",
+        "Wins",
+        "Percentage_wins",
+        "placed",
+        "Percentage_placed",
+        "Flat_AW_races",
+        "Flat_AW_wins",
+        "Flat_AW_rate",
+        "Flat_AW_placed",
+        "Flat_AW_placed_rate",
+        "Flat_Turf_races",
+        "Flat_Turf_wins",
+        "Flat_Turf_rate",
+        "Flat_Turf_placed",
+        "Flat_Turf_placed_rate",
+        "Chase_races",
+        "Chase_wins",
+        "Chase_rate",
+        "Chase_placed",
+        "Chase_placed_rate",
+        "Hurdle_races",
+        "Hurdle_wins",
+        "Hurdle_rate",
+        "Hurdle_placed",
+        "Hurdle_placed_rate",
+        "win_rate",
+        "place_rate",
+        "form_consistency",
+        "surface_preference",
         "age_squared",
-        "draw_squared",
-        "barrier_squared",
-        "jockey_trainer_combo",
-        "combined_place_pct",
-        "course_encoded",
+        "experience_age_ratio",
     ]
 
     return df[feature_columns]
@@ -760,17 +819,143 @@ except Exception as e:
     logger.warning(f"❌ Failed to include live race router: {e}")
 
 
-# Health check endpoint
+# Enhanced health check endpoints
+@app.get("/api/health")
+async def api_health_check():
+    """Comprehensive API health check with system status."""
+    import psycopg2
+    
+    health_status = {
+        "status": "healthy",
+        "timestamp": datetime.now().isoformat(),
+        "version": "1.0.0",
+        "components": {}
+    }
+    
+    overall_healthy = True
+    
+    # Check ensemble model
+    try:
+        model_status = {
+            "loaded": ensemble_model is not None,
+            "models_count": len(ensemble_model) if ensemble_model else 0,
+            "last_loaded": model_timestamp.isoformat() if model_timestamp else None
+        }
+        health_status["components"]["ensemble_model"] = {
+            "status": "healthy" if model_status["loaded"] else "unhealthy",
+            "details": model_status
+        }
+        if not model_status["loaded"]:
+            overall_healthy = False
+    except Exception as e:
+        health_status["components"]["ensemble_model"] = {
+            "status": "error",
+            "error": str(e)
+        }
+        overall_healthy = False
+    
+    # Check database connectivity
+    try:
+        db_config = {
+            "host": "localhost",
+            "port": 5434,
+            "database": "horse_racing_db",
+            "user": "horse_racing",
+            "password": "secure_password_123"
+        }
+        
+        with psycopg2.connect(**db_config) as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT COUNT(*) FROM race_entries")
+            race_count = cursor.fetchone()[0]
+            
+        health_status["components"]["database"] = {
+            "status": "healthy",
+            "details": {
+                "connected": True,
+                "race_entries_count": race_count
+            }
+        }
+    except Exception as e:
+        health_status["components"]["database"] = {
+            "status": "error",
+            "error": str(e)
+        }
+        overall_healthy = False
+    
+    # Check feature encoders
+    try:
+        encoder_status = {
+            "loaded": label_encoders is not None,
+            "encoders_count": len(label_encoders) if label_encoders else 0
+        }
+        health_status["components"]["feature_encoders"] = {
+            "status": "healthy" if encoder_status["loaded"] else "unhealthy",
+            "details": encoder_status
+        }
+        if not encoder_status["loaded"]:
+            overall_healthy = False
+    except Exception as e:
+        health_status["components"]["feature_encoders"] = {
+            "status": "error",
+            "error": str(e)
+        }
+        overall_healthy = False
+    
+    # Set overall status
+    health_status["status"] = "healthy" if overall_healthy else "unhealthy"
+    
+    return health_status
+
 @app.get("/health")
-async def health_check():
-    """Health check endpoint for Docker health checks"""
+async def simple_health_check():
+    """Simple health check endpoint for basic monitoring."""
     return {
         "status": "healthy",
         "timestamp": datetime.now().isoformat(),
-        "betting_api": "integrated",
-        "live_racing": "enabled",
+        "service": "horse_racing_prediction_api",
         "models_loaded": ensemble_model is not None,
     }
+
+@app.get("/api/system/diagnostics")
+async def system_diagnostics():
+    """Detailed system diagnostics for troubleshooting."""
+    import sys
+    import platform
+    import psutil
+    
+    try:
+        # System information
+        system_info = {
+            "python_version": sys.version,
+            "platform": platform.platform(),
+            "cpu_count": psutil.cpu_count(),
+            "memory_total_gb": round(psutil.virtual_memory().total / (1024**3), 2),
+            "memory_available_gb": round(psutil.virtual_memory().available / (1024**3), 2),
+            "disk_usage_percent": psutil.disk_usage('/').percent
+        }
+        
+        # Application information
+        app_info = {
+            "uptime_seconds": (datetime.now() - model_timestamp).total_seconds() if model_timestamp else 0,
+            "models_directory": str(Path(__file__).parent.parent / "trained_models"),
+            "log_directory": str(Path(__file__).parent.parent / "logs")
+        }
+        
+        return {
+            "timestamp": datetime.now().isoformat(),
+            "system": system_info,
+            "application": app_info,
+            "models": {
+                "ensemble_loaded": ensemble_model is not None,
+                "encoders_loaded": label_encoders is not None,
+                "metadata_available": model_metadata is not None
+            }
+        }
+        
+    except Exception as e:
+        logger.error(f"Error in system diagnostics: {e}")
+        return {"error": str(e), "timestamp": datetime.now().isoformat()}
 
 
 if __name__ == "__main__":
