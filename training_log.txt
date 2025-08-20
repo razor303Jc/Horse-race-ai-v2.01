@@ -1,0 +1,55 @@
+/home/jc/.local/lib/python3.12/site-packages/pandas/core/arrays/masked.py:61: UserWarning: Pandas requires version '1.3.6' or newer of 'bottleneck' (version '1.3.5' currently installed).
+  from pandas.core import (
+2025-08-20 18:58:32,551 - INFO - 🚀 Advanced Metrics ML Trainer initialized
+2025-08-20 18:58:32,551 - INFO - 🚀 Starting complete advanced metrics ML training
+2025-08-20 18:58:32,551 - INFO - 📊 Loading training data from data/ml_training_data/consolidated_training_20250820_183657.json
+2025-08-20 18:58:32,561 - INFO - ✅ Loaded 243 historical records with targets
+2025-08-20 18:58:32,561 - INFO - ✅ Loaded 720 current prediction records
+2025-08-20 18:58:32,561 - INFO - 🔧 Preparing features for training
+2025-08-20 18:58:32,566 - INFO - ✅ Features prepared: 12 total features
+2025-08-20 18:58:32,566 - INFO - 📊 Training with 243 historical records
+2025-08-20 18:58:32,566 - INFO - 🎯 Training win probability models
+2025-08-20 18:58:32,575 - INFO -   Training random_forest
+2025-08-20 18:58:33,007 - INFO -     random_forest: Accuracy=1.000, F1=1.000, AUC=1.000
+2025-08-20 18:58:33,007 - INFO -   Training gradient_boosting
+2025-08-20 18:58:33,132 - INFO -     gradient_boosting: Accuracy=1.000, F1=1.000, AUC=1.000
+2025-08-20 18:58:33,132 - INFO -   Training logistic_regression
+2025-08-20 18:58:33,141 - INFO -     logistic_regression: Accuracy=0.980, F1=0.909, AUC=0.996
+2025-08-20 18:58:33,141 - INFO -   Training neural_network
+2025-08-20 18:58:33,953 - INFO -     neural_network: Accuracy=1.000, F1=1.000, AUC=1.000
+2025-08-20 18:58:34,475 - INFO -     Ensemble: Accuracy=1.000, F1=1.000, AUC=1.000
+2025-08-20 18:58:34,475 - INFO - 🏁 Training finishing position models
+2025-08-20 18:58:34,483 - INFO -   Training random_forest
+2025-08-20 18:58:34,822 - INFO -     random_forest: MAE=0.485, RMSE=0.789, R²=0.924
+2025-08-20 18:58:34,822 - INFO -   Training gradient_boosting
+2025-08-20 18:58:34,969 - INFO -     gradient_boosting: MAE=0.437, RMSE=0.896, R²=0.901
+2025-08-20 18:58:34,969 - INFO -   Training ridge_regression
+2025-08-20 18:58:34,971 - INFO -     ridge_regression: MAE=0.797, RMSE=1.001, R²=0.877
+2025-08-20 18:58:34,971 - INFO -   Training neural_network
+2025-08-20 18:58:35,197 - INFO -     neural_network: MAE=1.053, RMSE=1.356, R²=0.774
+2025-08-20 18:58:35,689 - INFO -     Ensemble: MAE=0.542, RMSE=0.790, R²=0.923
+2025-08-20 18:58:35,689 - INFO - 🥉 Training place probability models
+2025-08-20 18:58:35,698 - INFO -   Training random_forest
+2025-08-20 18:58:36,073 - INFO -     random_forest: Accuracy=1.000, F1=1.000, AUC=1.000
+2025-08-20 18:58:36,073 - INFO -   Training gradient_boosting
+2025-08-20 18:58:36,159 - INFO -     gradient_boosting: Accuracy=1.000, F1=1.000, AUC=1.000
+2025-08-20 18:58:36,159 - INFO -   Training logistic_regression
+2025-08-20 18:58:36,167 - INFO -     logistic_regression: Accuracy=1.000, F1=1.000, AUC=1.000
+2025-08-20 18:58:36,547 - INFO -     Ensemble: Accuracy=1.000, F1=1.000, AUC=1.000
+2025-08-20 18:58:37,425 - INFO - 💾 Models saved to models/advanced_metrics_models_20250820_185836.joblib
+2025-08-20 18:58:37,425 - INFO - 💾 Individual models saved with timestamp 20250820_185836
+2025-08-20 18:58:37,426 - INFO - 📋 Training report saved to reports/advanced_metrics_training_report_20250820_185837.txt
+2025-08-20 18:58:37,426 - INFO - ✅ Complete training pipeline finished successfully!
+🎯 Advanced Metrics ML Training System
+=====================================
+
+🎉 Training completed!
+📁 Models saved to: models/advanced_metrics_models_20250820_185836.joblib
+🔧 Total models trained: 14
+📊 Features used: 12
+
+🏆 Win Probability Ensemble Model Ready
+🏁 Finishing Position Ensemble Model Ready
+🥉 Place Probability Ensemble Model Ready
+
+✅ All models ready for production use!
