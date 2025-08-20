@@ -17,8 +17,9 @@ import psycopg2
 import uvicorn
 from fastapi import FastAPI, HTTPException, Response
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
 from psycopg2.extras import RealDictCursor
 
 # Setup logging
@@ -30,6 +31,9 @@ project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
 
 app = FastAPI(title="Horse Racing AI API", version="2.0")
+
+# Setup templates
+templates = Jinja2Templates(directory="templates")
 
 # Enable CORS
 app.add_middleware(
@@ -53,7 +57,20 @@ DB_PARAMS = {
 def get_db_connection():
     """Get database connection"""
     try:
-        return psycopg2.connect(**DB_PARAMS, cursor_factory=RealDictCursor)
+        # Use DATABASE_URL from environment (for Docker) or fallback to localhost
+        database_url = os.environ.get("DATABASE_URL")
+        if database_url:
+            return psycopg2.connect(database_url, cursor_factory=RealDictCursor)
+        else:
+            # Fallback for local development
+            return psycopg2.connect(
+                host="localhost",
+                port=5434,
+                database="horse_racing_db",
+                user="horse_racing",
+                password="secure_password_123",
+                cursor_factory=RealDictCursor,
+            )
     except Exception as e:
         print(f"Database connection failed: {e}")
         return None
@@ -135,32 +152,42 @@ async def get_real_race_cards():
     try:
         cursor = conn.cursor()
 
-        # Query for race cards with horse details
+        # Query for race cards with horse details using new schema
         query = """
         SELECT 
             rc.race_id,
-            rc.horse_name,
-            rc.jockey_name,
-            rc.trainer_name,
-            rc.horse_age,
-            rc.horse_weight_kg,
-            rc.handicap_weight,
-            rc.draw,
-            rc.barrier,
-            rc.form,
-            rc.win_odds,
-            rc.place_odds,
-            rc.last_run_days,
-            rc.career_wins,
-            rc.career_runs,
-            rc.distance_record,
-            rc.track_record
-        FROM records rc
-        WHERE rc.horse_name != '0' 
-        AND rc.horse_name IS NOT NULL
-        AND rc.win_odds IS NOT NULL
-        ORDER BY rc.race_id, CAST(rc.win_odds AS NUMERIC) ASC
-        LIMIT 50;
+            rc.race_number,
+            rc.race_time,
+            rc.course,
+            rc.race_name,
+            rc.class,
+            rc.distance,
+            rc.surface,
+            rc.prize,
+            rc.runners,
+            h.name as horse_name,
+            h.age as horse_age,
+            h.country as horse_country,
+            h.color as horse_color,
+            h.sex as horse_sex,
+            h.total_races,
+            h.wins,
+            h.percentage_wins,
+            re.horse_number,
+            re.draw,
+            re.weight_kg,
+            re.jockey,
+            re.trainer,
+            re.odds,
+            re.favourite_position,
+            re.timeform_comments as form,
+            re.horse_rate as official_rating
+        FROM race_entries re
+        JOIN race_cards rc ON re.race_id = rc.race_id
+        JOIN horses h ON re.horse_id = h.horse_id
+        WHERE rc.race_date = CURRENT_DATE
+        ORDER BY rc.race_number, re.horse_number
+        LIMIT 200;
         """
 
         cursor.execute(query)
@@ -169,59 +196,68 @@ async def get_real_race_cards():
         # Group entries by race_id
         races = {}
         for entry in entries:
-            race_id = entry["race_id"] or f"race_{len(races) + 1}"
+            race_id = str(entry["race_id"])
 
             if race_id not in races:
-                races[race_id] = {"race_id": race_id, "horses": [], "total_runners": 0}
+                races[race_id] = {
+                    "race_id": race_id,
+                    "race_number": entry["race_number"],
+                    "race_time": (
+                        entry["race_time"].strftime("%H:%M")
+                        if entry["race_time"]
+                        else "TBA"
+                    ),
+                    "course": entry["course"],
+                    "race_name": entry["race_name"] or f"Race {entry['race_number']}",
+                    "class": entry["class"],
+                    "distance": entry["distance"],
+                    "surface": entry["surface"],
+                    "prize": entry["prize"],
+                    "runners": entry["runners"],
+                    "horses": [],
+                    "total_runners": 0,
+                }
 
             # Calculate win probability from odds
             try:
-                odds_str = entry["win_odds"]
+                odds_str = entry["odds"] or "10/1"
                 if "/" in odds_str:  # Fractional odds like "5/1"
                     num, den = map(float, odds_str.split("/"))
                     decimal_odds = (num / den) + 1
                 else:
                     decimal_odds = float(odds_str)
-
                 probability = (1 / decimal_odds) * 100
-            except:
+            except (ValueError, TypeError, ZeroDivisionError):
                 probability = 0
                 decimal_odds = 0
 
             # Calculate win rate
-            wins = entry["career_wins"] or 0
-            runs = entry["career_runs"] or 0
-            win_rate = (wins / runs * 100) if runs > 0 else 0
+            wins = entry["wins"] or 0
+            total_races = entry["total_races"] or 0
+            win_rate = (wins / total_races * 100) if total_races > 0 else 0
 
             horse_data = {
-                "horse_name": entry["horse_name"],
-                "jockey_name": (
-                    entry["jockey_name"] if entry["jockey_name"] != "Unknown" else "TBA"
-                ),
-                "trainer_name": (
-                    entry["trainer_name"]
-                    if entry["trainer_name"] != "Unknown"
-                    else "TBA"
-                ),
+                "horse_name": entry["horse_name"] or "Unknown",
+                "horse_number": entry["horse_number"],
+                "jockey": entry["jockey"] if entry["jockey"] != "Unknown" else "TBA",
+                "trainer": entry["trainer"] if entry["trainer"] != "Unknown" else "TBA",
                 "age": entry["horse_age"],
-                "weight_kg": (
-                    float(entry["horse_weight_kg"]) if entry["horse_weight_kg"] else 0
-                ),
-                "handicap_weight": (
-                    float(entry["handicap_weight"]) if entry["handicap_weight"] else 0
-                ),
+                "country": entry["horse_country"],
+                "color": entry["horse_color"],
+                "sex": entry["horse_sex"],
+                "weight_kg": float(entry["weight_kg"]) if entry["weight_kg"] else 0,
                 "draw": entry["draw"],
-                "barrier": entry["barrier"],
                 "form": entry["form"] or "N/A",
-                "win_odds": entry["win_odds"],
-                "place_odds": entry["place_odds"],
+                "odds": entry["odds"] or "N/A",
+                "favourite_position": entry["favourite_position"],
                 "win_probability": round(probability, 1),
                 "decimal_odds": round(decimal_odds, 2),
-                "last_run_days": entry["last_run_days"],
-                "career_record": f"{wins}/{runs}",
+                "career_record": (
+                    f"{int(wins)}/{int(total_races)}" if total_races else "0/0"
+                ),
                 "win_rate": round(win_rate, 1),
-                "distance_record": entry["distance_record"],
-                "track_record": entry["track_record"],
+                "percentage_wins": entry["percentage_wins"],
+                "official_rating": entry["official_rating"],
             }
 
             races[race_id]["horses"].append(horse_data)
@@ -230,8 +266,8 @@ async def get_real_race_cards():
         cursor.close()
         conn.close()
 
-        # Convert to list format
-        race_list = list(races.values())
+        # Convert to list format and sort by race number
+        race_list = sorted(list(races.values()), key=lambda x: x["race_number"] or 0)
 
         return {
             "total_races": len(race_list),
@@ -257,27 +293,144 @@ async def get_race_details(race_id: str):
     try:
         cursor = conn.cursor()
 
-        # Get race information from races_cards table
+        # Get race information from race_cards table
         race_query = """
         SELECT 
+            race_id,
             race_number,
             race_time,
             course,
             race_type,
-            date,
+            race_date,
             race_name,
-            class_level,
+            class,
             distance,
             surface,
-            field_size,
-            prize_money
-        FROM races_cards
-        WHERE id = %s OR race_number::text = %s
+            prize,
+            runners
+        FROM race_cards
+        WHERE race_id = %s
         LIMIT 1;
         """
 
-        cursor.execute(race_query, (race_id, race_id))
+        cursor.execute(race_query, (race_id,))
         race_info = cursor.fetchone()
+
+        if not race_info:
+            raise HTTPException(status_code=404, detail="Race not found")
+
+        # Get horse entries for this race
+        entries_query = """
+        SELECT 
+            h.name as horse_name,
+            h.age as horse_age,
+            h.country as horse_country,
+            h.color as horse_color,
+            h.sex as horse_sex,
+            h.total_races,
+            h.wins,
+            h.percentage_wins,
+            re.horse_number,
+            re.draw,
+            re.weight_kg,
+            re.jockey,
+            re.trainer,
+            re.odds,
+            re.favourite_position,
+            re.timeform_comments as form,
+            re.horse_rate as official_rating
+        FROM race_entries re
+        JOIN horses h ON re.horse_id = h.horse_id
+        WHERE re.race_id = %s
+        ORDER BY re.horse_number;
+        """
+
+        cursor.execute(entries_query, (race_id,))
+        entries = cursor.fetchall()
+
+        # Process entries
+        horses = []
+        for entry in entries:
+            # Calculate win probability from odds
+            try:
+                odds_str = entry["odds"] or "10/1"
+                if "/" in odds_str:
+                    num, den = map(float, odds_str.split("/"))
+                    decimal_odds = (num / den) + 1
+                else:
+                    decimal_odds = float(odds_str)
+                probability = (1 / decimal_odds) * 100
+            except (ValueError, TypeError, ZeroDivisionError):
+                probability = 0
+                decimal_odds = 0
+
+            # Calculate win rate
+            wins = entry["wins"] or 0
+            total_races = entry["total_races"] or 0
+            win_rate = (wins / total_races * 100) if total_races > 0 else 0
+
+            horse_data = {
+                "horse_name": entry["horse_name"] or "Unknown",
+                "horse_number": entry["horse_number"],
+                "jockey": entry["jockey"] if entry["jockey"] != "Unknown" else "TBA",
+                "trainer": entry["trainer"] if entry["trainer"] != "Unknown" else "TBA",
+                "age": entry["horse_age"],
+                "country": entry["horse_country"],
+                "color": entry["horse_color"],
+                "sex": entry["horse_sex"],
+                "weight_kg": float(entry["weight_kg"]) if entry["weight_kg"] else 0,
+                "draw": entry["draw"],
+                "form": entry["form"] or "N/A",
+                "odds": entry["odds"] or "N/A",
+                "favourite_position": entry["favourite_position"],
+                "win_probability": round(probability, 1),
+                "decimal_odds": round(decimal_odds, 2),
+                "career_record": (
+                    f"{int(wins)}/{int(total_races)}" if total_races else "0/0"
+                ),
+                "win_rate": round(win_rate, 1),
+                "percentage_wins": entry["percentage_wins"],
+                "official_rating": entry["official_rating"],
+            }
+            horses.append(horse_data)
+
+        cursor.close()
+        conn.close()
+
+        # Format race details
+        race_details = {
+            "race_id": race_info["race_id"],
+            "race_number": race_info["race_number"],
+            "race_time": (
+                race_info["race_time"].strftime("%H:%M")
+                if race_info["race_time"]
+                else "TBA"
+            ),
+            "course": race_info["course"],
+            "race_type": race_info["race_type"],
+            "race_date": (
+                race_info["race_date"].strftime("%Y-%m-%d")
+                if race_info["race_date"]
+                else ""
+            ),
+            "race_name": race_info["race_name"] or f"Race {race_info['race_number']}",
+            "class": race_info["class"],
+            "distance": race_info["distance"],
+            "surface": race_info["surface"],
+            "prize": race_info["prize"],
+            "total_runners": race_info["runners"],
+            "horses": horses,
+            "data_source": "live_database",
+            "timestamp": datetime.now().isoformat(),
+        }
+
+        return race_details
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        conn.close()
+        raise HTTPException(status_code=500, detail=f"Database query failed: {str(e)}")
 
         # Get horses for this race
         horses_query = """
@@ -333,111 +486,69 @@ async def get_race_details(race_id: str):
 
 @app.get("/api/daily_races")
 async def get_daily_races():
-    """Get today's races from real database data"""
+    """Get all races for today"""
 
     conn = get_db_connection()
     if not conn:
-        # Fallback to mock data if database unavailable
-        return get_mock_daily_races()
+        raise HTTPException(status_code=503, detail="Database connection failed")
 
     try:
         cursor = conn.cursor()
 
-        # Get today's races from races_cards table
-        today = date.today()
+        # Get today's races
         query = """
         SELECT 
-            id as race_id,
+            race_id,
             race_number,
             race_time,
             course,
-            race_type,
-            date,
             race_name,
-            class_level,
+            class,
             distance,
             surface,
-            field_size,
-            prize_money
-        FROM races_cards
-        WHERE date = %s OR date >= CURRENT_DATE - INTERVAL '7 days'
-        ORDER BY race_time ASC
-        LIMIT 20;
+            prize,
+            runners
+        FROM race_cards
+        WHERE race_date = CURRENT_DATE
+        ORDER BY race_time, race_number;
         """
 
-        cursor.execute(query, (today,))
+        cursor.execute(query)
         races = cursor.fetchall()
 
-        if not races:
-            # If no races today, get recent races
-            cursor.execute(
-                """
-                SELECT 
-                    id as race_id,
-                    race_number,
-                    race_time,
-                    course,
-                    race_type,
-                    date,
-                    race_name,
-                    class_level,
-                    distance,
-                    surface,
-                    field_size,
-                    prize_money
-                FROM races_cards
-                ORDER BY date DESC, race_time ASC
-                LIMIT 20;
-            """
-            )
-            races = cursor.fetchall()
+        # Format races data
+        daily_races = []
+        for race in races:
+            race_data = {
+                "race_id": race["race_id"],
+                "race_number": race["race_number"],
+                "race_time": (
+                    race["race_time"].strftime("%H:%M") if race["race_time"] else "TBA"
+                ),
+                "course": race["course"],
+                "race_name": race["race_name"] or f"Race {race['race_number']}",
+                "class": race["class"],
+                "distance": race["distance"],
+                "surface": race["surface"],
+                "prize": race["prize"],
+                "runners": race["runners"],
+            }
+            daily_races.append(race_data)
 
         cursor.close()
         conn.close()
 
-        # Format races for frontend
-        formatted_races = []
-        for race in races:
-            formatted_race = {
-                "race_id": str(race["race_id"]),
-                "meeting": race["course"] if race["course"] != "0" else "Unknown Track",
-                "race_number": race["race_number"] or 1,
-                "time": race["race_time"] or "15:00",
-                "race_name": (
-                    race["race_name"]
-                    if race["race_name"] != "0"
-                    else f"Race {race['race_number']}"
-                ),
-                "class": race["class_level"] or "Unknown",
-                "distance": race["distance"] or "Unknown",
-                "distance_meters": 1609,  # Default 1 mile
-                "going": "Good",  # Default
-                "prize_money": race["prize_money"] or 5000,
-                "field_size": race["field_size"] or 8,
-                "age_restriction": "3yo+",
-                "race_type": race["race_type"] if race["race_type"] != "0" else "Flat",
-                "surface": race["surface"] if race["surface"] != "0" else "Turf",
-                "quality_rating": "B",
-                "predicted_competitiveness": 7.5,
-                "betting_volume": 50000.0,
-                "favorite": {"horse": "TBA", "odds": 3.0, "probability": 33.3},
-                "race_insights": ["Real data from database"],
-            }
-            formatted_races.append(formatted_race)
-
         return {
-            "date": today.isoformat(),
-            "total_races": len(formatted_races),
-            "total_meetings": len(set(race["meeting"] for race in formatted_races)),
+            "date": datetime.now().strftime("%Y-%m-%d"),
+            "total_races": len(daily_races),
+            "races": daily_races,
             "data_source": "live_database",
-            "races": formatted_races,
+            "timestamp": datetime.now().isoformat(),
         }
 
     except Exception as e:
         conn.close()
-        # Fallback to mock data on error
-        print(f"Database error: {e}")
-        return get_mock_daily_races()
+        raise HTTPException(status_code=500, detail=f"Database query failed: {str(e)}")
 
 
 def get_mock_daily_races():
@@ -786,6 +897,20 @@ def serve_react_app():
         )
         return response
     return {"message": "Horse Racing AI API - Build React app first"}
+
+
+@app.get("/race_cards", response_class=HTMLResponse)
+async def race_cards_page():
+    """Serve the race cards HTML template"""
+    template_path = (
+        Path(__file__).parent.parent.parent / "templates" / "race_cards.html"
+    )
+    if template_path.exists():
+        with open(template_path, "r", encoding="utf-8") as f:
+            content = f.read()
+        return HTMLResponse(content=content)
+    else:
+        raise HTTPException(status_code=404, detail="Race cards template not found")
 
 
 @app.get("/")

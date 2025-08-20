@@ -1,123 +1,58 @@
 /**
  * API Service for Horse Racing AI Frontend
  * 
- * This service handles all API calls to replace mock data in React components
- * with real backend integration.
+ * This service handles all API calls using REAL data from PostgreSQL database.
+ * NO MOCK DATA - All endpoints connect to live database at localhost:3000
  */
 
-// API Base URL - adjust based on your deployment
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000/api';
+// API Base URL - pointing to the real backend with PostgreSQL data
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000/api';
 
-// API Response Types
-export interface BettingRecommendation {
+// Real API Response Types (matching PostgreSQL database structure)
+export interface RealHorse {
   horse_name: string;
-  confidence: number;
-  current_odds: number;
-  value: number;
-  stake_recommendation: number;
-  recommended_action: string;
-  race_id?: string;
-  race_time?: string;
-  venue?: string;
+  horse_number: number | null;
+  jockey: string;
+  trainer: string;
+  age: number;
+  weight_kg: number | null;
+  odds: string | null;
+  form: string | null;
+  draw: number | null;
+  silk_colors: string | null;
 }
 
-export interface PaperBet {
-  bet_id: string;
-  horse_name: string;
-  stake: number;
-  odds: number;
-  status: string;
-  pnl: number;
-  timestamp: string;
-}
-
-export interface BettingPerformance {
-  account_balance: number;
-  daily_pnl: number;
-  win_rate: number;
-  roi: number;
-  total_bets: number;
-  active_bets: number;
-  recent_performance?: Array<{
-    date: string;
-    pnl: number;
-  }>;
-}
-
-export interface Race {
-  race_id: string;
-  meeting: string;
+export interface RealRaceCard {
+  race_id: number;
   race_number: number;
-  time: string;
+  race_time: string;
+  course: string;
+  race_type: string;
+  race_date: string;
   race_name: string;
   class: string;
   distance: string;
-  distance_meters: number;
-  going: string;
-  prize_money: number;
-  field_size: number;
-  age_restriction: string;
-  race_type: string;
   surface: string;
-  quality_rating: string;
-  predicted_competitiveness: number;
-  betting_volume: number;
-  favorite: {
-    horse: string;
-    odds: number;
-    probability: number;
-  };
-  race_insights: string[];
+  prize: string;
+  total_runners: number;
+  horses: RealHorse[];
 }
 
-export interface DailyRacesData {
+export interface DailyRacesResponse {
+  date: string;
   total_races: number;
-  total_meetings: number;
-  daily_stats: {
-    total_prize_money: number;
-    group_races: number;
-    average_field_size: number;
-    handicaps: number;
-    maiden_races: number;
-    chase_hurdle_races: number;
-    quality_distribution: Record<string, number>;
-  };
-  races: Race[];
-}
-
-export interface Horse {
-  horse_name: string;
-  jockey_name: string;
-  trainer_name: string;
-  age: number;
-  weight_kg: number;
-  win_odds: number;
-  win_probability?: number;
-  career_record: string;
-  recent_form?: string;
-  position?: number;
-  silk_colors?: string;
-}
-
-export interface RaceCard {
-  race_id: string;
-  race_name: string;
-  venue: string;
-  time: string;
-  distance: string;
-  class: number;
-  going: string;
-  prize_money: number;
-  field_size: number;
-  horses: Horse[];
-}
-
-export interface RaceCardsData {
-  total_races: number;
-  total_horses: number;
-  data_source: string;
-  timestamp: string;
-  races: RaceCard[];
+  races: Array<{
+    race_id: number;
+    race_number: number;
+    race_time: string;
+    course: string;
+    race_name: string;
+    class: string;
+    distance: string;
+    surface: string;
+    prize: string;
+    runners: number;
+  }>;
 }
 
 // Error handling
@@ -138,15 +73,6 @@ async function apiCall<T>(endpoint: string, options: RequestInit = {}): Promise<
     },
   };
 
-  // Add auth token if available
-  const token = localStorage.getItem('auth_token');
-  if (token) {
-    defaultOptions.headers = {
-      ...defaultOptions.headers,
-      'Authorization': `Bearer ${token}`,
-    };
-  }
-
   const response = await fetch(url, {
     ...defaultOptions,
     ...options,
@@ -163,213 +89,115 @@ async function apiCall<T>(endpoint: string, options: RequestInit = {}): Promise<
   return response.json();
 }
 
-// API Service Class
+// API Service Class - REAL DATA ONLY
 export class HorseRacingAPI {
-  // Daily Races API
-  static async getDailyRaces(): Promise<DailyRacesData> {
+  
+  // Get daily races from PostgreSQL database
+  static async getDailyRaces(): Promise<DailyRacesResponse> {
     try {
-      const data = await apiCall<DailyRacesData>('/daily_races');
+      const data = await apiCall<DailyRacesResponse>('/daily_races');
+      console.log('Real daily races loaded:', data.total_races, 'races');
       return data;
     } catch (error) {
       console.error('Error fetching daily races:', error);
-      // Return fallback data for development
-      return this.getFallbackDailyRaces();
+      throw error; // No fallback - we want real data only
     }
   }
 
-  // Real Race Cards API
-  static async getRealRaceCards(): Promise<RaceCardsData> {
+  // Get detailed race information with horses
+  static async getRaceDetails(raceId: number): Promise<RealRaceCard> {
     try {
-      const data = await apiCall<RaceCardsData>('/real_race_cards');
-      return data;
-    } catch (error) {
-      console.error('Error fetching real race cards:', error);
-      return this.getFallbackRaceCards();
-    }
-  }
-
-  // Race Details API
-  static async getRaceDetails(raceId: string): Promise<RaceCard> {
-    try {
-      const data = await apiCall<RaceCard>(`/race_details/${raceId}`);
+      const data = await apiCall<RealRaceCard>(`/race_details/${raceId}`);
+      console.log('Real race details loaded:', data.race_name, 'with', data.total_runners, 'runners');
       return data;
     } catch (error) {
       console.error('Error fetching race details:', error);
-      throw error;
+      throw error; // No fallback - we want real data only
     }
   }
 
-  // Betting Recommendations API
-  static async getBettingRecommendations(): Promise<BettingRecommendation[]> {
-    try {
-      const response = await apiCall<{
-        status: string;
-        recommendations: BettingRecommendation[];
-        timestamp: string;
-      }>('/betting/recommendations');
-      return response.recommendations;
-    } catch (error) {
-      console.error('Error fetching betting recommendations:', error);
-      return this.getFallbackRecommendations();
-    }
-  }
-
-  // Stage 8 Performance API
-  static async getStage8Performance(): Promise<BettingPerformance> {
-    try {
-      const data = await apiCall<BettingPerformance>('/stage8/performance');
-      return data;
-    } catch (error) {
-      console.error('Error fetching Stage 8 performance:', error);
-      return this.getFallbackPerformance();
-    }
-  }
-
-  // Live Races API
-  static async getLiveRaces(): Promise<Race[]> {
-    try {
-      const response = await apiCall<{
-        status: string;
-        live_races: Race[];
-        timestamp: string;
-        total_live: number;
-      }>('/races/live');
-      return response.live_races;
-    } catch (error) {
-      console.error('Error fetching live races:', error);
-      return [];
-    }
-  }
-
-  // Fallback data methods for development/offline mode
-  private static getFallbackDailyRaces(): DailyRacesData {
+  // Transform daily races data for UI consumption
+  static transformDailyRacesToRaceCards(dailyRaces: DailyRacesResponse) {
     return {
-      total_races: 45,
-      total_meetings: 8,
-      daily_stats: {
-        total_prize_money: 2450000,
-        group_races: 3,
-        average_field_size: 12.5,
-        handicaps: 18,
-        maiden_races: 8,
-        chase_hurdle_races: 12,
-        quality_distribution: {
-          "A+": 3, "A": 8, "A-": 12, "B+": 15, "B": 7
-        }
-      },
-      races: [
-        {
-          race_id: "daily_001",
-          meeting: "Cheltenham",
-          race_number: 1,
-          time: "13:30",
-          race_name: "Maiden Hurdle",
-          class: "4",
-          distance: "2m",
-          distance_meters: 3200,
-          going: "Good to Soft",
-          prize_money: 15000,
-          field_size: 12,
-          age_restriction: "4yo+",
-          race_type: "Hurdle",
-          surface: "Turf",
-          quality_rating: "B+",
-          predicted_competitiveness: 85.2,
-          betting_volume: 125000,
-          favorite: {
-            horse: "Thunder Strike",
-            odds: 3.5,
-            probability: 28.6
-          },
-          race_insights: [
-            "Strong field with competitive handicap marks",
-            "Weather conditions favor front runners"
-          ]
-        }
-      ]
-    };
-  }
-
-  private static getFallbackRaceCards(): RaceCardsData {
-    return {
-      total_races: 32,
-      total_horses: 384,
-      data_source: "fallback_data",
+      total_races: dailyRaces.total_races,
+      total_horses: dailyRaces.races.reduce((sum, race) => sum + race.runners, 0),
+      data_source: "postgresql_database",
       timestamp: new Date().toISOString(),
-      races: [
-        {
-          race_id: "real_001",
-          race_name: "Class 2 Handicap",
-          venue: "Newmarket",
-          time: "15:30",
-          distance: "1m 2f",
-          class: 2,
-          going: "Good",
-          prize_money: 35000,
-          field_size: 14,
-          horses: [
-            {
-              horse_name: "Thunder Strike",
-              jockey_name: "R. Moore",
-              trainer_name: "A. O'Brien",
-              age: 4,
-              weight_kg: 59.0,
-              win_odds: 3.5,
-              win_probability: 28.6,
-              career_record: "3-2-1",
-              recent_form: "1-2-3",
-              position: 1,
-              silk_colors: "Blue, white stars"
-            }
-          ]
-        }
-      ]
+      races: dailyRaces.races.map(race => ({
+        race_id: race.race_id.toString(),
+        race_name: race.race_name,
+        venue: race.course,
+        time: race.race_time,
+        distance: race.distance,
+        class: parseInt(race.class.replace('Class ', '') || '0'),
+        going: race.surface,
+        prize_money: parseInt(race.prize.replace(/[£,]/g, '') || '0'),
+        field_size: race.runners,
+        horses: [] // Will be populated when we fetch detailed race data
+      }))
     };
   }
 
-  private static getFallbackRecommendations(): BettingRecommendation[] {
-    return [
-      {
-        horse_name: "Thunder Strike",
-        confidence: 0.85,
-        current_odds: 3.5,
-        value: 0.12,
-        stake_recommendation: 8.5,
-        recommended_action: "BACK",
-        race_id: "rec_001",
-        race_time: "15:30",
-        venue: "Newmarket"
-      },
-      {
-        horse_name: "Lightning Bolt",
-        confidence: 0.78,
-        current_odds: 4.2,
-        value: 0.08,
-        stake_recommendation: 6.2,
-        recommended_action: "BACK",
-        race_id: "rec_002",
-        race_time: "16:05",
-        venue: "Cheltenham"
-      }
-    ];
+  // Get all race cards with basic info (no horse details)
+  static async getRaceCardsBasic() {
+    const dailyRaces = await this.getDailyRaces();
+    return this.transformDailyRacesToRaceCards(dailyRaces);
   }
 
-  private static getFallbackPerformance(): BettingPerformance {
-    return {
-      account_balance: 1245.67,
-      daily_pnl: 45.32,
-      win_rate: 72.5,
-      roi: 12.8,
-      total_bets: 89,
-      active_bets: 3,
-      recent_performance: [
-        { date: "2025-08-19", pnl: 45.32 },
-        { date: "2025-08-18", pnl: -12.50 },
-        { date: "2025-08-17", pnl: 67.89 }
-      ]
-    };
+  // Get race cards with full horse details for specific races
+  static async getRaceCardsWithHorses(raceIds?: number[]) {
+    try {
+      const dailyRaces = await this.getDailyRaces();
+      const racesToFetch = raceIds || dailyRaces.races.slice(0, 10).map(r => r.race_id); // Limit to first 10 races if no specific IDs
+      
+      const detailedRaces = await Promise.all(
+        racesToFetch.map(async (raceId) => {
+          try {
+            return await this.getRaceDetails(raceId);
+          } catch (error) {
+            console.warn(`Failed to load details for race ${raceId}:`, error);
+            return null;
+          }
+        })
+      );
+
+      const validRaces = detailedRaces.filter(race => race !== null) as RealRaceCard[];
+
+      return {
+        total_races: validRaces.length,
+        total_horses: validRaces.reduce((sum, race) => sum + race.total_runners, 0),
+        data_source: "postgresql_database_detailed",
+        timestamp: new Date().toISOString(),
+        races: validRaces.map(race => ({
+          race_id: race.race_id.toString(),
+          race_name: race.race_name,
+          venue: race.course,
+          time: race.race_time,
+          distance: race.distance,
+          class: parseInt(race.class.replace('Class ', '') || '0'),
+          going: race.surface,
+          prize_money: parseInt(race.prize.replace(/[£,]/g, '') || '0'),
+          field_size: race.total_runners,
+          horses: race.horses.map((horse, index) => ({
+            horse_name: horse.horse_name,
+            jockey_name: horse.jockey,
+            trainer_name: horse.trainer,
+            age: horse.age,
+            weight_kg: horse.weight_kg || 60,
+            win_odds: parseFloat(horse.odds?.replace('/1', '') || '10'),
+            win_probability: horse.odds ? (1 / (parseFloat(horse.odds.replace('/1', '')) + 1)) * 100 : 10,
+            career_record: horse.form || 'N/A',
+            recent_form: horse.form || 'N/A',
+            position: horse.horse_number || (index + 1),
+            silk_colors: horse.silk_colors
+          }))
+        }))
+      };
+    } catch (error) {
+      console.error('Error fetching race cards with horses:', error);
+      throw error; // No fallback - we want real data only
+    }
   }
 }
 
-// React hooks for API integration
 export default HorseRacingAPI;

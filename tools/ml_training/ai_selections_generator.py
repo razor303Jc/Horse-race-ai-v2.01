@@ -22,10 +22,11 @@ import psycopg2
 
 warnings.filterwarnings("ignore")
 
+
 # Setup structured logging with JSON format
 class StructuredFormatter(logging.Formatter):
     """Custom formatter for structured JSON logging."""
-    
+
     def format(self, record):
         log_entry = {
             "timestamp": datetime.utcnow().isoformat(),
@@ -34,16 +35,17 @@ class StructuredFormatter(logging.Formatter):
             "message": record.getMessage(),
             "module": record.module,
             "function": record.funcName,
-            "line": record.lineno
+            "line": record.lineno,
         }
-        
-        if hasattr(record, 'extra_data'):
+
+        if hasattr(record, "extra_data"):
             log_entry.update(record.extra_data)
-            
+
         if record.exc_info:
             log_entry["exception"] = self.formatException(record.exc_info)
-            
+
         return json.dumps(log_entry)
+
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -170,36 +172,55 @@ class AISelectionsGenerator:
         """Get cached database connection with enhanced error handling."""
         max_retries = 3
         retry_delay = 1
-        
+
         for attempt in range(max_retries):
             try:
                 if self._db_connection is None or self._db_connection.closed:
-                    logger.info("🔗 Establishing optimized database connection...", 
-                               extra={'extra_data': {'attempt': attempt + 1}})
+                    logger.info(
+                        "🔗 Establishing optimized database connection...",
+                        extra={"extra_data": {"attempt": attempt + 1}},
+                    )
                     self._db_connection = psycopg2.connect(**self.db_config)
-                    
+
                 # Test connection with a simple query
                 with self._db_connection.cursor() as cursor:
                     cursor.execute("SELECT 1")
                     cursor.fetchone()
-                    
+
                 logger.info("✅ Database connection established successfully")
                 return self._db_connection
-                
+
             except psycopg2.OperationalError as e:
-                logger.error(f"❌ Database connection failed (attempt {attempt + 1}): {e}",
-                           extra={'extra_data': {'error_type': 'OperationalError', 'attempt': attempt + 1}})
-                
+                logger.error(
+                    f"❌ Database connection failed (attempt {attempt + 1}): {e}",
+                    extra={
+                        "extra_data": {
+                            "error_type": "OperationalError",
+                            "attempt": attempt + 1,
+                        }
+                    },
+                )
+
                 if attempt < max_retries - 1:
                     import time
+
                     time.sleep(retry_delay)
                     retry_delay *= 2  # Exponential backoff
                 else:
-                    raise ConnectionError(f"Failed to connect to database after {max_retries} attempts")
-                    
+                    raise ConnectionError(
+                        f"Failed to connect to database after {max_retries} attempts"
+                    )
+
             except Exception as e:
-                logger.error(f"❌ Unexpected database error: {e}",
-                           extra={'extra_data': {'error_type': type(e).__name__, 'attempt': attempt + 1}})
+                logger.error(
+                    f"❌ Unexpected database error: {e}",
+                    extra={
+                        "extra_data": {
+                            "error_type": type(e).__name__,
+                            "attempt": attempt + 1,
+                        }
+                    },
+                )
                 raise
 
     def get_todays_races(self) -> pd.DataFrame:
@@ -796,14 +817,16 @@ class AISelectionsGenerator:
 
         start_time = time.time()
         session_id = -1
-        
+
         # Add initial health checks
         if not self.health_check():
             logger.error("❌ System health check failed - aborting execution")
             raise RuntimeError("System health check failed")
 
-        logger.info("🚀 Starting AI Racing Selections Generator", 
-                   extra={'extra_data': {'start_time': datetime.utcnow().isoformat()}})
+        logger.info(
+            "🚀 Starting AI Racing Selections Generator",
+            extra={"extra_data": {"start_time": datetime.utcnow().isoformat()}},
+        )
         logger.info("=" * 60)
 
         try:
@@ -815,22 +838,26 @@ class AISelectionsGenerator:
                 logger.warning("⚠️ No races found for today - nothing to process")
                 return
 
-            logger.info(f"✅ Loaded {len(races_df)} race entries", 
-                       extra={'extra_data': {'race_count': len(races_df)}})
+            logger.info(
+                f"✅ Loaded {len(races_df)} race entries",
+                extra={"extra_data": {"race_count": len(races_df)}},
+            )
 
             # Engineer features with validation
             logger.info("⚙️ Engineering features...")
             features_df = self.engineer_features(races_df)
-            
+
             if features_df is None or len(features_df) == 0:
                 raise ValueError("Feature engineering failed - no features generated")
 
             # Generate predictions with model validation
             logger.info("🤖 Generating AI predictions...")
             predictions_df = self.generate_predictions(features_df)
-            
+
             if predictions_df is None or len(predictions_df) == 0:
-                raise ValueError("Prediction generation failed - no predictions created")
+                raise ValueError(
+                    "Prediction generation failed - no predictions created"
+                )
 
             # Store predictions to database with transaction handling
             logger.info("💾 Storing predictions to database...")
@@ -848,7 +875,7 @@ class AISelectionsGenerator:
             # Save report to file with error handling
             report_file = Path(f"ai_selections_{date.today().strftime('%Y%m%d')}.txt")
             try:
-                with open(report_file, "w", encoding='utf-8') as f:
+                with open(report_file, "w", encoding="utf-8") as f:
                     f.write(report)
                 logger.info(f"📁 Report saved successfully: {report_file}")
             except IOError as e:
@@ -871,26 +898,34 @@ class AISelectionsGenerator:
                     logger.warning(f"⚠️ Failed to update session metadata: {e}")
 
             # Log success metrics
-            logger.info("✅ AI selections generation completed successfully!", 
-                       extra={'extra_data': {
-                           'processing_time': processing_time,
-                           'session_id': session_id,
-                           'predictions_generated': len(predictions_df),
-                           'report_size_kb': file_size_kb
-                       }})
+            logger.info(
+                "✅ AI selections generation completed successfully!",
+                extra={
+                    "extra_data": {
+                        "processing_time": processing_time,
+                        "session_id": session_id,
+                        "predictions_generated": len(predictions_df),
+                        "report_size_kb": file_size_kb,
+                    }
+                },
+            )
 
         except Exception as e:
             # Comprehensive error handling
             error_type = type(e).__name__
             error_msg = str(e)
-            
-            logger.error(f"❌ Critical error in selections generation: {error_msg}", 
-                        extra={'extra_data': {
-                            'error_type': error_type,
-                            'session_id': session_id,
-                            'processing_time': time.time() - start_time,
-                            'traceback': traceback.format_exc()
-                        }})
+
+            logger.error(
+                f"❌ Critical error in selections generation: {error_msg}",
+                extra={
+                    "extra_data": {
+                        "error_type": error_type,
+                        "session_id": session_id,
+                        "processing_time": time.time() - start_time,
+                        "traceback": traceback.format_exc(),
+                    }
+                },
+            )
 
             # Update session with error if it was created
             if session_id > 0:
@@ -905,36 +940,40 @@ class AISelectionsGenerator:
     def health_check(self) -> bool:
         """Perform comprehensive system health check."""
         logger.info("🔍 Performing system health check...")
-        
+
         try:
             # Check database connectivity
             connection = self._get_db_connection()
             if connection is None or connection.closed:
                 logger.error("❌ Health check: Database connection failed")
                 return False
-                
+
             # Check models are loaded
             if not self.models or len(self.models) < 3:
-                logger.error(f"❌ Health check: Insufficient models loaded ({len(self.models)})")
+                logger.error(
+                    f"❌ Health check: Insufficient models loaded ({len(self.models)})"
+                )
                 return False
-                
+
             # Check scaler is available
             if self.scaler is None:
                 logger.error("❌ Health check: Feature scaler not loaded")
                 return False
-                
+
             # Check feature names are available
             if not self.feature_names or len(self.feature_names) < 10:
-                logger.error(f"❌ Health check: Insufficient features ({len(self.feature_names)})")
+                logger.error(
+                    f"❌ Health check: Insufficient features ({len(self.feature_names)})"
+                )
                 return False
-                
+
             logger.info("✅ System health check passed")
             return True
-            
+
         except Exception as e:
             logger.error(f"❌ Health check failed: {e}")
             return False
-            
+
     def _update_failed_session(self, session_id: int, error_msg: str) -> None:
         """Update session status to failed with error message."""
         try:
@@ -944,7 +983,7 @@ class AISelectionsGenerator:
                     """UPDATE ai_prediction_sessions 
                        SET status = 'FAILED', error_message = %s 
                        WHERE id = %s""",
-                    (error_msg, session_id)
+                    (error_msg, session_id),
                 )
                 connection.commit()
                 logger.info(f"✅ Updated failed session {session_id}")

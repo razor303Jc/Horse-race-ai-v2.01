@@ -49,10 +49,11 @@ from sklearn.preprocessing import OneHotEncoder, StandardScaler
 
 warnings.filterwarnings("ignore")
 
+
 # Enhanced structured logging setup
 class MLTrainingFormatter(logging.Formatter):
     """Custom formatter for ML training with performance metrics."""
-    
+
     def format(self, record):
         log_entry = {
             "timestamp": datetime.utcnow().isoformat(),
@@ -60,19 +61,20 @@ class MLTrainingFormatter(logging.Formatter):
             "component": "ML_TRAINER",
             "message": record.getMessage(),
             "module": record.module,
-            "function": record.funcName
+            "function": record.funcName,
         }
-        
-        if hasattr(record, 'metrics'):
+
+        if hasattr(record, "metrics"):
             log_entry["metrics"] = record.metrics
-            
-        if hasattr(record, 'model_info'):
+
+        if hasattr(record, "model_info"):
             log_entry["model_info"] = record.model_info
-            
+
         if record.exc_info:
             log_entry["exception"] = self.formatException(record.exc_info)
-            
+
         return json.dumps(log_entry)
+
 
 # Configure enhanced logging
 logger = logging.getLogger(__name__)

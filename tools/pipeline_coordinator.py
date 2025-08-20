@@ -156,27 +156,98 @@ class PipelineOrchestrator:
             logger.error(f"❌ Error checking downloads: {e}")
             return False
 
+    def check_manual_downloads(self):
+        """Check for manual download ZIP files"""
+        logger.info("🔍 Checking for manual downloads...")
+
+        try:
+            manual_dir = Path("/app/data/daily_downloads/manual_download")
+            if not manual_dir.exists():
+                logger.info("📂 No manual download directory found")
+                return False
+
+            # Check for ZIP files
+            zip_files = list(manual_dir.glob("*.zip"))
+            if not zip_files:
+                logger.info("📁 No ZIP files found in manual download directory")
+                return False
+
+            logger.info(f"✅ Found {len(zip_files)} ZIP files for processing")
+            for zip_file in zip_files:
+                logger.info(f"   📦 {zip_file.name}")
+
+            return True
+
+        except Exception as e:
+            logger.error(f"❌ Error checking manual downloads: {e}")
+            return False
+
+    def process_manual_downloads(self):
+        """Process manual downloads using file watcher"""
+        logger.info("⚙️ Processing manual downloads...")
+
+        try:
+            # Import and run file watcher
+            import sys
+
+            sys.path.append("/app/tools/automation")
+
+            from file_watcher_enhanced import FileWatcherEnhanced
+
+            watcher = FileWatcherEnhanced()
+            result = watcher.process_existing_files()
+
+            if result.get("success", False):
+                logger.info("✅ Manual downloads processed successfully")
+                processed_files = result.get("processed_files", [])
+                for file_info in processed_files:
+                    logger.info(f"   📦 Processed: {file_info}")
+                return True
+            else:
+                logger.error(
+                    f"❌ Manual download processing failed: {result.get('error', 'Unknown error')}"
+                )
+                return False
+
+        except Exception as e:
+            logger.error(f"❌ Error processing manual downloads: {e}")
+            import traceback
+
+            traceback.print_exc()
+            return False
+
     def run_pipeline_sequence(self):
         """Run the complete pipeline sequence"""
         logger.info("🚀 Starting pipeline sequence...")
 
-        # Stage 1: Data Validation (already done in auto-downloader)
-        self.mark_stage_complete("data_download", "Auto-downloader completed")
+        # Stage 1: Check for Manual Download Data
+        if self.check_manual_downloads():
+            self.mark_stage_complete("data_download", "Manual download data available")
 
-        # Stage 2: CSV Import
-        if self.run_csv_import():
-            self.mark_stage_complete("csv_import", "Database import successful")
-
-            # Stage 3: Data Preprocessing
-            if self.run_data_preprocessing():
+            # Stage 2: Process Manual Downloads
+            if self.process_manual_downloads():
                 self.mark_stage_complete(
-                    "data_preprocessing", "Data relationships processed"
+                    "manual_processing", "Manual downloads processed"
                 )
 
-                # Stage 4: Trigger ML Pipeline
-                self.trigger_ml_pipeline()
+                # Stage 3: CSV Import
+                if self.run_csv_import():
+                    self.mark_stage_complete("csv_import", "Database import successful")
+
+                    # Stage 4: Data Preprocessing
+                    if self.run_data_preprocessing():
+                        self.mark_stage_complete(
+                            "data_preprocessing", "Data relationships processed"
+                        )
+
+                        # Stage 5: Trigger ML Pipeline
+                        self.trigger_ml_pipeline()
+                    else:
+                        logger.error("❌ Data preprocessing failed")
+                else:
+                    logger.error("❌ CSV import failed")
             else:
-                logger.error("❌ Data preprocessing failed")
+                logger.error("❌ Manual download processing failed")
         else:
             logger.error("❌ CSV import failed")
 
@@ -185,32 +256,32 @@ class PipelineOrchestrator:
         logger.info("📊 Stage 2: Starting CSV Import...")
 
         try:
-            # Use the complete upload solution
+            # Use the complete race card upload solution
             result = subprocess.run(
-                ["python", "/app/tools/data_processing/corrected_uploader.py"],
+                ["python", "/app/tools/database/complete_upload.py"],
                 capture_output=True,
                 text=True,
                 timeout=300,
             )
 
             if result.returncode == 0:
-                logger.info("✅ CSV import completed successfully")
-                logger.info(f"Import output: {result.stdout[-200:]}")  # Last 200 chars
+                logger.info("✅ Race card database upload completed successfully")
+                logger.info(f"Upload output: {result.stdout[-200:]}")  # Last 200 chars
                 return True
             else:
-                logger.error(f"❌ CSV import failed: {result.stderr}")
+                logger.error(f"❌ Race card upload failed: {result.stderr}")
 
-                # Try alternative uploader
-                logger.info("🔄 Trying alternative CSV uploader...")
+                # Try fallback uploader
+                logger.info("🔄 Trying fallback CSV uploader...")
                 result = subprocess.run(
-                    ["python", "/app/tools/data_processing/database_uploader.py"],
+                    ["python", "/app/tools/data_processing/corrected_uploader.py"],
                     capture_output=True,
                     text=True,
                     timeout=300,
                 )
 
                 if result.returncode == 0:
-                    logger.info("✅ Alternative CSV import successful")
+                    logger.info("✅ Fallback CSV import successful")
                     return True
                 else:
                     logger.error(f"❌ Both CSV importers failed")

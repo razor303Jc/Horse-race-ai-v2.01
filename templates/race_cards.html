@@ -104,145 +104,205 @@
         <!-- Header -->
         <div class="header-container">
             <h1 class="display-4 mb-3">🏇 Today's Race Cards</h1>
-            <p class="lead text-muted mb-4">{{ race_data.date }} - All Courses</p>
-            <div class="text-center">
+            <p class="lead text-muted mb-4">Live Race Data</p>
+            <div class="text-center mb-3">
                 <a href="/" class="btn btn-outline-primary me-2">← Dashboard</a>
                 <a href="/live_analytics" class="btn btn-outline-success me-2">Live Analytics</a>
                 <a href="/betting_strategies" class="btn btn-outline-warning">Betting Strategies</a>
             </div>
-        </div>
-
-        <!-- Race Cards by Course -->
-        {% for course_name, course_data in race_data.courses.items() %}
-        <div class="course-header">
-            <h2><i class="fas fa-map-marker-alt"></i> {{ course_name }}</h2>
-            <p class="mb-0">{{ course_data.total_races }} races scheduled today</p>
-        </div>
-
-        <div class="row">
-            {% for race in course_data.races %}
-            <div class="col-md-6 col-lg-4">
-                <div class="race-card" onclick="window.location.href='/race/{{ race.race_id }}'">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <div class="race-time">{{ race.race_time }}</div>
-                        <div class="race-class">{{ race.race_class }}</div>
-                    </div>
-                    
-                    <h5 class="mb-3">{{ race.race_name }}</h5>
-                    
-                    <div class="row mb-3">
-                        <div class="col-6">
-                            <small class="text-muted">Distance:</small><br>
-                            <strong>{{ race.distance }}</strong>
-                        </div>
-                        <div class="col-6">
-                            <small class="text-muted">Prize Money:</small><br>
-                            <span class="prize-money">{{ race.prize_money }}</span>
-                        </div>
-                    </div>
-                    
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <span class="going-badge">{{ race.going }}</span>
-                            <span class="field-size ms-2">{{ race.field_size }} runners</span>
-                        </div>
-                        <div>
-                            <i class="fas fa-chevron-right text-primary"></i>
-                        </div>
+            
+            <!-- Stats Row -->
+            <div class="row mt-4">
+                <div class="col-md-4">
+                    <div class="text-center p-3 bg-light rounded">
+                        <i class="fas fa-flag-checkered fa-2x text-primary mb-2"></i>
+                        <h6>Total Races</h6>
+                        <p class="h4 text-primary" id="total-races">Loading...</p>
                     </div>
                 </div>
-            </div>
-            {% endfor %}
-        </div>
-        {% endfor %}
-
-        <!-- Summary Stats -->
-        <div class="race-card mt-4">
-            <h4 class="text-center mb-4"><i class="fas fa-chart-bar"></i> Today's Racing Summary</h4>
-            <div class="row text-center">
-                <div class="col-md-3">
-                    <h3 class="text-primary">{{ race_data.courses|length }}</h3>
-                    <p class="text-muted">Active Courses</p>
+                <div class="col-md-4">
+                    <div class="text-center p-3 bg-light rounded">
+                        <i class="fas fa-horse fa-2x text-success mb-2"></i>
+                        <h6>Total Runners</h6>
+                        <p class="h4 text-success" id="total-horses">Loading...</p>
+                    </div>
                 </div>
-                <div class="col-md-3">
-                    <h3 class="text-success">
-                        {% set total_races = [] %}
-                        {% for course in race_data.courses.values() %}
-                            {% set _ = total_races.extend(course.races) %}
-                        {% endfor %}
-                        {{ total_races|length }}
-                    </h3>
-                    <p class="text-muted">Total Races</p>
-                </div>
-                <div class="col-md-3">
-                    <h3 class="text-warning">
-                        {% set total_runners = [] %}
-                        {% for course in race_data.courses.values() %}
-                            {% for race in course.races %}
-                                {% set _ = total_runners.append(race.field_size) %}
-                            {% endfor %}
-                        {% endfor %}
-                        {{ total_runners|sum }}
-                    </h3>
-                    <p class="text-muted">Total Runners</p>
-                </div>
-                <div class="col-md-3">
-                    <h3 class="text-info">
-                        {% set group_races = [] %}
-                        {% for course in race_data.courses.values() %}
-                            {% for race in course.races %}
-                                {% if "Group" in race.race_class %}
-                                    {% set _ = group_races.append(race) %}
-                                {% endif %}
-                            {% endfor %}
-                        {% endfor %}
-                        {{ group_races|length }}
-                    </h3>
-                    <p class="text-muted">Group Races</p>
+                <div class="col-md-4">
+                    <div class="text-center p-3 bg-light rounded">
+                        <i class="fas fa-clock fa-2x text-warning mb-2"></i>
+                        <h6>Last Updated</h6>
+                        <p class="h6 text-muted" id="last-updated">Loading...</p>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- AI Insights -->
-        <div class="race-card mt-4">
-            <h4 class="text-center mb-4"><i class="fas fa-brain"></i> AI Racing Insights</h4>
-            <div class="row">
-                <div class="col-md-4">
-                    <div class="text-center p-3 bg-light rounded">
-                        <i class="fas fa-trophy fa-2x text-warning mb-2"></i>
-                        <h6>Featured Race</h6>
-                        <p class="small text-muted">King George VI Stakes at Ascot (14:00) - £1.25M Group 1</p>
-                    </div>
+        <!-- Race Cards Container -->
+        <div id="race-cards-container">
+            <div class="race-card text-center">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
                 </div>
-                <div class="col-md-4">
-                    <div class="text-center p-3 bg-light rounded">
-                        <i class="fas fa-star fa-2x text-primary mb-2"></i>
-                        <h6>AI Confidence</h6>
-                        <p class="small text-muted">92% accuracy predicted for today's selections</p>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="text-center p-3 bg-light rounded">
-                        <i class="fas fa-chart-line fa-2x text-success mb-2"></i>
-                        <h6>Betting Value</h6>
-                        <p class="small text-muted">15+ value opportunities identified</p>
-                    </div>
-                </div>
+                <p class="mt-3 text-muted">Loading race cards...</p>
             </div>
         </div>
     </div>
+        </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Add click handlers for race cards
+        // Fetch and display real race data
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('Race cards loaded for {{ race_data.date }}');
+            console.log('Loading real race cards...');
+            loadRealRaceCards();
             
             // Auto-refresh every 5 minutes
-            setTimeout(function() {
-                window.location.reload();
+            setInterval(function() {
+                loadRealRaceCards();
             }, 300000);
         });
+
+        async function loadRealRaceCards() {
+            try {
+                const response = await fetch('/api/real_race_cards');
+                const data = await response.json();
+                
+                if (response.ok) {
+                    displayRaceCards(data);
+                    updateStats(data);
+                } else {
+                    console.error('Failed to load race cards:', data.detail);
+                    showError(data.detail || 'Failed to load race cards');
+                }
+            } catch (error) {
+                console.error('Error loading race cards:', error);
+                showError('Network error loading race cards');
+            }
+        }
+
+        function displayRaceCards(data) {
+            const container = document.getElementById('race-cards-container');
+            if (!container) return;
+            
+            container.innerHTML = '';
+            
+            if (data.races && data.races.length > 0) {
+                // Group races by course
+                const racesByCourse = {};
+                data.races.forEach(race => {
+                    if (!racesByCourse[race.course]) {
+                        racesByCourse[race.course] = [];
+                    }
+                    racesByCourse[race.course].push(race);
+                });
+
+                // Display races by course
+                Object.keys(racesByCourse).forEach(course => {
+                    const courseDiv = document.createElement('div');
+                    courseDiv.innerHTML = `
+                        <div class="course-header">
+                            <h2><i class="fas fa-map-marker-alt"></i> ${course}</h2>
+                            <p class="mb-0">${racesByCourse[course].length} races today</p>
+                        </div>
+                    `;
+                    container.appendChild(courseDiv);
+
+                    racesByCourse[course].forEach(race => {
+                        const raceDiv = document.createElement('div');
+                        raceDiv.className = 'race-card';
+                        raceDiv.innerHTML = createRaceCardHTML(race);
+                        container.appendChild(raceDiv);
+                    });
+                });
+            } else {
+                container.innerHTML = `
+                    <div class="race-card text-center">
+                        <i class="fas fa-exclamation-triangle fa-3x text-warning mb-3"></i>
+                        <h4>No race cards available</h4>
+                        <p class="text-muted">Please check back later or contact support if this persists.</p>
+                    </div>
+                `;
+            }
+        }
+
+        function createRaceCardHTML(race) {
+            const topHorses = race.horses.slice(0, 5); // Show top 5 horses
+            
+            return `
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div>
+                        <h4><i class="fas fa-flag-checkered"></i> Race ${race.race_number}</h4>
+                        <h5 class="text-primary">${race.race_name}</h5>
+                        <p class="text-muted mb-2">
+                            <i class="fas fa-clock"></i> ${race.race_time} | 
+                            <i class="fas fa-ruler"></i> ${race.distance} | 
+                            <i class="fas fa-layer-group"></i> ${race.class}
+                        </p>
+                    </div>
+                    <div class="text-end">
+                        <span class="badge bg-success fs-6">${race.runners} runners</span>
+                        <p class="text-muted small mt-1">${race.prize}</p>
+                    </div>
+                </div>
+                
+                <div class="horses-list">
+                    <h6><i class="fas fa-horse"></i> Top Contenders</h6>
+                    ${topHorses.map((horse, index) => `
+                        <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                            <div class="d-flex align-items-center">
+                                <span class="badge bg-secondary me-2">${index + 1}</span>
+                                <div>
+                                    <strong>${horse.horse_name}</strong>
+                                    <br>
+                                    <small class="text-muted">
+                                        J: ${horse.jockey} | T: ${horse.trainer} | Age: ${horse.age}
+                                    </small>
+                                </div>
+                            </div>
+                            <div class="text-end">
+                                <span class="fw-bold text-primary">${horse.odds}</span>
+                                <br>
+                                <small class="text-success">${horse.win_probability}%</small>
+                            </div>
+                        </div>
+                    `).join('')}
+                    
+                    ${race.horses.length > 5 ? `
+                        <div class="text-center mt-2">
+                            <button class="btn btn-outline-primary btn-sm" onclick="showFullRace('${race.race_id}')">
+                                <i class="fas fa-eye"></i> View All ${race.runners} Runners
+                            </button>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+        }
+
+        function updateStats(data) {
+            document.getElementById('total-races').textContent = data.total_races || 0;
+            document.getElementById('total-horses').textContent = data.total_horses || 0;
+            document.getElementById('last-updated').textContent = new Date().toLocaleTimeString();
+        }
+
+        function showError(message) {
+            const container = document.getElementById('race-cards-container');
+            if (container) {
+                container.innerHTML = `
+                    <div class="race-card text-center">
+                        <i class="fas fa-exclamation-circle fa-3x text-danger mb-3"></i>
+                        <h4>Error Loading Race Cards</h4>
+                        <p class="text-muted">${message}</p>
+                        <button class="btn btn-primary" onclick="loadRealRaceCards()">
+                            <i class="fas fa-refresh"></i> Retry
+                        </button>
+                    </div>
+                `;
+            }
+        }
+
+        function showFullRace(raceId) {
+            window.open(`/api/race_details/${raceId}`, '_blank');
+        }
     </script>
 </body>
 </html>

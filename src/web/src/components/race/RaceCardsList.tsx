@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     Box,
     Card,
@@ -14,7 +14,9 @@ import {
     TableContainer,
     TableHead,
     TableRow,
-    LinearProgress
+    LinearProgress,
+    Alert,
+    CircularProgress
 } from '@mui/material';
 import {
     AccessTime,
@@ -22,96 +24,108 @@ import {
     Star,
     Place
 } from '@mui/icons-material';
-
-const mockRaceCards = [
-    {
-        id: 1,
-        course: 'Ascot',
-        time: '15:30',
-        distance: '1m 2f',
-        ground: 'Good',
-        type: 'Handicap',
-        prize: '£50,000',
-        runners: [
-            {
-                number: 1,
-                name: 'Thunder Strike',
-                odds: '5/1',
-                form: '1-2-3',
-                jockey: 'R. Moore',
-                trainer: 'A. O\'Brien',
-                weight: '9-7',
-                aiRating: 85,
-                prediction: 'Strong chance'
-            },
-            {
-                number: 2,
-                name: 'Golden Arrow',
-                odds: '3/1',
-                form: '1-1-2',
-                jockey: 'W. Buick',
-                trainer: 'J. Gosden',
-                weight: '9-5',
-                aiRating: 92,
-                prediction: 'Top pick'
-            },
-            {
-                number: 3,
-                name: 'Silver Bullet',
-                odds: '7/1',
-                form: '2-3-1',
-                jockey: 'F. Dettori',
-                trainer: 'M. Stoute',
-                weight: '9-3',
-                aiRating: 78,
-                prediction: 'Each way value'
-            }
-        ]
-    },
-    {
-        id: 2,
-        course: 'Newmarket',
-        time: '16:05',
-        distance: '7f',
-        ground: 'Good to Firm',
-        type: 'Group 2',
-        prize: '£100,000',
-        runners: [
-            {
-                number: 1,
-                name: 'Speed Demon',
-                odds: '2/1',
-                form: '1-1-1',
-                jockey: 'R. Moore',
-                trainer: 'A. O\'Brien',
-                weight: '9-0',
-                aiRating: 95,
-                prediction: 'Banker'
-            },
-            {
-                number: 2,
-                name: 'Lightning Fast',
-                odds: '5/2',
-                form: '2-1-2',
-                jockey: 'W. Buick',
-                trainer: 'J. Gosden',
-                weight: '9-0',
-                aiRating: 88,
-                prediction: 'Danger'
-            }
-        ]
-    }
-];
+import { HorseRacingAPI } from '../../services/api';
 
 export const RaceCardsList: React.FC = () => {
+    const [raceCards, setRaceCards] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+        const fetchRealRaceCards = async () => {
+            try {
+                setLoading(true);
+                setError(null);
+                
+                // Get real race data with horses from PostgreSQL
+                const realData = await HorseRacingAPI.getRaceCardsWithHorses();
+                console.log('Loaded real race data:', realData);
+                
+                // Transform data for display
+                const transformedData = realData.races.map(race => ({
+                    id: race.race_id,
+                    course: race.venue,
+                    time: race.time,
+                    distance: race.distance,
+                    ground: race.going,
+                    type: `Class ${race.class}`,
+                    prize: `£${race.prize_money.toLocaleString()}`,
+                    runners: race.horses.map((horse, index) => ({
+                        number: horse.position || (index + 1),
+                        name: horse.horse_name || 'Unknown Horse',
+                        odds: `${Math.round(horse.win_odds || 10)}/1`,
+                        form: horse.recent_form || 'N/A',
+                        jockey: horse.jockey_name || 'TBA',
+                        trainer: horse.trainer_name || 'TBA',
+                        weight: `${Math.round((horse.weight_kg || 60) / 0.453592)}-0`,
+                        aiRating: Math.round((horse.win_probability || 10)),
+                        prediction: horse.win_probability ? (
+                            horse.win_probability > 70 ? 'Top pick' :
+                            horse.win_probability > 60 ? 'Banker' :
+                            horse.win_probability > 40 ? 'Strong chance' :
+                            horse.win_probability > 20 ? 'Danger' : 
+                            horse.win_probability > 10 ? 'Each way value' : 'Outsider'
+                        ) : 'Analysis pending'
+                    }))
+                }));
+                
+                setRaceCards(transformedData);
+            } catch (err) {
+                console.error('Error fetching real race cards:', err);
+                setError(`Failed to load race data from database: ${err}`);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchRealRaceCards();
+    }, []);
+
+    if (loading) {
+        return (
+            <Box display="flex" justifyContent="center" alignItems="center" minHeight="400px">
+                <CircularProgress size={60} />
+                <Typography variant="h6" sx={{ ml: 2 }}>
+                    Loading real race data from PostgreSQL...
+                </Typography>
+            </Box>
+        );
+    }
+
+    if (error) {
+        return (
+            <Box sx={{ mb: 3 }}>
+                <Alert severity="error" sx={{ mb: 2 }}>
+                    {error}
+                </Alert>
+                <Typography variant="body1">
+                    Unable to connect to the PostgreSQL database. Please ensure the API server is running on port 3000.
+                </Typography>
+            </Box>
+        );
+    }
+
+    if (!raceCards || raceCards.length === 0) {
+        return (
+            <Box sx={{ textAlign: 'center', py: 4 }}>
+                <Alert severity="info" sx={{ mb: 2 }}>
+                    No races found in the database for today.
+                </Alert>
+                <Typography variant="body1" color="text.secondary">
+                    Race data will appear here when available in the PostgreSQL database.
+                </Typography>
+            </Box>
+        );
+    }
+
     return (
         <Box>
             <Typography variant="h5" component="h2" gutterBottom sx={{ mb: 4, fontWeight: 'bold' }}>
-                🏇 Today's Race Cards
+                🏇 Today's Race Cards ({raceCards.length} races) - LIVE DATABASE
             </Typography>
             
             <Grid container spacing={4}>
-                {mockRaceCards.map((race) => (
+                {raceCards.map((race) => (
                     <Grid item xs={12} key={race.id}>
                         <Card sx={{ mb: 3 }}>
                             <CardContent>
@@ -228,6 +242,7 @@ export const RaceCardsList: React.FC = () => {
                 <Typography variant="body2" color="text.secondary">
                     Our AI models have analyzed today's races using advanced machine learning algorithms. 
                     The ratings consider form, track conditions, jockey/trainer combinations, and historical data.
+                    Live data updated from our racing database with {raceCards.length} active race cards.
                 </Typography>
             </Box>
         </Box>

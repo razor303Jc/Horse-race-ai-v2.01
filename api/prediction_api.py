@@ -824,36 +824,36 @@ except Exception as e:
 async def api_health_check():
     """Comprehensive API health check with system status."""
     import psycopg2
-    
+
     health_status = {
         "status": "healthy",
         "timestamp": datetime.now().isoformat(),
         "version": "1.0.0",
-        "components": {}
+        "components": {},
     }
-    
+
     overall_healthy = True
-    
+
     # Check ensemble model
     try:
         model_status = {
             "loaded": ensemble_model is not None,
             "models_count": len(ensemble_model) if ensemble_model else 0,
-            "last_loaded": model_timestamp.isoformat() if model_timestamp else None
+            "last_loaded": model_timestamp.isoformat() if model_timestamp else None,
         }
         health_status["components"]["ensemble_model"] = {
             "status": "healthy" if model_status["loaded"] else "unhealthy",
-            "details": model_status
+            "details": model_status,
         }
         if not model_status["loaded"]:
             overall_healthy = False
     except Exception as e:
         health_status["components"]["ensemble_model"] = {
             "status": "error",
-            "error": str(e)
+            "error": str(e),
         }
         overall_healthy = False
-    
+
     # Check database connectivity
     try:
         db_config = {
@@ -861,51 +861,46 @@ async def api_health_check():
             "port": 5434,
             "database": "horse_racing_db",
             "user": "horse_racing",
-            "password": "secure_password_123"
+            "password": "secure_password_123",
         }
-        
+
         with psycopg2.connect(**db_config) as conn:
             cursor = conn.cursor()
             cursor.execute("SELECT COUNT(*) FROM race_entries")
             race_count = cursor.fetchone()[0]
-            
+
         health_status["components"]["database"] = {
             "status": "healthy",
-            "details": {
-                "connected": True,
-                "race_entries_count": race_count
-            }
+            "details": {"connected": True, "race_entries_count": race_count},
         }
     except Exception as e:
-        health_status["components"]["database"] = {
-            "status": "error",
-            "error": str(e)
-        }
+        health_status["components"]["database"] = {"status": "error", "error": str(e)}
         overall_healthy = False
-    
+
     # Check feature encoders
     try:
         encoder_status = {
             "loaded": label_encoders is not None,
-            "encoders_count": len(label_encoders) if label_encoders else 0
+            "encoders_count": len(label_encoders) if label_encoders else 0,
         }
         health_status["components"]["feature_encoders"] = {
             "status": "healthy" if encoder_status["loaded"] else "unhealthy",
-            "details": encoder_status
+            "details": encoder_status,
         }
         if not encoder_status["loaded"]:
             overall_healthy = False
     except Exception as e:
         health_status["components"]["feature_encoders"] = {
             "status": "error",
-            "error": str(e)
+            "error": str(e),
         }
         overall_healthy = False
-    
+
     # Set overall status
     health_status["status"] = "healthy" if overall_healthy else "unhealthy"
-    
+
     return health_status
+
 
 @app.get("/health")
 async def simple_health_check():
@@ -917,13 +912,14 @@ async def simple_health_check():
         "models_loaded": ensemble_model is not None,
     }
 
+
 @app.get("/api/system/diagnostics")
 async def system_diagnostics():
     """Detailed system diagnostics for troubleshooting."""
     import sys
     import platform
     import psutil
-    
+
     try:
         # System information
         system_info = {
@@ -931,17 +927,23 @@ async def system_diagnostics():
             "platform": platform.platform(),
             "cpu_count": psutil.cpu_count(),
             "memory_total_gb": round(psutil.virtual_memory().total / (1024**3), 2),
-            "memory_available_gb": round(psutil.virtual_memory().available / (1024**3), 2),
-            "disk_usage_percent": psutil.disk_usage('/').percent
+            "memory_available_gb": round(
+                psutil.virtual_memory().available / (1024**3), 2
+            ),
+            "disk_usage_percent": psutil.disk_usage("/").percent,
         }
-        
+
         # Application information
         app_info = {
-            "uptime_seconds": (datetime.now() - model_timestamp).total_seconds() if model_timestamp else 0,
+            "uptime_seconds": (
+                (datetime.now() - model_timestamp).total_seconds()
+                if model_timestamp
+                else 0
+            ),
             "models_directory": str(Path(__file__).parent.parent / "trained_models"),
-            "log_directory": str(Path(__file__).parent.parent / "logs")
+            "log_directory": str(Path(__file__).parent.parent / "logs"),
         }
-        
+
         return {
             "timestamp": datetime.now().isoformat(),
             "system": system_info,
@@ -949,10 +951,10 @@ async def system_diagnostics():
             "models": {
                 "ensemble_loaded": ensemble_model is not None,
                 "encoders_loaded": label_encoders is not None,
-                "metadata_available": model_metadata is not None
-            }
+                "metadata_available": model_metadata is not None,
+            },
         }
-        
+
     except Exception as e:
         logger.error(f"Error in system diagnostics: {e}")
         return {"error": str(e), "timestamp": datetime.now().isoformat()}
