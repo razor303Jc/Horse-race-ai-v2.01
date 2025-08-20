@@ -1,0 +1,39 @@
+{
+  "analysis_date": "2025-08-20",
+  "summary_stats": {
+    "total_races": 3,
+    "profitable_opportunities": 3,
+    "total_potential_stakes": 375.0,
+    "total_potential_profit": 10.899999999999984,
+    "eighty_twenty_count": 3,
+    "dutching_count": 0,
+    "combined_count": 0,
+    "no_bet_count": 0
+  },
+  "results": [
+    {
+      "race_id": "DAILY_001",
+      "timestamp": "2025-08-20T22:06:50.646939",
+      "recommended_strategy": "80/20",
+      "combined_roi_estimate": 0.7999999999999973,
+      "eighty_twenty_suitable": true,
+      "dutching_suitable": true
+    },
+    {
+      "race_id": "DAILY_002",
+      "timestamp": "2025-08-20T22:06:50.647399",
+      "recommended_strategy": "80/20",
+      "combined_roi_estimate": 19.0,
+      "eighty_twenty_suitable": true,
+      "dutching_suitable": true
+    },
+    {
+      "race_id": "DAILY_003",
+      "timestamp": "2025-08-20T22:06:50.647750",
+      "recommended_strategy": "80/20",
+      "combined_roi_estimate": 2.0,
+      "eighty_twenty_suitable": true,
+      "dutching_suitable": true
+    }
+  ]
+}

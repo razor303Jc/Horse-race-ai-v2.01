@@ -304,6 +304,12 @@ class EnhancedMLRatingSystem:
                     }
                 )
 
+                # Add betting strategy features
+                strategy_features = self._create_betting_strategy_features(
+                    feature_dict, race_conditions, i
+                )
+                feature_dict.update(strategy_features)
+
                 # Jockey/Trainer performance
                 jockeys = [p.jockey for p in recent_performances]
                 trainers = [p.trainer for p in recent_performances]
@@ -492,10 +498,91 @@ class EnhancedMLRatingSystem:
             "CLAIMING": 2.0,
             "ALLOWANCE": 3.0,
             "STAKES": 4.0,
-            "GRADED": 5.0,
-            "HANDICAP": 3.5,
         }
-        return class_mapping.get(race_class.upper(), 3.0)
+        return class_mapping.get(race_class.upper(), 2.5)
+
+    def _create_betting_strategy_features(
+        self,
+        feature_dict: Dict[str, float],
+        race_conditions: Dict[str, Any],
+        horse_index: int,
+    ) -> Dict[str, float]:
+        """Create betting strategy-aware features for ML models."""
+
+        strategy_features = {}
+
+        # Get basic probabilities and odds (estimated from features)
+        win_prob = (
+            feature_dict.get("composite_score", 75) / 150.0
+        )  # Normalize to probability
+        place_prob = min(win_prob * 2.5, 0.9)  # Estimate place probability
+
+        # Estimate odds from composite score (inverse relationship)
+        estimated_odds = max(1.2, 1.0 / max(win_prob, 0.05))
+
+        # 80/20 Strategy Features
+        strategy_features["eighty_twenty_win_value"] = max(
+            0, win_prob - (1.0 / estimated_odds)
+        )
+        strategy_features["eighty_twenty_place_value"] = max(
+            0, place_prob - (1.0 / (estimated_odds / 3))
+        )
+
+        # Odds suitability for 80/20 (works best at extremes)
+        if estimated_odds <= 1.8 or estimated_odds >= 6.0:
+            strategy_features["eighty_twenty_odds_suitability"] = 1.0
+        else:
+            strategy_features["eighty_twenty_odds_suitability"] = 0.3
+
+        # Place advantage factor
+        strategy_features["eighty_twenty_place_advantage"] = place_prob / max(
+            win_prob, 0.01
+        )
+
+        # Form consistency for 80/20
+        strategy_features["eighty_twenty_form_consistency"] = (
+            feature_dict.get("consistency_score", 0.7) / 100.0
+        )
+
+        # Dutching Strategy Features
+        field_size = race_conditions.get("field_size", 10)
+        strategy_features["dutching_field_size"] = min(field_size / 20.0, 1.0)
+
+        # Market competitiveness (estimate based on horse quality)
+        horse_rating = feature_dict.get("composite_score", 75)
+        # Competitive if rating is in middle-upper range
+        if 70 <= horse_rating <= 95:
+            strategy_features["dutching_competitive_level"] = 0.8
+        else:
+            strategy_features["dutching_competitive_level"] = 0.4
+
+        # Profit potential for dutching
+        strategy_features["dutching_profit_potential"] = win_prob * (
+            estimated_odds - 1.0
+        )
+
+        # Market position (better horses have better position)
+        strategy_features["dutching_market_position"] = min(horse_rating / 100.0, 1.0)
+
+        # Market Efficiency Features
+        strategy_features["market_efficiency"] = 0.85  # Default market overround
+        strategy_features["liquidity_indicator"] = min(field_size / 15.0, 1.0)
+
+        # Value betting indicators
+        strategy_features["value_bet_potential"] = (
+            max(0, win_prob - (1.0 / estimated_odds)) * 10
+        )
+        strategy_features["confidence_edge"] = feature_dict.get("confidence_level", 0.7)
+
+        # Risk factors
+        consistency = feature_dict.get("consistency_score", 70) / 100.0
+        strategy_features["betting_risk_factor"] = 1.0 - consistency
+
+        # Performance trends for strategy timing
+        speed_trend = feature_dict.get("speed_trend", 0.0)
+        strategy_features["form_momentum"] = max(-1.0, min(1.0, speed_trend))
+
+        return strategy_features
 
     def train_models(
         self,

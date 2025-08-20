@@ -1,0 +1,1372 @@
+{
+  "eighty_twenty": {
+    "total_races": 31,
+    "successful_races": 19,
+    "total_stakes": 1550.0,
+    "total_returns": 1560.7,
+    "net_profit": 10.69999999999999,
+    "roi_percentage": 0.6903225806451606,
+    "win_rate": 61.29032258064516,
+    "place_rate": 0.0,
+    "bets": [
+      {
+        "strategy": "80/20",
+        "race_id": "183200",
+        "horse_name": "London Is Blue",
+        "confidence": 75.0,
+        "win_stake": 10.0,
+        "place_stake": 40.0,
+        "total_stake": 50.0,
+        "win_odds": 1.44,
+        "place_odds": 1.1099999999999999,
+        "actual_place": 1,
+        "win_return": 14.399999999999999,
+        "place_return": 44.39999999999999,
+        "total_return": 58.79999999999999,
+        "net_profit": 8.79999999999999,
+        "successful": true,
+        "roi": 17.59999999999998
+      },
+      {
+        "strategy": "80/20",
+        "race_id": "183201",
+        "horse_name": "Lord Montague",
+        "confidence": 75.0,
+        "win_stake": 10.0,
+        "place_stake": 40.0,
+        "total_stake": 50.0,
+        "win_odds": 1.44,
+        "place_odds": 1.1099999999999999,
+        "actual_place": 1,
+        "win_return": 14.399999999999999,
+        "place_return": 44.39999999999999,
+        "total_return": 58.79999999999999,
+        "net_profit": 8.79999999999999,
+        "successful": true,
+        "roi": 17.59999999999998
+      },
+      {
+        "strategy": "80/20",
+        "race_id": "183202",
+        "horse_name": "Angel On High",
+        "confidence": 75.0,
+        "win_stake": 10.0,
+        "place_stake": 40.0,
+        "total_stake": 50.0,
+        "win_odds": 3.0,
+        "place_odds": 1.5,
+        "actual_place": 4,
+        "win_return": 0.0,
+        "place_return": 0.0,
+        "total_return": 0.0,
+        "net_profit": -50.0,
+        "successful": false,
+        "roi": -100.0
+      },
+      {
+        "strategy": "80/20",
+        "race_id": "183203",
+        "horse_name": "Beautiful Dawn",
+        "confidence": 75.0,
+        "win_stake": 10.0,
+        "place_stake": 40.0,
+        "total_stake": 50.0,
+        "win_odds": 1.91,
+        "place_odds": 1.2275,
+        "actual_place": 4,
+        "win_return": 0.0,
+        "place_return": 0.0,
+        "total_return": 0.0,
+        "net_profit": -50.0,
+        "successful": false,
+        "roi": -100.0
+      },
+      {
+        "strategy": "80/20",
+        "race_id": "183204",
+        "horse_name": "Monks Mead",
+        "confidence": 75.0,
+        "win_stake": 10.0,
+        "place_stake": 40.0,
+        "total_stake": 50.0,
+        "win_odds": 2.75,
+        "place_odds": 1.4375,
+        "actual_place": 3,
+        "win_return": 0.0,
+        "place_return": 57.5,
+        "total_return": 57.5,
+        "net_profit": 7.5,
+        "successful": true,
+        "roi": 15.0
+      },
+      {
+        "strategy": "80/20",
+        "race_id": "183205",
+        "horse_name": "Tea Sea",
+        "confidence": 75.0,
+        "win_stake": 10.0,
+        "place_stake": 40.0,
+        "total_stake": 50.0,
+        "win_odds": 2.5,
+        "place_odds": 1.375,
+        "actual_place": 1,
+        "win_return": 25.0,
+        "place_return": 55.0,
+        "total_return": 80.0,
+        "net_profit": 30.0,
+        "successful": true,
+        "roi": 60.0
+      },
+      {
+        "strategy": "80/20",
+        "race_id": "183206",
+        "horse_name": "Soca Star",
+        "confidence": 75.0,
+        "win_stake": 10.0,
+        "place_stake": 40.0,
+        "total_stake": 50.0,
+        "win_odds": 2.38,
+        "place_odds": 1.345,
+        "actual_place": 2,
+        "win_return": 0.0,
+        "place_return": 53.8,
+        "total_return": 53.8,
+        "net_profit": 3.799999999999997,
+        "successful": true,
+        "roi": 7.599999999999994
+      },
+      {
+        "strategy": "80/20",
+        "race_id": "183207",
+        "horse_name": "Jeddaal",
+        "confidence": 75.0,
+        "win_stake": 10.0,
+        "place_stake": 40.0,
+        "total_stake": 50.0,
+        "win_odds": 1.67,
+        "place_odds": 1.1675,
+        "actual_place": 2,
+        "win_return": 0.0,
+        "place_return": 46.7,
+        "total_return": 46.7,
+        "net_profit": -3.299999999999997,
+        "successful": false,
+        "roi": -6.599999999999994
+      },
+      {
+        "strategy": "80/20",
+        "race_id": "183208",
+        "horse_name": "Savannah Smiles",
+        "confidence": 75.0,
+        "win_stake": 10.0,
+        "place_stake": 40.0,
+        "total_stake": 50.0,
+        "win_odds": 2.25,
+        "place_odds": 1.3125,
+        "actual_place": 2,
+        "win_return": 0.0,
+        "place_return": 52.5,
+        "total_return": 52.5,
+        "net_profit": 2.5,
+        "successful": true,
+        "roi": 5.0
+      },
+      {
+        "strategy": "80/20",
+        "race_id": "183209",
+        "horse_name": "Wallop",
+        "confidence": 75.0,
+        "win_stake": 10.0,
+        "place_stake": 40.0,
+        "total_stake": 50.0,
+        "win_odds": 2.75,
+        "place_odds": 1.4375,
+        "actual_place": 4,
+        "win_return": 0.0,
+        "place_return": 0.0,
+        "total_return": 0.0,
+        "net_profit": -50.0,
+        "successful": false,
+        "roi": -100.0
+      },
+      {
+        "strategy": "80/20",
+        "race_id": "183210",
+        "horse_name": "Believe You Me",
+        "confidence": 75.0,
+        "win_stake": 10.0,
+        "place_stake": 40.0,
+        "total_stake": 50.0,
+        "win_odds": 2.5,
+        "place_odds": 1.375,
+        "actual_place": 4,
+        "win_return": 0.0,
+        "place_return": 0.0,
+        "total_return": 0.0,
+        "net_profit": -50.0,
+        "successful": false,
+        "roi": -100.0
+      },
+      {
+        "strategy": "80/20",
+        "race_id": "183211",
+        "horse_name": "Midsummer Music",
+        "confidence": 75.0,
+        "win_stake": 10.0,
+        "place_stake": 40.0,
+        "total_stake": 50.0,
+        "win_odds": 3.75,
+        "place_odds": 1.55,
+        "actual_place": 1,
+        "win_return": 37.5,
+        "place_return": 62.0,
+        "total_return": 99.5,
+        "net_profit": 49.5,
+        "successful": true,
+        "roi": 99.0
+      },
+      {
+        "strategy": "80/20",
+        "race_id": "183218",
+        "horse_name": "Princess Honey Bee",
+        "confidence": 75.0,
+        "win_stake": 10.0,
+        "place_stake": 40.0,
+        "total_stake": 50.0,
+        "win_odds": 2.0,
+        "place_odds": 1.25,
+        "actual_place": 3,
+        "win_return": 0.0,
+        "place_return": 50.0,
+        "total_return": 50.0,
+        "net_profit": 0.0,
+        "successful": false,
+        "roi": 0.0
+      },
+      {
+        "strategy": "80/20",
+        "race_id": "183219",
+        "horse_name": "Allegresse",
+        "confidence": 75.0,
+        "win_stake": 10.0,
+        "place_stake": 40.0,
+        "total_stake": 50.0,
+        "win_odds": 1.36,
+        "place_odds": 1.09,
+        "actual_place": 1,
+        "win_return": 13.600000000000001,
+        "place_return": 43.6,
+        "total_return": 57.2,
+        "net_profit": 7.200000000000003,
+        "successful": true,
+        "roi": 14.400000000000004
+      },
+      {
+        "strategy": "80/20",
+        "race_id": "183220",
+        "horse_name": "Bizou",
+        "confidence": 75.0,
+        "win_stake": 10.0,
+        "place_stake": 40.0,
+        "total_stake": 50.0,
+        "win_odds": 3.75,
+        "place_odds": 1.55,
+        "actual_place": 6,
+        "win_return": 0.0,
+        "place_return": 0.0,
+        "total_return": 0.0,
+        "net_profit": -50.0,
+        "successful": false,
+        "roi": -100.0
+      },
+      {
+        "strategy": "80/20",
+        "race_id": "183221",
+        "horse_name": "Dubai Beach",
+        "confidence": 75.0,
+        "win_stake": 10.0,
+        "place_stake": 40.0,
+        "total_stake": 50.0,
+        "win_odds": 2.5,
+        "place_odds": 1.375,
+        "actual_place": 1,
+        "win_return": 25.0,
+        "place_return": 55.0,
+        "total_return": 80.0,
+        "net_profit": 30.0,
+        "successful": true,
+        "roi": 60.0
+      },
+      {
+        "strategy": "80/20",
+        "race_id": "183222",
+        "horse_name": "Karthon",
+        "confidence": 75.0,
+        "win_stake": 10.0,
+        "place_stake": 40.0,
+        "total_stake": 50.0,
+        "win_odds": 2.0,
+        "place_odds": 1.25,
+        "actual_place": 2,
+        "win_return": 0.0,
+        "place_return": 50.0,
+        "total_return": 50.0,
+        "net_profit": 0.0,
+        "successful": false,
+        "roi": 0.0
+      },
+      {
+        "strategy": "80/20",
+        "race_id": "183223",
+        "horse_name": "Saytarr",
+        "confidence": 75.0,
+        "win_stake": 10.0,
+        "place_stake": 40.0,
+        "total_stake": 50.0,
+        "win_odds": 3.0,
+        "place_odds": 1.5,
+        "actual_place": 2,
+        "win_return": 0.0,
+        "place_return": 60.0,
+        "total_return": 60.0,
+        "net_profit": 10.0,
+        "successful": true,
+        "roi": 20.0
+      },
+      {
+        "strategy": "80/20",
+        "race_id": "183224",
+        "horse_name": "Dun An Oir",
+        "confidence": 75.0,
+        "win_stake": 10.0,
+        "place_stake": 40.0,
+        "total_stake": 50.0,
+        "win_odds": 3.25,
+        "place_odds": 1.45,
+        "actual_place": 9,
+        "win_return": 0.0,
+        "place_return": 0.0,
+        "total_return": 0.0,
+        "net_profit": -50.0,
+        "successful": false,
+        "roi": -100.0
+      },
+      {
+        "strategy": "80/20",
+        "race_id": "183225",
+        "horse_name": "Idiocracy",
+        "confidence": 75.0,
+        "win_stake": 10.0,
+        "place_stake": 40.0,
+        "total_stake": 50.0,
+        "win_odds": 4.2,
+        "place_odds": 1.6400000000000001,
+        "actual_place": 3,
+        "win_return": 0.0,
+        "place_return": 65.60000000000001,
+        "total_return": 65.60000000000001,
+        "net_profit": 15.600000000000009,
+        "successful": true,
+        "roi": 31.200000000000017
+      },
+      {
+        "strategy": "80/20",
+        "race_id": "183226",
+        "horse_name": "Giovanni Giorgio",
+        "confidence": 75.0,
+        "win_stake": 10.0,
+        "place_stake": 40.0,
+        "total_stake": 50.0,
+        "win_odds": 1.91,
+        "place_odds": 1.2275,
+        "actual_place": 2,
+        "win_return": 0.0,
+        "place_return": 49.1,
+        "total_return": 49.1,
+        "net_profit": -0.8999999999999986,
+        "successful": false,
+        "roi": -1.7999999999999972
+      },
+      {
+        "strategy": "80/20",
+        "race_id": "183227",
+        "horse_name": "Proxima Centauri",
+        "confidence": 75.0,
+        "win_stake": 10.0,
+        "place_stake": 40.0,
+        "total_stake": 50.0,
+        "win_odds": 2.75,
+        "place_odds": 1.4375,
+        "actual_place": 1,
+        "win_return": 27.5,
+        "place_return": 57.5,
+        "total_return": 85.0,
+        "net_profit": 35.0,
+        "successful": true,
+        "roi": 70.0
+      },
+      {
+        "strategy": "80/20",
+        "race_id": "183228",
+        "horse_name": "Engines On",
+        "confidence": 75.0,
+        "win_stake": 10.0,
+        "place_stake": 40.0,
+        "total_stake": 50.0,
+        "win_odds": 3.75,
+        "place_odds": 1.55,
+        "actual_place": 7,
+        "win_return": 0.0,
+        "place_return": 0.0,
+        "total_return": 0.0,
+        "net_profit": -50.0,
+        "successful": false,
+        "roi": -100.0
+      },
+      {
+        "strategy": "80/20",
+        "race_id": "183229",
+        "horse_name": "Sears Crossing",
+        "confidence": 75.0,
+        "win_stake": 10.0,
+        "place_stake": 40.0,
+        "total_stake": 50.0,
+        "win_odds": 3.0,
+        "place_odds": 1.5,
+        "actual_place": 2,
+        "win_return": 0.0,
+        "place_return": 60.0,
+        "total_return": 60.0,
+        "net_profit": 10.0,
+        "successful": true,
+        "roi": 20.0
+      },
+      {
+        "strategy": "80/20",
+        "race_id": "183230",
+        "horse_name": "Gotta Catchem All",
+        "confidence": 75.0,
+        "win_stake": 10.0,
+        "place_stake": 40.0,
+        "total_stake": 50.0,
+        "win_odds": 3.5,
+        "place_odds": 1.5,
+        "actual_place": 3,
+        "win_return": 0.0,
+        "place_return": 60.0,
+        "total_return": 60.0,
+        "net_profit": 10.0,
+        "successful": true,
+        "roi": 20.0
+      },
+      {
+        "strategy": "80/20",
+        "race_id": "183212",
+        "horse_name": "Hayynah",
+        "confidence": 75.0,
+        "win_stake": 10.0,
+        "place_stake": 40.0,
+        "total_stake": 50.0,
+        "win_odds": 1.57,
+        "place_odds": 1.1425,
+        "actual_place": 2,
+        "win_return": 0.0,
+        "place_return": 45.7,
+        "total_return": 45.7,
+        "net_profit": -4.299999999999997,
+        "successful": false,
+        "roi": -8.599999999999994
+      },
+      {
+        "strategy": "80/20",
+        "race_id": "183213",
+        "horse_name": "Sporting Light",
+        "confidence": 75.0,
+        "win_stake": 10.0,
+        "place_stake": 40.0,
+        "total_stake": 50.0,
+        "win_odds": 2.75,
+        "place_odds": 1.4375,
+        "actual_place": 1,
+        "win_return": 27.5,
+        "place_return": 57.5,
+        "total_return": 85.0,
+        "net_profit": 35.0,
+        "successful": true,
+        "roi": 70.0
+      },
+      {
+        "strategy": "80/20",
+        "race_id": "183214",
+        "horse_name": "Noisy Music",
+        "confidence": 75.0,
+        "win_stake": 10.0,
+        "place_stake": 40.0,
+        "total_stake": 50.0,
+        "win_odds": 5.5,
+        "place_odds": 1.9,
+        "actual_place": 1,
+        "win_return": 55.0,
+        "place_return": 76.0,
+        "total_return": 131.0,
+        "net_profit": 81.0,
+        "successful": true,
+        "roi": 162.0
+      },
+      {
+        "strategy": "80/20",
+        "race_id": "183215",
+        "horse_name": "Sams Hope",
+        "confidence": 75.0,
+        "win_stake": 10.0,
+        "place_stake": 40.0,
+        "total_stake": 50.0,
+        "win_odds": 2.25,
+        "place_odds": 1.3125,
+        "actual_place": 2,
+        "win_return": 0.0,
+        "place_return": 52.5,
+        "total_return": 52.5,
+        "net_profit": 2.5,
+        "successful": true,
+        "roi": 5.0
+      },
+      {
+        "strategy": "80/20",
+        "race_id": "183216",
+        "horse_name": "Glory Hyde",
+        "confidence": 75.0,
+        "win_stake": 10.0,
+        "place_stake": 40.0,
+        "total_stake": 50.0,
+        "win_odds": 3.25,
+        "place_odds": 1.45,
+        "actual_place": 3,
+        "win_return": 0.0,
+        "place_return": 58.0,
+        "total_return": 58.0,
+        "net_profit": 8.0,
+        "successful": true,
+        "roi": 16.0
+      },
+      {
+        "strategy": "80/20",
+        "race_id": "183217",
+        "horse_name": "Lightning Touch",
+        "confidence": 75.0,
+        "win_stake": 10.0,
+        "place_stake": 40.0,
+        "total_stake": 50.0,
+        "win_odds": 4.0,
+        "place_odds": 1.6,
+        "actual_place": 2,
+        "win_return": 0.0,
+        "place_return": 64.0,
+        "total_return": 64.0,
+        "net_profit": 14.0,
+        "successful": true,
+        "roi": 28.000000000000004
+      }
+    ]
+  },
+  "dutching": {
+    "total_races": 26,
+    "successful_races": 20,
+    "total_stakes": 1950.0,
+    "total_returns": 1907.5253050432066,
+    "net_profit": -42.47469495679352,
+    "roi_percentage": -2.17818948496377,
+    "success_rate": 76.92307692307693,
+    "bets": [
+      {
+        "strategy": "Dutching",
+        "race_id": "183202",
+        "selections": [
+          {
+            "horse_name": "Angel On High",
+            "odds": 3.0,
+            "stake": 29.716981132075475,
+            "place": 4
+          },
+          {
+            "horse_name": "Stintino Sunset",
+            "odds": 3.5,
+            "stake": 25.471698113207548,
+            "place": 3
+          },
+          {
+            "horse_name": "Foinix",
+            "odds": 4.5,
+            "stake": 19.811320754716984,
+            "place": 1
+          }
+        ],
+        "total_stake": 75.0,
+        "winning_horse": "Foinix",
+        "total_return": 89.15094339622642,
+        "net_profit": 14.150943396226424,
+        "successful": true,
+        "roi": 18.8679245283019
+      },
+      {
+        "strategy": "Dutching",
+        "race_id": "183203",
+        "selections": [
+          {
+            "horse_name": "Beautiful Dawn",
+            "odds": 1.91,
+            "stake": 44.2275600459776,
+            "place": 4
+          },
+          {
+            "horse_name": "Chourmo",
+            "odds": 4.33,
+            "stake": 19.509154662313446,
+            "place": 5
+          },
+          {
+            "horse_name": "Fighting Poet",
+            "odds": 7.5,
+            "stake": 11.263285291708963,
+            "place": 1
+          }
+        ],
+        "total_stake": 75.0,
+        "winning_horse": "Fighting Poet",
+        "total_return": 84.47463968781722,
+        "net_profit": 9.474639687817216,
+        "successful": true,
+        "roi": 12.632852917089622
+      },
+      {
+        "strategy": "Dutching",
+        "race_id": "183204",
+        "selections": [
+          {
+            "horse_name": "Monks Mead",
+            "odds": 2.75,
+            "stake": 32.8125,
+            "place": 3
+          },
+          {
+            "horse_name": "Blackbrook",
+            "odds": 3.5,
+            "stake": 25.781249999999996,
+            "place": 5
+          },
+          {
+            "horse_name": "Bear To Dream",
+            "odds": 5.5,
+            "stake": 16.40625,
+            "place": 2
+          }
+        ],
+        "total_stake": 75.0,
+        "winning_horse": null,
+        "total_return": 0,
+        "net_profit": -75.0,
+        "successful": false,
+        "roi": -100.0
+      },
+      {
+        "strategy": "Dutching",
+        "race_id": "183205",
+        "selections": [
+          {
+            "horse_name": "Tea Sea",
+            "odds": 2.5,
+            "stake": 35.526315789473685,
+            "place": 1
+          },
+          {
+            "horse_name": "Poetic Force",
+            "odds": 4.5,
+            "stake": 19.73684210526316,
+            "place": 2
+          },
+          {
+            "horse_name": "Dandy G Boy",
+            "odds": 4.5,
+            "stake": 19.73684210526316,
+            "place": 4
+          }
+        ],
+        "total_stake": 75.0,
+        "winning_horse": "Tea Sea",
+        "total_return": 88.81578947368422,
+        "net_profit": 13.81578947368422,
+        "successful": true,
+        "roi": 18.42105263157896
+      },
+      {
+        "strategy": "Dutching",
+        "race_id": "183206",
+        "selections": [
+          {
+            "horse_name": "Soca Star",
+            "odds": 2.38,
+            "stake": 34.61982305423773,
+            "place": 2
+          },
+          {
+            "horse_name": "Berlinetta",
+            "odds": 2.88,
+            "stake": 28.609437107321455,
+            "place": 3
+          },
+          {
+            "horse_name": "Sara Moon",
+            "odds": 7.0,
+            "stake": 11.770739838440825,
+            "place": 6
+          }
+        ],
+        "total_stake": 75.0,
+        "winning_horse": null,
+        "total_return": 0,
+        "net_profit": -75.0,
+        "successful": false,
+        "roi": -100.0
+      },
+      {
+        "strategy": "Dutching",
+        "race_id": "183208",
+        "selections": [
+          {
+            "horse_name": "Savannah Smiles",
+            "odds": 2.25,
+            "stake": 35.294117647058826,
+            "place": 2
+          },
+          {
+            "horse_name": "Over Spiced",
+            "odds": 3.0,
+            "stake": 26.47058823529412,
+            "place": 3
+          },
+          {
+            "horse_name": "Zoulu Warrior",
+            "odds": 6.0,
+            "stake": 13.23529411764706,
+            "place": 1
+          }
+        ],
+        "total_stake": 75.0,
+        "winning_horse": "Zoulu Warrior",
+        "total_return": 79.41176470588236,
+        "net_profit": 4.411764705882362,
+        "successful": true,
+        "roi": 5.882352941176483
+      },
+      {
+        "strategy": "Dutching",
+        "race_id": "183209",
+        "selections": [
+          {
+            "horse_name": "Wallop",
+            "odds": 2.75,
+            "stake": 28.49686847599165,
+            "place": 4
+          },
+          {
+            "horse_name": "Vape",
+            "odds": 3.25,
+            "stake": 24.112734864300627,
+            "place": 1
+          },
+          {
+            "horse_name": "Saffredi",
+            "odds": 3.5,
+            "stake": 22.390396659707722,
+            "place": 2
+          }
+        ],
+        "total_stake": 75.0,
+        "winning_horse": "Vape",
+        "total_return": 78.36638830897704,
+        "net_profit": 3.3663883089770366,
+        "successful": true,
+        "roi": 4.488517745302715
+      },
+      {
+        "strategy": "Dutching",
+        "race_id": "183210",
+        "selections": [
+          {
+            "horse_name": "Believe You Me",
+            "odds": 2.5,
+            "stake": 31.395348837209305,
+            "place": 4
+          },
+          {
+            "horse_name": "Highfield Viking",
+            "odds": 3.0,
+            "stake": 26.16279069767442,
+            "place": 1
+          },
+          {
+            "horse_name": "Jenni",
+            "odds": 4.5,
+            "stake": 17.44186046511628,
+            "place": 3
+          }
+        ],
+        "total_stake": 75.0,
+        "winning_horse": "Highfield Viking",
+        "total_return": 78.48837209302326,
+        "net_profit": 3.4883720930232585,
+        "successful": true,
+        "roi": 4.651162790697678
+      },
+      {
+        "strategy": "Dutching",
+        "race_id": "183211",
+        "selections": [
+          {
+            "horse_name": "Midsummer Music",
+            "odds": 3.75,
+            "stake": 28.378378378378383,
+            "place": 1
+          },
+          {
+            "horse_name": "Moonlight Bomb",
+            "odds": 4.2,
+            "stake": 25.337837837837842,
+            "place": 2
+          },
+          {
+            "horse_name": "Ravenglass",
+            "odds": 5.0,
+            "stake": 21.283783783783786,
+            "place": 3
+          }
+        ],
+        "total_stake": 75.00000000000001,
+        "winning_horse": "Midsummer Music",
+        "total_return": 106.41891891891893,
+        "net_profit": 31.41891891891892,
+        "successful": true,
+        "roi": 41.89189189189189
+      },
+      {
+        "strategy": "Dutching",
+        "race_id": "183218",
+        "selections": [
+          {
+            "horse_name": "Princess Honey Bee",
+            "odds": 2.0,
+            "stake": 42.80487804878049,
+            "place": 3
+          },
+          {
+            "horse_name": "Della Pace",
+            "odds": 4.5,
+            "stake": 19.02439024390244,
+            "place": 1
+          },
+          {
+            "horse_name": "Red Tsarina",
+            "odds": 6.5,
+            "stake": 13.170731707317072,
+            "place": 2
+          }
+        ],
+        "total_stake": 75.0,
+        "winning_horse": "Della Pace",
+        "total_return": 85.60975609756099,
+        "net_profit": 10.60975609756099,
+        "successful": true,
+        "roi": 14.146341463414652
+      },
+      {
+        "strategy": "Dutching",
+        "race_id": "183220",
+        "selections": [
+          {
+            "horse_name": "Bizou",
+            "odds": 3.75,
+            "stake": 33.80281690140845,
+            "place": 6
+          },
+          {
+            "horse_name": "Tuesdays Child",
+            "odds": 5.0,
+            "stake": 25.352112676056336,
+            "place": 1
+          },
+          {
+            "horse_name": "Tronido",
+            "odds": 8.0,
+            "stake": 15.845070422535212,
+            "place": 2
+          }
+        ],
+        "total_stake": 75.0,
+        "winning_horse": "Tuesdays Child",
+        "total_return": 126.76056338028168,
+        "net_profit": 51.76056338028168,
+        "successful": true,
+        "roi": 69.01408450704224
+      },
+      {
+        "strategy": "Dutching",
+        "race_id": "183221",
+        "selections": [
+          {
+            "horse_name": "Dubai Beach",
+            "odds": 2.5,
+            "stake": 34.06940063091483,
+            "place": 1
+          },
+          {
+            "horse_name": "Grand Traverse",
+            "odds": 2.88,
+            "stake": 29.574132492113566,
+            "place": 2
+          },
+          {
+            "horse_name": "Tennessee Gold",
+            "odds": 7.5,
+            "stake": 11.35646687697161,
+            "place": 3
+          }
+        ],
+        "total_stake": 75.0,
+        "winning_horse": "Dubai Beach",
+        "total_return": 85.17350157728707,
+        "net_profit": 10.17350157728707,
+        "successful": true,
+        "roi": 13.564668769716093
+      },
+      {
+        "strategy": "Dutching",
+        "race_id": "183222",
+        "selections": [
+          {
+            "horse_name": "Karthon",
+            "odds": 2.0,
+            "stake": 49.4,
+            "place": 2
+          },
+          {
+            "horse_name": "Carderock",
+            "odds": 6.5,
+            "stake": 15.2,
+            "place": 3
+          },
+          {
+            "horse_name": "Distinction",
+            "odds": 9.5,
+            "stake": 10.4,
+            "place": 1
+          }
+        ],
+        "total_stake": 75.0,
+        "winning_horse": "Distinction",
+        "total_return": 98.8,
+        "net_profit": 23.799999999999997,
+        "successful": true,
+        "roi": 31.73333333333333
+      },
+      {
+        "strategy": "Dutching",
+        "race_id": "183223",
+        "selections": [
+          {
+            "horse_name": "Saytarr",
+            "odds": 3.0,
+            "stake": 35.48259493670886,
+            "place": 2
+          },
+          {
+            "horse_name": "Fort Augustus",
+            "odds": 4.6,
+            "stake": 23.140822784810126,
+            "place": 7
+          },
+          {
+            "horse_name": "Moderna",
+            "odds": 6.5,
+            "stake": 16.376582278481013,
+            "place": 5
+          }
+        ],
+        "total_stake": 75.0,
+        "winning_horse": null,
+        "total_return": 0,
+        "net_profit": -75.0,
+        "successful": false,
+        "roi": -100.0
+      },
+      {
+        "strategy": "Dutching",
+        "race_id": "183224",
+        "selections": [
+          {
+            "horse_name": "Dun An Oir",
+            "odds": 3.25,
+            "stake": 33.36019339242546,
+            "place": 9
+          },
+          {
+            "horse_name": "Mono River",
+            "odds": 4.6,
+            "stake": 23.569701853344075,
+            "place": 1
+          },
+          {
+            "horse_name": "Theophilos",
+            "odds": 6.0,
+            "stake": 18.070104754230456,
+            "place": 6
+          }
+        ],
+        "total_stake": 74.99999999999999,
+        "winning_horse": "Mono River",
+        "total_return": 108.42062852538274,
+        "net_profit": 33.42062852538275,
+        "successful": true,
+        "roi": 44.56083803384368
+      },
+      {
+        "strategy": "Dutching",
+        "race_id": "183225",
+        "selections": [
+          {
+            "horse_name": "Idiocracy",
+            "odds": 4.2,
+            "stake": 25.832582065015647,
+            "place": 3
+          },
+          {
+            "horse_name": "Echo Of Faith",
+            "odds": 4.33,
+            "stake": 25.057008007636423,
+            "place": 1
+          },
+          {
+            "horse_name": "Spinning Around",
+            "odds": 4.5,
+            "stake": 24.110409927347938,
+            "place": 2
+          }
+        ],
+        "total_stake": 75.0,
+        "winning_horse": "Echo Of Faith",
+        "total_return": 108.49684467306571,
+        "net_profit": 33.49684467306571,
+        "successful": true,
+        "roi": 44.66245956408761
+      },
+      {
+        "strategy": "Dutching",
+        "race_id": "183227",
+        "selections": [
+          {
+            "horse_name": "Proxima Centauri",
+            "odds": 2.75,
+            "stake": 31.99052132701422,
+            "place": 1
+          },
+          {
+            "horse_name": "Perfect Base",
+            "odds": 3.75,
+            "stake": 23.45971563981043,
+            "place": 3
+          },
+          {
+            "horse_name": "Tinas Charm",
+            "odds": 4.5,
+            "stake": 19.54976303317536,
+            "place": 2
+          }
+        ],
+        "total_stake": 75.00000000000001,
+        "winning_horse": "Proxima Centauri",
+        "total_return": 87.97393364928911,
+        "net_profit": 12.973933649289094,
+        "successful": true,
+        "roi": 17.298578199052123
+      },
+      {
+        "strategy": "Dutching",
+        "race_id": "183228",
+        "selections": [
+          {
+            "horse_name": "Engines On",
+            "odds": 3.75,
+            "stake": 36.206896551724135,
+            "place": 7
+          },
+          {
+            "horse_name": "Four Blondes",
+            "odds": 7.0,
+            "stake": 19.39655172413793,
+            "place": 2
+          },
+          {
+            "horse_name": "William F Browne",
+            "odds": 7.0,
+            "stake": 19.39655172413793,
+            "place": 12
+          }
+        ],
+        "total_stake": 75.0,
+        "winning_horse": null,
+        "total_return": 0,
+        "net_profit": -75.0,
+        "successful": false,
+        "roi": -100.0
+      },
+      {
+        "strategy": "Dutching",
+        "race_id": "183229",
+        "selections": [
+          {
+            "horse_name": "Sears Crossing",
+            "odds": 3.0,
+            "stake": 29.411764705882355,
+            "place": 2
+          },
+          {
+            "horse_name": "Smithfield",
+            "odds": 3.75,
+            "stake": 23.529411764705884,
+            "place": 4
+          },
+          {
+            "horse_name": "Bryant",
+            "odds": 4.0,
+            "stake": 22.058823529411764,
+            "place": 1
+          }
+        ],
+        "total_stake": 75.0,
+        "winning_horse": "Bryant",
+        "total_return": 88.23529411764706,
+        "net_profit": 13.235294117647058,
+        "successful": true,
+        "roi": 17.64705882352941
+      },
+      {
+        "strategy": "Dutching",
+        "race_id": "183230",
+        "selections": [
+          {
+            "horse_name": "Gotta Catchem All",
+            "odds": 3.5,
+            "stake": 32.380073800738,
+            "place": 3
+          },
+          {
+            "horse_name": "Pillar Of Hope",
+            "odds": 4.5,
+            "stake": 25.184501845018453,
+            "place": 7
+          },
+          {
+            "horse_name": "Ms Messi",
+            "odds": 6.5,
+            "stake": 17.435424354243544,
+            "place": 9
+          }
+        ],
+        "total_stake": 75.0,
+        "winning_horse": null,
+        "total_return": 0,
+        "net_profit": -75.0,
+        "successful": false,
+        "roi": -100.0
+      },
+      {
+        "strategy": "Dutching",
+        "race_id": "183212",
+        "selections": [
+          {
+            "horse_name": "Hayynah",
+            "odds": 1.57,
+            "stake": 49.11613848690236,
+            "place": 2
+          },
+          {
+            "horse_name": "Yasalam",
+            "odds": 5.5,
+            "stake": 14.02042498626122,
+            "place": 4
+          },
+          {
+            "horse_name": "Secret Of Life",
+            "odds": 6.5,
+            "stake": 11.863436526836416,
+            "place": 1
+          }
+        ],
+        "total_stake": 75.0,
+        "winning_horse": "Secret Of Life",
+        "total_return": 77.1123374244367,
+        "net_profit": 2.112337424436703,
+        "successful": true,
+        "roi": 2.816449899248937
+      },
+      {
+        "strategy": "Dutching",
+        "race_id": "183213",
+        "selections": [
+          {
+            "horse_name": "Sporting Light",
+            "odds": 2.75,
+            "stake": 29.9417798724702,
+            "place": 1
+          },
+          {
+            "horse_name": "Phantom Watch",
+            "odds": 2.88,
+            "stake": 28.590241197671197,
+            "place": 5
+          },
+          {
+            "horse_name": "Space Bear",
+            "odds": 5.0,
+            "stake": 16.46797892985861,
+            "place": 6
+          }
+        ],
+        "total_stake": 75.0,
+        "winning_horse": "Sporting Light",
+        "total_return": 82.33989464929304,
+        "net_profit": 7.3398946492930435,
+        "successful": true,
+        "roi": 9.786526199057391
+      },
+      {
+        "strategy": "Dutching",
+        "race_id": "183214",
+        "selections": [
+          {
+            "horse_name": "Noisy Music",
+            "odds": 5.5,
+            "stake": 28.49686847599165,
+            "place": 1
+          },
+          {
+            "horse_name": "Dream Illusion",
+            "odds": 6.5,
+            "stake": 24.112734864300627,
+            "place": 4
+          },
+          {
+            "horse_name": "Little Keilee",
+            "odds": 7.0,
+            "stake": 22.390396659707722,
+            "place": 2
+          }
+        ],
+        "total_stake": 75.0,
+        "winning_horse": "Noisy Music",
+        "total_return": 156.73277661795407,
+        "net_profit": 81.73277661795407,
+        "successful": true,
+        "roi": 108.97703549060542
+      },
+      {
+        "strategy": "Dutching",
+        "race_id": "183215",
+        "selections": [
+          {
+            "horse_name": "Sams Hope",
+            "odds": 2.25,
+            "stake": 41.66666666666667,
+            "place": 2
+          },
+          {
+            "horse_name": "Kento",
+            "odds": 4.5,
+            "stake": 20.833333333333336,
+            "place": 3
+          },
+          {
+            "horse_name": "Sanbona",
+            "odds": 7.5,
+            "stake": 12.500000000000002,
+            "place": 1
+          }
+        ],
+        "total_stake": 75.00000000000001,
+        "winning_horse": "Sanbona",
+        "total_return": 93.75000000000001,
+        "net_profit": 18.75,
+        "successful": true,
+        "roi": 24.999999999999993
+      },
+      {
+        "strategy": "Dutching",
+        "race_id": "183216",
+        "selections": [
+          {
+            "horse_name": "Glory Hyde",
+            "odds": 3.25,
+            "stake": 31.69014084507042,
+            "place": 3
+          },
+          {
+            "horse_name": "Havana Sky",
+            "odds": 3.75,
+            "stake": 27.464788732394364,
+            "place": 1
+          },
+          {
+            "horse_name": "Bill Plumb",
+            "odds": 6.5,
+            "stake": 15.84507042253521,
+            "place": 6
+          }
+        ],
+        "total_stake": 75.0,
+        "winning_horse": "Havana Sky",
+        "total_return": 102.99295774647887,
+        "net_profit": 27.992957746478865,
+        "successful": true,
+        "roi": 37.32394366197182
+      },
+      {
+        "strategy": "Dutching",
+        "race_id": "183217",
+        "selections": [
+          {
+            "horse_name": "Lightning Touch",
+            "odds": 4.0,
+            "stake": 27.892561983471072,
+            "place": 2
+          },
+          {
+            "horse_name": "Team Player",
+            "odds": 4.5,
+            "stake": 24.793388429752067,
+            "place": 3
+          },
+          {
+            "horse_name": "Typhoon Dancer",
+            "odds": 5.0,
+            "stake": 22.314049586776857,
+            "place": 6
+          }
+        ],
+        "total_stake": 75.0,
+        "winning_horse": null,
+        "total_return": 0,
+        "net_profit": -75.0,
+        "successful": false,
+        "roi": -100.0
+      }
+    ]
+  },
+  "overall": {
+    "total_races": 31,
+    "profitable_races": 28,
+    "total_stakes": 3500.0,
+    "total_returns": 3468.2253050432064,
+    "net_profit": -31.77469495679353,
+    "roi_percentage": -0.907848427336958,
+    "success_rate": 90.32258064516128
+  }
+}

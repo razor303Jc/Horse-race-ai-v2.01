@@ -210,6 +210,147 @@ services:
       retries: 3
 
   # =============================================================================
+  # PRODUCTION TRADING SERVICES
+  # =============================================================================
+
+  # Live Strategy Execution - Automated trading coordinator
+  live-execution:
+    build:
+      context: .
+      dockerfile: docker/dockerfiles/Dockerfile.production
+      args:
+        USER_NAME: ${USER_NAME:-jc}
+        USER_ID: ${USER_ID:-1000}
+        GROUP_ID: ${GROUP_ID:-1000}
+    container_name: horse_racing_live_execution
+    environment:
+      DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/horse_racing_db
+      REDIS_URL: redis://:${REDIS_PASSWORD:-redis_password_123}@redis:6379/0
+      PYTHONPATH: /app
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      # Trading configuration
+      EXECUTION_MODE: ${EXECUTION_MODE:-simulation}
+      MAX_DAILY_STAKE: ${MAX_DAILY_STAKE:-200.0}
+      MAX_SINGLE_STAKE: ${MAX_SINGLE_STAKE:-50.0}
+      AUTO_PLACE_BETS: ${AUTO_PLACE_BETS:-false}
+      # API credentials (injected via secrets in production)
+      BETFAIR_APP_KEY: ${BETFAIR_APP_KEY:-}
+      BETFAIR_USERNAME: ${BETFAIR_USERNAME:-}
+      BETFAIR_PASSWORD: ${BETFAIR_PASSWORD:-}
+      RACING_API_KEY: ${RACING_API_KEY:-}
+      TWILIO_ACCOUNT_SID: ${TWILIO_ACCOUNT_SID:-}
+      TWILIO_AUTH_TOKEN: ${TWILIO_AUTH_TOKEN:-}
+    volumes:
+      - ./src:/app/src:ro
+      - ./config:/app/config:rw
+      - ./logs:/app/logs:rw
+      - ./models:/app/models:ro
+      - ./data:/app/data:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      web-app:
+        condition: service_healthy
+    networks:
+      - horse_racing_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import sys; sys.exit(0)"]
+      interval: 60s
+      timeout: 10s
+      retries: 3
+    profiles:
+      - production
+
+  # Production Dashboard - Public web interface
+  production-dashboard:
+    build:
+      context: .
+      dockerfile: docker/dockerfiles/Dockerfile.dashboard
+      args:
+        USER_NAME: ${USER_NAME:-jc}
+        USER_ID: ${USER_ID:-1000}
+        GROUP_ID: ${GROUP_ID:-1000}
+    container_name: horse_racing_dashboard
+    environment:
+      DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/horse_racing_db
+      REDIS_URL: redis://:${REDIS_PASSWORD:-redis_password_123}@redis:6379/0
+      PYTHONPATH: /app
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      FLASK_ENV: ${FLASK_ENV:-production}
+      SECRET_KEY: ${SECRET_KEY:-your-secret-key-here}
+    volumes:
+      - ./src:/app/src:ro
+      - ./templates:/app/templates:ro
+      - ./config:/app/config:ro
+      - ./logs:/app/logs:rw
+    ports:
+      - "5000:5000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - horse_racing_network
+      - traefik-dev
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.dashboard.rule=Host(`dashboard.horserace.local`)"
+      - "traefik.http.routers.dashboard.service=dashboard"
+      - "traefik.http.services.dashboard.loadbalancer.server.port=5000"
+    profiles:
+      - production
+
+  # Alert System - Notification coordinator
+  alert-system:
+    build:
+      context: .
+      dockerfile: docker/dockerfiles/Dockerfile.alerts
+      args:
+        USER_NAME: ${USER_NAME:-jc}
+        USER_ID: ${USER_ID:-1000}
+        GROUP_ID: ${GROUP_ID:-1000}
+    container_name: horse_racing_alerts
+    environment:
+      DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/horse_racing_db
+      REDIS_URL: redis://:${REDIS_PASSWORD:-redis_password_123}@redis:6379/0
+      PYTHONPATH: /app
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      # Email configuration
+      SMTP_SERVER: ${SMTP_SERVER:-smtp.gmail.com}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      EMAIL_USERNAME: ${EMAIL_USERNAME:-}
+      EMAIL_PASSWORD: ${EMAIL_PASSWORD:-}
+      # SMS configuration  
+      TWILIO_ACCOUNT_SID: ${TWILIO_ACCOUNT_SID:-}
+      TWILIO_AUTH_TOKEN: ${TWILIO_AUTH_TOKEN:-}
+      TWILIO_FROM_NUMBER: ${TWILIO_FROM_NUMBER:-}
+    volumes:
+      - ./src:/app/src:ro
+      - ./config:/app/config:ro
+      - ./logs:/app/logs:rw
+      - ./templates:/app/templates:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - horse_racing_network
+    restart: unless-stopped
+    profiles:
+      - production
+
+  # =============================================================================
   # OPTIONAL/SUPPORT SERVICES
   # =============================================================================
 
