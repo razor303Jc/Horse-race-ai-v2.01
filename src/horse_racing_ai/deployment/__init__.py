@@ -15,4 +15,4 @@ Author: Horse Racing AI System V2.03
 
 from .production_dashboard import ProductionDashboard
 
-__all__ = ['ProductionDashboard']
+__all__ = ["ProductionDashboard"]

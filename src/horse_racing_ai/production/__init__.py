@@ -15,4 +15,4 @@ Author: Horse Racing AI System V2.03
 
 from .live_strategy_execution import LiveStrategyExecutor
 
-__all__ = ['LiveStrategyExecutor']
+__all__ = ["LiveStrategyExecutor"]

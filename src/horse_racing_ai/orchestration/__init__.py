@@ -15,4 +15,4 @@ Author: Horse Racing AI System V2.03
 
 from .production_system import ProductionSystemManager
 
-__all__ = ['ProductionSystemManager']
+__all__ = ["ProductionSystemManager"]

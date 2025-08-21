@@ -198,9 +198,10 @@ class ProductionSystemManager:
         try:
             subprocess.run(
                 [
-                    sys.executable, "-m", 
-                    "src.horse_racing_ai.deployment.production_dashboard", 
-                    "create-config"
+                    sys.executable,
+                    "-m",
+                    "src.horse_racing_ai.deployment.production_dashboard",
+                    "create-config",
                 ],
                 check=True,
                 capture_output=True,
@@ -245,8 +246,9 @@ class ProductionSystemManager:
             # Start execution in background
             process = subprocess.Popen(
                 [
-                    sys.executable, "-m", 
-                    "src.horse_racing_ai.production.live_strategy_execution"
+                    sys.executable,
+                    "-m",
+                    "src.horse_racing_ai.production.live_strategy_execution",
                 ],
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
@@ -277,8 +279,9 @@ class ProductionSystemManager:
             # Start monitoring in background
             process = subprocess.Popen(
                 [
-                    sys.executable, "-m", 
-                    "src.horse_racing_ai.monitoring.live_system_integration"
+                    sys.executable,
+                    "-m",
+                    "src.horse_racing_ai.monitoring.live_system_integration",
                 ],
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,

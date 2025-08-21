@@ -144,6 +144,11 @@ export class HorseRacingAPI {
     return this.transformDailyRacesToRaceCards(dailyRaces);
   }
 
+  // Get real race cards - alias for getRaceCardsBasic for compatibility
+  static async getRealRaceCards() {
+    return this.getRaceCardsBasic();
+  }
+
   // Get race cards with full horse details for specific races
   static async getRaceCardsWithHorses(raceIds?: number[]) {
     try {
@@ -196,6 +201,52 @@ export class HorseRacingAPI {
     } catch (error) {
       console.error('Error fetching race cards with horses:', error);
       throw error; // No fallback - we want real data only
+    }
+  }
+
+  // Get Stage 8 Performance data (betting performance metrics)
+  static async getStage8Performance() {
+    try {
+      const data = await apiCall<any>('/dashboard_data');
+      console.log('Stage 8 performance data loaded:', data);
+      
+      // Transform dashboard data to BettingPerformance format
+      const performanceData = data.performance || {};
+      return {
+        account_balance: performanceData.profit_7d || 1000.0,
+        daily_pnl: data.betting?.profit_today || 0.0,
+        win_rate: performanceData.accuracy_7d || 0.0,
+        roi: performanceData.roi_7d || 0.0,
+        total_bets: performanceData.bets_placed || 0,
+        active_bets: data.betting?.daily_opportunities || 0
+      };
+    } catch (error) {
+      console.error('Error fetching Stage 8 performance:', error);
+      throw error;
+    }
+  }
+
+  // Get betting recommendations
+  static async getBettingRecommendations() {
+    try {
+      const data = await apiCall<any>('/betting/recommendations');
+      console.log('Betting recommendations loaded:', data);
+      return data;
+    } catch (error) {
+      console.error('Error fetching betting recommendations:', error);
+      throw error;
+    }
+  }
+
+  // Get live races
+  static async getLiveRaces() {
+    try {
+      const data = await apiCall<any>('/daily_races');
+      console.log('Live races loaded:', data);
+      return data.races || [];
+    } catch (error) {
+      console.error('Error fetching live races:', error);
+      throw error;
     }
   }
 }
