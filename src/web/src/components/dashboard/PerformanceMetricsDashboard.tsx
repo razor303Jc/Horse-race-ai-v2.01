@@ -95,7 +95,7 @@ export const PerformanceMetricsDashboard: React.FC = () => {
     const keyMetrics: PerformanceMetric[] = useMemo(() => [
         {
             name: 'Total P&L',
-            value: performance.daily_pnl,
+            value: performance.daily_pnl || 0,
             change: 12.5,
             trend: 'up',
             color: '#4caf50'
@@ -116,7 +116,7 @@ export const PerformanceMetricsDashboard: React.FC = () => {
         },
         {
             name: 'Active Bets',
-            value: performance.active_bets,
+            value: performance.active_bets || 0,
             change: 0,
             trend: 'neutral',
             color: '#9c27b0'
@@ -401,7 +401,7 @@ export const PerformanceMetricsDashboard: React.FC = () => {
                     <Grid container spacing={2}>
                         <Grid item xs={6} sm={3}>
                             <Paper sx={{ p: 2, textAlign: 'center' }}>
-                                <Typography variant="h5" color="primary">£{performance.account_balance.toFixed(2)}</Typography>
+                                <Typography variant="h5" color="primary">£{(performance.account_balance || 0).toFixed(2)}</Typography>
                                 <Typography variant="caption">Current Balance</Typography>
                             </Paper>
                         </Grid>

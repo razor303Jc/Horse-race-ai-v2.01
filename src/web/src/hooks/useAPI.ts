@@ -1,7 +1,7 @@
 /**
  * React hooks for Horse Racing AI API integration
- * 
- * These hooks provide state management and caching for API calls,
+ *       const cardsData = await HorseRacingAPI.getRaceCards();
+      setData(cardsData);* These hooks provide state management and caching for API calls,
  * replacing mock data with real backend integration.
  */
 
@@ -90,7 +90,7 @@ export const useRaceCard = (raceId: string | null) => {
     try {
       setLoading(true);
       setError(null);
-      const cardData = await HorseRacingAPI.getRaceDetails(id);
+      const cardData = await HorseRacingAPI.getRaceDetails(parseInt(id));
       setData(cardData);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch race card');
@@ -127,7 +127,7 @@ export const useBettingRecommendations = () => {
       setLoading(true);
       setError(null);
       const data = await HorseRacingAPI.getBettingRecommendations();
-      setRecommendations(data.filter(r => r.recommended_action !== 'SKIP'));
+      setRecommendations(data.filter((r: BettingRecommendation) => r.recommended_action !== 'SKIP'));
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch recommendations');
     } finally {
@@ -153,12 +153,13 @@ export const useBettingRecommendations = () => {
 // Hook for Stage 8 Performance data
 export const useStage8Performance = () => {
   const [performance, setPerformance] = useState<BettingPerformance>({
-    account_balance: 1000.0,
-    daily_pnl: 0.0,
-    win_rate: 0.0,
-    roi: 0.0,
     total_bets: 0,
-    active_bets: 0
+    winning_bets: 0,
+    total_stake: 0,
+    total_return: 0,
+    profit_loss: 0,
+    roi: 0,
+    win_rate: 0
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -168,7 +169,20 @@ export const useStage8Performance = () => {
       setLoading(true);
       setError(null);
       const data = await HorseRacingAPI.getStage8Performance();
-      setPerformance(data);
+      setPerformance({
+        total_bets: data.total_bets || 0,
+        winning_bets: Math.round((data.win_rate || 0) * (data.total_bets || 0) / 100),
+        total_stake: data.account_balance || 0,
+        total_return: (data.account_balance || 0) + (data.daily_pnl || 0),
+        profit_loss: data.daily_pnl || 0,
+        roi: data.roi || 0,
+        win_rate: data.win_rate || 0,
+        // Add the additional properties for components
+        account_balance: data.account_balance || 1000,
+        daily_pnl: data.daily_pnl || 0,
+        active_bets: data.active_bets || 0,
+        recent_performance: (data as any).recent_performance || []
+      });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch performance data');
       // Keep using fallback data on error

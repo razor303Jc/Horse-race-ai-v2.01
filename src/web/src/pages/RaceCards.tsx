@@ -1,9 +1,12 @@
+import React, { useState, useEffect } from 'react'
 import {
     AccessTime,
     TrendingUp,
     Speed,
     EmojiEvents,
     Place,
+    Refresh,
+    Warning,
     Star
 } from '@mui/icons-material'
 import {
@@ -15,79 +18,127 @@ import {
     Typography,
     Paper,
     Chip,
-    Avatar,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
+    CircularProgress,
+    Alert,
+    Button,
     LinearProgress
 } from '@mui/material'
+import { HorseRacingAPI } from '../services/api'
 
-const raceCards = [
-    {
-        id: 1,
-        venue: "Kempton Park",
-        time: "14:30",
-        name: "Handicap Stakes",
-        distance: "1m 2f",
-        prize: "£15,000",
-        field: 12,
-        going: "Good to Firm",
-        status: "upcoming"
-    },
-    {
-        id: 2,
-        venue: "Newmarket",
-        time: "15:00",
-        name: "Maiden Stakes",
-        distance: "7f",
-        prize: "£8,500",
-        field: 14,
-        going: "Good",
-        status: "upcoming"
-    },
-    {
-        id: 3,
-        venue: "Ascot",
-        time: "15:30",
-        name: "Listed Race",
-        distance: "1m 4f",
-        prize: "£25,000",
-        field: 8,
-        going: "Soft",
-        status: "upcoming"
-    },
-    {
-        id: 4,
-        venue: "Cheltenham",
-        time: "16:00",
-        name: "Novice Hurdle",
-        distance: "2m 1f",
-        prize: "£12,000",
-        field: 10,
-        going: "Good to Soft",
-        status: "running"
-    }
-]
+// Real data interfaces
+interface RealRaceCard {
+    race_id: number;
+    race_number: number;
+    race_time: string;
+    course: string;
+    race_name: string;
+    class: string;
+    distance: string;
+    surface: string;
+    prize: string;
+    runners: number;
+    status?: string;
+}
 
-const topHorses = [
-    { name: "Lightning Strike", jockey: "R. Moore", odds: "3/1", confidence: 85, form: "11211" },
-    { name: "Thunder Bay", jockey: "W. Buick", odds: "5/2", confidence: 78, form: "21131" },
-    { name: "Storm Chaser", jockey: "F. Dettori", odds: "4/1", confidence: 72, form: "31121" },
-    { name: "Wind Walker", jockey: "J. Murphy", odds: "6/1", confidence: 68, form: "12312" },
-    { name: "Rain Dance", jockey: "T. Marquand", odds: "8/1", confidence: 65, form: "21321" }
-]
+interface RealHorse {
+    horse_name: string;
+    jockey: string;
+    trainer: string;
+    age: number;
+    odds: string | null;
+    odds_decimal: number | null;
+    confidence?: number;
+    form?: string;
+}
 
 export default function RaceCards() {
+    const [raceCards, setRaceCards] = useState<RealRaceCard[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+    const [totalRaces, setTotalRaces] = useState(0);
+    const [totalVenues, setTotalVenues] = useState(0);
+    const [showAllRaces, setShowAllRaces] = useState(false);
+
+    useEffect(() => {
+        const loadRaceCards = async () => {
+            try {
+                setLoading(true);
+                setError(null);
+                
+                console.log('Loading real race cards from API...');
+                console.log('API URL being called:', 'http://localhost:3000/api/daily_races');
+                
+                const dailyRaces = await HorseRacingAPI.getDailyRaces();
+                
+                console.log('Received daily races:', dailyRaces);
+                console.log('Total races in response:', dailyRaces.races.length);
+                
+                const raceCardsData: RealRaceCard[] = dailyRaces.races.map(race => ({
+                    race_id: race.race_id,
+                    race_number: race.race_number,
+                    race_time: race.race_time,
+                    course: race.course,
+                    race_name: race.race_name,
+                    class: race.class || 'Unknown',
+                    distance: race.distance || 'Unknown',
+                    surface: race.surface || 'Unknown',
+                    prize: race.prize || 'Unknown',
+                    runners: race.runners,
+                    status: 'upcoming'
+                })).sort((a, b) => a.race_time.localeCompare(b.race_time));
+                
+                console.log('Processed race cards data:', raceCardsData.length);
+                console.log('First race:', raceCardsData[0]);
+                console.log('Last race:', raceCardsData[raceCardsData.length - 1]);
+                
+                setRaceCards(raceCardsData);
+                setTotalRaces(dailyRaces.total_races);
+                setTotalVenues(new Set(dailyRaces.races.map(r => r.course)).size);
+                
+                console.log(`Loaded ${raceCardsData.length} race cards from ${new Set(dailyRaces.races.map(r => r.course)).size} venues`);
+                console.log('Last few race times:', raceCardsData.slice(-5).map(r => `${r.race_time} ${r.course}`));
+                console.log('All race times:', raceCardsData.map(r => r.race_time).sort());
+                
+            } catch (error) {
+                console.error('Error loading race cards:', error);
+                setError('Failed to load race cards. Please try again.');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        loadRaceCards();
+    }, []);
+
+    if (loading) {
+        return (
+            <Container maxWidth="xl" sx={{ mt: 4, mb: 4, display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '400px' }}>
+                <CircularProgress size={60} />
+                <Typography variant="h6" sx={{ ml: 2 }}>Loading today's race cards...</Typography>
+            </Container>
+        );
+    }
+
+    if (error) {
+        return (
+            <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
+                <Alert severity="error" sx={{ mb: 4 }}>
+                    {error}
+                    <Button variant="outlined" sx={{ ml: 2 }} onClick={() => window.location.reload()}>
+                        Retry
+                    </Button>
+                </Alert>
+            </Container>
+        );
+    }
+
     return (
         <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
             <Typography variant="h3" component="h1" gutterBottom sx={{ mb: 4, fontWeight: 'bold' }}>
-                🏇 Today's Race Cards
+                🏇 Today's Race Cards ({totalRaces} races)
             </Typography>
             
-            {/* Race Overview */}
+            {/* Real Race Overview */}
             <Grid container spacing={3} sx={{ mb: 4 }}>
                 <Grid item xs={12} sm={6} md={3}>
                     <Card sx={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', color: 'white' }}>
@@ -96,8 +147,8 @@ export default function RaceCards() {
                                 <AccessTime sx={{ mr: 1 }} />
                                 <Typography variant="h6">Today's Races</Typography>
                             </Box>
-                            <Typography variant="h3" sx={{ fontWeight: 'bold' }}>24</Typography>
-                            <Typography variant="body2">Across 6 venues</Typography>
+                            <Typography variant="h3" sx={{ fontWeight: 'bold' }}>{totalRaces}</Typography>
+                            <Typography variant="body2">Across {totalVenues} venues</Typography>
                         </CardContent>
                     </Card>
                 </Grid>
@@ -142,21 +193,34 @@ export default function RaceCards() {
                 </Grid>
             </Grid>
 
-            {/* Race Cards Grid */}
+            {/* Real Race Cards Grid */}
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+                <Typography variant="h4" gutterBottom sx={{ mt: 4, mb: 0 }}>
+                    📅 Today's Race Cards ({raceCards.length} races - Latest: {raceCards.length > 0 ? raceCards[raceCards.length - 1]?.race_time : 'None'} at {raceCards.length > 0 ? raceCards[raceCards.length - 1]?.course : 'None'})
+                </Typography>
+                <Button 
+                    variant="outlined" 
+                    onClick={() => setShowAllRaces(!showAllRaces)}
+                    sx={{ mt: 2 }}
+                >
+                    {showAllRaces ? 'Show Next 12 Races' : `Show All ${raceCards.length} Races`}
+                </Button>
+            </Box>
             <Grid container spacing={3} sx={{ mb: 4 }}>
-                {raceCards.map((race) => (
-                    <Grid item xs={12} md={6} key={race.id}>
+                {(showAllRaces ? raceCards : raceCards.slice(0, 12)).map((race) => (
+                    <Grid item xs={12} md={6} key={race.race_id}>
                         <Card sx={{ p: 3, height: '100%' }}>
                             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                                <Typography variant="h5" sx={{ fontWeight: 'bold' }}>{race.venue}</Typography>
+                                <Typography variant="h5" sx={{ fontWeight: 'bold' }}>{race.course}</Typography>
                                 <Chip 
-                                    label={race.status === 'running' ? 'LIVE' : race.time} 
+                                    label={race.status === 'running' ? 'LIVE' : race.race_time} 
                                     color={race.status === 'running' ? 'error' : 'primary'}
                                     variant={race.status === 'running' ? 'filled' : 'outlined'}
                                 />
                             </Box>
                             
-                            <Typography variant="h6" color="primary" sx={{ mb: 2 }}>{race.name}</Typography>
+                            <Typography variant="h6" color="primary" sx={{ mb: 2 }}>{race.race_name}</Typography>
+                            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>{race.class}</Typography>
                             
                             <Grid container spacing={2}>
                                 <Grid item xs={6}>
@@ -169,11 +233,11 @@ export default function RaceCards() {
                                 </Grid>
                                 <Grid item xs={6}>
                                     <Typography variant="body2" color="text.secondary">Field Size</Typography>
-                                    <Typography variant="body1" sx={{ fontWeight: 'bold' }}>{race.field} runners</Typography>
+                                    <Typography variant="body1" sx={{ fontWeight: 'bold' }}>{race.runners} runners</Typography>
                                 </Grid>
                                 <Grid item xs={6}>
                                     <Typography variant="body2" color="text.secondary">Going</Typography>
-                                    <Typography variant="body1" sx={{ fontWeight: 'bold' }}>{race.going}</Typography>
+                                    <Typography variant="body1" sx={{ fontWeight: 'bold' }}>{race.surface}</Typography>
                                 </Grid>
                             </Grid>
                             
@@ -188,81 +252,26 @@ export default function RaceCards() {
                 ))}
             </Grid>
 
-            {/* Top Horses Table */}
+            {/* Real Race Analysis - Coming Soon */}
             <Card sx={{ p: 3 }}>
-                <Typography variant="h5" gutterBottom sx={{ mb: 3 }}>🌟 Featured Runners - Next Race</Typography>
-                <TableContainer>
-                    <Table>
-                        <TableHead>
-                            <TableRow>
-                                <TableCell><Typography variant="subtitle2" sx={{ fontWeight: 'bold' }}>Horse</Typography></TableCell>
-                                <TableCell><Typography variant="subtitle2" sx={{ fontWeight: 'bold' }}>Jockey</Typography></TableCell>
-                                <TableCell><Typography variant="subtitle2" sx={{ fontWeight: 'bold' }}>Odds</Typography></TableCell>
-                                <TableCell><Typography variant="subtitle2" sx={{ fontWeight: 'bold' }}>AI Confidence</Typography></TableCell>
-                                <TableCell><Typography variant="subtitle2" sx={{ fontWeight: 'bold' }}>Recent Form</Typography></TableCell>
-                                <TableCell><Typography variant="subtitle2" sx={{ fontWeight: 'bold' }}>Rating</Typography></TableCell>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {topHorses.map((horse, index) => (
-                                <TableRow key={index} hover>
-                                    <TableCell>
-                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                                            <Avatar sx={{ bgcolor: index === 0 ? '#ffd700' : index === 1 ? '#c0c0c0' : '#cd7f32' }}>
-                                                {index + 1}
-                                            </Avatar>
-                                            <Typography variant="body1" sx={{ fontWeight: 'bold' }}>{horse.name}</Typography>
-                                        </Box>
-                                    </TableCell>
-                                    <TableCell>
-                                        <Typography variant="body2">{horse.jockey}</Typography>
-                                    </TableCell>
-                                    <TableCell>
-                                        <Chip label={horse.odds} variant="outlined" color="primary" />
-                                    </TableCell>
-                                    <TableCell>
-                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                            <Box sx={{ width: '100px' }}>
-                                                <LinearProgress 
-                                                    variant="determinate" 
-                                                    value={horse.confidence} 
-                                                    color={horse.confidence > 80 ? 'success' : horse.confidence > 70 ? 'warning' : 'error'}
-                                                />
-                                            </Box>
-                                            <Typography variant="body2">{horse.confidence}%</Typography>
-                                        </Box>
-                                    </TableCell>
-                                    <TableCell>
-                                        <Box sx={{ display: 'flex', gap: 0.5 }}>
-                                            {horse.form.split('').map((position, i) => (
-                                                <Chip 
-                                                    key={i}
-                                                    label={position}
-                                                    size="small"
-                                                    color={position === '1' ? 'success' : position === '2' ? 'warning' : 'default'}
-                                                    sx={{ minWidth: '24px', fontSize: '0.75rem' }}
-                                                />
-                                            ))}
-                                        </Box>
-                                    </TableCell>
-                                    <TableCell>
-                                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                            {[...Array(5)].map((_, i) => (
-                                                <Star 
-                                                    key={i} 
-                                                    sx={{ 
-                                                        color: i < Math.floor(horse.confidence / 20) ? '#ffd700' : '#e0e0e0',
-                                                        fontSize: '1rem'
-                                                    }} 
-                                                />
-                                            ))}
-                                        </Box>
-                                    </TableCell>
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </TableContainer>
+                <Typography variant="h5" gutterBottom sx={{ mb: 3 }}>🔮 AI Race Analysis</Typography>
+                <Box sx={{ textAlign: 'center', py: 4 }}>
+                    <Typography variant="h6" color="text.secondary" sx={{ mb: 2 }}>
+                        Detailed runner analysis with real-time data is being integrated
+                    </Typography>
+                    <Typography variant="body1" color="text.secondary">
+                        This section will display actual horses, jockeys, odds, and AI predictions from the live database
+                    </Typography>
+                    <Box sx={{ mt: 3 }}>
+                        <Button 
+                            variant="outlined" 
+                            onClick={() => console.log('Loading race analysis...')}
+                            disabled
+                        >
+                            Coming Soon
+                        </Button>
+                    </Box>
+                </Box>
             </Card>
 
             {/* Quick Stats */}

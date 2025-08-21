@@ -10,8 +10,10 @@ const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000/api
 
 // Real API Response Types (matching PostgreSQL database structure)
 export interface RealHorse {
-  horse_name: string;
-  horse_number: number | null;
+  horse_id: number;
+  name: string;
+  horse_name?: string; // Alias for name
+  horse_number?: number;
   jockey: string;
   trainer: string;
   age: number;
@@ -20,6 +22,14 @@ export interface RealHorse {
   form: string | null;
   draw: number | null;
   silk_colors: string | null;
+  // Additional properties used in components
+  position?: number;
+  jockey_name?: string;
+  trainer_name?: string;
+  win_odds?: string;
+  win_probability?: number;
+  recent_form?: string;
+  career_record?: string;
 }
 
 export interface RealRaceCard {
@@ -36,11 +46,22 @@ export interface RealRaceCard {
   prize: string;
   total_runners: number;
   horses: RealHorse[];
+  // Additional properties used in components
+  time?: string;
+  venue?: string;
+  going?: string;
+  prize_money?: number;
 }
 
 export interface DailyRacesResponse {
   date: string;
   total_races: number;
+  total_meetings?: number;
+  daily_stats?: {
+    total_prize_money: number;
+    group_races: number;
+    average_field_size: number;
+  };
   races: Array<{
     race_id: number;
     race_number: number;
@@ -52,7 +73,81 @@ export interface DailyRacesResponse {
     surface: string;
     prize: string;
     runners: number;
+    meeting?: string;
+    time?: string;
+    distance_meters?: number;
+    going?: string;
+    race_type?: string;
+    quality_rating?: string;
+    prize_money?: number;
+    field_size?: number;
+    predicted_competitiveness?: number;
+    favorite?: {
+      horse: string;
+      odds: number;
+      probability: number;
+    };
   }>;
+}
+
+// Legacy interfaces for backward compatibility
+export interface RaceCard extends RealRaceCard {}
+export interface Horse extends RealHorse {}
+export interface RaceCardsData {
+  total_races: number;
+  total_horses: number;
+  data_source: string;
+  timestamp: string;
+  races: RealRaceCard[];
+}
+export interface DailyRacesData extends DailyRacesResponse {}
+export interface Race {
+  race_id: number;
+  race_number: number;
+  race_time: string;
+  course: string;
+  race_name: string;
+  class: string;
+  distance: string;
+  surface: string;
+  prize: string;
+  runners: number;
+  meeting?: string;
+  race_type?: string;
+  horses?: Horse[];
+}
+
+// Betting interfaces
+export interface BettingRecommendation {
+  race_id: number;
+  horse_name: string;
+  recommended_action: 'BUY' | 'SELL' | 'HOLD' | 'SKIP';
+  confidence: number;
+  odds: string;
+  stake_percentage: number;
+  expected_return: number;
+  reasoning: string;
+  // Additional properties used in components
+  venue?: string;
+  race_time?: string;
+  current_odds?: number;
+  stake_recommendation?: number;
+  value?: number;
+}
+
+export interface BettingPerformance {
+  total_bets: number;
+  winning_bets: number;
+  total_stake: number;
+  total_return: number;
+  profit_loss: number;
+  roi: number;
+  win_rate: number;
+  // Additional properties used in components
+  account_balance?: number;
+  daily_pnl?: number;
+  active_bets?: number;
+  recent_performance?: any[];
 }
 
 // Error handling
@@ -124,15 +219,18 @@ export class HorseRacingAPI {
       data_source: "postgresql_database",
       timestamp: new Date().toISOString(),
       races: dailyRaces.races.map(race => ({
-        race_id: race.race_id.toString(),
+        race_id: race.race_id,
+        race_number: race.race_number,
+        race_time: race.race_time,
+        course: race.course,
+        race_type: race.class, // Map class to race_type
+        race_date: dailyRaces.date,
         race_name: race.race_name,
-        venue: race.course,
-        time: race.race_time,
+        class: race.class,
         distance: race.distance,
-        class: parseInt(race.class.replace('Class ', '') || '0'),
-        going: race.surface,
-        prize_money: parseInt(race.prize.replace(/[£,]/g, '') || '0'),
-        field_size: race.runners,
+        surface: race.surface,
+        prize: race.prize,
+        total_runners: race.runners,
         horses: [] // Will be populated when we fetch detailed race data
       }))
     };

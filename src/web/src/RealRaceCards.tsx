@@ -32,7 +32,7 @@ import {
 } from '@mui/material';
 import React, { useState } from 'react';
 import { useRealRaceCards } from './hooks/useAPI';
-import { RaceCard, Horse, RaceCardsData } from './services/api';
+import { RealRaceCard, RealHorse, RaceCardsData } from './services/api';
 
 const RealRaceCards: React.FC = () => {
     // Use API hook for real data
@@ -43,7 +43,7 @@ const RealRaceCards: React.FC = () => {
         refetch 
     } = useRealRaceCards();
     
-    const [selectedRace, setSelectedRace] = useState<RaceCard | null>(null);
+    const [selectedRace, setSelectedRace] = useState<RealRaceCard | null>(null);
     const [dialogOpen, setDialogOpen] = useState(false);
 
     const getOddsColor = (probability: number) => {
@@ -59,7 +59,7 @@ const RealRaceCards: React.FC = () => {
         return '#9e9e9e';
     };
 
-    const handleRaceClick = (race: RaceCard) => {
+    const handleRaceClick = (race: RealRaceCard) => {
         setSelectedRace(race);
         setDialogOpen(true);
     };
@@ -114,7 +114,7 @@ const RealRaceCards: React.FC = () => {
                                 Total Horses
                             </Typography>
                             <Typography variant="h4">
-                                {raceCards.total_horses}
+                                {raceCards.total_horses || 0}
                             </Typography>
                         </CardContent>
                     </Card>
@@ -126,7 +126,7 @@ const RealRaceCards: React.FC = () => {
                                 Data Source
                             </Typography>
                             <Chip 
-                                label={raceCards.data_source}
+                                label={raceCards.data_source || 'Unknown'}
                                 color={raceCards.data_source === 'live_database' ? 'success' : 'warning'}
                             />
                         </CardContent>
@@ -139,7 +139,7 @@ const RealRaceCards: React.FC = () => {
                                 Last Updated
                             </Typography>
                             <Typography variant="body2">
-                                {new Date(raceCards.timestamp).toLocaleTimeString()}
+                                {new Date(raceCards.timestamp || '').toLocaleTimeString()}
                             </Typography>
                         </CardContent>
                     </Card>
@@ -151,7 +151,7 @@ const RealRaceCards: React.FC = () => {
                 🏇 Live Race Cards
             </Typography>
 
-            {raceCards.races.map((race, index) => (
+            {raceCards.races.map((race: RealRaceCard, index: number) => (
                 <Accordion key={race.race_id} sx={{ mb: 2 }}>
                     <AccordionSummary expandIcon={<ExpandMore />}>
                         <Box sx={{ display: 'flex', alignItems: 'center', width: '100%' }}>
@@ -182,7 +182,7 @@ const RealRaceCards: React.FC = () => {
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
-                                    {race.horses.map((horse, idx) => (
+                                    {race.horses.map((horse: RealHorse, idx: number) => (
                                         <TableRow 
                                             key={idx}
                                             hover
@@ -193,7 +193,7 @@ const RealRaceCards: React.FC = () => {
                                         >
                                             <TableCell>
                                                 <Typography variant="subtitle2" fontWeight="bold">
-                                                    {horse.horse_name}
+                                                    {horse.horse_name || horse.name}
                                                 </Typography>
                                                 {horse.position && (
                                                     <Typography variant="caption" color="textSecondary">
@@ -204,13 +204,13 @@ const RealRaceCards: React.FC = () => {
                                             <TableCell>
                                                 <Box display="flex" alignItems="center">
                                                     <Person fontSize="small" sx={{ mr: 0.5 }} />
-                                                    {horse.jockey_name}
+                                                    {horse.jockey_name || horse.jockey}
                                                 </Box>
                                             </TableCell>
                                             <TableCell>
                                                 <Box display="flex" alignItems="center">
                                                     <Psychology fontSize="small" sx={{ mr: 0.5 }} />
-                                                    {horse.trainer_name}
+                                                    {horse.trainer_name || horse.trainer}
                                                 </Box>
                                             </TableCell>
                                             <TableCell>{horse.age}yo</TableCell>
@@ -219,7 +219,7 @@ const RealRaceCards: React.FC = () => {
                                             </TableCell>
                                             <TableCell>
                                                 <Chip
-                                                    label={horse.win_odds}
+                                                    label={horse.win_odds || horse.odds}
                                                     size="small"
                                                     sx={{ 
                                                         backgroundColor: getOddsColor(horse.win_probability || 0),
@@ -230,22 +230,22 @@ const RealRaceCards: React.FC = () => {
                                             </TableCell>
                                             <TableCell>
                                                 <Typography variant="body2" fontWeight="bold">
-                                                    {horse.win_probability}%
+                                                    {horse.win_probability || 0}%
                                                 </Typography>
                                             </TableCell>
                                             <TableCell>
                                                 <Chip
-                                                    label={horse.recent_form || 'N/A'}
+                                                    label={horse.recent_form || horse.form || 'N/A'}
                                                     size="small"
                                                     sx={{ 
-                                                        backgroundColor: getFormColor(horse.recent_form || ''),
+                                                        backgroundColor: getFormColor(horse.recent_form || horse.form || ''),
                                                         color: 'white'
                                                     }}
                                                 />
                                             </TableCell>
                                             <TableCell>
                                                 <Typography variant="body2">
-                                                    {horse.career_record}
+                                                    {horse.career_record || 'N/A'}
                                                 </Typography>
                                             </TableCell>
                                         </TableRow>

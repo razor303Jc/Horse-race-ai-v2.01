@@ -22,6 +22,10 @@ import Dashboard from './pages/Dashboard'
 import RacingAnalyzer from './pages/RacingAnalyzer'
 import LiveAnalytics from './pages/LiveAnalytics'
 import RaceCardsEnhanced from './pages/RaceCardsEnhanced'
+import RaceCards from './pages/RaceCards'
+import CourseSummary from './pages/CourseSummary'
+import CourseDetail from './pages/CourseDetail'
+import RaceDetail from './pages/RaceDetail'
 import RaceDetails from './pages/RaceDetails'
 import DatabaseManagement from './pages/DatabaseManagement'
 import ErrorPage from './pages/ErrorPage'
@@ -116,8 +120,13 @@ function App() {
               <Route path="/live" element={<LiveAnalytics />} />
               <Route path="/live-racing" element={<RaceSelection />} />
               <Route path="/betting" element={<AdvancedBettingDashboard />} />
-              <Route path="/cards" element={<RaceCardsEnhanced />} />
-              <Route path="/race/:id" element={<RaceDetails />} />
+              {/* New Race Card Structure */}
+              <Route path="/cards" element={<CourseSummary />} />
+              <Route path="/course/:courseName" element={<CourseDetail />} />
+              <Route path="/race/:raceId" element={<RaceDetail />} />
+              {/* Legacy Routes */}
+              <Route path="/cards-enhanced" element={<RaceCardsEnhanced />} />
+              <Route path="/race-details/:id" element={<RaceDetails />} />
               <Route path="/database" element={<DatabaseManagement />} />
               {/* User Management Routes */}
               <Route path="/user/dashboard" element={<UserManagementDashboard />} />

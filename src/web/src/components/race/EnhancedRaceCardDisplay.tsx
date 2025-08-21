@@ -187,19 +187,19 @@ export const EnhancedRaceCardDisplay: React.FC = () => {
                                 </Box>
                             </Box>
                             <IconButton 
-                                onClick={() => toggleRaceExpanded(race.race_id)}
+                                onClick={() => toggleRaceExpanded(race.race_id.toString())}
                                 color="primary"
                             >
-                                {expandedRaces.has(race.race_id) ? <ExpandLess /> : <ExpandMore />}
+                                {expandedRaces.has(race.race_id.toString()) ? <ExpandLess /> : <ExpandMore />}
                             </IconButton>
                         </Box>
 
-                        <Collapse in={expandedRaces.has(race.race_id)}>
+                        <Collapse in={expandedRaces.has(race.race_id.toString())}>
                             <Box sx={{ mt: 3 }}>
                                 <Grid container spacing={2}>
                                     {race.horses.map((horse, index) => {
                                         const analysis = getHorseAnalysis(horse);
-                                        const isSelected = selectedForComparison.has(horse.horse_name);
+                                        const isSelected = selectedForComparison.has(horse.horse_name || horse.name || '');
                                         
                                         return (
                                             <Grid item xs={12} md={6} lg={4} key={index}>
@@ -211,7 +211,7 @@ export const EnhancedRaceCardDisplay: React.FC = () => {
                                                         borderColor: isSelected ? 'primary.main' : 'divider',
                                                         cursor: compareMode ? 'pointer' : 'default'
                                                     }}
-                                                    onClick={() => compareMode ? toggleHorseComparison(horse.horse_name) : setSelectedHorse(horse)}
+                                                    onClick={() => compareMode ? toggleHorseComparison(horse.horse_name || horse.name || '') : setSelectedHorse(horse)}
                                                 >
                                                     <CardContent>
                                                         {/* Horse Header */}
@@ -239,7 +239,7 @@ export const EnhancedRaceCardDisplay: React.FC = () => {
                                                         <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
                                                             <Box>
                                                                 <Typography variant="h5" color="primary">
-                                                                    {horse.win_odds}
+                                                                    {horse.win_odds || horse.odds}
                                                                 </Typography>
                                                                 <Typography variant="caption">Odds</Typography>
                                                             </Box>
@@ -255,11 +255,11 @@ export const EnhancedRaceCardDisplay: React.FC = () => {
                                                         <Box sx={{ mb: 2 }}>
                                                             <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
                                                                 <Person fontSize="small" sx={{ mr: 1, color: 'text.secondary' }} />
-                                                                <Typography variant="body2">{horse.jockey_name}</Typography>
+                                                                <Typography variant="body2">{horse.jockey_name || horse.jockey}</Typography>
                                                             </Box>
                                                             <Box sx={{ display: 'flex', alignItems: 'center' }}>
                                                                 <Psychology fontSize="small" sx={{ mr: 1, color: 'text.secondary' }} />
-                                                                <Typography variant="body2">{horse.trainer_name}</Typography>
+                                                                <Typography variant="body2">{horse.trainer_name || horse.trainer}</Typography>
                                                             </Box>
                                                         </Box>
 

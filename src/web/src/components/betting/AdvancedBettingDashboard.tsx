@@ -179,7 +179,7 @@ export const BettingDashboard: React.FC = () => {
                 <CardContent sx={{ textAlign: 'center' }}>
                   <Typography 
                     variant="h6" 
-                    color={performance.daily_pnl >= 0 ? 'success.main' : 'error.main'}
+                    color={(performance.daily_pnl || 0) >= 0 ? 'success.main' : 'error.main'}
                   >
                     £{performance.daily_pnl?.toFixed(2) || '0.00'}
                   </Typography>

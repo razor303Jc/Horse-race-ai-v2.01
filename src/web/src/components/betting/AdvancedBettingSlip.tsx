@@ -147,8 +147,8 @@ export const AdvancedBettingSlip: React.FC = () => {
       raceName: `${recommendation.venue} ${recommendation.race_time}`,
       raceTime: recommendation.race_time || '',
       venue: recommendation.venue || '',
-      odds: recommendation.current_odds,
-      stake: recommendation.stake_recommendation,
+      odds: recommendation.current_odds || 0,
+      stake: recommendation.stake_recommendation || 0,
       betType: 'win',
       confidence: recommendation.confidence,
       aiRecommended: true
@@ -649,7 +649,7 @@ export const AdvancedBettingSlip: React.FC = () => {
                           {rec.horse_name}
                         </Typography>
                         <Typography variant="caption" color="text.secondary">
-                          {rec.venue} • {rec.current_odds.toFixed(1)}
+                          {rec.venue} • {(rec.current_odds || 0).toFixed(1)}
                         </Typography>
                         <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 1 }}>
                           <Chip

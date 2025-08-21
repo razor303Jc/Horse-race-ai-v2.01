@@ -64,7 +64,7 @@ const QuickStatsWidget: React.FC = () => {
         <Grid container spacing={2}>
             <Grid item xs={6}>
                 <Box sx={{ textAlign: 'center', p: 1 }}>
-                    <Typography variant="h6" color="primary">£{performance.account_balance.toFixed(2)}</Typography>
+                    <Typography variant="h6" color="primary">£{(performance.account_balance || 0).toFixed(2)}</Typography>
                     <Typography variant="caption">Balance</Typography>
                 </Box>
             </Grid>
@@ -104,10 +104,10 @@ const TodayRacesWidget: React.FC = () => {
                 <Chip label={`${racesData?.total_meetings || 0} Meetings`} color="secondary" size="small" />
             </Box>
             <Typography variant="body2" color="text.secondary">
-                Prize money: £{racesData?.daily_stats.total_prize_money.toLocaleString() || 0}
+                Prize money: £{racesData?.daily_stats?.total_prize_money?.toLocaleString() || 0}
             </Typography>
             <Typography variant="body2" color="text.secondary">
-                Avg field size: {racesData?.daily_stats.average_field_size || 0}
+                Avg field size: {racesData?.daily_stats?.average_field_size || 0}
             </Typography>
         </Box>
     );
@@ -125,7 +125,7 @@ const MiniPerformanceWidget: React.FC = () => {
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
                 <TrendingUp color="success" sx={{ mr: 1 }} />
                 <Typography variant="body2">
-                    Daily P&L: £{performance.daily_pnl.toFixed(2)}
+                    Daily P&L: £{(performance.daily_pnl || 0).toFixed(2)}
                 </Typography>
             </Box>
             <Box sx={{ height: 60, backgroundColor: '#f5f5f5', borderRadius: 1, p: 1 }}>

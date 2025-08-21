@@ -117,7 +117,7 @@ export const BettingDashboard: React.FC = () => {
         bet_id: `bet_${Date.now()}`,
         horse_name: recommendation.horse_name,
         stake: stakeAmount,
-        odds: recommendation.current_odds,
+        odds: recommendation.current_odds || 0,
         status: 'placed',
         pnl: 0.0,
         timestamp: new Date().toISOString()
@@ -232,10 +232,10 @@ export const BettingDashboard: React.FC = () => {
                 Account Balance
               </Typography>
               <Typography variant="h4" color="primary">
-                £{performance.account_balance.toFixed(2)}
+                £{(performance.account_balance || 0).toFixed(2)}
               </Typography>
-              <Typography variant="body2" color={performance.daily_pnl >= 0 ? 'success.main' : 'error.main'}>
-                Today: {performance.daily_pnl >= 0 ? '+' : ''}£{performance.daily_pnl.toFixed(2)}
+              <Typography variant="body2" color={(performance.daily_pnl || 0) >= 0 ? 'success.main' : 'error.main'}>
+                Today: {(performance.daily_pnl || 0) >= 0 ? '+' : ''}£{(performance.daily_pnl || 0).toFixed(2)}
               </Typography>
             </CardContent>
           </Card>
@@ -322,15 +322,15 @@ export const BettingDashboard: React.FC = () => {
                         size="small"
                       />
                     </TableCell>
-                    <TableCell>{rec.current_odds.toFixed(1)}</TableCell>
+                    <TableCell>{(rec.current_odds || 0).toFixed(1)}</TableCell>
                     <TableCell>
                       <Chip
-                        label={`${(rec.value * 100).toFixed(1)}%`}
-                        color={getValueColor(rec.value)}
+                        label={`${((rec.value || 0) * 100).toFixed(1)}%`}
+                        color={getValueColor(rec.value || 0)}
                         size="small"
                       />
                     </TableCell>
-                    <TableCell>£{rec.stake_recommendation.toFixed(2)}</TableCell>
+                    <TableCell>£{(rec.stake_recommendation || 0).toFixed(2)}</TableCell>
                     <TableCell>
                       <Button
                         variant="contained"
@@ -421,7 +421,7 @@ export const BettingDashboard: React.FC = () => {
             <Box sx={{ pt: 2 }}>
               <Typography variant="h6">{selectedBet.horse_name}</Typography>
               <Typography color="text.secondary" gutterBottom>
-                Odds: {selectedBet.current_odds.toFixed(1)} | 
+                Odds: {(selectedBet.current_odds || 0).toFixed(1)} | 
                 Confidence: {(selectedBet.confidence * 100).toFixed(0)}%
               </Typography>
               
@@ -439,7 +439,7 @@ export const BettingDashboard: React.FC = () => {
               />
               
               <Typography variant="body2" sx={{ mt: 2 }}>
-                Potential Return: £{(stakeAmount * selectedBet.current_odds).toFixed(2)}
+                Potential Return: £{(stakeAmount * (selectedBet.current_odds || 0)).toFixed(2)}
               </Typography>
             </Box>
           )}

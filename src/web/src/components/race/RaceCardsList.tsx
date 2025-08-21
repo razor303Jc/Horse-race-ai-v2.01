@@ -159,7 +159,7 @@ export const RaceCardsList: React.FC = () => {
                                             </TableRow>
                                         </TableHead>
                                         <TableBody>
-                                            {race.runners.map((horse) => (
+                                            {race.runners.map((horse: any) => (
                                                 <TableRow key={horse.number} hover>
                                                     <TableCell>
                                                         <Avatar sx={{ bgcolor: 'primary.main', width: 32, height: 32 }}>

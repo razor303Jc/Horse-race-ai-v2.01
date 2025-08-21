@@ -98,8 +98,8 @@ export const ProfessionalStakeCalculator: React.FC = () => {
 
   // Update bankroll from performance data
   React.useEffect(() => {
-    if (performance.account_balance > 0) {
-      setBankroll(performance.account_balance);
+    if ((performance.account_balance || 0) > 0) {
+      setBankroll(performance.account_balance || 1000);
     }
   }, [performance.account_balance]);
 
@@ -718,9 +718,9 @@ export const ProfessionalStakeCalculator: React.FC = () => {
                         </Typography>
                         <Typography 
                           variant="h6"
-                          color={performance.daily_pnl >= 0 ? 'success.main' : 'error.main'}
+                          color={(performance.daily_pnl || 0) >= 0 ? 'success.main' : 'error.main'}
                         >
-                          £{performance.daily_pnl.toFixed(2)}
+                          £{(performance.daily_pnl || 0).toFixed(2)}
                         </Typography>
                       </Grid>
                       

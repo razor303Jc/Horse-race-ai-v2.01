@@ -192,27 +192,27 @@ export const DailyRaces: React.FC = () => {
     return <Typography>No race data available</Typography>;
   }
 
-  const meetings = [...new Set(data.races.map(race => race.meeting))];
-  const raceTypes = [...new Set(data.races.map(race => race.race_type))];
+  const meetings = [...new Set(data.races.map((race) => race.meeting || race.course))];
+  const raceTypes = [...new Set(data.races.map((race) => race.race_type || race.class))];
 
   let filteredRaces = data.races;
   if (filterMeeting !== 'all') {
-    filteredRaces = filteredRaces.filter(race => race.meeting === filterMeeting);
+    filteredRaces = filteredRaces.filter((race) => (race.meeting || race.course) === filterMeeting);
   }
   if (filterType !== 'all') {
-    filteredRaces = filteredRaces.filter(race => race.race_type === filterType);
+    filteredRaces = filteredRaces.filter((race) => (race.race_type || race.class) === filterType);
   }
 
   const sortedRaces = [...filteredRaces].sort((a, b) => {
     switch (sortBy) {
       case 'time':
-        return a.time.localeCompare(b.time);
+        return (a.time || a.race_time || '').localeCompare(b.time || b.race_time || '');
       case 'quality':
-        return b.quality_rating.localeCompare(a.quality_rating);
+        return (b.quality_rating || '').localeCompare(a.quality_rating || '');
       case 'prize':
-        return b.prize_money - a.prize_money;
+        return (b.prize_money || 0) - (a.prize_money || 0);
       case 'competitiveness':
-        return b.predicted_competitiveness - a.predicted_competitiveness;
+        return (b.predicted_competitiveness || 0) - (a.predicted_competitiveness || 0);
       default:
         return 0;
     }
@@ -233,7 +233,7 @@ export const DailyRaces: React.FC = () => {
                 {data.total_races}
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                Races across {data.total_meetings} meetings
+                Races across {data.total_meetings || 0} meetings
               </Typography>
             </CardContent>
           </Card>
@@ -247,7 +247,7 @@ export const DailyRaces: React.FC = () => {
                 <Typography variant="h6">Prize Money</Typography>
               </Box>
               <Typography variant="h4" color="success.main">
-                {formatCurrency(data.daily_stats.total_prize_money)}
+                {formatCurrency(data.daily_stats?.total_prize_money || 0)}
               </Typography>
               <Typography variant="body2" color="text.secondary">
                 Total on offer today
@@ -264,7 +264,7 @@ export const DailyRaces: React.FC = () => {
                 <Typography variant="h6">Group Races</Typography>
               </Box>
               <Typography variant="h4" color="warning.main">
-                {data.daily_stats.group_races}
+                {data.daily_stats?.group_races || 0}
               </Typography>
               <Typography variant="body2" color="text.secondary">
                 Premium quality races
@@ -281,7 +281,7 @@ export const DailyRaces: React.FC = () => {
                 <Typography variant="h6">Avg Field Size</Typography>
               </Box>
               <Typography variant="h4" color="info.main">
-                {data.daily_stats.average_field_size}
+                {data.daily_stats?.average_field_size || 0}
               </Typography>
               <Typography variant="body2" color="text.secondary">
                 Runners per race
@@ -312,7 +312,7 @@ export const DailyRaces: React.FC = () => {
                 <InputLabel>Meeting</InputLabel>
                 <Select value={filterMeeting} onChange={(e) => setFilterMeeting(e.target.value)}>
                   <MenuItem value="all">All Meetings</MenuItem>
-                  {meetings.map(meeting => (
+                  {meetings.map((meeting: string) => (
                     <MenuItem key={meeting} value={meeting}>{meeting}</MenuItem>
                   ))}
                 </Select>
@@ -324,7 +324,7 @@ export const DailyRaces: React.FC = () => {
                 <InputLabel>Race Type</InputLabel>
                 <Select value={filterType} onChange={(e) => setFilterType(e.target.value)}>
                   <MenuItem value="all">All Types</MenuItem>
-                  {raceTypes.map(type => (
+                  {raceTypes.map((type: string) => (
                     <MenuItem key={type} value={type}>{type}</MenuItem>
                   ))}
                 </Select>
@@ -377,16 +377,16 @@ export const DailyRaces: React.FC = () => {
                         backgroundColor: 'rgba(25, 118, 210, 0.08)'
                       }
                     }}
-                    onClick={() => fetchRaceCard(race.race_id)}
+                    onClick={() => fetchRaceCard(race.race_id.toString())}
                   >
                     <TableCell>
                       <Typography variant="body2" fontWeight="bold">
-                        {race.time}
+                        {race.time || race.race_time}
                       </Typography>
                     </TableCell>
                     <TableCell>
                       <Typography variant="body2">
-                        {race.meeting}
+                        {race.meeting || race.course}
                       </Typography>
                     </TableCell>
                     <TableCell>
@@ -395,11 +395,11 @@ export const DailyRaces: React.FC = () => {
                           {race.race_name}
                         </Typography>
                         <Chip
-                          label={race.race_type}
+                          label={race.race_type || race.class}
                           size="small"
                           sx={{ 
                             mt: 0.5,
-                            backgroundColor: getRaceTypeColor(race.race_type),
+                            backgroundColor: getRaceTypeColor(race.race_type || race.class || ''),
                             color: 'white',
                             fontSize: '0.7rem'
                           }}
@@ -418,15 +418,15 @@ export const DailyRaces: React.FC = () => {
                     </TableCell>
                     <TableCell>
                       <Typography variant="body2">
-                        {race.going}
+                        {race.going || race.surface}
                       </Typography>
                     </TableCell>
                     <TableCell>
                       <Chip
-                        label={race.quality_rating}
+                        label={race.quality_rating || 'N/A'}
                         size="small"
                         sx={{ 
-                          backgroundColor: getQualityColor(race.quality_rating),
+                          backgroundColor: getQualityColor(race.quality_rating || ''),
                           color: 'white',
                           fontWeight: 'bold'
                         }}
@@ -434,21 +434,21 @@ export const DailyRaces: React.FC = () => {
                     </TableCell>
                     <TableCell>
                       <Typography variant="body2">
-                        {formatCurrency(race.prize_money)}
+                        {formatCurrency(race.prize_money || 0)}
                       </Typography>
                     </TableCell>
                     <TableCell>
                       <Typography variant="body2">
-                        {race.field_size} runners
+                        {race.field_size || race.runners} runners
                       </Typography>
                     </TableCell>
                     <TableCell>
                       <Box>
                         <Typography variant="body2" fontWeight="bold">
-                          {race.favorite.horse}
+                          {race.favorite?.horse || 'N/A'}
                         </Typography>
                         <Typography variant="caption" color="text.secondary">
-                          {race.favorite.odds}/1 ({race.favorite.probability.toFixed(1)}%)
+                          {race.favorite?.odds || 0}/1 ({race.favorite?.probability?.toFixed(1) || 0}%)
                         </Typography>
                       </Box>
                     </TableCell>
@@ -474,12 +474,12 @@ export const DailyRaces: React.FC = () => {
                 {selectedRaceCard.race_name}
               </Typography>
               <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
-                <Chip icon={<AccessTime />} label={selectedRaceCard.time} size="small" color="primary" />
-                <Chip icon={<LocationOn />} label={selectedRaceCard.venue} size="small" color="secondary" />
+                <Chip icon={<AccessTime />} label={selectedRaceCard.time || selectedRaceCard.race_time} size="small" color="primary" />
+                <Chip icon={<LocationOn />} label={selectedRaceCard.venue || selectedRaceCard.course} size="small" color="secondary" />
                 <Chip label={`${selectedRaceCard.distance}`} size="small" />
                 <Chip label={`Class ${selectedRaceCard.class}`} size="small" />
-                <Chip label={selectedRaceCard.going} size="small" />
-                <Chip label={`${formatCurrency(selectedRaceCard.prize_money)}`} size="small" color="success" />
+                <Chip label={selectedRaceCard.going || selectedRaceCard.surface} size="small" />
+                <Chip label={`${formatCurrency(selectedRaceCard.prize_money || 0)}`} size="small" color="success" />
               </Box>
             </Box>
           )}
@@ -496,7 +496,7 @@ export const DailyRaces: React.FC = () => {
                 Error loading race card: {raceCardError}
               </Typography>
               <Button 
-                onClick={() => selectedRaceCard && fetchRaceCard(selectedRaceCard.race_id)}
+                onClick={() => selectedRaceCard && fetchRaceCard(selectedRaceCard.race_id.toString())}
                 variant="outlined"
               >
                 Retry
@@ -518,7 +518,7 @@ export const DailyRaces: React.FC = () => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {selectedRaceCard.horses.map((horse, index) => (
+                  {selectedRaceCard.horses.map((horse, index: number) => (
                     <TableRow key={index} hover>
                       <TableCell>
                         <Typography variant="body2" fontWeight="bold">
