@@ -108,10 +108,10 @@ from enhanced_error_handling import (
                 timeout=self.config.data_sources.circuit_breaker_timeout,
                 name="database"
             ),
-            "auto_downloader": CircuitBreaker(
+            "manual_data_loading": CircuitBreaker(
                 failure_threshold=5,
                 timeout=300,
-                name="auto_downloader"
+                name="manual_data_loading"
             ),
             "relationships_pipeline": CircuitBreaker(
                 failure_threshold=3,
@@ -229,7 +229,7 @@ from enhanced_error_handling import (
         # Determine which circuit breaker to use
         script_name = script_path.name.lower()
         if "downloader" in script_name:
-            circuit_breaker = self.circuit_breakers["auto_downloader"]
+            circuit_breaker = self.circuit_breakers["manual_data_loading"]
             retry_handler = self.retry_handlers["external_scripts"]
         elif "relationship" in script_name:
             circuit_breaker = self.circuit_breakers["relationships_pipeline"] 

@@ -125,7 +125,6 @@ services:
       LOG_LEVEL: ${LOG_LEVEL:-INFO}
       # Pipeline-specific configuration
       PIPELINE_MODE: production
-      AUTO_DOWNLOAD_ENABLED: "true"
       VALIDATION_ENABLED: "true"
       UPLOAD_ENABLED: "true"
       RACE_CARD_AUTOMATION: "true"
@@ -191,6 +190,7 @@ services:
       - ./trained_models:/app/trained_models:rw
       - ./docker/ml_training:/app/docker/ml_training:ro
       - ./tools:/app/tools:ro
+      - ./src:/app/src:ro  # Mount src directory for V201EnsemblePredictor
       - ./data:/app/data:ro  # Read-only access to data
       - ./logs:/app/logs:rw
       - ./ml_cache:/app/ml_cache:rw

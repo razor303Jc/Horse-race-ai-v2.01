@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-🕒 Auto-Downloader Schedule Manager CLI
+# REMOVED: 🕒 Auto-Downloader Schedule Manager CLI
 =====================================
 
-A command-line tool to manage the auto-downloader's scheduled start time.
+# REMOVED: A command-line tool to manage the auto-downloader's scheduled start time.
 
 Author: AI Assistant
 Date: August 13, 2025
@@ -28,7 +28,7 @@ logger = logging.getLogger(__name__)
 
 
 class ScheduleManager:
-    """Manages auto-downloader scheduling configuration."""
+# REMOVED:     """Manages auto-downloader scheduling configuration."""
 
     def __init__(self):
         """Initialize the scheduler manager."""
@@ -48,9 +48,9 @@ class ScheduleManager:
     def get_schedule_files(self) -> List[Path]:
         """Get Python files with schedule definitions."""
         files = [
-            "run_docker_auto_downloader.py",  # Root file used by Docker
-            "tools/utilities/run_docker_auto_downloader.py",
-            "docker/automation/run_docker_auto_downloader.py",
+# REMOVED:             "run_docker_auto_downloader.py",  # Root file used by Docker
+# REMOVED:             "tools/utilities/run_docker_auto_downloader.py",
+# REMOVED:             "docker/automation/run_docker_auto_downloader.py",
         ]
         return [
             self.project_root / f for f in files if (self.project_root / f).exists()
@@ -206,18 +206,18 @@ class ScheduleManager:
             return False
 
     def restart_container(self) -> bool:
-        """Restart the auto-downloader container."""
+# REMOVED:         """Restart the auto-downloader container."""
         try:
             logger.info("Restarting container...")
 
             # Stop and remove
             subprocess.run(
-                ["docker", "stop", "horse_racing_auto_downloader_clean"],
+# REMOVED:                 ["docker", "stop", "horse_racing_auto_downloader_clean"],
                 check=True,
                 capture_output=True,
             )
             subprocess.run(
-                ["docker", "rm", "horse_racing_auto_downloader_clean"],
+# REMOVED:                 ["docker", "rm", "horse_racing_auto_downloader_clean"],
                 check=True,
                 capture_output=True,
             )
@@ -229,7 +229,7 @@ class ScheduleManager:
                 "docker-compose.clean.yml",
                 "up",
                 "-d",
-                "auto-downloader",
+# REMOVED:                 "auto-downloader",
             ]
             subprocess.run(cmd, cwd=self.project_root, check=True, capture_output=True)
 
@@ -242,7 +242,7 @@ class ScheduleManager:
 
     def show_status(self) -> None:
         """Display current schedule status."""
-        print("🕒 Auto-Downloader Schedule Status")
+# REMOVED:         print("🕒 Auto-Downloader Schedule Status")
         print("=" * 40)
 
         schedules = self.get_current_schedules()
@@ -275,7 +275,7 @@ class ScheduleManager:
                     "docker",
                     "ps",
                     "--filter",
-                    "name=horse_racing_auto_downloader_clean",
+# REMOVED:                     "name=horse_racing_auto_downloader_clean",
                     "--format",
                     "{{.Names}}",
                 ],
@@ -283,7 +283,7 @@ class ScheduleManager:
                 text=True,
                 check=True,
             )
-            if "horse_racing_auto_downloader_clean" in result.stdout:
+# REMOVED:             if "horse_racing_auto_downloader_clean" in result.stdout:
                 print("\n🐳 Container: ✅ Running")
             else:
                 print("\n🐳 Container: ❌ Not running")
@@ -294,7 +294,7 @@ class ScheduleManager:
 def main():
     """Main CLI entry point."""
     parser = argparse.ArgumentParser(
-        description="Auto-Downloader Schedule Manager",
+# REMOVED:         description="Auto-Downloader Schedule Manager",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:

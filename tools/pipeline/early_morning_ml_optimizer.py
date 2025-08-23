@@ -50,7 +50,7 @@ class EarlyMorningMLOptimizer:
                 "duration_minutes": 5,
                 "optimum_minutes": 8,
                 "minimum_minutes": 3,
-                "description": "Download daily racing data from auto-downloader",
+                "description": "Download daily racing data from manual data loading",
                 "prerequisites": [],
                 "critical": True,
                 "phase": "data_acquisition",

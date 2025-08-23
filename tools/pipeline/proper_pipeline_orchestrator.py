@@ -134,8 +134,8 @@ class PipelineOrchestrator:
         """Run the complete pipeline sequence"""
         logger.info("🚀 Starting pipeline sequence...")
 
-        # Stage 1: Data Validation (already done in auto-downloader)
-        self.mark_stage_complete("data_download", "Auto-downloader completed")
+        # Stage 1: Data Validation (already done in manual data loading)
+        self.mark_stage_complete("data_download", "Manual data loading completed")
 
         # Stage 2: CSV Import
         if self.run_csv_import():

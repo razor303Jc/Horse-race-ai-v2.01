@@ -79,9 +79,9 @@ class PipelineMLIntegration:
                         datetime.strptime(first_race_time, "%H:%M").time(),
                     )
 
-                # Calculate current schedule with 00:01 download time for auto-downloader
+                # Calculate current schedule with 00:01 download time for manual data loading
                 schedule = self.pipeline_allocator.allocate_stage_times(
-                    download_time="00:01",  # Auto-downloader starts at 00:01
+                    download_time="00:01",  # Manual data loading starts at 00:01
                     first_race_time=first_race_dt,
                 )
 
