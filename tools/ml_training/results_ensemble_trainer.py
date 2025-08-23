@@ -1,38 +1,40 @@
 #!/usr/bin/env python3
 """
-Results Database Ensemble Training Script
-========================================
+Results Ensemble Trainer for Horse Racing AI
+============================================
 
-Trains ensemble models on actual race results with schema-corrected queries.
+Trains ensemble models on actual race results data using the results database.
+Uses corrected database schema and course mapping for ML training.
 """
 
-import sys
 import logging
-import json
-import psycopg2
-import numpy as np
-import pandas as pd
+import os
+import pickle
+import sys
+import warnings
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Any, Tuple
-from sklearn.model_selection import cross_val_score, StratifiedKFold
-from sklearn.metrics import classification_report, confusion_matrix, roc_auc_score
-from sklearn.preprocessing import StandardScaler
+from typing import Any, Dict, List, Tuple
+
+import joblib
+import numpy as np
+import pandas as pd
+import psycopg2
 from sklearn.ensemble import (
-    RandomForestClassifier,
+    ExtraTreesClassifier,
     GradientBoostingClassifier,
+    RandomForestClassifier,
     VotingClassifier,
 )
 from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import classification_report, confusion_matrix, roc_auc_score
+from sklearn.model_selection import StratifiedKFold, cross_val_score, train_test_split
 from sklearn.neural_network import MLPClassifier
-import joblib
+from sklearn.preprocessing import StandardScaler
+from sklearn.utils.class_weight import compute_class_weight
 
-# Add project root to path
-project_root = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(project_root))
-
-# Import course mapper
-from src.horse_racing_ai.ml.course_mapper import CourseMapper
+# Import standalone course mapper for ML training
+from standalone_course_mapper import StandaloneCourseMapper
 
 # Setup logging
 logging.basicConfig(
@@ -97,56 +99,40 @@ class ResultsEnsembleTrainer:
         """Load race results data for training with corrected schema."""
         logger.info("🏁 Loading race results data from results database...")
 
+        # Fetch race results data from records table only
         query = """
-            SELECT DISTINCT
-                r.race_id,
-                r.race_number,
-                r.date as race_date,
-                r.course,
-                r.race_name,
-                r.class,
-                r.distance,
-                rec.horse_name,
-                rec.jockey,
-                rec.trainer,
-                rec.position,
-                CAST(rec.starting_price AS FLOAT) as odds_decimal,
-                CAST(rec.weight AS FLOAT) as horse_weight_kg,
-                CAST(rec.age AS INT) as horse_age,
-                
-                -- Calculate market metrics (simplified)
-                ROW_NUMBER() OVER (
-                    PARTITION BY r.race_id ORDER BY CAST(rec.starting_price AS FLOAT)
-                ) as odds_rank,
-                CASE WHEN ROW_NUMBER() OVER (
-                    PARTITION BY r.race_id ORDER BY CAST(rec.starting_price AS FLOAT)
-                ) = 1 THEN 1 ELSE 0 END as is_favorite,
-                1.0 / CAST(rec.starting_price AS FLOAT) as implied_probability,
-                LN(CAST(rec.starting_price AS FLOAT)) as log_odds,
-                
-                -- Get jockey stats
-                COALESCE(js.win_rate, 0) as jockey_win_pct,
-                COALESCE(js.wins, 0) as jockey_wins,
-                COALESCE(js.runs, 0) as jockey_runs,
-                
-                -- Get trainer stats
-                COALESCE(ts.win_rate, 0) as trainer_win_pct,
-                COALESCE(ts.wins, 0) as trainer_wins,
-                COALESCE(ts.runs, 0) as trainer_runs,
-                
-                -- Race level stats
-                COUNT(*) OVER (PARTITION BY r.race_id) as field_size
-                
-            FROM races r
-            JOIN records rec ON r.race_id = rec.race_id
-            LEFT JOIN jockeys_stats js ON rec.jockey = js.jockey_name
-            LEFT JOIN trainers_stats ts ON rec.trainer = ts.trainer_name
-            WHERE rec.position IS NOT NULL
-              AND rec.starting_price IS NOT NULL
-              AND CAST(rec.starting_price AS FLOAT) > 0
-              AND rec.jockey IS NOT NULL
-              AND rec.trainer IS NOT NULL
-            ORDER BY r.race_id, CAST(rec.starting_price AS FLOAT)
+        query = '''
+        SELECT 
+            rec.race_id,
+            rec.horse_name,
+            rec.jockey,
+            rec.trainer,
+            rec.position,
+            rec.horse_id,
+            rec.jockey_id,
+            rec.trainer_id,
+            CAST(rec.starting_price AS FLOAT) as odds_decimal,
+            1.0 / CAST(rec.starting_price AS FLOAT) as implied_probability,
+            LN(CAST(rec.starting_price AS FLOAT)) as log_odds,
+            10.0 as horse_weight_kg,
+            CAST(rec.age AS INT) as horse_age,
+            COUNT(*) OVER (PARTITION BY rec.race_id) as field_size,
+            ROW_NUMBER() OVER (PARTITION BY rec.race_id ORDER BY CAST(rec.starting_price AS FLOAT)) as odds_rank,
+            CASE WHEN ROW_NUMBER() OVER (PARTITION BY rec.race_id ORDER BY CAST(rec.starting_price AS FLOAT)) = 1 THEN 1 ELSE 0 END as is_favorite,
+            COALESCE(js.win_rate, 0.0) as jockey_win_pct,
+            COALESCE(js.place_rate, 0.0) as jockey_place_pct,
+            COALESCE(ts.win_rate, 0.0) as trainer_win_pct,
+            COALESCE(ts.place_rate, 0.0) as trainer_place_pct
+        FROM records rec
+        LEFT JOIN jockeys_stats js ON rec.jockey_id = js.jockey_id
+        LEFT JOIN trainers_stats ts ON rec.trainer_id = ts.trainer_id
+        WHERE rec.position IS NOT NULL
+          AND rec.starting_price IS NOT NULL
+          AND CAST(rec.starting_price AS FLOAT) > 0
+          AND rec.jockey_id IS NOT NULL
+          AND rec.trainer_id IS NOT NULL
+        ORDER BY rec.race_id, CAST(rec.starting_price AS FLOAT)
+        '''
         """
 
         try:
@@ -159,7 +145,7 @@ class ResultsEnsembleTrainer:
         logger.info(
             f"✅ Loaded {len(df)} horse records from {df['race_id'].nunique()} races"
         )
-        logger.info(f"   Courses: {', '.join(df['course'].unique()[:5])}...")
+        logger.info(f"   Jockeys: {', '.join(df['jockey'].unique()[:5])}...")
 
         # Create target variable (winner = 1, others = 0)
         target = (df["position"] == 1).astype(int)
@@ -177,10 +163,13 @@ class ResultsEnsembleTrainer:
 
         features_df = df.copy()
 
+        # Add a default course since we don't have course info in records table
+        features_df["course"] = "Unknown"
+
         # Map courses to numerical values
         logger.info("🏁 Mapping courses to numerical IDs...")
         features_df["course_id"] = features_df["course"].apply(
-            CourseMapper.get_course_id
+            StandaloneCourseMapper.get_course_id
         )
 
         # Log course mappings for verification
@@ -228,7 +217,7 @@ class ResultsEnsembleTrainer:
             features_df["horse_age"], bins=[0, 3, 5, 8, 100], labels=[0, 1, 2, 3]
         ).astype(int)
 
-        # Performance metrics
+        # Performance metrics (win_pct already in percentage format)
         features_df["jockey_performance"] = features_df["jockey_win_pct"] / 100.0
         features_df["trainer_performance"] = features_df["trainer_win_pct"] / 100.0
         features_df["combined_performance"] = (
