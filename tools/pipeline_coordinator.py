@@ -252,46 +252,87 @@ class PipelineOrchestrator:
             logger.error("❌ CSV import failed")
 
     def run_csv_import(self) -> bool:
-        """Run CSV import using existing tools"""
-        logger.info("📊 Stage 2: Starting CSV Import...")
+        """Run CSV import for both cards and results databases"""
+        logger.info("📊 Stage 2: Starting Database Separation CSV Import...")
 
         try:
-            # Use the working race card upload solution
-            result = subprocess.run(
-                ["python", "/app/tools/data_processing/upload_mapped_data.py"],
+            # Step 1: Upload to cards database (race cards for AI predictions)
+            logger.info("📊 Uploading race cards to cards database...")
+            cards_result = subprocess.run(
+                ["python", "/app/tools/data_processing/upload_mapped_data_container.py"],
                 capture_output=True,
                 text=True,
                 timeout=300,
             )
 
-            if result.returncode == 0:
-                logger.info("✅ Race card database upload completed successfully")
-                logger.info(f"Upload output: {result.stdout[-200:]}")  # Last 200 chars
+            if cards_result.returncode == 0:
+                logger.info("✅ Cards database upload completed successfully")
+                logger.info(f"Cards upload output: {cards_result.stdout[-200:]}")
+            else:
+                logger.error(f"❌ Cards database upload failed: {cards_result.stderr}")
+                return False
+
+            # Step 2: Upload to results database (race results for validation)
+            logger.info("🏁 Uploading race results to results database...")
+            results_result = subprocess.run(
+                ["python", "/app/tools/data_processing/upload_results_data_container.py"],
+                capture_output=True,
+                text=True,
+                timeout=300,
+            )
+
+            if results_result.returncode == 0:
+                logger.info("✅ Results database upload completed successfully")
+                logger.info(f"Results upload output: {results_result.stdout[-200:]}")
+            else:
+                logger.error(f"❌ Results database upload failed: {results_result.stderr}")
+                return False
+
+            # Step 3: Trigger AI predictions generation
+            logger.info("🤖 Triggering AI predictions generation...")
+            ai_result = self.run_ai_predictions()
+            
+            if ai_result:
+                logger.info("✅ Database separation pipeline completed successfully")
+                logger.info("� Cards DB → AI Predictions → Results DB validation ready")
                 return True
             else:
-                logger.error(f"❌ Race card upload failed: {result.stderr}")
-
-                # Try fallback uploader if needed
-                logger.info("🔄 Trying fallback CSV uploader...")
-                result = subprocess.run(
-                    ["python", "/app/tools/data_processing/upload_mapped_data.py"],
-                    capture_output=True,
-                    text=True,
-                    timeout=300,
-                )
-
-                if result.returncode == 0:
-                    logger.info("✅ Fallback CSV import successful")
-                    return True
-                else:
-                    logger.error(f"❌ Both CSV importers failed")
-                    return False
+                logger.warning("⚠️ AI predictions failed, but data upload succeeded")
+                return True  # Don't fail the pipeline if AI predictions fail
 
         except subprocess.TimeoutExpired:
             logger.error("❌ CSV import timed out")
             return False
         except Exception as e:
             logger.error(f"❌ CSV import exception: {e}")
+            return False
+
+    def run_ai_predictions(self) -> bool:
+        """Run AI predictions using cards database data"""
+        logger.info("🤖 Running AI predictions from cards database...")
+
+        try:
+            # Run AI predictions generator
+            ai_result = subprocess.run(
+                ["python", "/app/tools/ml_training/ai_race_predictions_generator.py"],
+                capture_output=True,
+                text=True,
+                timeout=600,  # AI predictions might take longer
+            )
+
+            if ai_result.returncode == 0:
+                logger.info("✅ AI predictions generated successfully")
+                logger.info(f"AI output: {ai_result.stdout[-300:]}")
+                return True
+            else:
+                logger.error(f"❌ AI predictions failed: {ai_result.stderr}")
+                return False
+
+        except subprocess.TimeoutExpired:
+            logger.error("❌ AI predictions timed out")
+            return False
+        except Exception as e:
+            logger.error(f"❌ AI predictions exception: {e}")
             return False
 
     def run_data_preprocessing(self) -> bool:

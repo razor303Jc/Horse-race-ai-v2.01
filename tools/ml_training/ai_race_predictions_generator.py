@@ -34,6 +34,9 @@ from contextlib import contextmanager
 project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
 
+# Import V201EnsemblePredictor for ML integration
+from src.horse_racing_ai.ml.v2_01_ensemble_predictor import V201EnsemblePredictor
+
 # Configure logging
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
@@ -108,7 +111,10 @@ class AIRacePredictionsGenerator:
         self.models_dir = Path(models_dir) if models_dir else self._find_models_dir()
         self.db_config = db_config or self._get_default_db_config()
 
-        # ML Model components
+        # Initialize V201EnsemblePredictor for ML integration
+        self.v201_predictor = V201EnsemblePredictor(models_dir=str(self.models_dir))
+
+        # Legacy components for backward compatibility
         self.ensemble_model = None
         self.individual_models = {}
         self.scaler = None
@@ -162,7 +168,7 @@ class AIRacePredictionsGenerator:
         return default_path
 
     def _get_default_db_config(self) -> Dict[str, Any]:
-        """Get default database configuration."""
+        """Get default database configuration for cards database (database separation)."""
         # Check if running in Docker environment
         database_url = os.environ.get("DATABASE_URL")
         if database_url:
@@ -178,18 +184,18 @@ class AIRacePredictionsGenerator:
                 "database": url.path[1:],  # Remove leading '/'
             }
         else:
-            # Local development configuration
+            # Local development configuration - use cards database for predictions
             return {
                 "host": "localhost",
                 "port": 5432,
                 "user": "horse_racing",
                 "password": "secure_password_123",
-                "database": "horse_racing_db",
+                "database": "cards_horse_racing_db",  # Database separation: use cards DB
             }
 
     @contextmanager
     def get_db_connection(self):
-        """Get database connection with context manager."""
+        """Get database connection with context manager (cards database)."""
         connection = None
         try:
             connection = psycopg2.connect(**self.db_config)
@@ -203,57 +209,127 @@ class AIRacePredictionsGenerator:
             if connection:
                 connection.close()
 
-    def load_models(self) -> bool:
-        """Load trained ML models and components."""
+    @contextmanager
+    def get_main_db_connection(self):
+        """Get main database connection for storing AI predictions."""
+        connection = None
         try:
-            logger.info("🤖 Loading AI prediction models...")
+            # Use main database for predictions storage
+            main_db_config = self.db_config.copy()
+            main_db_config["database"] = "horse_racing_db"  # Main database
+            connection = psycopg2.connect(**main_db_config)
+            yield connection
+        except Exception as e:
+            if connection:
+                connection.rollback()
+            logger.error(f"Main database connection error: {e}")
+            raise
+        finally:
+            if connection:
+                connection.close()
 
-            # Find latest ensemble model
+    def load_models(self) -> bool:
+        """Load trained ML models and components using V201EnsemblePredictor."""
+        try:
+            logger.info("🤖 Loading AI prediction models with V201EnsemblePredictor...")
+
+            # Check if V201EnsemblePredictor has trained models
+            if (
+                hasattr(self.v201_predictor, "is_trained")
+                and self.v201_predictor.is_trained
+            ):
+                logger.info("✅ V201EnsemblePredictor already trained")
+                self.is_loaded = True
+                return True
+
+            # Try to load existing trained models for V201EnsemblePredictor
             model_files = list(self.models_dir.glob("*ensemble*.joblib"))
             if not model_files:
                 model_files = list(self.models_dir.glob("*.joblib"))
 
-            if not model_files:
-                logger.error("No model files found")
-                return False
+            if model_files:
+                latest_model = max(model_files, key=lambda x: x.stat().st_mtime)
+                logger.info(f"Loading V201EnsemblePredictor model: {latest_model}")
 
-            latest_model = max(model_files, key=lambda x: x.stat().st_mtime)
-            logger.info(f"Loading model: {latest_model}")
+                try:
+                    # Load model data for V201EnsemblePredictor
+                    model_data = joblib.load(latest_model)
 
-            # Load model data
-            model_data = joblib.load(latest_model)
+                    # Check if this is a V201EnsemblePredictor model format
+                    if isinstance(model_data, dict) and "ensemble_model" in model_data:
+                        # Load into V201EnsemblePredictor
+                        if "models" in model_data:
+                            self.v201_predictor.models = model_data["models"]
+                        if "ensemble_model" in model_data:
+                            self.v201_predictor.ensemble_model = model_data[
+                                "ensemble_model"
+                            ]
+                        if "scaler" in model_data:
+                            self.v201_predictor.scaler = model_data["scaler"]
+                        if "feature_names" in model_data:
+                            self.v201_predictor.feature_names = model_data[
+                                "feature_names"
+                            ]
 
-            # Handle different model formats
-            if isinstance(model_data, dict):
-                self.ensemble_model = model_data.get("ensemble_model")
-                self.individual_models = model_data.get("individual_models", {})
-                self.scaler = model_data.get("scaler")
-                self.feature_names = model_data.get("feature_names", [])
-            else:
-                self.ensemble_model = model_data
-                self.individual_models = {}
-                logger.warning("Legacy model format - individual models not available")
+                        self.v201_predictor.is_trained = True
+                        logger.info("✅ V201EnsemblePredictor loaded from saved models")
+                    else:
+                        logger.warning(
+                            "Model format not compatible with V201EnsemblePredictor"
+                        )
 
-            # Load scaler if not in model data
-            if self.scaler is None:
-                scaler_files = list(self.models_dir.glob("*scaler*.joblib"))
-                if scaler_files:
-                    self.scaler = joblib.load(scaler_files[0])
-                    logger.info("Loaded separate scaler file")
+                except Exception as e:
+                    logger.warning(
+                        f"Failed to load models into V201EnsemblePredictor: {e}"
+                    )
 
-            # Load encoders
-            encoder_files = list(self.models_dir.glob("*encoder*.joblib"))
-            if encoder_files:
-                self.label_encoders = joblib.load(encoder_files[0])
-                logger.info("Loaded label encoders")
+            # Fallback: Legacy model loading for backward compatibility
+            if not self.v201_predictor.is_trained and model_files:
+                logger.info("Loading legacy models for fallback...")
+                latest_model = max(model_files, key=lambda x: x.stat().st_mtime)
+                model_data = joblib.load(latest_model)
+
+                if isinstance(model_data, dict):
+                    self.ensemble_model = model_data.get("ensemble_model")
+                    self.individual_models = model_data.get("individual_models", {})
+                    self.scaler = model_data.get("scaler")
+                    self.feature_names = model_data.get("feature_names", [])
+                else:
+                    self.ensemble_model = model_data
+                    self.individual_models = {}
+
+                # Load scaler if not in model data
+                if self.scaler is None:
+                    scaler_files = list(self.models_dir.glob("*scaler*.joblib"))
+                    if scaler_files:
+                        self.scaler = joblib.load(scaler_files[0])
+
+                # Load encoders
+                encoder_files = list(self.models_dir.glob("*encoder*.joblib"))
+                if encoder_files:
+                    self.label_encoders = joblib.load(encoder_files[0])
 
             self.is_loaded = True
-            logger.info("✅ AI models loaded successfully")
+            logger.info(
+                "✅ AI models loaded successfully with V201EnsemblePredictor integration"
+            )
 
-            if hasattr(self.ensemble_model, "estimators"):
-                logger.info(
-                    f"   Ensemble components: {[name for name, _ in self.ensemble_model.estimators]}"
-                )
+            # Log model status
+            if self.v201_predictor.is_trained:
+                logger.info("   Primary: V201EnsemblePredictor (4-model ensemble)")
+                if (
+                    hasattr(self.v201_predictor, "models")
+                    and self.v201_predictor.models
+                ):
+                    model_names = list(self.v201_predictor.models.keys())
+                    logger.info(f"   Models: {model_names}")
+            elif self.ensemble_model:
+                logger.info("   Fallback: Legacy ensemble model")
+                if hasattr(self.ensemble_model, "estimators"):
+                    estimator_names = [
+                        name for name, _ in self.ensemble_model.estimators
+                    ]
+                    logger.info(f"   Components: {estimator_names}")
 
             return True
 
@@ -429,7 +505,7 @@ class AIRacePredictionsGenerator:
             return df
 
     def generate_predictions(self, df: pd.DataFrame) -> List[RacePrediction]:
-        """Generate AI predictions for all runners."""
+        """Generate AI predictions for all runners using V201EnsemblePredictor."""
         if not self.is_loaded:
             logger.error("Models not loaded - cannot generate predictions")
             return []
@@ -443,6 +519,111 @@ class AIRacePredictionsGenerator:
         predictions = []
 
         try:
+            # Use V201EnsemblePredictor if available and trained
+            if (
+                hasattr(self.v201_predictor, "is_trained")
+                and self.v201_predictor.is_trained
+            ):
+                logger.info("Using V201EnsemblePredictor for predictions")
+
+                # Use V201EnsemblePredictor's predict_race method
+                try:
+                    ensemble_results = self.v201_predictor.predict_race(df)
+
+                    # Convert V201 predictions to our RacePrediction format
+                    for v201_pred in ensemble_results.predictions:
+                        # Map V201EnsemblePrediction to RacePrediction
+                        prediction = RacePrediction(
+                            horse_name=v201_pred.horse_name,
+                            race_id=(
+                                int(df.iloc[0]["race_id"])
+                                if "race_id" in df.columns
+                                else 0
+                            ),
+                            course=(
+                                df.iloc[0]["course"]
+                                if "course" in df.columns
+                                else "Unknown"
+                            ),
+                            race_number=(
+                                int(df.iloc[0]["race_number"])
+                                if "race_number" in df.columns
+                                else 1
+                            ),
+                            jockey=(
+                                df.iloc[0]["jockey"]
+                                if "jockey" in df.columns
+                                else "Unknown"
+                            ),
+                            trainer=(
+                                df.iloc[0]["trainer"]
+                                if "trainer" in df.columns
+                                else "Unknown"
+                            ),
+                            random_forest_prob=float(v201_pred.rf_prob),
+                            gradient_boosting_prob=float(v201_pred.gb_prob),
+                            logistic_regression_prob=float(v201_pred.lr_prob),
+                            neural_network_prob=float(v201_pred.nn_prob),
+                            ensemble_prob=float(v201_pred.ensemble_prob),
+                            confidence_score=float(v201_pred.confidence),
+                            confidence_level=(
+                                "High"
+                                if v201_pred.confidence > 0.8
+                                else "Medium" if v201_pred.confidence > 0.6 else "Low"
+                            ),
+                            odds_decimal=(
+                                float(df.iloc[0]["odds_decimal"])
+                                if "odds_decimal" in df.columns
+                                else 1.0
+                            ),
+                            market_rank=int(df.iloc[0].get("odds_rank", 1)),
+                            implied_probability=(
+                                float(df.iloc[0]["implied_probability"])
+                                if "implied_probability" in df.columns
+                                else 0.0
+                            ),
+                            log_odds=(
+                                float(df.iloc[0]["log_odds"])
+                                if "log_odds" in df.columns
+                                else 0.0
+                            ),
+                            jockey_win_pct=(
+                                float(df.iloc[0]["jockey_win_pct"])
+                                if "jockey_win_pct" in df.columns
+                                else 0.0
+                            ),
+                            trainer_win_pct=(
+                                float(df.iloc[0]["trainer_win_pct"])
+                                if "trainer_win_pct" in df.columns
+                                else 0.0
+                            ),
+                            field_size=(
+                                int(df.iloc[0]["field_size"])
+                                if "field_size" in df.columns
+                                else len(df)
+                            ),
+                            prediction_rank=v201_pred.ml_rank,
+                            is_recommended=bool(v201_pred.value_bet),
+                            betting_recommendation=(
+                                "BUY" if v201_pred.value_bet else "HOLD"
+                            ),
+                        )
+                        predictions.append(prediction)
+
+                    logger.info(
+                        f"✅ Generated {len(predictions)} predictions with V201EnsemblePredictor"
+                    )
+                    return predictions
+
+                except Exception as e:
+                    logger.warning(
+                        f"V201EnsemblePredictor failed, falling back to legacy: {e}"
+                    )
+                    # Fall through to legacy prediction method
+
+            # Legacy prediction method (fallback)
+            logger.info("Using legacy prediction method")
+
             # Prepare feature matrix
             X = df[self.feature_columns].values
 
@@ -643,15 +824,15 @@ class AIRacePredictionsGenerator:
         )
 
     def store_predictions_to_database(self, predictions: List[RacePrediction]) -> int:
-        """Store predictions to ai_predictions table."""
+        """Store predictions to ai_predictions table in main database."""
         if not predictions:
             logger.warning("No predictions to store")
             return 0
 
-        logger.info(f"💾 Storing {len(predictions)} predictions to database...")
+        logger.info(f"💾 Storing {len(predictions)} predictions to main database...")
 
         try:
-            with self.get_db_connection() as conn:
+            with self.get_main_db_connection() as conn:  # Use main database
                 cursor = conn.cursor()
 
                 # Insert query for ai_predictions table
@@ -850,9 +1031,9 @@ class AIRacePredictionsGenerator:
             return results
 
     def get_predictions_for_race(self, race_id: int) -> List[RacePrediction]:
-        """Get stored predictions for a specific race."""
+        """Get stored predictions for a specific race from main database."""
         try:
-            with self.get_db_connection() as conn:
+            with self.get_main_db_connection() as conn:  # Use main database
                 query = """
                     SELECT * FROM ai_predictions 
                     WHERE race_id = %s 
@@ -916,12 +1097,12 @@ class AIRacePredictionsGenerator:
             return []
 
     def get_daily_summary(self, race_date: date = None) -> Dict[str, Any]:
-        """Get summary of daily predictions."""
+        """Get summary of daily predictions from main database."""
         if race_date is None:
             race_date = date.today()
 
         try:
-            with self.get_db_connection() as conn:
+            with self.get_main_db_connection() as conn:  # Use main database
                 # Get overall statistics
                 stats_query = """
                     SELECT 

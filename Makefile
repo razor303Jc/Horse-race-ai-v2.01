@@ -68,6 +68,18 @@ test-fast: ## Run tests without coverage
 	pytest $(TESTS_DIR) -x
 	@echo "$(GREEN)✓ Fast tests completed$(NC)"
 
+test-integration: ## Run database separation integration tests
+	@echo "$(BLUE)Running database separation integration tests...$(NC)"
+	@./tests/run_integration_tests.sh
+	@echo "$(GREEN)✓ Integration tests completed$(NC)"
+
+test-db-separation: ## Test database separation implementation
+	@echo "$(BLUE)Testing database separation implementation...$(NC)"
+	python tests/run_database_separation_tests.py
+	@echo "$(GREEN)✓ Database separation tests completed$(NC)"
+
+test-all: test test-integration ## Run all tests including integration
+
 check: format-check lint test ## Run all code quality checks
 
 watch-test: ## Run tests in watch mode
@@ -162,9 +174,9 @@ test-unit: ## Run unit tests only
 	$(PYTHON) tests/run_comprehensive_tests.py --unit
 	@echo "$(GREEN)✓ Unit tests completed$(NC)"
 
-test-integration: ## Run integration tests only
-	@echo "$(BLUE)🔗 Running integration tests...$(NC)"
-	$(PYTHON) tests/run_comprehensive_tests.py --integration
+test-integration: ## Run database separation integration tests
+	@echo "$(BLUE)Running database separation integration tests...$(NC)"
+	@./tests/run_integration_tests.sh
 	@echo "$(GREEN)✓ Integration tests completed$(NC)"
 
 test-performance: ## Run performance tests only
