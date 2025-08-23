@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """
-Upload Mapped Data - Direct upload of our processed CSV files to database
+Upload Results Data - Upload race results to results database
+Container version - for running inside Docker containers
 """
 
 import pandas as pd
@@ -9,30 +10,21 @@ from psycopg2.extras import execute_values
 from pathlib import Path
 import os
 from urllib.parse import urlparse
-from dotenv import load_dotenv
 
-# Load environment variables from .env file
-load_dotenv()
-
-# Use DATABASE_URL from environment like Docker containers do
-# For race card data (before races), use cards database
-CARDS_DATABASE_URL = os.getenv(
-    "CARDS_DATABASE_URL",
-    "postgresql://horse_racing:secure_password_123@localhost:5432/"
-    "cards_horse_racing_db",
+# Set database URL for results database (container environment)
+RESULTS_DATABASE_URL = os.getenv(
+    "RESULTS_DATABASE_URL",
+    "postgresql://horse_racing:secure_password_123@postgres:5432/"
+    "results_horse_racing_db",
 )
 
-# Replace 'postgres' hostname with 'localhost' when running outside Docker
-if "postgres:5432" in CARDS_DATABASE_URL:
-    CARDS_DATABASE_URL = CARDS_DATABASE_URL.replace("postgres:5432", "localhost:5432")
-
-# Parse CARDS_DATABASE_URL
-parsed_url = urlparse(CARDS_DATABASE_URL)
+# Parse RESULTS_DATABASE_URL
+parsed_url = urlparse(RESULTS_DATABASE_URL)
 DATABASE_CONFIG = {
-    "host": parsed_url.hostname or "localhost",
+    "host": parsed_url.hostname or "postgres",
     "port": parsed_url.port or 5432,
     "database": (
-        parsed_url.path.lstrip("/") if parsed_url.path else "cards_horse_racing_db"
+        parsed_url.path.lstrip("/") if parsed_url.path else "results_horse_racing_db"
     ),
     "user": parsed_url.username or "horse_racing",
     "password": parsed_url.password or "secure_password_123",
@@ -40,7 +32,7 @@ DATABASE_CONFIG = {
 
 
 def upload_csv_to_database(csv_file, table_name):
-    """Upload a CSV file to the database with column mapping"""
+    """Upload a CSV file to the results database"""
     print(f"\n📄 Uploading {csv_file} to {table_name}")
 
     try:
@@ -52,8 +44,8 @@ def upload_csv_to_database(csv_file, table_name):
             print("⚠️ No data to upload")
             return False
 
-        # Since table names now match CSV files exactly, no complex mapping needed
-        # Just handle special cases where column names might differ slightly
+        # Log the columns being used
+        print(f"📋 Using columns as-is: {list(df.columns)}")
 
         # Connect to database
         conn = psycopg2.connect(**DATABASE_CONFIG)
@@ -99,24 +91,23 @@ def upload_csv_to_database(csv_file, table_name):
 
 
 def main():
-    print("🏇 Mapped Data Uploader")
+    print("🏇 Results Data Uploader (Container Version)")
     print("=" * 50)
+    print(f"📊 Using RESULTS_DATABASE_URL: {RESULTS_DATABASE_URL}")
+    print(f"📊 Using Database Config: {DATABASE_CONFIG}")
 
-    # Define RACE CARD files to upload (before race happens)
-    # Results data is handled separately after races finish
+    # Define RESULTS files to upload (after races finish)
     # IMPORTANT: Upload order matters due to foreign key constraints!
-    data_dir = Path("data/daily_downloads")
+    data_dir = Path("/app/data/daily_downloads")
     uploads = [
-        # 1. Upload races first (parent table)
+        # 1. Upload races first (parent table for results)
         (data_dir / "mapped_races.csv", "races"),
         # 2. Upload independent tables
         (data_dir / "mapped_horses.csv", "horses"),
         (data_dir / "mapped_jockeys_stats.csv", "jockeys_stats"),
         (data_dir / "mapped_trainers_stats.csv", "trainers_stats"),
-        # 3. Upload racecard_details last (has foreign key to races)
-        (data_dir / "mapped_racecard_details.csv", "racecard_details"),
-        # mapped_records.csv is RESULTS data - handled by separate process
-        # after races finish
+        # 3. Upload records last (has foreign key to races)
+        (data_dir / "mapped_records.csv", "records"),
     ]
 
     successful = 0
@@ -132,7 +123,7 @@ def main():
     print(f"\n📊 SUMMARY: {successful}/{total} uploads successful")
 
     if successful == total:
-        print("🎉 All data uploaded successfully!")
+        print("🎉 All results data uploaded successfully!")
     else:
         print("⚠️ Some uploads failed")
 

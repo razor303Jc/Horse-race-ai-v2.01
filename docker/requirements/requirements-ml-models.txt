@@ -1,6 +1,9 @@
 # Machine Learning requirements for AI models
 # Heavy packages only needed for ML training and prediction services
 
+# Environment and configuration
+python-dotenv>=1.0.0
+
 # Database connectivity
 psycopg2-binary>=2.9.0
 

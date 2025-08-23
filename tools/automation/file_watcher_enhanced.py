@@ -780,7 +780,7 @@ class RacingDataFileWatcher(FileSystemEventHandler):
                 "DB_PASSWORD=secure_password_123",
                 "horse-racing-ai_data-pipeline",
                 "python",
-                "/app/tools/data_processing/simple_database_uploader.py",
+                "/app/tools/data_processing/upload_mapped_data.py",
             ]
 
             process = subprocess.run(

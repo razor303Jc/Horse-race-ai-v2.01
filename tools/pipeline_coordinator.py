@@ -256,9 +256,9 @@ class PipelineOrchestrator:
         logger.info("📊 Stage 2: Starting CSV Import...")
 
         try:
-            # Use the complete race card upload solution
+            # Use the working race card upload solution
             result = subprocess.run(
-                ["python", "/app/tools/database/complete_upload.py"],
+                ["python", "/app/tools/data_processing/upload_mapped_data.py"],
                 capture_output=True,
                 text=True,
                 timeout=300,
@@ -271,10 +271,10 @@ class PipelineOrchestrator:
             else:
                 logger.error(f"❌ Race card upload failed: {result.stderr}")
 
-                # Try fallback uploader
+                # Try fallback uploader if needed
                 logger.info("🔄 Trying fallback CSV uploader...")
                 result = subprocess.run(
-                    ["python", "/app/tools/data_processing/corrected_uploader.py"],
+                    ["python", "/app/tools/data_processing/upload_mapped_data.py"],
                     capture_output=True,
                     text=True,
                     timeout=300,
