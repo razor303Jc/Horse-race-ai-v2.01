@@ -290,3 +290,34 @@ setup: clean install db-migrate ## Complete setup for new developers
 	@echo "  1. Copy .env.example to .env and configure"
 	@echo "  2. Run 'make dev' to start development server"
 	@echo "  3. Run 'make test' to verify everything works"
+
+# Enhanced Pipeline Integration with Time-Aware ML
+pipeline-enhanced: ## Run enhanced pipeline with time-aware ML training
+	@echo "$(BLUE)🚀 Running enhanced pipeline with ML optimization...$(NC)"
+	$(PYTHON) tools/automation/enhanced_pipeline_integration.py --run-once
+	@echo "$(GREEN)✓ Enhanced pipeline completed$(NC)"
+
+pipeline-continuous: ## Start continuous pipeline monitoring with ML optimization
+	@echo "$(BLUE)🔄 Starting continuous pipeline monitoring...$(NC)"
+	$(PYTHON) tools/automation/enhanced_pipeline_integration.py --continuous
+	@echo "$(GREEN)✓ Continuous monitoring started$(NC)"
+
+pipeline-continuous-fast: ## Start continuous monitoring with 30-minute intervals
+	@echo "$(BLUE)🔄 Starting fast continuous monitoring (30min intervals)...$(NC)"
+	$(PYTHON) tools/automation/enhanced_pipeline_integration.py --continuous --check-interval 30
+	@echo "$(GREEN)✓ Fast continuous monitoring started$(NC)"
+
+pipeline-no-ml: ## Run enhanced pipeline without ML optimization
+	@echo "$(BLUE)🔄 Running enhanced pipeline (no ML training)...$(NC)"
+	$(PYTHON) tools/automation/enhanced_pipeline_integration.py --run-once --disable-ml
+	@echo "$(GREEN)✓ Enhanced pipeline (no ML) completed$(NC)"
+
+ml-optimize: ## Run time-aware ML optimization only
+	@echo "$(BLUE)🤖 Running time-aware ML optimization...$(NC)"
+	$(PYTHON) tools/ml_training/time_aware_ml_optimizer.py --optimize-models
+	@echo "$(GREEN)✓ ML optimization completed$(NC)"
+
+ml-optimize-dry-run: ## Dry run of ML optimization (no actual training)
+	@echo "$(BLUE)🤖 Running ML optimization dry run...$(NC)"
+	$(PYTHON) tools/ml_training/time_aware_ml_optimizer.py --dry-run
+	@echo "$(GREEN)✓ ML optimization dry run completed$(NC)"
