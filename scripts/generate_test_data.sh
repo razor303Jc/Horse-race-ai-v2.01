@@ -27,7 +27,7 @@ sleep 10
 
 # Check database connection
 echo "🔍 Checking database connection..."
-DB_URL="postgresql://horse_racing_test:test_password_123@localhost:5434/horse_racing_test_db"
+DB_URL="postgresql://horse_racing_test:test_password_123@postgres:5432/horse_racing_test_db"
 
 # Test connection
 if python3 -c "import psycopg2; psycopg2.connect('$DB_URL'); print('✅ Database connection successful')" 2>/dev/null; then
@@ -82,7 +82,7 @@ echo "   3. Validate AI performance metrics"
 echo "   4. Benchmark database queries"
 echo ""
 echo "🐳 Test containers running:"
-echo "   • PostgreSQL: localhost:5434"
+echo "   • PostgreSQL: postgres:5432"
 echo "   • Database: horse_racing_test_db"
 echo "   • User: horse_racing_test"
 echo ""

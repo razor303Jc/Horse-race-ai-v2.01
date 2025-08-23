@@ -219,7 +219,7 @@ def main():
     """Main pipeline execution."""
     # Database configuration
     database_url = (
-        "postgresql://horse_racing:secure_password_123@localhost:5432/horse_racing_db"
+        "postgresql://horse_racing:secure_password_123@postgres:5432/horse_racing_db"
     )
 
     # Initialize processor

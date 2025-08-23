@@ -21,5 +21,11 @@ requests>=2.31.0
 # Environment variable handling
 python-dotenv>=1.0.0
 
-# Total packages: ~7 (vs 50+ in full requirements.txt)
-# Estimated build time: 2-3 minutes (vs 15-20 minutes)
+# UI and display formatting
+rich>=13.0.0
+
+# Database ORM and connections
+sqlalchemy>=2.0.0
+
+# Total packages: ~9 (vs 50+ in full requirements.txt)
+# Estimated build time: 3-4 minutes (vs 15-20 minutes)

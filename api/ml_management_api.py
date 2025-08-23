@@ -60,9 +60,9 @@ logger = logging.getLogger(__name__)
 # Database configuration from environment
 DATABASE_URL = os.getenv(
     "DATABASE_URL",
-    "postgresql://horse_racing:secure_password_123@localhost:5434/horse_racing_db",
+    "postgresql://horse_racing:secure_password_123@postgres:5432/horse_racing_db",
 )
-REDIS_URL = os.getenv("REDIS_URL", "redis://:redis_password_123@localhost:6380/0")
+REDIS_URL = os.getenv("REDIS_URL", "redis://:redis_password_123@redis:6379/0")
 
 # Initialize FastAPI app for ML management
 ml_app = FastAPI(

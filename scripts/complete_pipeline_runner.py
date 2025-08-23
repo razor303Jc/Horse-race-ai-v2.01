@@ -23,7 +23,7 @@ from typing import Dict, Any, List
 
 # Setup environment
 os.environ["DATABASE_URL"] = (
-    "postgresql://horse_racing_test:test_password_123@localhost:5434/horse_racing_test_db"
+    "postgresql://horse_racing_test:test_password_123@postgres:5432/horse_racing_test_db"
 )
 
 # Add project root to path

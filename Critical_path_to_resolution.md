@@ -1,7 +1,7 @@
 
 1. Database-Pipeline Connection Mismatch
 Your pipeline scripts have conflicting database configurations
-Some connect to localhost:5434 (wrong), others to postgres:5432 (correct)
+Some connect to postgres:5432 (wrong), others to postgres:5432 (correct)
 This explains why CSV imports fail even though database is accessible
 2. Container Path Resolution Failure
 Pipeline coordinator calls complete_upload.py

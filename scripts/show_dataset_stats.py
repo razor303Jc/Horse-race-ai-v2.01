@@ -11,7 +11,7 @@ from psycopg2.extras import RealDictCursor
 def show_dataset_stats():
     """Display comprehensive dataset statistics"""
 
-    database_url = "postgresql://horse_racing_test:test_password_123@localhost:5434/horse_racing_test_db"
+    database_url = "postgresql://horse_racing_test:test_password_123@postgres:5432/horse_racing_test_db"
 
     try:
         conn = psycopg2.connect(database_url, cursor_factory=RealDictCursor)

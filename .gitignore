@@ -69,6 +69,8 @@ test_results/
 data/
 !data/.gitkeep
 !data/README.md
+!data/daily_downloads/
+!data/daily_downloads/*/.gitkeep
 
 # All trained model files (typically large binary files)
 trained_models/

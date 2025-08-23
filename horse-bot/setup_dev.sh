@@ -66,12 +66,12 @@ ENVIRONMENT=development
 DEBUG=true
 
 # Database Configuration
-DATABASE_URL=postgresql+asyncpg://username:password@localhost:5432/horse_racing_dev
+DATABASE_URL=postgresql+asyncpg://username:password@postgres:5432/horse_racing_dev
 DATABASE_POOL_SIZE=10
 DATABASE_MAX_OVERFLOW=20
 
 # Redis Configuration
-REDIS_URL=redis://localhost:6379/0
+REDIS_URL=redis://redis:6379/0
 
 # API Configuration
 API_V1_PREFIX=/api/v1

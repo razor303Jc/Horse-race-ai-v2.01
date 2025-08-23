@@ -19,7 +19,7 @@ echo "⏳ Waiting for PostgreSQL to be ready..."
 sleep 10
 
 # Check database connection
-DB_URL="postgresql://horse_racing_test:test_password_123@localhost:5434/horse_racing_test_db"
+DB_URL="postgresql://horse_racing_test:test_password_123@postgres:5432/horse_racing_test_db"
 
 echo "🔍 Testing database connection..."
 python3 -c "

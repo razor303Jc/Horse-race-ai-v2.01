@@ -113,7 +113,7 @@ class TestDataGenerator:
         """Initialize with test database connection"""
         self.database_url = (
             database_url
-            or "postgresql://horse_racing_test:test_password_123@localhost:5434/horse_racing_test_db"
+            or "postgresql://horse_racing_test:test_password_123@postgres:5432/horse_racing_test_db"
         )
         self.connection = None
 

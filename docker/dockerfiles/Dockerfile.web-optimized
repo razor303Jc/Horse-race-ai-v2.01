@@ -6,11 +6,13 @@ FROM python:3.12-slim
 # Set working directory
 WORKDIR /app
 
-# Install system dependencies including Node.js
+# Install system dependencies including Node.js and PostgreSQL client
 RUN apt-get update && apt-get install -y \
     libpq-dev \
     gcc \
     curl \
+    postgresql-client \
+    redis-tools \
     && curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
     && apt-get install -y nodejs \
     && rm -rf /var/lib/apt/lists/*
@@ -26,9 +28,13 @@ COPY api/ ./api/
 COPY src/web/ ./src/web/
 COPY config/ ./config/
 
-# Build React app
+# Copy entrypoint script
+COPY docker/entrypoints/web-app-entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+# Pre-install npm dependencies for faster startup
 WORKDIR /app/src/web
-RUN npm install && npm run build
+RUN NODE_ENV=development npm install --legacy-peer-deps --include=dev
 
 # Back to main app directory
 WORKDIR /app
@@ -57,5 +63,5 @@ EXPOSE 3000
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD curl -f http://localhost:8000/health || exit 1
 
-# Default command - run the enhanced web server that serves both React and API
-CMD ["python", "src/web/api_server_enhanced.py"]
+# Default command - use the entrypoint script
+ENTRYPOINT ["/entrypoint.sh"]

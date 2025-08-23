@@ -17,17 +17,28 @@ Features:
 import json
 import logging
 import os
-import sqlite3
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 import pandas as pd
+import psycopg2
+from psycopg2.extras import execute_values
 from rich.console import Console
 from rich.panel import Panel
 from rich.progress import BarColumn, Progress, SpinnerColumn, TextColumn
 from rich.table import Table
+from sqlalchemy import create_engine
+
+# Load environment variables
+try:
+    from dotenv import load_dotenv
+
+    load_dotenv()
+except ImportError:
+    # dotenv not available in production container
+    pass
 
 # Add project root to path
 project_root = Path(__file__).parent.parent.parent
@@ -40,21 +51,29 @@ logger = logging.getLogger(__name__)
 class DatabaseUploader:
     """Uploads organized race data to database"""
 
-    def __init__(self, downloads_dir: str = "data/daily_downloads"):
-        self.downloads_dir = Path(downloads_dir)
-        self.upload_manifest_path = self.downloads_dir / "upload_manifest.json"
+    def __init__(self):
+        """Initialize uploader with database connection"""
+        # Set upload manifest path to absolute path in container
+        self.upload_manifest_path = Path(
+            "/app/data/daily_downloads/mapped_upload_manifest.json"
+        )
+        self.downloads_dir = Path("/app/data/daily_downloads")
 
-        # Database configuration
-        self.db_url = os.getenv("DATABASE_URL", "sqlite:///data/horse_racing.db")
+        # Use DATABASE_URL from environment file
+        self.db_url = os.getenv(
+            "DATABASE_URL",
+            "postgresql://horse_racing:secure_password_123@postgres:5432/"
+            "horse_racing_db",
+        )
 
-        # Table schemas for race data
+        # Table schemas for PostgreSQL - Separated cards and results data
         self.table_schemas = {
-            "races": """
-                CREATE TABLE IF NOT EXISTS races (
-                    race_id INTEGER PRIMARY KEY,
+            "card_races": """
+                CREATE TABLE IF NOT EXISTS card_races (
+                    race_id BIGINT PRIMARY KEY,
                     race_number INTEGER,
                     race_time TEXT,
-                    course_id INTEGER,
+                    course_id BIGINT,
                     course TEXT,
                     race_type TEXT,
                     date DATE,
@@ -67,52 +86,114 @@ class DatabaseUploader:
                     runners_racecard INTEGER,
                     runners INTEGER,
                     draw TEXT,
-                    ew_racecard INTEGER,
+                    ew_racecard TEXT,
                     ew INTEGER,
-                    places_ew_racecard INTEGER,
+                    places_ew_racecard TEXT,
                     places_ew INTEGER,
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 )
             """,
-            "records": """
-                CREATE TABLE IF NOT EXISTS records (
-                    record_id INTEGER PRIMARY KEY,
-                    race_id INTEGER,
+            "card_records": """
+                CREATE TABLE IF NOT EXISTS card_records (
+                    record_id BIGINT PRIMARY KEY,
+                    race_id BIGINT,
                     horse_name TEXT,
                     jockey TEXT,
                     trainer TEXT,
-                    owner TEXT,
                     position INTEGER,
                     starting_price TEXT,
                     weight TEXT,
                     age INTEGER,
                     form TEXT,
+                    extra TEXT,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+            """,
+            "card_horses": """
+                CREATE TABLE IF NOT EXISTS card_horses (
+                    horse_id BIGINT PRIMARY KEY,
+                    name TEXT,
+                    age INTEGER,
+                    sex TEXT,
+                    colour TEXT,
+                    sire TEXT,
+                    dam TEXT,
+                    trainer TEXT,
+                    owner TEXT,
+                    country TEXT,
+                    rating TEXT,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+            """,
+            "result_races": """
+                CREATE TABLE IF NOT EXISTS result_races (
+                    race_id BIGINT PRIMARY KEY,
+                    race_number INTEGER,
+                    race_time TEXT,
+                    course_id BIGINT,
+                    course TEXT,
+                    race_type TEXT,
+                    date DATE,
+                    race_name TEXT,
+                    class TEXT,
+                    years TEXT,
+                    distance TEXT,
+                    surface TEXT,
+                    prize TEXT,
+                    runners_racecard INTEGER,
+                    runners INTEGER,
+                    draw TEXT,
+                    ew_racecard TEXT,
+                    ew INTEGER,
+                    places_ew_racecard TEXT,
+                    places_ew INTEGER,
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                    FOREIGN KEY (race_id) REFERENCES races(race_id)
+                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 )
             """,
             "racecard_details": """
                 CREATE TABLE IF NOT EXISTS racecard_details (
-                    detail_id INTEGER PRIMARY KEY,
-                    race_id INTEGER,
+                    record_id BIGINT PRIMARY KEY,
+                    race_id BIGINT,
                     horse_name TEXT,
                     jockey TEXT,
                     trainer TEXT,
-                    owner TEXT,
-                    number INTEGER,
+                    position INTEGER,
+                    starting_price TEXT,
                     weight TEXT,
                     age INTEGER,
                     form TEXT,
-                    odds TEXT,
-                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                    FOREIGN KEY (race_id) REFERENCES races(race_id)
+                    extra TEXT,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 )
             """,
-            "horses": """
-                CREATE TABLE IF NOT EXISTS horses (
-                    horse_id INTEGER PRIMARY KEY,
-                    horse_name TEXT UNIQUE,
+            "jockeys_stats": """
+                CREATE TABLE IF NOT EXISTS jockeys_stats (
+                    jockey_id BIGINT PRIMARY KEY,
+                    name TEXT,
+                    wins INTEGER,
+                    runs INTEGER,
+                    win_percentage DECIMAL(5,2),
+                    strike_rate DECIMAL(5,2),
+                    prize_money TEXT,
+                    last_14_days TEXT,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+            """,
+            "trainers_stats": """
+                CREATE TABLE IF NOT EXISTS trainers_stats (
+                    trainer_id BIGINT PRIMARY KEY,
+                    name TEXT,
+                    wins INTEGER,
+                    runs INTEGER,
+                    win_percentage DECIMAL(5,2),
+                    strike_rate DECIMAL(5,2),
+                    prize_money TEXT,
+                    last_14_days TEXT,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+            """
                     age INTEGER,
                     sex TEXT,
                     color TEXT,
@@ -120,6 +201,7 @@ class DatabaseUploader:
                     dam TEXT,
                     trainer TEXT,
                     owner TEXT,
+                    breeder TEXT,
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 )
@@ -150,7 +232,7 @@ class DatabaseUploader:
             """,
         }
 
-    def run_upload_process(self) -> Dict[str, any]:
+    def run_upload_process(self) -> Dict[str, Any]:
         """
         Run complete database upload process
 
@@ -190,8 +272,19 @@ class DatabaseUploader:
             self._initialize_database()
             console.print("✅ Database initialized successfully")
 
-            # Step 3: Process each data type
+            # Step 3: Process each data type in dependency order
             console.print("📊 [cyan]Step 3: Processing data files...[/cyan]")
+
+            # Define table upload order - separated cards and results data
+            table_order = [
+                "card_races",       # Card races (independent)
+                "card_records",     # Card records (independent)
+                "card_horses",      # Card horses (independent)
+                "result_races",     # Result races (independent)
+                "jockeys_stats",    # Jockeys statistics (independent)  
+                "trainers_stats",   # Trainers statistics (independent)
+                "racecard_details"  # Racecard details (independent)
+            ]
 
             with Progress(
                 SpinnerColumn(),
@@ -200,8 +293,34 @@ class DatabaseUploader:
                 console=console,
             ) as progress:
 
+                # Process tables in dependency order
+                for data_type in table_order:
+                    if data_type in upload_files and upload_files[data_type]:
+                        file_paths = upload_files[data_type]
+                        task = progress.add_task(
+                            f"Processing {data_type}...", total=len(file_paths)
+                        )
+
+                        for file_path in file_paths:
+                            try:
+                                records_count = self._upload_data_file(
+                                    data_type, Path(file_path)
+                                )
+                                stats["records_uploaded"] += records_count
+                                progress.update(task, advance=1)
+
+                            except Exception as e:
+                                error_msg = f"Error uploading {file_path}: {str(e)}"
+                                stats["errors"].append(error_msg)
+                                logger.error(error_msg)
+                                progress.update(task, advance=1)
+
+                        stats["tables_processed"] += 1
+                        progress.update(task, completed=len(file_paths))
+                
+                # Handle any remaining tables not in the defined order
                 for data_type, file_paths in upload_files.items():
-                    if file_paths:  # Only process if files exist
+                    if data_type not in table_order and file_paths:
                         task = progress.add_task(
                             f"Processing {data_type}...", total=len(file_paths)
                         )
@@ -259,38 +378,47 @@ class DatabaseUploader:
         """Load upload manifest created by auto downloader"""
         try:
             with open(self.upload_manifest_path, "r") as f:
-                return json.load(f)
+                manifest = json.load(f)
+
+            # Extract files from the manifest structure
+            if "files" in manifest:
+                # Group files by table type
+                upload_files = {}
+                for file_path, file_info in manifest["files"].items():
+                    table_name = file_info.get("table", "unknown")
+                    if table_name not in upload_files:
+                        upload_files[table_name] = []
+                    # Convert relative paths to absolute paths in container
+                    abs_file_path = f"/app/{file_path}"
+                    upload_files[table_name].append(abs_file_path)
+                return upload_files
+            else:
+                # Fallback for older manifest format
+                return manifest
+
         except Exception as e:
             raise Exception(f"Failed to load upload manifest: {e}")
 
     def _initialize_database(self) -> None:
-        """Initialize database with required tables"""
-        if self.db_url.startswith("sqlite"):
-            # SQLite database
-            db_path = self.db_url.replace("sqlite:///", "")
-            Path(db_path).parent.mkdir(parents=True, exist_ok=True)
+        """Initialize PostgreSQL database with required tables"""
+        conn = psycopg2.connect(self.db_url)
+        with conn.cursor() as cursor:
+            # Drop existing tables to ensure clean schema
+            cursor.execute("DROP TABLE IF EXISTS racecard_details CASCADE;")
+            cursor.execute("DROP TABLE IF EXISTS records CASCADE;")
+            cursor.execute("DROP TABLE IF EXISTS horses CASCADE;")
+            cursor.execute("DROP TABLE IF EXISTS races CASCADE;")
+            cursor.execute("DROP TABLE IF EXISTS jockeys_stats CASCADE;")
+            cursor.execute("DROP TABLE IF EXISTS trainers_stats CASCADE;")
 
-            with sqlite3.connect(db_path) as conn:
-                for table_name, schema in self.table_schemas.items():
-                    conn.execute(schema)
-                conn.commit()
-
-        elif self.db_url.startswith("postgresql"):
-            # PostgreSQL database
-            import psycopg2
-
-            conn = psycopg2.connect(self.db_url)
-            with conn.cursor() as cursor:
-                for table_name, schema in self.table_schemas.items():
-                    cursor.execute(schema)
-            conn.commit()
-            conn.close()
-
-        else:
-            raise ValueError(f"Unsupported database type: {self.db_url}")
+            # Create tables with new schema
+            for table_name, schema in self.table_schemas.items():
+                cursor.execute(schema)
+        conn.commit()
+        conn.close()
 
     def _upload_data_file(self, data_type: str, file_path: Path) -> int:
-        """Upload a single CSV file to the database"""
+        """Upload a single CSV file to the PostgreSQL database"""
         if not file_path.exists():
             raise FileNotFoundError(f"Data file not found: {file_path}")
 
@@ -301,57 +429,45 @@ class DatabaseUploader:
                 logger.warning(f"Empty CSV file: {file_path}")
                 return 0
 
+            # Deduplicate data based on primary key
+            if data_type == "horses" and "horse_id" in df.columns:
+                original_count = len(df)
+                df = df.drop_duplicates(subset=["horse_id"], keep="first")
+                dedup_count = len(df)
+                if original_count != dedup_count:
+                    logger.warning(
+                        f"Removed {original_count - dedup_count} duplicate "
+                        f"horse_ids from {file_path}"
+                    )
+
         except Exception as e:
             raise Exception(f"Failed to read CSV {file_path}: {e}")
 
-        # Upload to database
-        if self.db_url.startswith("sqlite"):
-            return self._upload_to_sqlite(data_type, df)
-        elif self.db_url.startswith("postgresql"):
-            return self._upload_to_postgresql(data_type, df)
-        else:
-            raise ValueError(f"Unsupported database type: {self.db_url}")
-
-    def _upload_to_sqlite(self, table_name: str, df: pd.DataFrame) -> int:
-        """Upload DataFrame to SQLite database"""
-        db_path = self.db_url.replace("sqlite:///", "")
-
-        with sqlite3.connect(db_path) as conn:
-            # Insert data with REPLACE to handle duplicates
-            df.to_sql(table_name, conn, if_exists="append", index=False, method="multi")
-            return len(df)
+        # Upload to PostgreSQL database
+        return self._upload_to_postgresql(data_type, df)
 
     def _upload_to_postgresql(self, table_name: str, df: pd.DataFrame) -> int:
         """Upload DataFrame to PostgreSQL database"""
-        import psycopg2
-        from sqlalchemy import create_engine
-
         engine = create_engine(self.db_url)
-        df.to_sql(table_name, engine, if_exists="append", index=False, method="multi")
+        # Use smaller batch size to avoid SQL parameter limit issues
+        batch_size = 100
+        df.to_sql(
+            table_name, engine, if_exists="append", index=False, chunksize=batch_size
+        )
         return len(df)
 
     def _verify_uploads(self) -> Dict[str, int]:
-        """Verify uploaded data"""
+        """Verify uploaded data in PostgreSQL"""
         verification = {}
 
-        if self.db_url.startswith("sqlite"):
-            db_path = self.db_url.replace("sqlite:///", "")
-            with sqlite3.connect(db_path) as conn:
-                for table_name in self.table_schemas.keys():
-                    cursor = conn.execute(f"SELECT COUNT(*) FROM {table_name}")
-                    count = cursor.fetchone()[0]
-                    verification[f"{table_name}_count"] = count
-
-        elif self.db_url.startswith("postgresql"):
-            import psycopg2
-
-            conn = psycopg2.connect(self.db_url)
-            with conn.cursor() as cursor:
-                for table_name in self.table_schemas.keys():
-                    cursor.execute(f"SELECT COUNT(*) FROM {table_name}")
-                    count = cursor.fetchone()[0]
-                    verification[f"{table_name}_count"] = count
-            conn.close()
+        conn = psycopg2.connect(self.db_url)
+        with conn.cursor() as cursor:
+            for table_name in self.table_schemas.keys():
+                cursor.execute(f"SELECT COUNT(*) FROM {table_name}")
+                result = cursor.fetchone()
+                count = result[0] if result else 0
+                verification[f"{table_name}_count"] = count
+        conn.close()
 
         return verification
 
@@ -399,9 +515,10 @@ def main():
     results = uploader.run_upload_process()
 
     if results["success"]:
-        console.print(f"\n✅ [green]Upload completed successfully![/green]")
+        console.print("\n✅ [green]Upload completed successfully![/green]")
         console.print(
-            f"📊 Uploaded {results['records_uploaded']} records to {results['tables_processed']} tables"
+            f"📊 Uploaded {results['records_uploaded']} records to "
+            f"{results['tables_processed']} tables"
         )
         return True
     else:

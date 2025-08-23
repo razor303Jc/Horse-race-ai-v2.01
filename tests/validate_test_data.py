@@ -430,7 +430,7 @@ def main():
     parser.add_argument(
         "--database-url",
         type=str,
-        default="postgresql://horse_racing_test:test_password_123@localhost:5434/horse_racing_test_db",
+        default="postgresql://horse_racing_test:test_password_123@postgres:5432/horse_racing_test_db",
         help="Test database URL",
     )
 

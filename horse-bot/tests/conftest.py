@@ -31,7 +31,7 @@ def settings():
     """Test settings configuration."""
     test_settings = get_settings()
     test_settings.database_url = "sqlite+aiosqlite:///./test.db"
-    test_settings.redis_url = "redis://localhost:6379/15"  # Test database
+    test_settings.redis_url = "redis://redis:6379/15"  # Test database
     test_settings.debug = True
     return test_settings
 

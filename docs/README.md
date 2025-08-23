@@ -172,7 +172,7 @@ Copy `.env.example` to `.env` and configure:
 
 ```bash
 # Database
-DATABASE_URL=postgresql://user:pass@localhost:5432/horserace
+DATABASE_URL=postgresql://user:pass@postgres:5432/horserace
 
 # APIs
 BETDAQ_API_KEY=your_api_key

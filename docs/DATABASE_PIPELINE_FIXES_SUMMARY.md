@@ -20,9 +20,9 @@
 
 ### 2. ✅ **Database Connection Configuration Fixed**
 
-**Issue:** Pipeline CSV import failing with connection errors to localhost:5434
+**Issue:** Pipeline CSV import failing with connection errors to postgres:5432
 
-**Root Cause:** Data uploaders using localhost:5434 instead of postgres:5432 from inside Docker containers
+**Root Cause:** Data uploaders using postgres:5432 instead of postgres:5432 from inside Docker containers
 
 **Solution:**
 

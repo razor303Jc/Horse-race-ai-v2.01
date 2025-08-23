@@ -11,7 +11,7 @@ echo "of race cards, with each day's races being released progressively."
 echo ""
 
 # Set up environment
-export DATABASE_URL="postgresql://postgres:password@localhost:5434/horse_racing_test_db"
+export DATABASE_URL="postgresql://postgres:password@postgres:5432/horse_racing_test_db"
 
 # Check database
 echo "🔍 Checking test database..."
@@ -78,4 +78,4 @@ echo "- Progressive data availability testing"
 echo "- Daily processing workflow validation"
 echo "- Monte Carlo + Fast Results + NTFY integration testing"
 echo ""
-echo "Database: postgresql://postgres:password@localhost:5434/horse_racing_test_db"
+echo "Database: postgresql://postgres:password@postgres:5432/horse_racing_test_db"

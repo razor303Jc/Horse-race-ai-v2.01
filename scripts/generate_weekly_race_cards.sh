@@ -7,7 +7,7 @@ echo "🏁 Starting Weekly Race Cards Generation"
 echo "======================================="
 
 # Set up environment
-export DATABASE_URL="postgresql://postgres:password@localhost:5434/horse_racing_test_db"
+export DATABASE_URL="postgresql://postgres:password@postgres:5432/horse_racing_test_db"
 
 # Check if test database is running
 echo "🔍 Checking test database connection..."
@@ -38,4 +38,4 @@ echo ""
 echo "To check status of the week:"
 echo "python3 tests/weekly_race_cards_generator.py --start-date $START_DATE --status-only"
 echo ""
-echo "Database available at: postgresql://postgres:password@localhost:5434/horse_racing_test_db"
+echo "Database available at: postgresql://postgres:password@postgres:5432/horse_racing_test_db"

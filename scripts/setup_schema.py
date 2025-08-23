@@ -52,7 +52,7 @@ def setup_schema(database_url):
 
 
 if __name__ == "__main__":
-    database_url = "postgresql://horse_racing_test:test_password_123@localhost:5434/horse_racing_test_db"
+    database_url = "postgresql://horse_racing_test:test_password_123@postgres:5432/horse_racing_test_db"
 
     if len(sys.argv) > 1:
         database_url = sys.argv[1]

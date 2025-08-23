@@ -36,7 +36,7 @@ class Settings(BaseSettings):
     database_echo: bool = Field(default=False, env="DATABASE_ECHO")
     
     # Redis Settings
-    redis_url: str = Field(default="redis://localhost:6379", env="REDIS_URL")
+    redis_url: str = Field(default="redis://redis:6379", env="REDIS_URL")
     
     # External API Settings
     proform_racing_api_key: Optional[str] = Field(default=None, env="PROFORM_RACING_API_KEY")

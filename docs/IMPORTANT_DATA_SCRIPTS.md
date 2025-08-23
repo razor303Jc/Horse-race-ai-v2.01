@@ -21,7 +21,7 @@
   - **Purpose**: Direct uploader for processed CSV files to Docker database
   - **Status**: Ready - handles conflicts and bulk inserts
   - **Key Features**:
-    - Docker database connection (localhost:5434)
+    - Docker database connection (postgres:5432)
     - ON CONFLICT handling for duplicates
     - Bulk insert with execute_values
     - Proper NULL value handling
@@ -84,7 +84,7 @@
 
 - **Current Records**: 404 race records, 54 races, 414 horses
 - **Recovered Data**: Additional 43 races (182648-182690) ready for import
-- **Connection**: Docker PostgreSQL on localhost:5434
+- **Connection**: Docker PostgreSQL on postgres:5432
 
 ## 🚀 Next Actions:
 

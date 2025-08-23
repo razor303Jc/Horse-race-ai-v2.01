@@ -380,7 +380,7 @@ def main():
     """Main function"""
     database_url = (
         "postgresql://horse_racing_test:test_password_123@"
-        "localhost:5434/horse_racing_test_db"
+        "postgres:5432/horse_racing_test_db"
     )
 
     migrator = DatasetMigrator(database_url)

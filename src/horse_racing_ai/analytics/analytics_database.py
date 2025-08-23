@@ -26,7 +26,7 @@ class AnalyticsDatabase:
         self.database_url = database_url or os.getenv("DATABASE_URL")
         if not self.database_url:
             self.database_url = (
-                "postgresql://horse_racing:secure_password_123@localhost:5434/"
+                "postgresql://horse_racing:secure_password_123@postgres:5432/"
                 "horse_racing_db"
             )
 

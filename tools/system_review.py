@@ -177,7 +177,7 @@ def main():
 
     # Test API server
     try:
-        response = requests.get("http://localhost:5434/api/health", timeout=5)
+        response = requests.get("http://postgres:5432/api/health", timeout=5)
         if response.status_code == 200:
             print_status("API Server (Port 5434)", "WORKING", "Health check passed")
         else:
@@ -189,7 +189,7 @@ def main():
 
     # Test race data API
     try:
-        response = requests.get("http://localhost:5434/api/races", timeout=5)
+        response = requests.get("http://postgres:5432/api/races", timeout=5)
         if response.status_code == 200:
             races_data = response.json()
             print_status("Race Data API", "WORKING", f"{len(races_data)} races via API")
