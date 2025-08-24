@@ -1,11 +1,88 @@
 #!/usr/bin/env python3
 """
 Data Cleaner - Fix data type issues before database upload
+Enhanced with comprehensive dash/hyphen symbol handling
 """
 
 import pandas as pd
 import re
+import json
 from pathlib import Path
+
+
+def load_column_type_mapping():
+    """Load data type configuration from mapping file"""
+    config_file = (
+        Path(__file__).parent.parent.parent
+        / "config"
+        / "complete_csv_column_mapping.json"
+    )
+    try:
+        with open(config_file, "r") as f:
+            config = json.load(f)
+        return config["table_mappings"]
+    except Exception as e:
+        print(f"⚠️ Could not load column mapping: {e}")
+        return {}
+
+
+def clean_dash_symbols(df, table_name):
+    """
+    🔧 ENHANCED: Clean dash/hyphen symbols based on data type
+    - Numeric fields (int/decimal): "-" → 0
+    - String fields: "-" → "None"
+    - Weight fields: "10-2" → "10.2" (stones-pounds format)
+    """
+    print(f"🧹 Cleaning dash symbols for {table_name}...")
+
+    # Load data type configuration
+    type_mapping = load_column_type_mapping()
+    table_config = type_mapping.get(table_name, {}).get("null_handling", {})
+
+    integer_fields = table_config.get("integers", [])
+    decimal_fields = table_config.get("decimals", [])
+    string_fields = table_config.get("strings", [])
+
+    cleaned_count = 0
+
+    for column in df.columns:
+        if column in df.columns:
+            # Handle weight_uk specially (UK format like "10-2")
+            if column == "weight_uk":
+                # Convert UK weight format "10-2" to "10.2"
+                mask = df[column].astype(str).str.match(r"^\d+-\d+$")
+                df.loc[mask, column] = (
+                    df.loc[mask, column].astype(str).str.replace("-", ".")
+                )
+                cleaned_count += mask.sum()
+
+                # Convert standalone "-" to 0 for weight
+                standalone_dash = df[column].astype(str) == "-"
+                df.loc[standalone_dash, column] = 0
+                cleaned_count += standalone_dash.sum()
+
+            elif column in integer_fields:
+                # Integer fields: "-" → 0
+                dash_mask = df[column].astype(str) == "-"
+                df.loc[dash_mask, column] = 0
+                cleaned_count += dash_mask.sum()
+
+            elif column in decimal_fields:
+                # Decimal fields: "-" → 0
+                dash_mask = df[column].astype(str) == "-"
+                df.loc[dash_mask, column] = 0
+                cleaned_count += dash_mask.sum()
+
+            elif column in string_fields:
+                # String fields: "-" → "None"
+                dash_mask = df[column].astype(str) == "-"
+                df.loc[dash_mask, column] = "None"
+                cleaned_count += dash_mask.sum()
+
+    if cleaned_count > 0:
+        print(f"  ✅ Cleaned {cleaned_count} dash symbols across all columns")
+
+    return df
 
 
 def clean_percentage_fields(df, percentage_columns):
@@ -18,13 +95,16 @@ def clean_percentage_fields(df, percentage_columns):
 
 
 def clean_races_data():
-    """Clean races data - fix draw field with 'Low' values"""
+    """Clean races data - fix draw field with 'Low' values and dash symbols"""
     print("🧹 Cleaning races data...")
 
     file_path = Path("data/daily_downloads/complete_mapped_races.csv")
     df = pd.read_csv(file_path)
 
     print(f"Original: {len(df)} rows")
+
+    # Step 1: Clean dash symbols based on data types
+    df = clean_dash_symbols(df, "races")
 
     # Fix draw field - convert 'Low' to 0 or NULL
     if "draw" in df.columns:
@@ -55,13 +135,16 @@ def clean_races_data():
 
 
 def clean_records_data():
-    """Clean records data - handle missing columns and data types"""
+    """Clean records data - handle missing columns, data types, and dash symbols"""
     print("🧹 Cleaning records data...")
 
     file_path = Path("data/daily_downloads/complete_mapped_records.csv")
     df = pd.read_csv(file_path)
 
     print(f"Original: {len(df)} rows, {len(df.columns)} columns")
+
+    # Step 1: Clean dash symbols based on data types
+    df = clean_dash_symbols(df, "records")
 
     # Remove columns that don't exist in database
     columns_to_remove = []
@@ -99,9 +182,8 @@ def clean_records_data():
         if field in df.columns:
             df[field] = pd.to_numeric(df[field], errors="coerce").fillna(0)
 
-    # Fix weight format: "10-2" -> "10.2"
+    # Note: weight_uk dash handling is done in clean_dash_symbols function
     if "weight_uk" in df.columns:
-        df["weight_uk"] = df["weight_uk"].astype(str).str.replace("-", ".")
         df["weight_uk"] = pd.to_numeric(df["weight_uk"], errors="coerce").fillna(0)
 
     # Fix distance fields - convert fractions to decimals
@@ -127,13 +209,16 @@ def clean_records_data():
 
 
 def clean_horses_data():
-    """Clean horses data - fix percentage fields"""
+    """Clean horses data - fix percentage fields and dash symbols"""
     print("🧹 Cleaning horses data...")
 
     file_path = Path("data/daily_downloads/complete_mapped_horses.csv")
     df = pd.read_csv(file_path)
 
     print(f"Original: {len(df)} rows")
+
+    # Step 1: Clean dash symbols based on data types
+    df = clean_dash_symbols(df, "horses")
 
     # Fix percentage fields
     percentage_cols = [
@@ -184,13 +269,16 @@ def clean_horses_data():
 
 
 def clean_jockeys_stats():
-    """Clean jockeys stats data - fix percentage fields"""
+    """Clean jockeys stats data - fix percentage fields and dash symbols"""
     print("🧹 Cleaning jockeys stats data...")
 
     file_path = Path("data/daily_downloads/complete_mapped_jockeys_stats.csv")
     df = pd.read_csv(file_path)
 
     print(f"Original: {len(df)} rows")
+
+    # Step 1: Clean dash symbols based on data types
+    df = clean_dash_symbols(df, "jockeys_stats")
 
     # Fix percentage fields
     percentage_cols = [
@@ -215,13 +303,16 @@ def clean_jockeys_stats():
 
 
 def clean_trainers_stats():
-    """Clean trainers stats data - fix percentage fields"""
+    """Clean trainers stats data - fix percentage fields and dash symbols"""
     print("🧹 Cleaning trainers stats data...")
 
     file_path = Path("data/daily_downloads/complete_mapped_trainers_stats.csv")
     df = pd.read_csv(file_path)
 
     print(f"Original: {len(df)} rows")
+
+    # Step 1: Clean dash symbols based on data types
+    df = clean_dash_symbols(df, "trainers_stats")
 
     # Fix percentage fields
     percentage_cols = [
