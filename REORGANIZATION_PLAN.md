@@ -1,0 +1,257 @@
+# 📋 ROOT DIRECTORY REORGANIZATION PLAN
+
+**Safe File Organization Strategy - Horse Racing AI v2.04**
+
+---
+
+## 🔍 **CURRENT ANALYSIS**
+
+### ✅ **KEEP IN ROOT (Essential Files)**
+
+```
+✅ .env                                    # Environment variables
+✅ .flake8                                 # Code style config
+✅ .gitignore                              # Git ignore patterns
+✅ docker-compose.clean.yml                # Main Docker config
+✅ example.env                             # Environment template
+✅ Makefile                                # Build automation
+✅ pyproject.toml                          # Python project config
+✅ pytest.ini                             # Testing config
+✅ run_tests.sh                           # Test execution script
+✅ start_daily_watcher.sh                 # Daily automation
+✅ start_pipeline_integration.sh          # Pipeline startup
+✅ morning_briefing.md                    # Daily operations
+✅ evening_debrief.md                     # Daily analysis
+✅ quick_access.sh                        # Quick operations script
+✅ ROOT_DIRECTORY_INDEX.md                # This file
+✅ README.md → docs/README.md             # Main docs (symlink)
+✅ ADVANCED_TODO.md → docs/...            # Todo list (symlink)
+✅ AI_SCHEMA.sql → database/...           # Schema (symlink)
+✅ ML_CONFIG.yaml → config/...            # ML config (symlink)
+```
+
+### 🔄 **MOVE TO DOCS/ (Documentation & Reports)**
+
+```
+📄 Critical_path_to_resolution.md         → docs/implementation/
+📄 DATABASE_SEPARATION_IMPLEMENTATION_COMPLETE.md → docs/implementation/
+📄 DATABASE_STRUCTURE_ANALYSIS_REPORT.md  → docs/analysis/
+📄 FINAL_PIPELINE_INTEGRATION_SUMMARY.md  → docs/implementation/
+📄 PIPELINE_AUTOMATION_SUCCESS_SUMMARY.md → docs/implementation/
+📄 PIPELINE_INTEGRATION_COMPLETE.md       → docs/implementation/
+📄 PIPELINE_SCRIPTS_ANALYSIS_REPORT.md    → docs/analysis/
+📄 SCRIPT_ANALYSIS_SYSTEM_REPORT.md       → docs/analysis/
+📄 TEST_FRAMEWORK_PROGRESS_REPORT.md      → docs/testing/
+```
+
+### 🧪 **MOVE TO TESTS/ (Test Files)**
+
+```
+🧪 comprehensive_records_test.py          → tests/integration/
+🧪 test_csv_import_fix.py                 → tests/data_processing/
+🧪 test_db_config_fix.py                  → tests/database/
+🧪 test_pipeline_fixes.py                 → tests/pipeline/
+🧪 test_records_import.py                 → tests/data_processing/
+```
+
+### 🔧 **MOVE TO SCRIPTS/ (Utility Scripts)**
+
+```
+🔧 fix_database_and_upload.py             → scripts/database/
+🔧 fix_records_import.py                  → scripts/data_processing/
+```
+
+### 🗑️ **CACHE/TEMP DIRECTORIES (Review & Potentially Remove)**
+
+```
+📁 .pytest_cache/                         # Can be removed (regenerated)
+📁 cache/                                 # Review contents first
+📁 ml_cache/                              # Review contents first
+📁 temp_card_processing/                  # Review contents first
+```
+
+---
+
+## 🚀 **REORGANIZATION STEPS**
+
+### 📋 **Phase 1: Create Destination Directories**
+
+```bash
+# Create documentation subdirectories
+mkdir -p docs/implementation
+mkdir -p docs/analysis
+mkdir -p docs/testing
+
+# Create test subdirectories
+mkdir -p tests/integration
+mkdir -p tests/data_processing
+mkdir -p tests/database
+mkdir -p tests/pipeline
+
+# Create script subdirectories
+mkdir -p scripts/database
+mkdir -p scripts/data_processing
+```
+
+### 📋 **Phase 2: Move Documentation Files**
+
+```bash
+# Implementation documentation
+mv Critical_path_to_resolution.md docs/implementation/
+mv DATABASE_SEPARATION_IMPLEMENTATION_COMPLETE.md docs/implementation/
+mv FINAL_PIPELINE_INTEGRATION_SUMMARY.md docs/implementation/
+mv PIPELINE_AUTOMATION_SUCCESS_SUMMARY.md docs/implementation/
+mv PIPELINE_INTEGRATION_COMPLETE.md docs/implementation/
+
+# Analysis reports
+mv DATABASE_STRUCTURE_ANALYSIS_REPORT.md docs/analysis/
+mv PIPELINE_SCRIPTS_ANALYSIS_REPORT.md docs/analysis/
+mv SCRIPT_ANALYSIS_SYSTEM_REPORT.md docs/analysis/
+
+# Testing documentation
+mv TEST_FRAMEWORK_PROGRESS_REPORT.md docs/testing/
+```
+
+### 📋 **Phase 3: Move Test Files**
+
+```bash
+# Integration tests
+mv comprehensive_records_test.py tests/integration/
+
+# Data processing tests
+mv test_csv_import_fix.py tests/data_processing/
+mv test_records_import.py tests/data_processing/
+
+# Database tests
+mv test_db_config_fix.py tests/database/
+
+# Pipeline tests
+mv test_pipeline_fixes.py tests/pipeline/
+```
+
+### 📋 **Phase 4: Move Utility Scripts**
+
+```bash
+# Database utilities
+mv fix_database_and_upload.py scripts/database/
+
+# Data processing utilities
+mv fix_records_import.py scripts/data_processing/
+```
+
+### 📋 **Phase 5: Review Cache Directories**
+
+```bash
+# Check what's in cache directories before removing
+ls -la cache/
+ls -la ml_cache/
+ls -la temp_card_processing/
+ls -la .pytest_cache/
+
+# Remove only if confirmed empty or containing only temp files
+# rm -rf .pytest_cache/  # Safe to remove (regenerated by pytest)
+```
+
+---
+
+## ⚠️ **SAFETY CHECKS BEFORE MOVING**
+
+### 🔍 **Files to Investigate First**
+
+```bash
+# Check if any files are actively used
+grep -r "Critical_path_to_resolution" . --exclude-dir=.git
+grep -r "comprehensive_records_test" . --exclude-dir=.git
+grep -r "fix_database_and_upload" . --exclude-dir=.git
+
+# Check import statements in Python files
+find . -name "*.py" -exec grep -l "comprehensive_records_test\|fix_database_and_upload\|fix_records_import" {} \;
+```
+
+### 📋 **Git Status Check**
+
+```bash
+# Ensure all important changes are committed before reorganization
+git status
+git add -A
+git commit -m "docs: pre-reorganization commit"
+```
+
+### 🔗 **Update References After Moving**
+
+```bash
+# Update any hardcoded paths in documentation
+# Update import statements in test files
+# Update any scripts that reference moved files
+```
+
+---
+
+## 🎯 **FINAL ROOT DIRECTORY STRUCTURE**
+
+### ✅ **After Reorganization**
+
+```
+Horse-race-ai-v2.04/
+├── 📋 morning_briefing.md
+├── 🌆 evening_debrief.md
+├── 📖 README.md → docs/README.md
+├── 🎯 ADVANCED_TODO.md → docs/ADVANCED_AI_RACING_TODO_LIST.md
+├── 🗂️ ROOT_DIRECTORY_INDEX.md
+├── 🚀 quick_access.sh
+├──
+├── 🐳 docker-compose.clean.yml
+├── ⚙️ pyproject.toml
+├── 🧪 pytest.ini
+├── 🔧 Makefile
+├── 🏃 run_tests.sh
+├── 🌅 start_daily_watcher.sh
+├── 🔄 start_pipeline_integration.sh
+├──
+├── 📝 .env
+├── 📄 example.env
+├── 🎨 .flake8
+├── 🚫 .gitignore
+├──
+├── 🔗 AI_SCHEMA.sql → database/ai_predictions_schema.sql
+├── 🔗 ML_CONFIG.yaml → config/ml_training_config.yaml
+├──
+└── 📁 [subdirectories...]
+```
+
+---
+
+## 🤝 **APPROVAL REQUIRED**
+
+### ❓ **Questions Before Proceeding**
+
+1. **Documentation Files**: Are any of these reports still actively referenced?
+
+   - `Critical_path_to_resolution.md`
+   - Various `*_COMPLETE.md` and `*_REPORT.md` files
+
+2. **Test Files**: Are these test files still needed or can they be archived?
+
+   - `comprehensive_records_test.py`
+   - `test_*_fix.py` files
+
+3. **Utility Scripts**: Are these fix scripts still needed for ongoing operations?
+
+   - `fix_database_and_upload.py`
+   - `fix_records_import.py`
+
+4. **Cache Directories**: Can we safely remove/archive these?
+   - `cache/`, `ml_cache/`, `temp_card_processing/`
+
+### 🎯 **Recommended Action**
+
+**Please review this plan and confirm which files you'd like to:**
+
+- ✅ **Move as planned**
+- 🔄 **Keep in root** (with reason)
+- 🗂️ **Archive** (move to `/archive/` directory)
+- ❓ **Investigate further** before moving
+
+---
+
+_This plan ensures no files are lost and all moves are intentional and safe._

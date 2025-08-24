@@ -61,23 +61,20 @@ def main():
             CAST(rec.starting_price AS FLOAT) as odds_decimal,
             1.0 / CAST(rec.starting_price AS FLOAT) as implied_probability,
             LN(CAST(rec.starting_price AS FLOAT)) as log_odds,
-            10.0 as horse_weight_kg,
+            COALESCE(CAST(rec.weight AS FLOAT), 10.0) as horse_weight_kg,
             CAST(rec.age AS INT) as horse_age,
             COUNT(*) OVER (PARTITION BY rec.race_id) as field_size,
             ROW_NUMBER() OVER (PARTITION BY rec.race_id ORDER BY CAST(rec.starting_price AS FLOAT)) as odds_rank,
             CASE WHEN ROW_NUMBER() OVER (PARTITION BY rec.race_id ORDER BY CAST(rec.starting_price AS FLOAT)) = 1 THEN 1 ELSE 0 END as is_favorite,
-            COALESCE(js.win_rate, 0.0) as jockey_win_pct,
-            COALESCE(js.place_rate, 0.0) as jockey_place_pct,
-            COALESCE(ts.win_rate, 0.0) as trainer_win_pct,
-            COALESCE(ts.place_rate, 0.0) as trainer_place_pct
+            0.0 as jockey_win_pct,
+            0.0 as jockey_place_pct,
+            0.0 as trainer_win_pct,
+            0.0 as trainer_place_pct
         FROM records rec
-        LEFT JOIN jockeys_stats js ON rec.jockey_id = js.jockey_id
-        LEFT JOIN trainers_stats ts ON rec.trainer_id = ts.trainer_id
         WHERE rec.position IS NOT NULL
           AND rec.starting_price IS NOT NULL
           AND CAST(rec.starting_price AS FLOAT) > 0
-          AND rec.jockey_id IS NOT NULL
-          AND rec.trainer_id IS NOT NULL
+          AND CAST(rec.age AS INT) > 0
         ORDER BY rec.race_id, CAST(rec.starting_price AS FLOAT)
         """
 

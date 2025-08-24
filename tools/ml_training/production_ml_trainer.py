@@ -85,12 +85,7 @@ console_handler = logging.StreamHandler(sys.stdout)
 console_handler.setFormatter(MLTrainingFormatter())
 logger.addHandler(console_handler)
 
-# File handler for ML training logs
-log_file = Path(__file__).parent.parent / "logs" / "ml_training.log"
-log_file.parent.mkdir(exist_ok=True)
-file_handler = logging.FileHandler(log_file)
-file_handler.setFormatter(MLTrainingFormatter())
-logger.addHandler(file_handler)
+# Note: File logging disabled for containerized environment
 logger = logging.getLogger(__name__)
 
 
@@ -104,9 +99,9 @@ class ProductionMLTrainer:
 
         # Database connection
         self.db_config = {
-            "host": "localhost",
-            "port": 5434,
-            "database": "horse_racing_db",
+            "host": "postgres",
+            "port": 5432,
+            "database": "results_horse_racing_db",
             "user": "horse_racing",
             "password": "secure_password_123",
         }
@@ -123,11 +118,11 @@ class ProductionMLTrainer:
             SELECT 
                 r.*,
                 js.wins as jockey_wins,
-                js.total_races as jockey_runs,
-                js.percentage_wins as jockey_win_pct,
+                js.runs as jockey_runs,
+                js.win_rate as jockey_win_pct,
                 ts.wins as trainer_wins,
-                ts.total_races as trainer_runs,
-                ts.percentage_wins as trainer_win_pct,
+                ts.runs as trainer_runs,
+                ts.win_rate as trainer_win_pct,
                 ra.course,
                 ra.distance,
                 ra.date as race_date,
@@ -139,8 +134,8 @@ class ProductionMLTrainer:
             WHERE r.jockey != 'none' 
             AND r.trainer != 'none'
             AND r.position IS NOT NULL
-            AND r.sp > 0
-            ORDER BY r.id DESC
+            AND r.starting_price > 0
+            ORDER BY r.record_id DESC
         """
 
         try:
@@ -163,22 +158,25 @@ class ProductionMLTrainer:
         df_features = df.copy()
 
         # Clean and convert data types using actual column names
-        df_features["win_odds"] = pd.to_numeric(df_features["sp"], errors="coerce")
+        df_features["win_odds"] = pd.to_numeric(
+            df_features["starting_price"], errors="coerce"
+        )
         df_features["horse_age"] = pd.to_numeric(df_features["age"], errors="coerce")
         df_features["horse_weight_kg"] = pd.to_numeric(
-            df_features["weight_kg"], errors="coerce"
+            df_features["weight"], errors="coerce"
         ).fillna(60)
-        df_features["draw"] = pd.to_numeric(df_features["draw"], errors="coerce")
+        df_features["draw"] = pd.to_numeric(df_features.get("draw", 1), errors="coerce")
+        df_features["draw"] = df_features["draw"].fillna(1)
         df_features["finished_position"] = pd.to_numeric(
             df_features["position"], errors="coerce"
         )
-        df_features["horse_name"] = df_features["horse"]
+        df_features["horse_name"] = df_features["horse_name"]
         df_features["jockey_name"] = df_features["jockey"]
         df_features["trainer_name"] = df_features["trainer"]
 
         # Clean missing values
         df_features = df_features.dropna(
-            subset=["win_odds", "horse_age", "draw", "finished_position"]
+            subset=["win_odds", "horse_age", "finished_position"]
         )
         df_features = df_features[df_features["win_odds"] > 0]
 

@@ -8,6 +8,8 @@ scikit-learn>=1.0.0
 psutil>=5.8.0
 redis>=4.0.0
 pyyaml>=6.0
+bottleneck>=1.3.6
+watchdog>=3.0.0
 
 # Phase 1 - Performance Optimization
 ## ML Training (UnifiedMLTrainer)

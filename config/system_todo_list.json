@@ -251,5 +251,490 @@
     ],
     "status": "PENDING",
     "created": "2025-08-20T15:01:26.939295"
+  },
+  {
+    "id": 12,
+    "title": "Fix CSV Backup EOF Error in Pipeline Integration",
+    "description": "Minor EOF error occurs during CSV backup processing in daily file watcher pipeline. Validation and processing complete successfully, but backup creation fails with 'EOF when reading a line' error.",
+    "priority": "MEDIUM",
+    "category": "Pipeline",
+    "estimated_time": "2 hours",
+    "solution_steps": [
+      "Investigate EOF error in CSV backup integration during file processing",
+      "Check file handling and reading operations in backup_integrator",
+      "Add better error handling for file stream operations",
+      "Verify ZIP file integrity before backup processing",
+      "Add retry mechanism for failed backup operations",
+      "Improve logging to identify exact source of EOF error",
+      "Test with various file sizes and formats to reproduce issue"
+    ],
+    "files_to_modify": [
+      "tools/pipeline/csv_backup_integration.py",
+      "tools/data_processing/csv_backup_manager.py",
+      "tools/automation/daily_file_watcher.py"
+    ],
+    "status": "PENDING",
+    "created": "2025-08-24T10:45:00",
+    "notes": "Discovered during live testing on 2025-08-24. System continues processing with fallback handling, but backup creation should be reliable."
+  },
+  {
+    "id": 13,
+    "title": "Complete Cards Database Historical Upload Documentation",
+    "description": "Document and automate the cards database upload process including all data processing issues discovered during Aug 22-24 historical upload",
+    "priority": "HIGH",
+    "category": "Documentation & Automation",
+    "estimated_time": "4 hours",
+    "solution_steps": [
+      "✅ COMPLETED: Successfully uploaded 670 racecard details, 73 races, 418 horses",
+      "✅ COMPLETED: Documented 6 critical data processing issues and solutions",
+      "✅ COMPLETED: Created automated_cards_processor.py for pipeline integration",
+      "✅ COMPLETED: Created configuration files for column mapping and field types",
+      "⏳ NEXT: Integrate automated processor into daily pipeline",
+      "⏳ NEXT: Add monitoring and error alerting for automated processing",
+      "⏳ NEXT: Replace manual upload scripts with automated solution"
+    ],
+    "files_to_modify": [
+      "tools/pipeline/automated_cards_processor.py",
+      "config/cards_column_mappings.json", 
+      "config/cards_field_types.json",
+      "tools/pipeline/pipeline_integration_example.py"
+    ],
+    "status": "COMPLETED",
+    "completed_date": "2025-08-24T20:00:00",
+    "resolution": "Historical cards upload completed successfully. All data processing issues documented and automated solutions created. Ready for pipeline integration.",
+    "created": "2025-08-24T16:00:00",
+    "reference_documents": [
+      "docs/DATA_PROCESSING_ISSUES_CARDS_UPLOAD.md",
+      "docs/CARDS_UPLOAD_COMPLETE_SUMMARY.md"
+    ],
+    "notes": "Critical fixes: PostgreSQL integer overflow, auto-increment ID generation, foreign key validation, column mapping, duplicate column removal, data type cleaning"
+  },
+  {
+    "id": 14,
+    "title": "Integrate Automated Cards Processor into Daily Pipeline",
+    "description": "Replace manual cards upload scripts with automated processor that handles all discovered data processing issues",
+    "priority": "MEDIUM",
+    "category": "Pipeline Integration",
+    "estimated_time": "3 hours",
+    "solution_steps": [
+      "Test automated_cards_processor.py with live daily data",
+      "Update daily pipeline configuration to use automated processor",
+      "Add error monitoring and alerting for processing failures",
+      "Create fallback procedures if automated processing fails",
+      "Update team documentation for new automated process",
+      "Archive or remove manual upload scripts",
+      "Add data quality monitoring dashboards"
+    ],
+    "files_to_modify": [
+      "tools/automation/daily_file_watcher.py",
+      "config/pipeline_config_staging.json",
+      "tools/pipeline/automated_cards_processor.py"
+    ],
+    "status": "PENDING",
+    "created": "2025-08-24T20:05:00",
+    "dependencies": [
+      "Automated cards processor testing and validation"
+    ],
+    "reference_documents": [
+      "tools/pipeline/pipeline_integration_example.py",
+      "docs/DATA_PROCESSING_ISSUES_CARDS_UPLOAD.md"
+    ]
+  },
+  {
+    "id": 15,
+    "title": "Fix Pandas FutureWarnings in AI Selections Feature Engineering",
+    "description": "Multiple FutureWarnings in container_ai_selections.py about downcasting object dtype arrays on .fillna() operations",
+    "priority": "MEDIUM",
+    "category": "Code Quality",
+    "estimated_time": "1 hour",
+    "solution_steps": [
+      "Update fillna operations to use .infer_objects(copy=False) as suggested",
+      "Set pd.set_option('future.no_silent_downcasting', True) for future compatibility",
+      "Test all feature engineering functions after changes",
+      "Verify no functionality is broken after pandas warning fixes",
+      "Add type hints to improve code clarity"
+    ],
+    "files_to_modify": [
+      "tools/ml_training/container_ai_selections.py"
+    ],
+    "status": "PENDING",
+    "created": "2025-08-24T13:05:00",
+    "technical_debt": true,
+    "warning_details": "FutureWarning: Downcasting object dtype arrays on .fillna, .ffill, .bfill is deprecated and will change in a future version. Call result.infer_objects(copy=False) instead."
+  },
+  {
+    "id": 16,
+    "title": "Implement Model Persistence for AI Selections",
+    "description": "Currently AI selections rebuilds models from training data on each execution due to container filesystem constraints",
+    "priority": "HIGH",
+    "category": "Performance",
+    "estimated_time": "4 hours",
+    "solution_steps": [
+      "Implement model serialization to external storage (database or mounted volume)",
+      "Add model versioning and metadata tracking",
+      "Create model loading logic with fallback to rebuild if needed",
+      "Add model cache validation (check if retrain needed based on new data)",
+      "Implement model performance monitoring and auto-retraining triggers",
+      "Update container_ai_selections.py to use persisted models when available"
+    ],
+    "files_to_modify": [
+      "tools/ml_training/container_ai_selections.py",
+      "tools/ml_training/container_ml_trainer.py"
+    ],
+    "status": "PENDING",
+    "created": "2025-08-24T13:05:00",
+    "performance_impact": "Currently rebuilding LogisticRegression model takes ~0.5s per execution, persistence would reduce to ~0.1s loading time",
+    "dependencies": [
+      "Decide on storage mechanism (database BLOBs vs mounted volume vs object storage)"
+    ]
+  },
+  {
+    "id": 17,
+    "title": "Add Prediction Confidence Intervals and Validation",
+    "description": "AI selections currently provide point estimates without confidence intervals or prediction validation",
+    "priority": "MEDIUM",
+    "category": "ML Enhancement",
+    "estimated_time": "3 hours",
+    "solution_steps": [
+      "Implement confidence intervals for win probability predictions",
+      "Add prediction validation against actual race results",
+      "Create performance tracking for model accuracy over time",
+      "Add prediction uncertainty quantification",
+      "Implement alerts for low-confidence predictions",
+      "Create daily/weekly model performance reports"
+    ],
+    "files_to_modify": [
+      "tools/ml_training/container_ai_selections.py",
+      "database schema (add confidence interval columns)"
+    ],
+    "status": "PENDING",
+    "created": "2025-08-24T13:05:00",
+    "business_value": "Better risk management and prediction reliability assessment",
+    "technical_requirements": [
+      "Historical race results for validation",
+      "Statistical confidence interval calculations",
+      "Model performance metrics tracking"
+    ]
+  },
+  {
+    "id": 18,
+    "title": "Optimize Database Connection Handling in AI Selections",
+    "description": "Current implementation uses multiple short-lived database connections, should implement connection pooling",
+    "priority": "LOW",
+    "category": "Performance",
+    "estimated_time": "2 hours",
+    "solution_steps": [
+      "Implement database connection pooling for postgres connections",
+      "Reuse connections across training data loading and prediction storage",
+      "Add connection retry logic with exponential backoff",
+      "Implement proper connection cleanup and error handling",
+      "Monitor connection usage and optimize pool size",
+      "Add database connection health checks"
+    ],
+    "files_to_modify": [
+      "tools/ml_training/container_ai_selections.py"
+    ],
+    "status": "PENDING",
+    "created": "2025-08-24T13:05:00",
+    "performance_impact": "Reduce database connection overhead from ~100ms to ~10ms per operation",
+    "current_implementation": "Creates new psycopg2 connection for each database operation"
+  },
+  {
+    "id": 19,
+    "title": "Add Comprehensive Error Handling for Missing Race Data",
+    "description": "AI selections assumes race card data exists for target date, needs graceful handling of missing data scenarios",
+    "priority": "MEDIUM",
+    "category": "Reliability",
+    "estimated_time": "2 hours",
+    "solution_steps": [
+      "Add validation for race card data availability before processing",
+      "Implement graceful handling when no races found for date",
+      "Add partial processing capability (skip races with insufficient data)",
+      "Create detailed error reporting for data quality issues",
+      "Add data completeness checks (missing jockey/trainer stats)",
+      "Implement fallback strategies for missing feature data"
+    ],
+    "files_to_modify": [
+      "tools/ml_training/container_ai_selections.py"
+    ],
+    "status": "PENDING",
+    "created": "2025-08-24T13:05:00",
+    "current_behavior": "Fails completely if any race data is missing or malformed",
+    "reliability_improvement": "Enable partial success scenarios and detailed error reporting"
+  },
+  {
+    "id": 20,
+    "title": "Implement Ensemble Model Predictions in AI Selections",
+    "description": "Currently only uses LogisticRegression model, should combine predictions from multiple trained models",
+    "priority": "HIGH",
+    "category": "ML Enhancement",
+    "estimated_time": "4 hours",
+    "solution_steps": [
+      "Modify container_ai_selections.py to train all 4 models (LogisticRegression, RandomForest, GradientBoosting, NeuralNetwork)",
+      "Implement weighted ensemble predictions based on individual model AUC scores",
+      "Add ensemble confidence scoring based on model agreement",
+      "Create model-specific prediction columns in database",
+      "Implement ensemble selection strategy (weighted average, voting, stacking)",
+      "Add ensemble performance tracking and comparison"
+    ],
+    "files_to_modify": [
+      "tools/ml_training/container_ai_selections.py",
+      "database schema (add individual model prediction columns)"
+    ],
+    "status": "PENDING",
+    "created": "2025-08-24T13:05:00",
+    "expected_improvement": "Ensemble methods typically improve prediction accuracy by 5-15% over single model",
+    "current_limitation": "Only using LogisticRegression (AUC 0.7163), ignoring other trained models"
+  },
+  {
+    "id": 21,
+    "title": "Performance Tracker Duplicate Implementation Resolution",
+    "description": "Two similar performance tracking files created (ai_selections_performance_tracker.py and ai_performance_tracker.py) causing code duplication and maintenance issues",
+    "priority": "MEDIUM",
+    "category": "Code Quality",
+    "estimated_time": "2 hours",
+    "solution_steps": [
+      "Compare functionality between ai_selections_performance_tracker.py and ai_performance_tracker.py",
+      "Identify best features from each implementation",
+      "Consolidate into single optimized performance tracking system",
+      "Remove duplicate file and update documentation",
+      "Test consolidated implementation with existing data",
+      "Update usage instructions in documentation"
+    ],
+    "files_to_modify": [
+      "tools/ml_training/ai_selections_performance_tracker.py",
+      "tools/ml_training/ai_performance_tracker.py"
+    ],
+    "status": "PENDING",
+    "created": "2025-08-24T16:00:00",
+    "code_duplication": true,
+    "maintenance_impact": "Two similar files create confusion and maintenance overhead"
+  },
+  {
+    "id": 22,
+    "title": "Race Results Upload Integration for Performance Analysis",
+    "description": "August 22nd results not yet uploaded to results_horse_racing_db, preventing completion of AI selections performance analysis",
+    "priority": "HIGH",
+    "category": "Data Integration",
+    "estimated_time": "3 hours",
+    "solution_steps": [
+      "Investigate current race results upload process and pipeline",
+      "Identify why August 22nd results are not in results_horse_racing_db.records",
+      "Fix results upload process to ensure timely data availability",
+      "Verify results data format matches performance tracker expectations",
+      "Run complete performance analysis once results are available",
+      "Set up automated results upload monitoring"
+    ],
+    "files_to_modify": [
+      "results upload pipeline",
+      "tools/ml_training/ai_selections_performance_tracker.py"
+    ],
+    "status": "PENDING",
+    "created": "2025-08-24T16:00:00",
+    "blocking_issue": true,
+    "current_status": "47 races scheduled, 0 results in database for 2025-08-22"
+  },
+  {
+    "id": 23,
+    "title": "Model Persistence Production Implementation",
+    "description": "Models rebuild on each execution (0.5s overhead) due to container filesystem constraints, should implement persistent storage",
+    "priority": "HIGH",
+    "category": "Performance",
+    "estimated_time": "4 hours",
+    "solution_steps": [
+      "Design model storage strategy (database BLOBs vs mounted volume vs object storage)",
+      "Implement model serialization with versioning and metadata",
+      "Create model loading logic with validation and fallback to rebuild",
+      "Add model cache validation based on training data changes",
+      "Implement model performance monitoring and auto-retraining triggers",
+      "Update container_ai_selections.py to use persisted models when available"
+    ],
+    "files_to_modify": [
+      "tools/ml_training/container_ai_selections.py",
+      "tools/ml_training/container_ml_trainer.py",
+      "database schema (model storage tables)"
+    ],
+    "status": "PENDING",
+    "created": "2025-08-24T16:00:00",
+    "performance_optimization": "Reduce model loading from 0.5s rebuild to 0.1s loading time",
+    "current_workaround": "Model rebuild strategy works but suboptimal for production"
+  },
+  {
+    "id": 24,
+    "title": "Ensemble Model Integration for Better Predictions",
+    "description": "Currently only using LogisticRegression despite training 4 models (LogisticRegression, RandomForest, GradientBoosting, NeuralNetwork)",
+    "priority": "HIGH",
+    "category": "ML Enhancement",
+    "estimated_time": "4 hours",
+    "solution_steps": [
+      "Modify container_ai_selections.py to use all 4 trained models",
+      "Implement weighted ensemble predictions based on individual model AUC scores",
+      "Add ensemble confidence scoring based on model agreement levels",
+      "Create model-specific prediction columns in ai_selections table",
+      "Implement ensemble selection strategies (weighted average, voting, stacking)",
+      "Add ensemble performance tracking and comparison metrics"
+    ],
+    "files_to_modify": [
+      "tools/ml_training/container_ai_selections.py",
+      "database schema (ai_selections table - add model columns)"
+    ],
+    "status": "PENDING",
+    "created": "2025-08-24T16:00:00",
+    "expected_improvement": "Ensemble methods typically improve prediction accuracy by 5-15% over single model",
+    "current_models_available": "LogisticRegression (0.7163), RandomForest (0.6894), GradientBoosting (0.6745), NeuralNetwork (0.6234)"
+  },
+  {
+    "id": 25,
+    "title": "Pandas FutureWarning Compatibility Updates",
+    "description": "Multiple FutureWarnings in container_ai_selections.py about downcasting object dtype arrays on fillna operations",
+    "priority": "MEDIUM",
+    "category": "Code Quality",
+    "estimated_time": "1 hour",
+    "solution_steps": [
+      "Update all fillna operations to use .infer_objects(copy=False) as recommended",
+      "Set pd.set_option('future.no_silent_downcasting', True) for future compatibility",
+      "Test all feature engineering functions after pandas compatibility changes",
+      "Verify no functionality is broken after warning fixes",
+      "Add type hints and improve data type handling clarity"
+    ],
+    "files_to_modify": [
+      "tools/ml_training/container_ai_selections.py"
+    ],
+    "status": "PENDING",
+    "created": "2025-08-24T16:00:00",
+    "technical_debt": true,
+    "warning_details": "FutureWarning: Downcasting object dtype arrays on .fillna, .ffill, .bfill is deprecated"
+  },
+  {
+    "id": 26,
+    "title": "Database Connection Pooling Optimization",
+    "description": "Multiple short-lived database connections create overhead (~100ms per operation), should implement connection pooling",
+    "priority": "LOW",
+    "category": "Performance",
+    "estimated_time": "2 hours",
+    "solution_steps": [
+      "Implement database connection pooling for postgres connections",
+      "Reuse connections across training data loading and prediction storage operations",
+      "Add connection retry logic with exponential backoff for reliability",
+      "Implement proper connection cleanup and comprehensive error handling",
+      "Monitor connection usage patterns and optimize pool size configuration",
+      "Add database connection health checks and monitoring"
+    ],
+    "files_to_modify": [
+      "tools/ml_training/container_ai_selections.py",
+      "tools/ml_training/ai_selections_performance_tracker.py"
+    ],
+    "status": "PENDING",
+    "created": "2025-08-24T16:00:00",
+    "performance_impact": "Reduce database connection overhead from ~100ms to ~10ms per operation",
+    "current_implementation": "Creates new psycopg2 connection for each database operation"
+  },
+  {
+    "id": 27,
+    "title": "Implement Schema Compatibility Checker for CSV Preprocessing",
+    "description": "Create pre-upload schema validation to prevent issues like AI selections 'draw' vs 'number' field mismatches and missing required fields",
+    "priority": "HIGH",
+    "category": "Data Pipeline",
+    "estimated_time": "4 hours",
+    "solution_steps": [
+      "Create SchemaCompatibilityChecker class to validate CSV schema against database/model requirements",
+      "Implement column name validation and mapping suggestions",
+      "Add data type compatibility checking with detailed error reporting",
+      "Validate required fields presence before upload",
+      "Create schema compatibility reports with actionable recommendations",
+      "Integrate checker into existing CSV processing pipeline"
+    ],
+    "files_to_modify": [
+      "tools/pipeline/schema_compatibility_checker.py",
+      "tools/pipeline/automated_cards_processor.py",
+      "config/schema_validation_rules.json"
+    ],
+    "status": "PENDING",
+    "created": "2025-08-24T22:00:00",
+    "reference_analysis": "reports/csv_preprocessing_pipeline_analysis.md",
+    "prevents_issues": [
+      "AI selections 'draw' vs 'number' field confusion",
+      "Missing required fields during model training",
+      "Data type mismatches causing silent failures"
+    ]
+  },
+  {
+    "id": 28,
+    "title": "Create Column Name Standardizer for CSV Processing",
+    "description": "Implement automated column name standardization to handle variations like draw/number, date/race_date across different data sources",
+    "priority": "HIGH",
+    "category": "Data Pipeline",
+    "estimated_time": "3 hours",
+    "solution_steps": [
+      "Create ColumnNameStandardizer class with configurable mapping rules",
+      "Implement common column name variations mapping (draw → number, date → race_date)",
+      "Add standardization logging to track all transformations applied",
+      "Integrate with existing automated_cards_processor.py",
+      "Update complete_csv_column_mapping.json with standardization rules",
+      "Test with historical data that caused AI selections issues"
+    ],
+    "files_to_modify": [
+      "tools/pipeline/column_name_standardizer.py",
+      "tools/pipeline/automated_cards_processor.py",
+      "config/complete_csv_column_mapping.json",
+      "config/column_standardization_rules.json"
+    ],
+    "status": "PENDING",
+    "created": "2025-08-24T22:00:00",
+    "reference_analysis": "reports/csv_preprocessing_pipeline_analysis.md",
+    "solves_problem": "Inconsistent column naming across data sources causing model training failures"
+  },
+  {
+    "id": 29,
+    "title": "Enhance CSV Preprocessing with Comprehensive Schema Validation",
+    "description": "Upgrade existing CSV processing tools with strict schema validation, missing field detection, and detailed error reporting",
+    "priority": "MEDIUM",
+    "category": "Data Pipeline",
+    "estimated_time": "3 hours",
+    "solution_steps": [
+      "Enhance automated_cards_processor.py with comprehensive schema validation",
+      "Add missing required field detection for model training compatibility",
+      "Implement detailed error reporting for preprocessing failures",
+      "Create data quality monitoring dashboard for preprocessing status",
+      "Add schema version control and migration support",
+      "Integrate preprocessing validation into daily pipeline workflow"
+    ],
+    "files_to_modify": [
+      "tools/pipeline/automated_cards_processor.py",
+      "tools/pipeline/enhanced_date_validation.py",
+      "tools/pipeline/comprehensive_schema_validator.py",
+      "config/preprocessing_validation_config.json"
+    ],
+    "status": "PENDING",
+    "created": "2025-08-24T22:00:00",
+    "reference_analysis": "reports/csv_preprocessing_pipeline_analysis.md",
+    "improves_existing": "70% of preprocessing capabilities exist but need better integration and validation"
+  },
+  {
+    "id": 30,
+    "title": "Standardize CSV Column Mapping Usage Across Pipeline",
+    "description": "Ensure consistent usage of complete_csv_column_mapping.json across all CSV processors to prevent schema inconsistencies",
+    "priority": "MEDIUM",
+    "category": "Data Pipeline",
+    "estimated_time": "2 hours",
+    "solution_steps": [
+      "Audit all CSV processing scripts for column mapping usage",
+      "Update csv_uploader.py to use comprehensive column mappings",
+      "Standardize enhanced_date_validation.py column detection with mapping config",
+      "Ensure race_staging_manager.py uses centralized mapping definitions",
+      "Create unified configuration loading for all processors",
+      "Add validation that all processors use same mapping source"
+    ],
+    "files_to_modify": [
+      "tools/pipeline/csv_uploader.py",
+      "tools/pipeline/enhanced_date_validation.py",
+      "tools/pipeline/race_staging_manager.py",
+      "tools/pipeline/pipeline_pre_validation.py",
+      "config/complete_csv_column_mapping.json"
+    ],
+    "status": "PENDING",
+    "created": "2025-08-24T22:00:00",
+    "reference_analysis": "reports/csv_preprocessing_pipeline_analysis.md",
+    "current_issue": "Inconsistent column mapping usage leads to preprocessing inconsistencies"
   }
 ]

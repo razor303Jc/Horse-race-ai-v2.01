@@ -139,6 +139,7 @@ config/secret_*.json
 
 # Reports and analysis outputs
 reports/
+!docs/reports/
 analysis_output/
 performance_reports/
 

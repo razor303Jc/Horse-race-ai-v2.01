@@ -14,11 +14,23 @@ import shutil
 import logging
 import json
 import pandas as pd
+import sys
 from pathlib import Path
 from datetime import datetime, timedelta, time
 from typing import Optional, Dict, Any, Set
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
+
+# Add project root to path for imports
+project_root = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(project_root))
+
+# Import CSV backup integration
+try:
+    from tools.pipeline.csv_backup_integration import CSVBackupIntegrator
+except ImportError as e:
+    logging.warning(f"CSV backup integration not available: {e}")
+    CSVBackupIntegrator = None
 
 # Set up logging
 log_file = "/home/jc/Documents/Horse-race-ai-v2.04/logs/daily_file_watcher.log"
@@ -43,6 +55,15 @@ class DailyRacingFileWatcher(FileSystemEventHandler):
 
         # Create directories
         self.create_directories()
+
+        # Initialize CSV backup integration
+        self.backup_integrator = None
+        if CSVBackupIntegrator:
+            try:
+                self.backup_integrator = CSVBackupIntegrator(str(self.base_path))
+                logger.info("✅ CSV backup integration initialized")
+            except Exception as e:
+                logger.warning(f"⚠️ CSV backup integration failed: {e}")
 
         # Daily tracking state - load first
         self.state = self.load_watcher_state()
@@ -194,6 +215,29 @@ class DailyRacingFileWatcher(FileSystemEventHandler):
                 logger.warning(
                     f"⚠️ File doesn't match target date {self.current_target_date}: {zip_path.name}"
                 )
+
+                # Enhanced user warning with specific instructions
+                file_type = self.determine_file_type(zip_path)
+                expected_name = self.get_expected_filename(file_type)
+
+                print("\n" + "=" * 80)
+                print("🚨 FILE NAME MISMATCH WARNING")
+                print("=" * 80)
+                print(f"📁 Received file: {zip_path.name}")
+                print(f"📅 Target date: {self.current_target_date}")
+                print(f"🎯 Expected name: {expected_name}")
+                print(f"📝 File type detected: {file_type}")
+                print()
+                print("💡 TO FIX THIS:")
+                print(f"   1. Rename your file to: {expected_name}")
+                print(f"   2. Place it in: {self.watch_dir}")
+                print("   3. The system will automatically detect and process it")
+                print()
+                print(
+                    "📂 This file has been moved to: data/daily_downloads/processed/non_target/"
+                )
+                print("=" * 80)
+
                 # Archive the file but don't process it
                 await self.archive_non_target_file(zip_path)
                 return
@@ -255,12 +299,38 @@ class DailyRacingFileWatcher(FileSystemEventHandler):
         else:
             return "unknown"
 
+    def get_expected_filename(self, file_type: str) -> str:
+        """Get the expected filename for a given file type and current target date"""
+        if file_type == "cards":
+            return f"racecards_{self.current_target_date}.zip"
+        elif file_type == "results":
+            return f"results_{self.current_target_date}.zip"
+        else:
+            return f"unknown_{self.current_target_date}.zip"
+
     async def extract_daily_race_cards(self, zip_path: Path) -> bool:
         """Extract race cards for current target date"""
         try:
             logger.info(
                 f"📋 Extracting cards for {self.current_target_date}: {zip_path.name}"
             )
+
+            # Create CSV backup first (if backup integration is available)
+            if self.backup_integrator:
+                try:
+                    backup_result = self.backup_integrator.process_download_with_backup(
+                        zip_path, "cards", self.current_target_date, automated=True
+                    )
+                    if backup_result.get("success", False):
+                        logger.info(
+                            f"✅ CSV backup created: {backup_result.get('backup_result', {}).get('archive_name', 'Unknown')}"
+                        )
+                    else:
+                        logger.warning(
+                            f"⚠️ CSV backup failed: {backup_result.get('errors', [])}"
+                        )
+                except Exception as e:
+                    logger.warning(f"⚠️ CSV backup integration error: {e}")
 
             # Create date-specific directory
             target_cards_dir = self.cards_dir / self.current_target_date
@@ -291,6 +361,24 @@ class DailyRacingFileWatcher(FileSystemEventHandler):
             logger.info(
                 f"🏁 Extracting results for {self.current_target_date}: {zip_path.name}"
             )
+
+            # Create CSV backup first (if backup integration is available)
+            if self.backup_integrator:
+                try:
+                    backup_result = self.backup_integrator.process_download_with_backup(
+                        zip_path, "results", self.current_target_date, automated=True
+                    )
+                    if backup_result.get("success", False):
+                        archive_name = backup_result.get("backup_result", {}).get(
+                            "archive_name", "Unknown"
+                        )
+                        logger.info(f"✅ CSV backup created: {archive_name}")
+                    else:
+                        logger.warning(
+                            f"⚠️ CSV backup failed: {backup_result.get('errors', [])}"
+                        )
+                except Exception as e:
+                    logger.warning(f"⚠️ CSV backup integration error: {e}")
 
             # Create date-specific directory
             target_results_dir = self.results_dir / self.current_target_date
