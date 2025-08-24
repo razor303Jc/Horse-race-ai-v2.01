@@ -49,14 +49,14 @@ def enhanced_ai_selections():
             # Get unique horses for this race
             cursor.execute(
                 """
-                SELECT DISTINCT ON (rd.horse_name, rd.jockey)
-                       rd.horse_name, rd.jockey, rd.trainer,
-                       COALESCE(rd.odds, 6.0) as odds,
+                SELECT DISTINCT ON (rd.name, rd.jockey)
+                       rd.name as horse_name, rd.jockey, rd.trainer,
+                       COALESCE(rd.odds_decimal, 6.0) as odds,
                        COALESCE(rd.age, 4) as age,
                        rd.weight
                 FROM racecard_details rd
                 WHERE rd.race_id = %s
-                ORDER BY rd.horse_name, rd.jockey, rd.number
+                ORDER BY rd.name, rd.jockey, rd.horse_number
             """,
                 (race_id,),
             )

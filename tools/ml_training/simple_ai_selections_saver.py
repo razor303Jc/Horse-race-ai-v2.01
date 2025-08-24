@@ -22,7 +22,7 @@ class SimpleAISelectionsSaver:
         """Initialize the saver"""
         self.setup_logging()
         self.db_config = {
-            "host": "localhost",
+            "host": "postgres",
             "database": "cards_horse_racing_db",
             "user": "horse_racing",
             "password": "secure_password_123",
@@ -80,11 +80,11 @@ class SimpleAISelectionsSaver:
                 horse_query = """
                     SELECT 
                         rd.race_id,
-                        rd.horse_name,
+                        rd.name as horse_name,
                         rd.jockey,
                         rd.trainer,
                         rd.odds_decimal,
-                        rd.odds_fractional,
+                        rd.odds as odds_fractional,
                         rd.age,
                         rd.weight
                     FROM racecard_details rd

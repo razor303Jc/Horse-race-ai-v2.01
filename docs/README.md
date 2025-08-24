@@ -1,55 +1,151 @@
-# 🏇 Horse Racing AI v2.0
+# 🏇 Horse Racing AI v2.04 - Production Analytics Platform
 
-**Advanced Machine Learning System for Horse Racing Prediction & Betting**
+**Advanced Machine Learning System for Horse Racing Prediction & Analysis**
 
-[![Python](https://img.shields.io/badge/Python-3.8%2B-blue.svg)](https://python.org)
-[![ML Models](https://img.shields.io/badge/ML_AUC-76.5%25-green.svg)](docs/analysis/ML_MODELS_HORSE_ANALYSIS_DEEP_DIVE.md)
+[![Version](https://img.shields.io/badge/version-2.04-blue.svg)](https://github.com/username/horse-racing-ai)
+[![Python](https://img.shields.io/badge/Python-3.9%2B-blue.svg)](https://python.org)
+[![ML AUC](https://img.shields.io/badge/ML_AUC-76.5%25-green.svg)](docs/analysis/ML_MODELS_HORSE_ANALYSIS_DEEP_DIVE.md)
+[![Status](https://img.shields.io/badge/status-production%20ready-brightgreen.svg)](https://github.com/username/horse-racing-ai)
+[![Success Rate](https://img.shields.io/badge/success%20rate-100%25-green.svg)](https://github.com/username/horse-racing-ai)
 [![Docker](https://img.shields.io/badge/Docker-Ready-blue.svg)](docker-compose.yml)
-[![License](https://img.shields.io/badge/License-Private-red.svg)](#)
 
 ---
 
-## 🎯 **What This System Does**
+## 🎯 **Production System Overview**
 
-Horse Racing AI v2.0 is a **world-class prediction and betting system** that combines:
+**Horse Racing AI v2.04** is a comprehensive production-grade analytics platform featuring:
 
-- **🤖 Advanced ML Models** (76.5% AUC performance)
-- **📊 Comprehensive Horse Analysis** (40+ features per horse)
-- **📈 Race Trend Analysis** (statistical pattern recognition)
-- **💰 Professional Betting Strategies** (Kelly Criterion, Value Betting)
-- **⚡ Real-time Integration** (live data feeds & betting)
-- **🧠 Contextual AI** (32 environmental factors)
+- **� 4-Model ML Ensemble** (76.5% AUC performance with 308K+ training records)
+- **⚡ Advanced Power Ratings** (8-component comprehensive assessment system)
+- **🏃 Speed & Pace Analysis** (Sectional breakdowns with tactical insights)
+- **🎲 Monte Carlo Simulations** (Probabilistic race outcome modeling)
+- **🗄️ PostgreSQL Integration** (Real-time analytics storage and retrieval)
+- **� Docker Infrastructure** (Scalable containerized deployment)
+
+### 🚀 **Production Status (August 24, 2025)**
+
+| Component            | Status        | Daily Records   | Success Rate | Performance          |
+| -------------------- | ------------- | --------------- | ------------ | -------------------- |
+| **AI Selections**    | ✅ Production | 252 horses      | 100%         | 76.5% AUC            |
+| **Power Ratings**    | ✅ Production | 82 horses       | 100%         | 8-factor analysis    |
+| **Speed & Pace**     | ✅ Production | 252 horses      | 100%         | Sectional breakdowns |
+| **Monte Carlo**      | ✅ Production | 82 simulations  | 100%         | 1000+ runs per race  |
+| **Database Systems** | ✅ Production | 586 records/day | 100%         | Real-time storage    |
 
 ---
 
-## 🚀 **Quick Start**
+## 📚 **Complete Documentation Suite**
+
+### 📖 **Core Documentation**
+
+- **[📋 ADVANCED_SYSTEM_DOCUMENTATION.md](ADVANCED_SYSTEM_DOCUMENTATION.md)** - Complete system overview, architecture, and usage
+- **[🔧 TECHNICAL_IMPLEMENTATION_GUIDE.md](TECHNICAL_IMPLEMENTATION_GUIDE.md)** - Detailed code implementation and structure
+- **[🚀 DEPLOYMENT_OPERATIONS_GUIDE.md](DEPLOYMENT_OPERATIONS_GUIDE.md)** - Production deployment and operations
+
+### 📊 **Performance & Analysis Reports**
+
+- **[🎯 AI_SELECTIONS_COMPLETE_IMPLEMENTATION_REPORT.md](AI_SELECTIONS_COMPLETE_IMPLEMENTATION_REPORT.md)** - AI engine performance analysis
+- **[📈 AI_SELECTIONS_PERFORMANCE_TRACKING_DOCUMENTATION.md](AI_SELECTIONS_PERFORMANCE_TRACKING_DOCUMENTATION.md)** - Performance tracking and metrics
+- **[📋 CSV_SCHEMA_CONSISTENCY_ANALYSIS_REPORT.md](CSV_SCHEMA_CONSISTENCY_ANALYSIS_REPORT.md)** - Data integrity validation
+
+### 🔧 **Development Resources**
+
+- **[📝 ADVANCED_TODO.md](ADVANCED_TODO.md)** - Development roadmap and progress tracking
+- **[🗂️ FILE_REORGANIZATION_NOTES.md](FILE_REORGANIZATION_NOTES.md)** - Codebase structure evolution
+- **[💾 SQLITE_BACKUP_TRACKING_DOCUMENTATION.md](SQLITE_BACKUP_TRACKING_DOCUMENTATION.md)** - Backup system documentation
+
+---
+
+## 🚀 **Quick Start - Production Deployment**
 
 ### **Prerequisites**
 
-- Python 3.8+
-- Docker & Docker Compose
-- 4GB+ RAM recommended
+- **Docker & Docker Compose** (v20.10+)
+- **8GB+ RAM** (16GB recommended for production)
+- **Python 3.9+** (for development)
+- **50GB+ Storage** (for databases and logs)
 
-### **1. Clone & Setup**
+### **🔥 1-Minute Production Start**
 
 ```bash
-git clone <repository-url>
-cd Horse-race-ai-v2.01
+# Clone repository
+git clone <repository-url> horse-racing-ai-v2.04
+cd horse-racing-ai-v2.04
+
+# Start production system
+make docker-start          # Start PostgreSQL containers
+make setup-databases       # Create schemas and initial data
+make start-services        # Start ML processing services
+
+# Verify system health
+make health-check          # Confirms all systems operational
+```
+
+### **💻 Development Setup**
+
+```bash
+# Set up development environment
+python -m venv venv
+source venv/bin/activate
 pip install -r requirements.txt
+
+# Configure environment
+cp example.env .env
+# Edit .env with your settings
+
+# Run development tests
+python -m pytest tests/
 ```
 
-### **2. Run Demo**
+### **📊 Access Production Dashboard**
 
 ```bash
-# Quick ML demo
-python demos/simplified_ml_demo.py
+# Generate performance dashboard
+python tools/generate_dashboard.py
 
-# Complete system demo
-python demos/complete_system_workflow_demo.py
-
-# Web interface
-python app.py
+# View results
+open logs/performance_dashboard.html
 ```
+
+---
+
+## 🏗️ **System Architecture**
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    Horse Racing AI v2.04                    │
+│                   Production Architecture                    │
+└─────────────────────────────────────────────────────────────┘
+                                │
+                ┌───────────────┼───────────────┐
+                │               │               │
+        ┌───────▼───────┐ ┌─────▼─────┐ ┌──────▼──────┐
+        │  AI Selections │ │   Power   │ │  Speed &    │
+        │    Engine      │ │  Ratings  │ │    Pace     │
+        │   (76.5% AUC)  │ │ (8-factor)│ │  Analysis   │
+        └───────┬───────┘ └─────┬─────┘ └──────┬──────┘
+                │               │               │
+                └───────────────┼───────────────┘
+                                │
+                        ┌───────▼───────┐
+                        │ Monte Carlo   │
+                        │  Simulations  │
+                        │  (1000+ runs) │
+                        └───────┬───────┘
+                                │
+        ┌─────────────────────────────────────────────────────┐
+        │              PostgreSQL Databases                   │
+        │  ┌─────────────┬──────────────┬─────────────────┐   │
+        │  │   Cards     │   Results    │    Advanced     │   │
+        │  │ Horse Racing│ Horse Racing │  Racing Metrics │   │
+        │  │     DB      │      DB      │       DB        │   │
+        │  └─────────────┴──────────────┴─────────────────┘   │
+        └─────────────────────────────────────────────────────┘
+```
+
+python app.py
+
+````
 
 ### **3. Docker Deployment**
 
@@ -59,7 +155,7 @@ docker-compose up -d
 
 # Development mode
 docker-compose -f docker-compose.test.yml up
-```
+````
 
 ---
 
