@@ -56,4 +56,4 @@ configparser>=5.2.0
 
 # System Integration
 pathlib2>=2.3.6
-importlib-util>=0.1.0
+importlib-metadata>=4.0.0

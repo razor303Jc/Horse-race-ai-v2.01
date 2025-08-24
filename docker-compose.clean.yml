@@ -442,20 +442,26 @@ services:
     image: dpage/pgadmin4:latest
     container_name: horse_racing_pgadmin
     environment:
-      PGADMIN_DEFAULT_EMAIL: admin@horseracing.local
+      PGADMIN_DEFAULT_EMAIL: admin@horseracing.com
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-admin_password_123}
       PGADMIN_LISTEN_PORT: 80
     volumes:
       - pgadmin_data:/var/lib/pgadmin
+    # Expose on port 8083 (unused) as alternative to Traefik
     ports:
-      - "8081:80"
+      - "8083:80"
     depends_on:
       - postgres
     networks:
       - horse_racing_network
+      - traefik-dev  # Connect to Traefik network
     restart: unless-stopped
-    profiles:
-      - admin
+    labels:
+      # Traefik configuration
+      - "traefik.enable=true"
+      - "traefik.http.routers.pgadmin.rule=Host(`pgadmin.horserace.local`)"
+      - "traefik.http.routers.pgadmin.service=pgadmin"
+      - "traefik.http.services.pgadmin.loadbalancer.server.port=80"
 
   # Notification Service
   ntfy:
