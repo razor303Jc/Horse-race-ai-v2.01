@@ -56,6 +56,8 @@ class EnhancedAISelectionsGenerator:
         self.feature_columns = []
         self.enhanced_feature_columns = []
         self.trained = False
+        # Initialize form analysis
+        self.initialize_form_analyzer()
         self.feature_importance = {}
 
     def connect_database(self, database="results_horse_racing_db"):
@@ -229,6 +231,8 @@ class EnhancedAISelectionsGenerator:
         # Load enriched features
         df_enhanced = self.load_enriched_features(df_base)
 
+        # Enhance with form analysis
+        df = self.enhance_features_with_form(df)
         return df_enhanced
 
     def load_enriched_features(self, df_base):
@@ -302,6 +306,8 @@ class EnhancedAISelectionsGenerator:
             f"✅ Enhanced dataset: {len(df_enhanced)} records with 30+ features"
         )
 
+        # Enhance with form analysis
+        df = self.enhance_features_with_form(df)
         return df_enhanced
 
     def engineer_enhanced_features(self, df):
@@ -709,6 +715,87 @@ class EnhancedAISelectionsGenerator:
         logger.info(
             "📄 Enhanced model summary saved to reports/enhanced_ai_models_summary.md"
         )
+
+
+
+    def initialize_form_analyzer(self):
+        """Initialize form analysis integration"""
+        try:
+            from tools.ml_training.simple_form_analyzer import FormAnalyzer
+            self.form_analyzer = FormAnalyzer()
+            logger.info("✅ Form analyzer initialized successfully")
+            return True
+        except Exception as e:
+            logger.warning(f"⚠️ Form analyzer initialization failed: {e}")
+            self.form_analyzer = None
+            return False
+    
+    def get_horse_form_metrics(self, horse_id, horse_name, race_id):
+        """Get form analysis metrics for a horse"""
+        if not hasattr(self, 'form_analyzer') or self.form_analyzer is None:
+            return {
+                'form_score': 50.0,
+                'form_trend_score': 0.0,
+                'form_confidence': 0.5,
+                'consistency_rating': 50.0,
+                'form_trend': 'stable'
+            }
+        
+        try:
+            form_result = self.form_analyzer.analyze_horse_form(horse_id, horse_name, race_id)
+            return {
+                'form_score': form_result.recent_form_score,
+                'form_trend_score': form_result.form_trend_score,
+                'form_confidence': form_result.form_confidence,
+                'consistency_rating': form_result.consistency_rating,
+                'form_trend': form_result.form_trend
+            }
+        except Exception as e:
+            logger.warning(f"⚠️ Form analysis failed for {horse_name}: {e}")
+            return {
+                'form_score': 50.0,
+                'form_trend_score': 0.0,
+                'form_confidence': 0.5,
+                'consistency_rating': 50.0,
+                'form_trend': 'stable'
+            }
+    
+    def enhance_features_with_form(self, features_df):
+        """Enhance feature set with form analysis"""
+        if features_df.empty:
+            return features_df
+        
+        logger.info("🔄 Enhancing features with form analysis...")
+        
+        # Add form analysis columns
+        form_columns = ['form_score', 'form_trend_score', 'form_confidence', 
+                       'consistency_rating']
+        
+        for col in form_columns:
+            if col not in features_df.columns:
+                features_df[col] = 50.0  # Default neutral values
+        
+        # Process each horse if horse_id is available
+        if 'horse_id' in features_df.columns and 'race_id' in features_df.columns:
+            total_horses = len(features_df)
+            for idx, row in features_df.iterrows():
+                if (idx + 1) % 10 == 0:
+                    print(f"  Processing form analysis {idx + 1}/{total_horses}...")
+                
+                horse_id = row.get('horse_id')
+                horse_name = row.get('horse_name', f'Horse_{horse_id}')
+                race_id = row.get('race_id')
+                
+                if horse_id and race_id:
+                    form_metrics = self.get_horse_form_metrics(horse_id, horse_name, race_id)
+                    
+                    # Update dataframe with form metrics
+                    for metric, value in form_metrics.items():
+                        if metric in form_columns:
+                            features_df.loc[idx, metric] = value
+        
+        logger.info(f"✅ Form analysis integrated for {len(features_df)} horses")
+        return features_df
 
 
 def main():
