@@ -59,57 +59,24 @@ class EnhancedAISelectionsGenerator:
         self.feature_importance = {}
 
     def connect_database(self, database="results_horse_racing_db"):
-        """Establish database connection via Docker"""
-        # Use Docker exec approach for better container networking
-        return self.execute_docker_query(database, "SELECT 1;")  # Test connection
-
-    def execute_docker_query(self, database: str, query: str):
-        """Execute SQL query via Docker"""
-        try:
-            import subprocess
-
-            cmd = [
-                "docker",
-                "exec",
-                "horse_racing_postgres_clean",
-                "psql",
-                "-U",
-                "horse_racing",
-                "-d",
-                database,
-                "-t",
-                "-A",
-                "-F",
-                "|",
-                "-c",
-                query,
-            ]
-
-            result = subprocess.run(cmd, capture_output=True, text=True, timeout=60)
-
-            if result.returncode != 0:
-                logger.error(f"Query failed: {result.stderr}")
-                return None
-
-            lines = result.stdout.strip().split("\n")
-            data = []
-            for line in lines:
-                if line and "|" in line:
-                    values = line.split("|")
-                    data.append(values)
-
-            return data
-
-        except Exception as e:
-            logger.error(f"Query execution failed: {e}")
-            return None
+        """Establish database connection"""
+        return psycopg2.connect(
+            host="localhost",
+            port="5432",
+            database=database,
+            user="horse_racing",
+            password=os.getenv("POSTGRES_PASSWORD", "secure_password_123"),
+        )
 
     def connect_enriched_database(self):
-        """Connect to enriched analytics database via Docker"""
-        # Use Docker exec approach for better container networking
-        return self.execute_docker_query(
-            "advanced_racing_metrics_db", "SELECT 1;"
-        )  # Test connection
+        """Connect to enriched analytics database"""
+        return psycopg2.connect(
+            host="localhost",
+            port="5432",
+            database="advanced_racing_metrics_db",
+            user="horse_racing",
+            password=os.getenv("POSTGRES_PASSWORD", "secure_password_123"),
+        )
 
     def load_enhanced_training_data(self):
         """Load training data with all 30+ enriched features"""
@@ -119,7 +86,7 @@ class EnhancedAISelectionsGenerator:
         base_query = """
         SELECT 
             rec.race_id,
-            h.horse_name,
+            rec.horse_name,
             rec.jockey,
             rec.trainer,
             rec.place as position,
@@ -141,7 +108,6 @@ class EnhancedAISelectionsGenerator:
             COALESCE(ts.place_rate, 0.0) as trainer_place_pct
         FROM records rec
         JOIN races r ON r.race_id = rec.race_id
-        JOIN horses h ON h.horse_id = rec.horse_id
         LEFT JOIN jockeys_stats js ON rec.jockey_id = js.jockey_id
         LEFT JOIN trainers_stats ts ON rec.trainer_id = ts.trainer_id
         WHERE rec.place IS NOT NULL
@@ -152,75 +118,9 @@ class EnhancedAISelectionsGenerator:
         ORDER BY rec.race_id, CAST(rec.sp AS FLOAT)
         """
 
-        # Execute query via Docker
-        raw_data = self.execute_docker_query("results_horse_racing_db", base_query)
-
-        if not raw_data:
-            logger.error("❌ No base training data loaded")
-            return pd.DataFrame()
-
-        # Convert to DataFrame
-        columns = [
-            "race_id",
-            "horse_name",
-            "jockey",
-            "trainer",
-            "position",
-            "horse_id",
-            "jockey_id",
-            "trainer_id",
-            "odds_decimal",
-            "implied_probability",
-            "log_odds",
-            "horse_weight_kg",
-            "horse_age",
-            "field_size",
-            "odds_rank",
-            "is_favorite",
-            "jockey_win_pct",
-            "jockey_place_pct",
-            "trainer_win_pct",
-            "trainer_place_pct",
-        ]
-
-        data_list = []
-        for row in raw_data:
-            if len(row) >= len(columns):
-                try:
-                    data_dict = {}
-                    for i, col in enumerate(columns):
-                        if col in [
-                            "race_id",
-                            "horse_id",
-                            "jockey_id",
-                            "trainer_id",
-                            "position",
-                            "horse_age",
-                            "field_size",
-                            "odds_rank",
-                            "is_favorite",
-                        ]:
-                            data_dict[col] = (
-                                int(float(row[i])) if row[i] and row[i].strip() else 0
-                            )
-                        else:
-                            data_dict[col] = (
-                                float(row[i])
-                                if row[i]
-                                and row[i].strip()
-                                and col not in ["horse_name", "jockey", "trainer"]
-                                else (
-                                    row[i]
-                                    if col in ["horse_name", "jockey", "trainer"]
-                                    else 0.0
-                                )
-                            )
-                    data_list.append(data_dict)
-                except (ValueError, TypeError) as e:
-                    logger.warning(f"Error parsing row: {e}")
-                    continue
-
-        df_base = pd.DataFrame(data_list)
+        conn = self.connect_database()
+        df_base = pd.read_sql_query(base_query, conn)
+        conn.close()
 
         logger.info(
             f"📊 Loaded {len(df_base)} base records from {df_base['race_id'].nunique()} races"
