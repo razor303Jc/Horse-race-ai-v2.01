@@ -19,22 +19,25 @@ logger = logging.getLogger(__name__)
 
 class FormIntegrationPatch:
     """Patches the main AI selections generator with form analysis"""
-    
+
     def __init__(self):
-        self.ai_selections_path = "/home/jc/Documents/Horse-race-ai-v2.04/src/ai_selections.py"
+        self.ai_selections_path = (
+            "/home/jc/Documents/Horse-race-ai-v2.04/src/ai_selections.py"
+        )
         self.backup_path = self.ai_selections_path + ".backup"
-        
+
     def create_backup(self):
         """Create backup of original file"""
         try:
             import shutil
+
             shutil.copy2(self.ai_selections_path, self.backup_path)
             print(f"✅ Backup created: {self.backup_path}")
             return True
         except Exception as e:
             print(f"❌ Backup failed: {e}")
             return False
-    
+
     def get_form_integration_code(self):
         """Get the form analysis integration code"""
         return '''
@@ -117,35 +120,37 @@ class FormIntegrationPatch:
         logger.info(f"✅ Form analysis integrated for {len(features_df)} horses")
         return features_df
 '''
-    
+
     def apply_form_integration(self):
         """Apply form integration to AI selections"""
         try:
             # Read current file
-            with open(self.ai_selections_path, 'r') as f:
+            with open(self.ai_selections_path, "r") as f:
                 content = f.read()
-            
+
             # Find the __init__ method and add form analyzer initialization
             init_pattern = "def __init__(self):"
             init_replacement = """def __init__(self):"""
-            
+
             if init_pattern in content:
                 # Add form analyzer initialization after existing __init__ setup
                 init_pos = content.find("self.trained = False")
                 if init_pos != -1:
                     end_pos = content.find("\n", init_pos)
-                    content = (content[:end_pos] + 
-                             "\n        # Initialize form analysis\n" +
-                             "        self.initialize_form_analyzer()" +
-                             content[end_pos:])
-            
+                    content = (
+                        content[:end_pos]
+                        + "\n        # Initialize form analysis\n"
+                        + "        self.initialize_form_analyzer()"
+                        + content[end_pos:]
+                    )
+
             # Add form integration methods before the main() function
             main_pos = content.find("def main():")
             if main_pos != -1:
                 # Insert form methods before main()
                 form_code = self.get_form_integration_code()
                 content = content[:main_pos] + form_code + "\n\n" + content[main_pos:]
-            
+
             # Enhance the load_enhanced_training_data method to include form
             if "def load_enhanced_training_data(self):" in content:
                 # Find the return statement and add form enhancement
@@ -155,52 +160,53 @@ class FormIntegrationPatch:
                         "return df",
                         """# Enhance with form analysis
         df = self.enhance_features_with_form(df)
-        return df"""
+        return df""",
                     )
-            
+
             # Write modified content
-            with open(self.ai_selections_path, 'w') as f:
+            with open(self.ai_selections_path, "w") as f:
                 f.write(content)
-            
+
             print("✅ Form integration applied successfully")
             return True
-            
+
         except Exception as e:
             print(f"❌ Form integration failed: {e}")
             return False
-    
+
     def verify_integration(self):
         """Verify the integration was successful"""
         try:
-            with open(self.ai_selections_path, 'r') as f:
+            with open(self.ai_selections_path, "r") as f:
                 content = f.read()
-            
+
             required_methods = [
                 "initialize_form_analyzer",
-                "get_horse_form_metrics", 
-                "enhance_features_with_form"
+                "get_horse_form_metrics",
+                "enhance_features_with_form",
             ]
-            
+
             missing_methods = []
             for method in required_methods:
                 if f"def {method}" not in content:
                     missing_methods.append(method)
-            
+
             if missing_methods:
                 print(f"❌ Missing methods: {missing_methods}")
                 return False
-            
+
             print("✅ Form integration verification passed")
             return True
-            
+
         except Exception as e:
             print(f"❌ Verification failed: {e}")
             return False
-    
+
     def restore_backup(self):
         """Restore from backup if something goes wrong"""
         try:
             import shutil
+
             if os.path.exists(self.backup_path):
                 shutil.copy2(self.backup_path, self.ai_selections_path)
                 print("✅ Backup restored successfully")
@@ -219,29 +225,29 @@ def main():
     print("=" * 50)
     print("Priority 1.2: Integrate Form Analysis into Main Pipeline")
     print()
-    
+
     patcher = FormIntegrationPatch()
-    
+
     # Step 1: Create backup
     print("Step 1: Creating backup...")
     if not patcher.create_backup():
         print("❌ Cannot proceed without backup")
         return 1
-    
+
     # Step 2: Apply integration
     print("\nStep 2: Applying form integration...")
     if not patcher.apply_form_integration():
         print("❌ Integration failed, restoring backup...")
         patcher.restore_backup()
         return 1
-    
+
     # Step 3: Verify integration
     print("\nStep 3: Verifying integration...")
     if not patcher.verify_integration():
         print("❌ Verification failed, restoring backup...")
         patcher.restore_backup()
         return 1
-    
+
     print("\n✅ FORM INTEGRATION COMPLETED SUCCESSFULLY!")
     print("🎯 Form analysis is now integrated into the main AI pipeline")
     print("📊 The system will now include:")
@@ -250,10 +256,10 @@ def main():
     print("   • Form confidence metrics")
     print("   • Consistency ratings")
     print("   • Enhanced prediction accuracy")
-    
+
     print(f"\n💾 Backup saved: {patcher.backup_path}")
     print("🚀 Ready for enhanced AI predictions with form analysis!")
-    
+
     return 0
 
 

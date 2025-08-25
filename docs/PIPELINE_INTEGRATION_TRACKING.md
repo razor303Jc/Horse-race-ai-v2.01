@@ -16,7 +16,7 @@
 Problem: Foreign key constraint violations blocking results upload
 Solution: tools/data_processing/fixed_results_uploader.py
 Status: ✅ COMPLETED
-Result: 
+Result:
   ├── 0 orphaned records in database
   ├── 104 races available for processing
   ├── Dependency-ordered uploads implemented

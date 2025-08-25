@@ -15,7 +15,7 @@ sys.path.append(str(project_root))
 
 from tools.data_processing.upload_results_data import (
     upload_csv_to_results_database,
-    test_connection
+    test_connection,
 )
 
 # Configure logging
@@ -48,10 +48,8 @@ def upload_results_with_dependency_order():
         ("data/daily_downloads/mapped_horses.csv", "horses"),
         ("data/daily_downloads/mapped_jockeys_stats.csv", "jockeys_stats"),
         ("data/daily_downloads/mapped_trainers_stats.csv", "trainers_stats"),
-
         # 2. Races table (referenced by records table)
         ("data/daily_downloads/mapped_races.csv", "races"),
-
         # 3. Records table (depends on races table via race_id foreign key)
         ("data/daily_downloads/mapped_records.csv", "records"),
     ]
@@ -129,18 +127,19 @@ def validate_database_state():
         cursor = conn.cursor()
 
         # Check for orphaned records (records without corresponding races)
-        cursor.execute("""
+        cursor.execute(
+            """
             SELECT COUNT(*) as orphaned_records
             FROM records r
             LEFT JOIN races ra ON r.race_id = ra.race_id
             WHERE ra.race_id IS NULL
-        """)
+        """
+        )
         orphaned_count = cursor.fetchone()[0]
 
         if orphaned_count > 0:
             logger.warning(
-                f"⚠️ Found {orphaned_count} orphaned records "
-                "(no corresponding race)"
+                f"⚠️ Found {orphaned_count} orphaned records " "(no corresponding race)"
             )
         else:
             logger.info("✅ No orphaned records found")
@@ -149,11 +148,13 @@ def validate_database_state():
         cursor.execute("SELECT COUNT(*) FROM races WHERE date >= '2025-08-22'")
         recent_races = cursor.fetchone()[0]
 
-        cursor.execute("""
+        cursor.execute(
+            """
             SELECT COUNT(*) FROM records r
             JOIN races ra ON r.race_id = ra.race_id
             WHERE ra.date >= '2025-08-22'
-        """)
+        """
+        )
         recent_records = cursor.fetchone()[0]
 
         logger.info(

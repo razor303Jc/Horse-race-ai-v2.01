@@ -22,24 +22,27 @@ logger = logging.getLogger(__name__)
 
 class PerformanceTrackingAutomator:
     """Automates performance tracking in daily operations"""
-    
+
     def __init__(self):
         self.project_root = Path("/home/jc/Documents/Horse-race-ai-v2.04")
         self.config_dir = self.project_root / "config"
         self.tools_dir = self.project_root / "tools"
-        
+
         # Performance tracking integration points
         self.integration_points = {
             "daily_watcher_config": self.config_dir / "daily_watcher_config.json",
-            "pipeline_integration_config": self.config_dir / "pipeline_integration_config.json",
-            "daily_watcher_script": self.project_root / "start_daily_watcher.sh"
+            "pipeline_integration_config": self.config_dir
+            / "pipeline_integration_config.json",
+            "daily_watcher_script": self.project_root / "start_daily_watcher.sh",
         }
-        
+
     def create_performance_tracking_stage(self):
         """Create automated performance tracking stage"""
-        
-        performance_stage_script = self.tools_dir / "automation" / "daily_performance_tracker.py"
-        
+
+        performance_stage_script = (
+            self.tools_dir / "automation" / "daily_performance_tracker.py"
+        )
+
         script_content = '''#!/usr/bin/env python3
 """
 Daily Performance Tracker for AI Selections v2.04
@@ -211,32 +214,32 @@ def main():
 if __name__ == "__main__":
     sys.exit(main())
 '''
-        
-        with open(performance_stage_script, 'w') as f:
+
+        with open(performance_stage_script, "w") as f:
             f.write(script_content)
-        
+
         # Make script executable
         os.chmod(performance_stage_script, 0o755)
-        
+
         print(f"✅ Performance tracking stage created: {performance_stage_script}")
         return performance_stage_script
-    
+
     def update_daily_watcher_config(self):
         """Update daily watcher config to include performance tracking"""
-        
+
         config_file = self.integration_points["daily_watcher_config"]
-        
+
         # Load existing config or create new
         if config_file.exists():
-            with open(config_file, 'r') as f:
+            with open(config_file, "r") as f:
                 config = json.load(f)
         else:
             config = {"daily_watcher_config": {}}
-        
+
         # Ensure daily_watcher_config structure exists
         if "daily_watcher_config" not in config:
             config["daily_watcher_config"] = {}
-        
+
         # Update pipeline integration to include performance tracking
         if "pipeline_integration" not in config["daily_watcher_config"]:
             config["daily_watcher_config"]["pipeline_integration"] = {
@@ -244,12 +247,14 @@ if __name__ == "__main__":
                 "database_upload": True,
                 "ml_retrain": False,
                 "api_update": True,
-                "web_app_notify": True
+                "web_app_notify": True,
             }
-        
+
         # Add performance tracking to pipeline integration
-        config["daily_watcher_config"]["pipeline_integration"]["performance_tracking"] = True
-        
+        config["daily_watcher_config"]["pipeline_integration"][
+            "performance_tracking"
+        ] = True
+
         # Add performance tracking stage configuration
         config["daily_watcher_config"]["performance_tracking"] = {
             "enabled": True,
@@ -258,32 +263,32 @@ if __name__ == "__main__":
             "timeout_seconds": 300,
             "required": False,  # Don't block pipeline if this fails
             "auto_run": True,
-            "save_metrics": True
+            "save_metrics": True,
         }
-        
+
         # Save updated config
-        with open(config_file, 'w') as f:
+        with open(config_file, "w") as f:
             json.dump(config, f, indent=2)
-        
+
         print(f"✅ Daily watcher config updated: {config_file}")
         return True
-    
+
     def update_pipeline_integration_config(self):
         """Update pipeline integration config for performance tracking"""
-        
+
         config_file = self.integration_points["pipeline_integration_config"]
-        
+
         # Load existing config or create new
         if config_file.exists():
-            with open(config_file, 'r') as f:
+            with open(config_file, "r") as f:
                 config = json.load(f)
         else:
             config = {}
-        
+
         # Add performance tracking stage definition
         if "stages" not in config:
             config["stages"] = {}
-        
+
         config["stages"]["performance_tracking"] = {
             "name": "Performance Tracking",
             "description": "Automated AI performance analysis and metrics tracking",
@@ -293,47 +298,51 @@ if __name__ == "__main__":
             "timeout": 300,
             "retry_count": 2,
             "required": False,
-            "outputs": [
-                "data/performance_tracking/daily_metrics_*.json"
-            ]
+            "outputs": ["data/performance_tracking/daily_metrics_*.json"],
         }
-        
+
         # Update stage execution order
         if "execution_order" not in config:
             config["execution_order"] = [
                 "data_validation",
-                "database_upload", 
+                "database_upload",
                 "relationship_analysis",
                 "ml_model_update",
                 "contextual_analysis",
-                "performance_tracking"
+                "performance_tracking",
             ]
         elif "performance_tracking" not in config["execution_order"]:
             config["execution_order"].append("performance_tracking")
-        
+
         # Save updated config
-        with open(config_file, 'w') as f:
+        with open(config_file, "w") as f:
             json.dump(config, f, indent=2)
-        
+
         print(f"✅ Pipeline integration config updated: {config_file}")
         return True
-    
+
     def test_performance_tracking(self):
         """Test the automated performance tracking"""
         print("🧪 Testing automated performance tracking...")
-        
-        performance_script = self.tools_dir / "automation" / "daily_performance_tracker.py"
-        
+
+        performance_script = (
+            self.tools_dir / "automation" / "daily_performance_tracker.py"
+        )
+
         if not performance_script.exists():
             print(f"❌ Performance script not found: {performance_script}")
             return False
-        
+
         try:
             # Test with summary option first
-            result = subprocess.run([
-                "python", str(performance_script), "--summary"
-            ], cwd=str(self.project_root), capture_output=True, text=True, timeout=60)
-            
+            result = subprocess.run(
+                ["python", str(performance_script), "--summary"],
+                cwd=str(self.project_root),
+                capture_output=True,
+                text=True,
+                timeout=60,
+            )
+
             if result.returncode == 0:
                 print("✅ Performance tracking script test passed")
                 print("📊 Summary output:")
@@ -342,56 +351,59 @@ if __name__ == "__main__":
             else:
                 print(f"❌ Performance tracking test failed: {result.stderr}")
                 return False
-                
+
         except subprocess.TimeoutExpired:
             print("⏱️ Performance tracking test timed out")
             return False
         except Exception as e:
             print(f"❌ Performance tracking test error: {e}")
             return False
-    
+
     def verify_integration(self):
         """Verify the performance tracking integration"""
         print("🔍 Verifying performance tracking integration...")
-        
+
         checks = []
-        
+
         # Check if performance script exists
-        performance_script = self.tools_dir / "automation" / "daily_performance_tracker.py"
+        performance_script = (
+            self.tools_dir / "automation" / "daily_performance_tracker.py"
+        )
         checks.append(("Performance script", performance_script.exists()))
-        
+
         # Check if daily watcher config includes performance tracking
         daily_config = self.integration_points["daily_watcher_config"]
         if daily_config.exists():
-            with open(daily_config, 'r') as f:
+            with open(daily_config, "r") as f:
                 config = json.load(f)
-            
+
             has_perf_config = (
-                "daily_watcher_config" in config and
-                "performance_tracking" in config["daily_watcher_config"]
+                "daily_watcher_config" in config
+                and "performance_tracking" in config["daily_watcher_config"]
             )
             checks.append(("Daily watcher config", has_perf_config))
         else:
             checks.append(("Daily watcher config", False))
-        
+
         # Check if pipeline config includes performance tracking
         pipeline_config = self.integration_points["pipeline_integration_config"]
         if pipeline_config.exists():
-            with open(pipeline_config, 'r') as f:
+            with open(pipeline_config, "r") as f:
                 config = json.load(f)
-            
+
             has_perf_stage = (
-                "stages" in config and
-                "performance_tracking" in config["stages"]
+                "stages" in config and "performance_tracking" in config["stages"]
             )
             checks.append(("Pipeline integration config", has_perf_stage))
         else:
             checks.append(("Pipeline integration config", False))
-        
+
         # Check if working performance trainer exists
-        trainer_script = self.project_root / "tools/training/working_performance_trainer.py"
+        trainer_script = (
+            self.project_root / "tools/training/working_performance_trainer.py"
+        )
         checks.append(("Working performance trainer", trainer_script.exists()))
-        
+
         # Display results
         all_passed = True
         for check_name, passed in checks:
@@ -399,7 +411,7 @@ if __name__ == "__main__":
             print(f"   {status} {check_name}")
             if not passed:
                 all_passed = False
-        
+
         return all_passed
 
 
@@ -409,36 +421,36 @@ def main():
     print("=" * 55)
     print("Priority 1.3: Automate Performance Tracking in Daily Operations")
     print()
-    
+
     automator = PerformanceTrackingAutomator()
-    
+
     # Step 1: Create performance tracking stage
     print("Step 1: Creating automated performance tracking stage...")
     performance_script = automator.create_performance_tracking_stage()
-    
+
     # Step 2: Update daily watcher configuration
     print("\nStep 2: Updating daily watcher configuration...")
     if not automator.update_daily_watcher_config():
         print("❌ Failed to update daily watcher config")
         return 1
-    
+
     # Step 3: Update pipeline integration configuration
     print("\nStep 3: Updating pipeline integration configuration...")
     if not automator.update_pipeline_integration_config():
         print("❌ Failed to update pipeline integration config")
         return 1
-    
+
     # Step 4: Test performance tracking
     print("\nStep 4: Testing performance tracking...")
     if not automator.test_performance_tracking():
         print("⚠️ Performance tracking test failed, but continuing...")
-    
+
     # Step 5: Verify integration
     print("\nStep 5: Verifying integration...")
     if not automator.verify_integration():
         print("❌ Integration verification failed")
         return 1
-    
+
     print("\n✅ PERFORMANCE TRACKING AUTOMATION COMPLETED!")
     print("🎯 Performance tracking is now automated in daily operations")
     print("📊 The system will now automatically:")
@@ -447,10 +459,12 @@ def main():
     print("   • Generate performance grades (A-F)")
     print("   • Save daily metrics for historical analysis")
     print("   • Provide performance summaries on demand")
-    
+
     print(f"\n🚀 Performance tracking integrated into pipeline stages!")
-    print("📈 Use 'python tools/automation/daily_performance_tracker.py --summary' for reports")
-    
+    print(
+        "📈 Use 'python tools/automation/daily_performance_tracker.py --summary' for reports"
+    )
+
     return 0
 
 
