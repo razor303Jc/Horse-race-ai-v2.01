@@ -18,7 +18,7 @@ _Last Updated: August 25, 2025_
 - **Files to Fix:** `tools/data_processing/upload_results_data_container.py`
 - **Specific Issues:**
   - ❌ horses table: "id" column not found
-  - ❌ jockeys_stats: "uptodate" vs "UptoDate" case mismatch  
+  - ❌ jockeys_stats: "uptodate" vs "UptoDate" case mismatch
   - ❌ trainers_stats: "uptodate" vs "UptoDate" case mismatch
   - ❌ records: invalid integer "-" strings need cleaning
 - **Action Required:** Fix column mappings and data cleaning immediately

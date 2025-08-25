@@ -13,14 +13,15 @@
 **File:** `tools/data_processing/upload_results_data_container.py`
 
 **Issues to Fix:**
-- ❌ horses table: "id" column not found  
+
+- ❌ horses table: "id" column not found
 - ❌ jockeys_stats: "UptoDate" vs "uptodate" case mismatch
-- ❌ trainers_stats: "UptoDate" vs "uptodate" case mismatch  
+- ❌ trainers_stats: "UptoDate" vs "uptodate" case mismatch
 - ❌ records: "-" strings in integer fields
 
 ### 2. Data Records Lost
 
-- **horses**: 574 records  
+- **horses**: 574 records
 - **jockeys_stats**: 6,605 records
 - **trainers_stats**: 4,260 records
 - **records**: 534 records
@@ -35,7 +36,7 @@
 ## ACTION PLAN
 
 1. **Fix schemas** (30 min)
-2. **Add validation** (20 min)  
+2. **Add validation** (20 min)
 3. **Re-upload data** (15 min)
 4. **Verify success** (10 min)
 
