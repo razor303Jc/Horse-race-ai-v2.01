@@ -1,6 +1,84 @@
 # 🐎 ADVANCED AI HORSE RACING SYSTEM - COMPREHENSIVE TODO LIST
 
-_Last Updated: August 23, 2025_
+_Last Updated: August 25, 2025_
+
+## 🚨 IMMEDIATE RECOMMENDED ACTIONS (PIPELINE ANALYSIS)
+
+### ⚡ Priority 1 (Today - 2-3 hours):
+
+**Status:** 🔥 URGENT - Pipeline Integration Gaps Identified  
+**Added:** August 25, 2025 - Based on comprehensive pipeline analysis
+
+#### 1.1 Fix Results Upload Database Constraints
+
+- **Issue:** Database constraint violations preventing results upload
+- **Error:** Race IDs missing from races table (race_id 183316 not found)
+- **Impact:** Results processing failing with foreign key constraints
+- **Action:** Resolve database schema dependencies for results pipeline
+- **Estimated Time:** 1 hour
+
+#### 1.2 Integrate Form Analysis into Main Pipeline
+
+- **Status:** Form analyzer working standalone, not integrated
+- **Location:** `tools/ml_training/simple_form_analyzer.py`
+- **Achievement:** Tested with 7 horses, proven functionality
+- **Action:** Connect form analysis to main AI selection pipeline
+- **Impact:** Enhanced prediction accuracy with form scoring
+- **Estimated Time:** 30 minutes
+
+#### 1.3 Automate Performance Tracking in Daily Operations
+
+- **Status:** Performance tracker available but not automated
+- **Location:** `tools/performance/race_results_tracker.py`
+- **Achievement:** +60.44% ROI demonstrated
+- **Action:** Integrate into daily automated pipeline
+- **Impact:** Continuous performance monitoring and feedback
+- **Estimated Time:** 30 minutes
+
+### 🎯 Priority 2 (This Week):
+
+#### 2.1 Implement Advanced Betting Reports Generator
+
+- **Status:** Missing component identified
+- **Features:** Daily selection summaries, ROI tracking, PDF generation
+- **Business Value:** Professional betting intelligence reports
+- **Estimated Time:** 8 hours
+
+#### 2.2 Create Performance Tracking Dashboard
+
+- **Status:** Missing component identified
+- **Features:** Real-time P&L, win rates, interactive charts
+- **Business Value:** Visual performance monitoring interface
+- **Estimated Time:** 10 hours
+
+#### 2.3 Add Jockey Performance Analysis
+
+- **Status:** Missing component identified
+- **Features:** Win rates by course/distance, jockey-trainer combinations
+- **Business Value:** Enhanced prediction factors
+- **Estimated Time:** 5 hours
+
+### 🔮 Priority 3 (Next Phase):
+
+#### 3.1 Track Specialization Models
+
+- **Features:** Course performance analysis, track bias detection
+- **Business Value:** Course-specific prediction adjustments
+- **Estimated Time:** 8 hours
+
+#### 3.2 Enhanced Monitoring and Alerting
+
+- **Features:** System health monitoring, performance alerts
+- **Business Value:** Proactive system maintenance
+- **Estimated Time:** 6 hours
+
+#### 3.3 API Endpoints Development
+
+- **Features:** REST API for external integrations
+- **Business Value:** System accessibility and third-party integration
+- **Estimated Time:** 12 hours
+
+---
 
 ## � CRITICAL: HISTORICAL DATA ENRICHMENT (JUST IDENTIFIED)
 

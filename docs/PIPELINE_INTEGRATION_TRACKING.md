@@ -446,18 +446,75 @@ PostgreSQL Databases:
 
 ## 🔍 NEXT IMMEDIATE ACTIONS
 
-### **Today's Priority:**
+### **Today's Priority (Updated August 25, 2025):**
 
-1. **⚡ INTEGRATE FORM ANALYSIS** into main pipeline (30 minutes)
-2. **⚡ INTEGRATE RESULTS TRACKING** into operations (30 minutes)
-3. **🚀 START BETTING REPORTS GENERATOR** implementation (next major task)
+#### ⚡ **CRITICAL PIPELINE FIXES (Priority 1 - Today 2-3 hours):**
+
+1. **🚨 Fix Results Upload Database Constraints** (1 hour)
+
+   - **Issue:** Race IDs missing from races table causing foreign key failures
+   - **Error:** `Key (race_id)=(183316) is not present in table "races"`
+   - **Action:** Resolve database schema dependencies for results pipeline
+   - **Files:** Results upload pipeline, database schema validation
+
+2. **🔗 Integrate Form Analysis into Main Pipeline** (30 minutes)
+
+   - **Status:** Form analyzer working standalone, not integrated
+   - **Location:** `tools/ml_training/simple_form_analyzer.py`
+   - **Achievement:** Tested with 7 horses, proven functionality
+   - **Action:** Connect form analysis to main AI selection pipeline
+   - **Impact:** Enhanced prediction accuracy with form scoring
+
+3. **⚙️ Automate Performance Tracking in Daily Operations** (30 minutes)
+   - **Status:** Performance tracker available but not automated
+   - **Location:** `tools/performance/race_results_tracker.py`
+   - **Achievement:** +60.44% ROI demonstrated
+   - **Action:** Integrate into daily automated pipeline
+   - **Impact:** Continuous performance monitoring and feedback
+
+#### 🎯 **HIGH PRIORITY IMPLEMENTATIONS (Priority 2 - This Week):**
+
+4. **📊 Implement Advanced Betting Reports Generator** (8 hours)
+
+   - **Features:** Daily selection summaries, ROI tracking, PDF generation
+   - **Business Value:** Professional betting intelligence reports
+   - **Files:** `tools/reporting/advanced_betting_reports.py`
+
+5. **📈 Create Performance Tracking Dashboard** (10 hours)
+
+   - **Features:** Real-time P&L, win rates, interactive charts
+   - **Business Value:** Visual performance monitoring interface
+   - **Files:** `tools/visualization/performance_dashboard.py`
+
+6. **🏇 Add Jockey Performance Analysis** (5 hours)
+   - **Features:** Win rates by course/distance, jockey-trainer combinations
+   - **Business Value:** Enhanced prediction factors
+   - **Files:** `tools/analytics/jockey_performance_analyzer.py`
+
+#### 🔮 **FUTURE ENHANCEMENTS (Priority 3 - Next Phase):**
+
+7. **🏁 Track Specialization Models** (8 hours)
+
+   - **Features:** Course performance analysis, track bias detection
+   - **Business Value:** Course-specific prediction adjustments
+
+8. **🔍 Enhanced Monitoring and Alerting** (6 hours)
+
+   - **Features:** System health monitoring, performance alerts
+   - **Business Value:** Proactive system maintenance
+
+9. **🔌 API Endpoints Development** (12 hours)
+   - **Features:** REST API for external integrations
+   - **Business Value:** System accessibility and third-party integration
+
+---
 
 ### **This Week's Goals:**
 
-1. ✅ Complete pipeline integration of existing features
-2. 🎯 Implement Advanced Betting Reports Generator
-3. 📊 Begin Jockey Performance Analysis
-4. 🔄 Setup automated daily operations with all features
+1. ✅ Complete pipeline integration of existing features (Priority 1 items)
+2. 🎯 Implement Advanced Betting Reports Generator (Priority 2)
+3. 📊 Begin Performance Dashboard development (Priority 2)
+4. 🏇 Start Jockey Performance Analysis (Priority 2)
 
 ---
 
