@@ -5,12 +5,12 @@ services:
   # INFRASTRUCTURE SERVICES
   # =============================================================================
   
-  # PostgreSQL Database - Single source of truth for all data
+  # PostgreSQL Database - Multiple specialized databases
   postgres:
     image: postgres:15
     container_name: horse_racing_postgres_clean
     environment:
-      POSTGRES_DB: horse_racing_db
+      POSTGRES_DB: postgres
       POSTGRES_USER: horse_racing
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-secure_password_123}
       POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --lc-collate=C --lc-ctype=C"
@@ -21,7 +21,7 @@ services:
       - horse_racing_network
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U horse_racing -d horse_racing_db"]
+      test: ["CMD-SHELL", "pg_isready -U horse_racing -d postgres"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -63,7 +63,12 @@ services:
         GROUP_ID: ${GROUP_ID:-1000}
     container_name: horse_racing_web_app_clean
     environment:
-      DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/horse_racing_db
+      # Multi-database configuration
+      CARDS_DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/cards_horse_racing_db
+      RESULTS_DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/results_horse_racing_db
+      ADVANCED_DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/advanced_racing_metrics_db
+      # Legacy fallback (for compatibility)
+      DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/cards_horse_racing_db
       REDIS_URL: redis://:${REDIS_PASSWORD:-redis_password_123}@redis:6379/0
       PYTHONPATH: /app
       LOG_LEVEL: ${LOG_LEVEL:-INFO}
@@ -119,7 +124,12 @@ services:
         GROUP_ID: ${GROUP_ID:-1000}
     container_name: horse_racing_data_pipeline_clean
     environment:
-      DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/horse_racing_db
+      # Multi-database configuration
+      CARDS_DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/cards_horse_racing_db
+      RESULTS_DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/results_horse_racing_db
+      ADVANCED_DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/advanced_racing_metrics_db
+      # Legacy fallback (for compatibility)
+      DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/cards_horse_racing_db
       REDIS_URL: redis://:${REDIS_PASSWORD:-redis_password_123}@redis:6379/0
       PYTHONPATH: /app
       LOG_LEVEL: ${LOG_LEVEL:-INFO}
@@ -165,7 +175,12 @@ services:
         GROUP_ID: ${GROUP_ID:-1000}
     container_name: horse_racing_ml_trainer_clean
     environment:
-      DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/horse_racing_db
+      # Multi-database configuration
+      CARDS_DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/cards_horse_racing_db
+      RESULTS_DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/results_horse_racing_db
+      ADVANCED_DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/advanced_racing_metrics_db
+      # Legacy fallback (for compatibility)
+      DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/advanced_racing_metrics_db
       REDIS_URL: redis://:${REDIS_PASSWORD:-redis_password_123}@redis:6379/0
       PYTHONPATH: /app
       LOG_LEVEL: ${LOG_LEVEL:-INFO}
@@ -226,7 +241,12 @@ services:
         GROUP_ID: ${GROUP_ID:-1000}
     container_name: horse_racing_live_execution
     environment:
-      DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/horse_racing_db
+      # Multi-database configuration
+      CARDS_DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/cards_horse_racing_db
+      RESULTS_DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/results_horse_racing_db
+      ADVANCED_DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/advanced_racing_metrics_db
+      # Legacy fallback (for compatibility)
+      DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/advanced_racing_metrics_db
       REDIS_URL: redis://:${REDIS_PASSWORD:-redis_password_123}@redis:6379/0
       PYTHONPATH: /app
       LOG_LEVEL: ${LOG_LEVEL:-INFO}
@@ -277,7 +297,12 @@ services:
         GROUP_ID: ${GROUP_ID:-1000}
     container_name: horse_racing_dashboard
     environment:
-      DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/horse_racing_db
+      # Multi-database configuration
+      CARDS_DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/cards_horse_racing_db
+      RESULTS_DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/results_horse_racing_db
+      ADVANCED_DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/advanced_racing_metrics_db
+      # Legacy fallback (for compatibility)
+      DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/advanced_racing_metrics_db
       REDIS_URL: redis://:${REDIS_PASSWORD:-redis_password_123}@redis:6379/0
       PYTHONPATH: /app
       LOG_LEVEL: ${LOG_LEVEL:-INFO}
@@ -323,7 +348,12 @@ services:
         GROUP_ID: ${GROUP_ID:-1000}
     container_name: horse_racing_alerts
     environment:
-      DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/horse_racing_db
+      # Multi-database configuration
+      CARDS_DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/cards_horse_racing_db
+      RESULTS_DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/results_horse_racing_db
+      ADVANCED_DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/advanced_racing_metrics_db
+      # Legacy fallback (for compatibility)
+      DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/advanced_racing_metrics_db
       REDIS_URL: redis://:${REDIS_PASSWORD:-redis_password_123}@redis:6379/0
       PYTHONPATH: /app
       LOG_LEVEL: ${LOG_LEVEL:-INFO}
@@ -389,7 +419,12 @@ services:
       dockerfile: docker/dockerfiles/Dockerfile.news-analyzer
     container_name: horse_racing_news_analyzer
     environment:
-      DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/horse_racing_db
+      # Multi-database configuration
+      CARDS_DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/cards_horse_racing_db
+      RESULTS_DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/results_horse_racing_db
+      ADVANCED_DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/advanced_racing_metrics_db
+      # Legacy fallback (for compatibility)
+      DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/advanced_racing_metrics_db
       OLLAMA_HOST: 0.0.0.0:11434
     volumes:
       - ./logs:/app/logs:rw
@@ -413,7 +448,12 @@ services:
       dockerfile: docker/dockerfiles/Dockerfile.reports
     container_name: horse_racing_reports
     environment:
-      DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/horse_racing_db
+      # Multi-database configuration
+      CARDS_DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/cards_horse_racing_db
+      RESULTS_DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/results_horse_racing_db
+      ADVANCED_DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/advanced_racing_metrics_db
+      # Legacy fallback (for compatibility)
+      DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/advanced_racing_metrics_db
       REDIS_URL: redis://:${REDIS_PASSWORD:-redis_password_123}@redis:6379/0
       PYTHONPATH: /app
       REPORTS_OUTPUT: /app/reports

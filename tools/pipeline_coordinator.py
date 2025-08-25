@@ -74,13 +74,29 @@ class PipelineOrchestrator:
         self.stage_status = {}
         self.last_file_check = {}
 
-        # Database connection for pipeline stages
-        self.db_config = {
-            "host": "horse_racing_postgres_clean",
-            "port": 5432,
-            "database": "horse_racing_db",
-            "user": "horse_racing",
-            "password": "secure_password_123",
+        # Database configuration for multiple specialized databases
+        self.db_configs = {
+            "cards": {
+                "host": "horse_racing_postgres_clean",
+                "port": 5432,
+                "database": "cards_horse_racing_db",
+                "user": "horse_racing",
+                "password": "secure_password_123",
+            },
+            "results": {
+                "host": "horse_racing_postgres_clean",
+                "port": 5432,
+                "database": "results_horse_racing_db",
+                "user": "horse_racing",
+                "password": "secure_password_123",
+            },
+            "advanced": {
+                "host": "horse_racing_postgres_clean",
+                "port": 5432,
+                "database": "advanced_racing_metrics_db",
+                "user": "horse_racing",
+                "password": "secure_password_123",
+            },
         }  # Ensure directories exist
         self.data_dir.mkdir(parents=True, exist_ok=True)
         self.logs_dir.mkdir(parents=True, exist_ok=True)
@@ -259,7 +275,10 @@ class PipelineOrchestrator:
             # Step 1: Upload to cards database (race cards for AI predictions)
             logger.info("📊 Uploading race cards to cards database...")
             cards_result = subprocess.run(
-                ["python", "/app/tools/data_processing/upload_mapped_data_container.py"],
+                [
+                    "python",
+                    "/app/tools/data_processing/upload_mapped_data_container.py",
+                ],
                 capture_output=True,
                 text=True,
                 timeout=300,
@@ -275,7 +294,10 @@ class PipelineOrchestrator:
             # Step 2: Upload to results database (race results for validation)
             logger.info("🏁 Uploading race results to results database...")
             results_result = subprocess.run(
-                ["python", "/app/tools/data_processing/upload_results_data_container.py"],
+                [
+                    "python",
+                    "/app/tools/data_processing/upload_results_data_container.py",
+                ],
                 capture_output=True,
                 text=True,
                 timeout=300,
@@ -285,13 +307,15 @@ class PipelineOrchestrator:
                 logger.info("✅ Results database upload completed successfully")
                 logger.info(f"Results upload output: {results_result.stdout[-200:]}")
             else:
-                logger.error(f"❌ Results database upload failed: {results_result.stderr}")
+                logger.error(
+                    f"❌ Results database upload failed: {results_result.stderr}"
+                )
                 return False
 
             # Step 3: Trigger AI predictions generation
             logger.info("🤖 Triggering AI predictions generation...")
             ai_result = self.run_ai_predictions()
-            
+
             if ai_result:
                 logger.info("✅ Database separation pipeline completed successfully")
                 logger.info("� Cards DB → AI Predictions → Results DB validation ready")
@@ -402,10 +426,10 @@ class PipelineOrchestrator:
     def monitor_pipeline_health(self):
         """Monitor overall pipeline health"""
         try:
-            # Check database connectivity
+            # Check database connectivity for primary database (cards)
             import psycopg2
 
-            conn = psycopg2.connect(**self.db_config)
+            conn = psycopg2.connect(**self.db_configs["cards"])
             conn.close()
 
             # Log status every 10 minutes
@@ -422,7 +446,8 @@ class PipelineOrchestrator:
                     ]
                 )
                 logger.info(
-                    f"💚 Pipeline Health: {completed_stages} stages completed, Database connected"
+                    f"💚 Pipeline Health: {completed_stages} stages completed, "
+                    f"Database connected"
                 )
                 self._last_health_log = current_time
 
