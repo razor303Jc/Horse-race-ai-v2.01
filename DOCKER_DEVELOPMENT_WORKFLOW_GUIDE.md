@@ -1,4 +1,5 @@
 # 🔧 DOCKER DEVELOPMENT WORKFLOW GUIDE
+
 ## Using Docker Volumes for Live Development
 
 _Updated: August 25, 2025 - Post Schema Guardian Success_
@@ -16,27 +17,27 @@ Your Docker setup is **perfectly configured** for development with live volume m
 
 data-pipeline:
   volumes:
-    - ./data:/app/data:rw          # Live data access
-    - ./tools:/app/tools:ro        # Schema Guardian tools 
-    - ./scripts:/app/scripts:ro    # Scripts
-    - ./config:/app/config:ro      # Configuration
-    - ./logs:/app/logs:rw          # Live log access
-    - ./cache:/app/cache:rw        # Cache storage
+    - ./data:/app/data:rw # Live data access
+    - ./tools:/app/tools:ro # Schema Guardian tools
+    - ./scripts:/app/scripts:ro # Scripts
+    - ./config:/app/config:ro # Configuration
+    - ./logs:/app/logs:rw # Live log access
+    - ./cache:/app/cache:rw # Cache storage
 
-web-app: 
+web-app:
   volumes:
-    - ./src:/app/src               # Live source code
-    - ./templates:/app/templates   # Live templates
-    - ./api:/app/api              # Live API code
-    - ./logs:/app/logs:rw         # Live logs
+    - ./src:/app/src # Live source code
+    - ./templates:/app/templates # Live templates
+    - ./api:/app/api # Live API code
+    - ./logs:/app/logs:rw # Live logs
 
 ml-trainer:
   volumes:
-    - ./models:/app/models:rw         # Live model access
-    - ./trained_models:/app/trained_models:rw  # Model outputs
-    - ./tools:/app/tools:ro           # ML tools
-    - ./src:/app/src:ro              # Source code
-    - ./data:/app/data:ro            # Data access
+    - ./models:/app/models:rw # Live model access
+    - ./trained_models:/app/trained_models:rw # Model outputs
+    - ./tools:/app/tools:ro # ML tools
+    - ./src:/app/src:ro # Source code
+    - ./data:/app/data:ro # Data access
 ```
 
 ---
@@ -48,7 +49,7 @@ ml-trainer:
 When you edit files locally, they're **immediately available** in containers:
 
 - ✅ **Schema Guardian tools** (`./tools/schema_guardian/`) → Live in data-pipeline
-- ✅ **Web app source** (`./src/`) → Live in web-app container  
+- ✅ **Web app source** (`./src/`) → Live in web-app container
 - ✅ **API code** (`./api/`) → Live in web-app container
 - ✅ **ML models** (`./models/`) → Live in ml-trainer container
 - ✅ **Configuration** (`./config/`) → Live in all containers
@@ -65,7 +66,7 @@ docker exec horse_racing_data_pipeline_clean python -m pytest /app/tests/test_sc
 # Run Schema Guardian tools
 docker exec horse_racing_data_pipeline_clean python /app/tools/schema_guardian/ultimate_schema_guardian.py
 
-# Run API tests  
+# Run API tests
 docker exec horse_racing_web_app_clean python -m pytest /app/tests/test_api_comprehensive.py -v
 ```
 
@@ -87,7 +88,7 @@ docker exec horse_racing_web_app_clean python -m pytest /app/tests/test_api_comp
 # Edit tests locally (immediately available in containers)
 vim tests/test_schema_guardian_regression.py
 
-# Run updated tests immediately  
+# Run updated tests immediately
 docker exec horse_racing_data_pipeline_clean python -m pytest /app/tests/test_schema_guardian_regression.py -v
 ```
 
@@ -131,6 +132,7 @@ docker exec horse_racing_data_pipeline_clean python /app/tests/run_comprehensive
 ```
 
 **Benefits of Docker Volume Approach:**
+
 - ✅ Edit tests locally in your preferred editor
 - ✅ Run tests immediately with database access
 - ✅ No container rebuilds required
@@ -178,7 +180,7 @@ docker exec horse_racing_data_pipeline_clean python -m pytest /app/tests/test_sc
 
 1. **Edit Locally** → Use your preferred IDE/editor
 2. **Test in Container** → Immediate access to database/network
-3. **Debug Live** → Add logs, test immediately  
+3. **Debug Live** → Add logs, test immediately
 4. **Iterate Fast** → No rebuild delays
 
 ### **Database Development:**
@@ -193,7 +195,7 @@ import psycopg2
 conn = psycopg2.connect(
     host='horse_racing_postgres_clean',
     port=5432,
-    database='results_horse_racing_db', 
+    database='results_horse_racing_db',
     user='horse_racing',
     password='secure_password_123'
 )
@@ -242,7 +244,7 @@ vim models/ensemble_predictor.py
 # Check current test framework status
 docker exec horse_racing_data_pipeline_clean python -m pytest /app/tests/ --collect-only | head -20
 
-# Run Schema Guardian tests with database access  
+# Run Schema Guardian tests with database access
 docker exec horse_racing_data_pipeline_clean python -m pytest /app/tests/test_schema_guardian_regression.py -v
 
 # Fix issues by editing locally, testing immediately
@@ -252,4 +254,4 @@ This workflow leverages your excellent Docker volume setup for rapid, live devel
 
 ---
 
-*This development workflow enables rapid iteration while maintaining the benefits of containerized database and network access.*
+_This development workflow enables rapid iteration while maintaining the benefits of containerized database and network access._
