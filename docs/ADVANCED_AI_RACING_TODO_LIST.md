@@ -2,6 +2,48 @@
 
 _Last Updated: August 25, 2025_
 
+## 🚨 CRITICAL PRIORITY 0 - IMMEDIATE FIXES REQUIRED (NEXT 30 MINUTES)
+
+### ⚡ EMERGENCY: PIPELINE SCHEMA MISMATCHES - DATA LOSS OCCURRING
+
+**Status:** 🚨 CRITICAL - 92% of results data not uploading due to schema issues  
+**Impact:** 11,973 records lost in last upload  
+**Timeline:** MUST FIX IMMEDIATELY
+
+#### 🚨 0.1 Fix Database Schema Mismatches for Results Upload
+
+- **Status:** 🚨 CRITICAL - BLOCKING ALL RESULTS DATA
+- **Problem:** Column name and data type mismatches preventing upload
+- **Data Loss:** 11,973 records not uploaded (horses, jockeys, trainers, results)
+- **Files to Fix:** `tools/data_processing/upload_results_data_container.py`
+- **Specific Issues:**
+  - ❌ horses table: "id" column not found
+  - ❌ jockeys_stats: "uptodate" vs "UptoDate" case mismatch  
+  - ❌ trainers_stats: "uptodate" vs "UptoDate" case mismatch
+  - ❌ records: invalid integer "-" strings need cleaning
+- **Action Required:** Fix column mappings and data cleaning immediately
+- **Estimated Time:** 30 minutes
+
+#### 🚨 0.2 Create Emergency Schema Validation System
+
+- **Status:** 🚨 URGENT - PREVENT FUTURE DATA LOSS
+- **Purpose:** Validate schema compatibility before upload
+- **Action:** Create pre-upload validation checks
+- **Files:** Create `tools/validation/schema_validator.py`
+- **Estimated Time:** 20 minutes
+
+#### 🚨 0.3 Re-process Failed Upload Data
+
+- **Status:** 🚨 URGENT - RECOVER LOST DATA
+- **Purpose:** Upload the 11,973 failed records after fixes
+- **Action:** Re-run upload process with fixed schemas
+- **Validation:** Verify all data reaches database
+- **Estimated Time:** 15 minutes
+
+**⏰ TOTAL EMERGENCY TIME: 65 MINUTES MAX**
+
+---
+
 ## ✅ COMPLETED PRIORITY 1 CRITICAL ISSUES (AUGUST 25, 2025)
 
 ### ⚡ Priority 1 (COMPLETED - 1.5 hours total):
@@ -756,6 +798,18 @@ CREATE TABLE betting_performance_tracker (
 - **Output Systems:** PDF reports, web dashboard, email alerts
 - **Betting Platforms:** API integration for automated placement
 - **Mobile Access:** Responsive web interface
+
+---
+
+## 🚨 IMMEDIATE ACTION REQUIRED
+
+### CRITICAL FINDING: PIPELINE DATA LOSS
+
+**See:** `CRITICAL_PIPELINE_FINDINGS_REPORT.md` for complete analysis
+
+**Summary:** The pipeline is working for file processing and cards data, but 92% of results data is being lost due to schema mismatches. Immediate fixes required to recover 11,973 lost records.
+
+**Next Action:** Fix Priority 0 items in TODO list above immediately.
 
 ---
 
