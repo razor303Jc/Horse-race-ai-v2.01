@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  bulk-uploader:
+    build: 
+      context: ./tools/bulk_uploader
+      dockerfile: Dockerfile
+    container_name: horse_racing_bulk_uploader
+    networks:
+      - horse_racing_network
+    volumes:
+      # Mount data directories
+      - ./data:/app/data
+      - ./logs:/app/logs
+      # Mount daily downloads if available
+      - ./data/daily_downloads:/app/data/daily_downloads
+    environment:
+      # Bulk uploader configuration
+      - BULK_UPLOAD_MODE=daily_downloads
+      - BULK_BATCH_SIZE=1000
+      - BULK_MAX_WORKERS=4
+      - BULK_VALIDATION_LEVEL=strict
+      - BULK_CONFLICT_RESOLUTION=ignore
+      - BULK_RETRY_ATTEMPTS=3
+      - BULK_CONNECTION_POOL=10
+      
+      # Database configuration (container network)
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=results_horse_racing_db
+      - DB_USER=horse_racing
+      - DB_PASSWORD=secure_password_123
+      
+      # Container detection
+      - DOCKER_CONTAINER=true
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "from bulk_uploader import DatabaseConnectionManager; DatabaseConnectionManager().test_connection()"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
+
+networks:
+  horse_racing_network:
+    external: true
