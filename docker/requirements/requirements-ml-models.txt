@@ -36,8 +36,13 @@ optuna>=3.2.0
 # Model monitoring
 mlflow>=2.5.0
 
+# Testing framework
+pytest>=7.4.0
+pytest-cov>=4.1.0
+pytest-mock>=3.11.0
+
 # GPU acceleration (optional)
 # tensorflow-gpu>=2.13.0  # Uncomment if GPU available
 
-# Total packages: ~15-20 heavy ML packages
+# Total packages: ~15-20 heavy ML packages + testing tools
 # Estimated build time: 15-25 minutes (only when ML needed)

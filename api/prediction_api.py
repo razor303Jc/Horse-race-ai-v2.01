@@ -856,17 +856,33 @@ async def api_health_check():
 
     # Check database connectivity
     try:
-        db_config = {
-            "host": "localhost",
-            "port": 5434,
-            "database": "horse_racing_db",
-            "user": "horse_racing",
-            "password": "secure_password_123",
-        }
+        # Use environment variables with fallback
+        db_url = os.getenv("CARDS_DATABASE_URL") or os.getenv("DATABASE_URL")
+        if db_url:
+            # Parse the database URL
+            import urllib.parse
+
+            parsed = urllib.parse.urlparse(db_url)
+            db_config = {
+                "host": parsed.hostname,
+                "port": parsed.port,
+                "database": parsed.path[1:],  # Remove leading slash
+                "user": parsed.username,
+                "password": parsed.password,
+            }
+        else:
+            # Fallback configuration
+            db_config = {
+                "host": "postgres",
+                "port": 5432,
+                "database": "cards_horse_racing_db",
+                "user": "horse_racing",
+                "password": "secure_password_123",
+            }
 
         with psycopg2.connect(**db_config) as conn:
             cursor = conn.cursor()
-            cursor.execute("SELECT COUNT(*) FROM race_entries")
+            cursor.execute("SELECT COUNT(*) FROM races")
             race_count = cursor.fetchone()[0]
 
         health_status["components"]["database"] = {

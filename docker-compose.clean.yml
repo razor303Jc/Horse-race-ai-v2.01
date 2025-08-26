@@ -207,6 +207,7 @@ services:
       - ./tools:/app/tools:ro
       - ./src:/app/src:ro  # Mount src directory for V201EnsemblePredictor
       - ./data:/app/data:ro  # Read-only access to data
+      - ./tests:/app/tests:ro  # Mount tests directory for pytest execution
       - ./logs:/app/logs:rw
       - ./ml_cache:/app/ml_cache:rw
     depends_on:

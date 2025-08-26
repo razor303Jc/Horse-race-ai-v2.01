@@ -27,7 +27,7 @@ class AnalyticsDatabase:
         if not self.database_url:
             self.database_url = (
                 "postgresql://horse_racing:secure_password_123@postgres:5432/"
-                "horse_racing_db"
+                "cards_horse_racing_db"
             )
 
         # Parse database URL for connection parameters

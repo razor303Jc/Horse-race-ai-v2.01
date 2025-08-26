@@ -18,7 +18,8 @@ class DatabaseConfig:
     # Primary PostgreSQL database for main operations
     url: str = os.getenv(
         "DATABASE_URL",
-        "postgresql://horse_racing:secure_password_123@postgres:5432/horse_racing_db",
+        "postgresql://horse_racing:secure_password_123@postgres:5432/"
+        "cards_horse_racing_db",
     )
     echo: bool = False
     pool_size: int = 5

@@ -91,7 +91,7 @@ class HorseProfilingSystem:
             self.db_config = {
                 "host": os.getenv("POSTGRES_HOST", "postgres"),
                 "port": int(os.getenv("POSTGRES_PORT", "5432")),
-                "database": os.getenv("POSTGRES_DB", "horse_racing_db"),
+                "database": os.getenv("POSTGRES_DB", "cards_horse_racing_db"),
                 "user": os.getenv("POSTGRES_USER", "horse_racing"),
                 "password": os.getenv("POSTGRES_PASSWORD", "secure_password_123"),
             }

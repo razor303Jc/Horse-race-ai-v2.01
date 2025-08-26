@@ -48,14 +48,14 @@ app.add_middleware(
 DB_PARAMS = {
     "host": "postgres",  # Use Docker service name for internal network
     "port": 5432,  # Use internal PostgreSQL port
-    "database": "horse_racing_db",
+    "database": "cards_horse_racing_db",  # Updated to use the correct database name
     "user": "horse_racing",
     "password": "secure_password_123",
 }
 
 
 def get_db_connection():
-    """Get database connection"""
+    """Get database connection to cards database (default)"""
     try:
         # Use DATABASE_URL from environment (for Docker) or fallback to localhost
         database_url = os.environ.get("DATABASE_URL")
@@ -66,13 +66,76 @@ def get_db_connection():
             return psycopg2.connect(
                 host="localhost",
                 port=5434,
-                database="horse_racing_db",
+                database="cards_horse_racing_db",  # Updated to correct database name
                 user="horse_racing",
                 password="secure_password_123",
                 cursor_factory=RealDictCursor,
             )
     except Exception as e:
         print(f"Database connection failed: {e}")
+        return None
+
+
+def get_cards_db_connection():
+    """Get connection to cards database (races, horses, jockeys, trainers)"""
+    try:
+        cards_url = os.environ.get("CARDS_DATABASE_URL")
+        if cards_url:
+            return psycopg2.connect(cards_url, cursor_factory=RealDictCursor)
+        else:
+            # Fallback for local development
+            return psycopg2.connect(
+                host="localhost",
+                port=5434,
+                database="cards_horse_racing_db",
+                user="horse_racing",
+                password="secure_password_123",
+                cursor_factory=RealDictCursor,
+            )
+    except Exception as e:
+        print(f"Cards database connection failed: {e}")
+        return None
+
+
+def get_results_db_connection():
+    """Get connection to results database (records, race results)"""
+    try:
+        results_url = os.environ.get("RESULTS_DATABASE_URL")
+        if results_url:
+            return psycopg2.connect(results_url, cursor_factory=RealDictCursor)
+        else:
+            # Fallback for local development
+            return psycopg2.connect(
+                host="localhost",
+                port=5434,
+                database="results_horse_racing_db",
+                user="horse_racing",
+                password="secure_password_123",
+                cursor_factory=RealDictCursor,
+            )
+    except Exception as e:
+        print(f"Results database connection failed: {e}")
+        return None
+
+
+def get_advanced_db_connection():
+    """Get connection to advanced metrics database (ML features, analytics)"""
+    try:
+        advanced_url = os.environ.get("ADVANCED_DATABASE_URL")
+        if advanced_url:
+            return psycopg2.connect(advanced_url, cursor_factory=RealDictCursor)
+        else:
+            # Fallback for local development
+            return psycopg2.connect(
+                host="localhost",
+                port=5434,
+                database="advanced_racing_metrics_db",
+                user="horse_racing",
+                password="secure_password_123",
+                cursor_factory=RealDictCursor,
+            )
+    except Exception as e:
+        print(f"Advanced database connection failed: {e}")
         return None
 
 
@@ -100,44 +163,105 @@ async def get_system_status():
 
 @app.get("/api/database_stats")
 async def get_database_stats():
-    """Get real database statistics"""
+    """Get real database statistics from all three databases"""
 
-    conn = get_db_connection()
-    if not conn:
-        raise HTTPException(status_code=503, detail="Database connection failed")
+    stats = {}
+    total_records = 0
 
     try:
-        cursor = conn.cursor()
+        # Cards database stats (races, horses, jockeys, trainers)
+        cards_conn = get_cards_db_connection()
+        if cards_conn:
+            cursor = cards_conn.cursor()
+            cards_tables = ["races", "horses", "jockeys_stats", "trainers_stats"]
 
-        # Get table counts
-        tables = [
-            "records",  # Changed from "race_results"
-            "races",  # Changed from "races_cards"
-            "horses",
-            "jockeys_stats",  # Changed from "jockey_stats"
-            "trainers_stats",  # Changed from "trainer_stats"
-        ]
-        stats = {}
+            for table in cards_tables:
+                try:
+                    cursor.execute(f"SELECT COUNT(*) FROM {table};")
+                    count = cursor.fetchone()["count"]
+                    stats[f"cards_{table}"] = count
+                    total_records += count
+                except Exception as e:
+                    stats[f"cards_{table}"] = f"Error: {str(e)}"
 
-        for table in tables:
-            cursor.execute(f"SELECT COUNT(*) FROM {table};")
-            count = cursor.fetchone()["count"]
-            stats[table] = count
+            cursor.close()
+            cards_conn.close()
+        else:
+            stats["cards_database"] = "Connection failed"
 
-        # Get total records
-        total_records = sum(stats.values())
+        # Results database stats (records, race results)
+        results_conn = get_results_db_connection()
+        if results_conn:
+            cursor = results_conn.cursor()
+            results_tables = ["records"]
 
-        cursor.close()
-        conn.close()
+            for table in results_tables:
+                try:
+                    cursor.execute(f"SELECT COUNT(*) FROM {table};")
+                    count = cursor.fetchone()["count"]
+                    stats[f"results_{table}"] = count
+                    total_records += count
+                except Exception as e:
+                    stats[f"results_{table}"] = f"Error: {str(e)}"
+
+            cursor.close()
+            results_conn.close()
+        else:
+            stats["results_database"] = "Connection failed"
+
+        # Advanced database stats (if available)
+        advanced_conn = get_advanced_db_connection()
+        if advanced_conn:
+            cursor = advanced_conn.cursor()
+            # Check what tables exist in advanced database
+            cursor.execute(
+                """
+                SELECT table_name 
+                FROM information_schema.tables 
+                WHERE table_schema = 'public';
+            """
+            )
+            advanced_tables = [row["table_name"] for row in cursor.fetchall()]
+
+            for table in advanced_tables:
+                try:
+                    cursor.execute(f"SELECT COUNT(*) FROM {table};")
+                    count = cursor.fetchone()["count"]
+                    stats[f"advanced_{table}"] = count
+                    total_records += count
+                except Exception as e:
+                    stats[f"advanced_{table}"] = f"Error: {str(e)}"
+
+            cursor.close()
+            advanced_conn.close()
+        else:
+            stats["advanced_database"] = "Connection failed or not available"
 
         return {
             "total_records": total_records,
+            "databases": {
+                "cards_horse_racing_db": (
+                    "Connected"
+                    if any(k.startswith("cards_") for k in stats.keys())
+                    else "Failed"
+                ),
+                "results_horse_racing_db": (
+                    "Connected"
+                    if any(k.startswith("results_") for k in stats.keys())
+                    else "Failed"
+                ),
+                "advanced_racing_metrics_db": (
+                    "Connected"
+                    if any(k.startswith("advanced_") for k in stats.keys())
+                    else "Not available"
+                ),
+            },
             "tables": stats,
             "last_updated": datetime.now().isoformat(),
         }
 
     except Exception as e:
-        conn.close()
+        raise HTTPException(status_code=503, detail=f"Database query failed: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Database query failed: {str(e)}")
 
 

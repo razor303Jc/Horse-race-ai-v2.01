@@ -86,7 +86,7 @@ class PostgreSQLHorseProfilingSystem:
         self,
         host: str = "localhost",
         port: int = 5434,
-        database: str = "horse_racing_db",
+        database: str = "cards_horse_racing_db",
         user: str = "horse_racing",
         password: str = "secure_password_123",
         min_runs_for_condition: int = 3,

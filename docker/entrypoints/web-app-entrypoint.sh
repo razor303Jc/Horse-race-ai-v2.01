@@ -120,7 +120,7 @@ echo "🗄️  Waiting for database connection..."
 DB_HOST=${DATABASE_HOST:-postgres}
 DB_PORT=${DATABASE_PORT:-5432}
 DB_USER=${DATABASE_USER:-horse_racing}
-DB_NAME=${DATABASE_NAME:-horse_racing_db}
+DB_NAME=${DATABASE_NAME:-cards_horse_racing_db}
 
 # Wait up to 60 seconds for database
 for i in $(seq 1 60); do
