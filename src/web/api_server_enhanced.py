@@ -267,142 +267,80 @@ async def get_database_stats():
 
 @app.get("/api/real_race_cards")
 async def get_real_race_cards():
-    """Get real race card data from our database"""
-
-    conn = get_db_connection()
+    """Get today's race cards from cards database with helpful guidance"""
+    
+    conn = get_cards_db_connection()  # Use cards database for race cards
     if not conn:
-        raise HTTPException(status_code=503, detail="Database connection failed")
+        raise HTTPException(status_code=503, detail="Cards database connection failed")
 
     try:
-        cursor = conn.cursor()
+        cursor = conn.cursor(cursor_factory=RealDictCursor)
 
-        # Query for race cards with horse details using new schema
-        query = """
-        SELECT 
-            rc.race_id,
-            rc.race_number,
-            rc.race_time,
-            rc.course,
-            rc.race_name,
-            rc.class,
-            rc.distance,
-            rc.surface,
-            rc.prize,
-            rc.runners,
-            h.name as horse_name,
-            h.age as horse_age,
-            h.country as horse_country,
-            h.color as horse_color,
-            h.sex as horse_sex,
-            h.total_races,
-            h.wins,
-            h.percentage_wins,
-            re.horse_number,
-            re.draw,
-            re.weight_kg,
-            re.jockey,
-            re.trainer,
-            re.odds,
-            re.favourite_position,
-            re.timeform_comments as form,
-            re.horse_rate as official_rating
-        FROM race_entries re
-        JOIN race_cards rc ON re.race_id = rc.race_id
-        JOIN horses h ON re.horse_id = h.horse_id
-        WHERE rc.race_date = CURRENT_DATE
-        ORDER BY rc.race_number, re.horse_number
-        LIMIT 200;
+        # Get today's date
+        today = datetime.now().date()
+        
+        # Query for today's races only
+        race_query = """
+        SELECT * FROM races
+        WHERE date = %s
+        ORDER BY race_time, race_number;
         """
 
-        cursor.execute(query)
-        entries = cursor.fetchall()
+        cursor.execute(race_query, (today,))
+        races = cursor.fetchall()
 
-        # Group entries by race_id
-        races = {}
-        for entry in entries:
-            race_id = str(entry["race_id"])
-
-            if race_id not in races:
-                races[race_id] = {
-                    "race_id": race_id,
-                    "race_number": entry["race_number"],
-                    "race_time": (
-                        entry["race_time"].strftime("%H:%M")
-                        if entry["race_time"]
-                        else "TBA"
-                    ),
-                    "course": entry["course"],
-                    "race_name": entry["race_name"] or f"Race {entry['race_number']}",
-                    "class": entry["class"],
-                    "distance": entry["distance"],
-                    "surface": entry["surface"],
-                    "prize": entry["prize"],
-                    "runners": entry["runners"],
-                    "horses": [],
-                    "total_runners": 0,
-                }
-
-            # Calculate win probability from odds
-            try:
-                odds_str = entry["odds"] or "10/1"
-                if "/" in odds_str:  # Fractional odds like "5/1"
-                    num, den = map(float, odds_str.split("/"))
-                    decimal_odds = (num / den) + 1
-                else:
-                    decimal_odds = float(odds_str)
-                probability = (1 / decimal_odds) * 100
-            except (ValueError, TypeError, ZeroDivisionError):
-                probability = 0
-                decimal_odds = 0
-
-            # Calculate win rate
-            wins = entry["wins"] or 0
-            total_races = entry["total_races"] or 0
-            win_rate = (wins / total_races * 100) if total_races > 0 else 0
-
-            horse_data = {
-                "horse_name": entry["horse_name"] or "Unknown",
-                "horse_number": entry["horse_number"],
-                "jockey": entry["jockey"] if entry["jockey"] != "Unknown" else "TBA",
-                "trainer": entry["trainer"] if entry["trainer"] != "Unknown" else "TBA",
-                "age": entry["horse_age"],
-                "country": entry["horse_country"],
-                "color": entry["horse_color"],
-                "sex": entry["horse_sex"],
-                "weight_kg": float(entry["weight_kg"]) if entry["weight_kg"] else 0,
-                "draw": entry["draw"],
-                "form": entry["form"] or "N/A",
-                "odds": entry["odds"] or "N/A",
-                "favourite_position": entry["favourite_position"],
-                "win_probability": round(probability, 1),
-                "decimal_odds": round(decimal_odds, 2),
-                "career_record": (
-                    f"{int(wins)}/{int(total_races)}" if total_races else "0/0"
-                ),
-                "win_rate": round(win_rate, 1),
-                "percentage_wins": entry["percentage_wins"],
-                "official_rating": entry["official_rating"],
+        # If no races found for today, provide helpful guidance
+        if not races:
+            cursor.close()
+            conn.close()
+            
+            return {
+                "status": "no_data",
+                "message": "No race cards found for today",
+                "guidance": {
+                    "action_needed": "Download today's race card data",
+                    "instructions": [
+                        "1. Check if the daily data pipeline is running",
+                        "2. Verify race card download scripts are scheduled",
+                        "3. Manually trigger race card download if needed",
+                        "4. Ensure racing websites are accessible"
+                    ],
+                    "troubleshooting": {
+                        "check_pipeline": "Run the pipeline diagnostic tool",
+                        "manual_download": "Use the manual download scripts in tools/",
+                        "verify_sources": "Check if racing data sources are available"
+                    }
+                },
+                "races": [],
+                "total_races": 0,
+                "date_checked": today.isoformat(),
+                "last_updated": datetime.now().isoformat(),
             }
 
-            races[race_id]["horses"].append(horse_data)
-            races[race_id]["total_runners"] = len(races[race_id]["horses"])
+        # Format today's races
+        race_list = []
+        for race in races:
+            race_dict = dict(race)
+            # Format race time for display
+            if race_dict.get('race_time'):
+                race_dict['race_time_formatted'] = race_dict['race_time'].strftime("%H:%M")
+            race_list.append(race_dict)
 
         cursor.close()
         conn.close()
 
-        # Convert to list format and sort by race number
-        race_list = sorted(list(races.values()), key=lambda x: x["race_number"] or 0)
-
         return {
-            "total_races": len(race_list),
-            "total_horses": sum(race["total_runners"] for race in race_list),
-            "data_source": "live_database",
-            "timestamp": datetime.now().isoformat(),
+            "status": "success",
+            "message": f"Found {len(race_list)} races for today",
             "races": race_list,
+            "total_races": len(race_list),
+            "date_checked": today.isoformat(),
+            "last_updated": datetime.now().isoformat(),
         }
 
     except Exception as e:
-        conn.close()
+        if conn:
+            conn.close()
         raise HTTPException(status_code=500, detail=f"Database query failed: {str(e)}")
 
 
@@ -610,16 +548,18 @@ async def get_race_details(race_id: str):
 
 @app.get("/api/daily_races")
 async def get_daily_races():
-    """Get all races for today"""
+    """Get all races for today from cards database"""
 
-    conn = get_db_connection()
+    conn = get_cards_db_connection()  # Use cards database
     if not conn:
-        raise HTTPException(status_code=503, detail="Database connection failed")
+        raise HTTPException(status_code=503, detail="Cards database connection failed")
 
     try:
-        cursor = conn.cursor()
-
-        # Get today's races
+        cursor = conn.cursor(cursor_factory=RealDictCursor)
+        
+        # Get today's races from the races table
+        today = datetime.now().date()
+        
         query = """
         SELECT 
             race_id,
@@ -631,16 +571,46 @@ async def get_daily_races():
             distance,
             surface,
             prize,
-            runners
-        FROM race_cards
-        WHERE race_date = CURRENT_DATE
+            date,
+            runners,
+            race_type
+        FROM races
+        WHERE date = %s
         ORDER BY race_time, race_number;
         """
 
-        cursor.execute(query)
+        cursor.execute(query, (today,))
         races = cursor.fetchall()
 
-        # Format races data
+        # If no races found for today, provide helpful guidance
+        if not races:
+            cursor.close()
+            conn.close()
+            
+            return {
+                "status": "no_data",
+                "message": "No races scheduled for today",
+                "guidance": {
+                    "action_needed": "Download today's racing data",
+                    "next_steps": [
+                        "1. Run the daily race card downloader",
+                        "2. Check racing calendar for today's meetings",
+                        "3. Verify data sources are available",
+                        "4. Check if it's a non-racing day"
+                    ],
+                    "manual_commands": [
+                        "Run: python tools/data_processing/daily_downloads_manager.py",
+                        "Check: Racing calendar for today's date",
+                        "Verify: Internet connection and racing site access"
+                    ]
+                },
+                "races": [],
+                "total_races": 0,
+                "date_checked": today.isoformat(),
+                "last_updated": datetime.now().isoformat(),
+            }
+
+        # Format today's races data
         daily_races = []
         for race in races:
             race_data = {
@@ -656,6 +626,11 @@ async def get_daily_races():
                 "surface": race["surface"],
                 "prize": race["prize"],
                 "runners": race["runners"],
+                "race_type": race["race_type"],
+                "race_date": (
+                    race["date"].strftime("%Y-%m-%d")
+                    if race["date"] else today.isoformat()
+                ),
             }
             daily_races.append(race_data)
 
@@ -663,10 +638,11 @@ async def get_daily_races():
         conn.close()
 
         return {
-            "date": datetime.now().strftime("%Y-%m-%d"),
+            "status": "success",
+            "date": today.strftime("%Y-%m-%d"),
             "total_races": len(daily_races),
             "races": daily_races,
-            "data_source": "live_database",
+            "data_source": "cards_database",
             "timestamp": datetime.now().isoformat(),
         }
 
