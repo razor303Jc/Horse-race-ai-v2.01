@@ -29,8 +29,10 @@ tests/
 │   │   └── test_ml_pipeline.py     # ML pipeline integration
 │   ├── api_integration/
 │   │   └── test_api_endpoints.py   # API integration tests
-│   └── docker_integration/
-│       └── test_docker_services.py # Docker integration tests
+│   ├── docker_integration/
+│   │   └── test_docker_services.py # Docker integration tests
+│   └── web_app_integration/
+│       └── test_playwright_integration.py  # Playwright web app tests
 │
 ├── 🏗️ system/                      # System-level end-to-end tests
 │   └── end_to_end/
@@ -50,11 +52,13 @@ tests/
 ## 🚀 Quick Start
 
 ### 1. Setup Environment
+
 ```bash
 ./test_runner.sh setup
 ```
 
 ### 2. Run Tests
+
 ```bash
 # Run all tests
 ./test_runner.sh all
@@ -73,6 +77,7 @@ tests/
 ```
 
 ### 3. Python Runner (Alternative)
+
 ```bash
 # Using Python runner
 python run_tests.py --category=all
@@ -83,23 +88,28 @@ python run_tests.py --smoke
 ## 📋 Test Categories
 
 ### 🧪 Unit Tests (300+ tests)
+
 - **Bulk Uploader Tests**: DataCleaner, column mappings, upload processes
 - **Pipeline Fixes Tests**: Validation of all 5 critical fixes from CRITICAL_PIPELINE_FINDINGS_REPORT.md
 - **ML Pipeline Tests**: Feature engineering, model training, evaluation
 
 ### 🔗 Integration Tests (200+ tests)
+
 - **Database Integration**: Multi-database operations, bulk inserts, conflict handling
 - **ML Pipeline Integration**: End-to-end ML workflows, feature engineering, predictions
 - **API Integration**: Prediction API, ML management API, web application endpoints
 - **Docker Integration**: Container health, networking, service orchestration
+- **Web App Integration**: Playwright UI testing, cross-browser compatibility, user workflows
 
 ### 🏗️ System Tests (100+ tests)
+
 - **Complete Data Pipeline**: Ingestion → Validation → Storage
-- **Complete ML Training**: Data prep → Training → Validation → Deployment  
+- **Complete ML Training**: Data prep → Training → Validation → Deployment
 - **Complete Prediction Workflow**: Input → Features → Prediction → Storage
 - **Complete API Workflow**: Health → Upload → Prediction → Results
 
 ### ⚡ Performance Tests (50+ tests)
+
 - **Data Processing Benchmarks**: >1000 records/second threshold
 - **ML Training Performance**: <120 seconds for 10K records
 - **Prediction Performance**: >100 predictions/second
@@ -112,7 +122,7 @@ The framework uses pytest markers for test organization:
 
 ```python
 @pytest.mark.unit          # Unit tests
-@pytest.mark.integration   # Integration tests  
+@pytest.mark.integration   # Integration tests
 @pytest.mark.system        # System tests
 @pytest.mark.performance   # Performance tests
 @pytest.mark.smoke         # Smoke tests
@@ -121,18 +131,21 @@ The framework uses pytest markers for test organization:
 @pytest.mark.api           # API tests
 @pytest.mark.database      # Database tests
 @pytest.mark.docker        # Docker tests
+@pytest.mark.web_app       # Web application Playwright tests
 @pytest.mark.e2e           # End-to-end tests
 ```
 
 ## 🔧 Key Features
 
 ### ✅ Comprehensive Coverage
-- **System Components**: Bulk uploader, pipeline fixes, ML training, API, database
-- **Integration Points**: Database operations, API endpoints, Docker services
-- **Workflows**: Complete end-to-end data and ML pipelines
-- **Performance**: Load testing, benchmarks, stress testing
+
+- **System Components**: Bulk uploader, pipeline fixes, ML training, API, database, web app
+- **Integration Points**: Database operations, API endpoints, Docker services, web UI
+- **Workflows**: Complete end-to-end data and ML pipelines, user interface flows
+- **Performance**: Load testing, benchmarks, stress testing, UI responsiveness
 
 ### ✅ Modern Testing Practices
+
 - **Pytest Framework**: Modern Python testing with fixtures and markers
 - **Parallel Execution**: Support for concurrent test execution
 - **Coverage Analysis**: Code coverage reporting with branch coverage
@@ -140,12 +153,14 @@ The framework uses pytest markers for test organization:
 - **Performance Monitoring**: System resource monitoring during tests
 
 ### ✅ Production-Ready Features
+
 - **Mock Support**: Comprehensive mocking for external dependencies
 - **Error Handling**: Graceful error handling and recovery testing
 - **Security Testing**: Input validation, authentication, rate limiting
 - **Reliability Testing**: Failure scenarios and fallback mechanisms
 
 ### ✅ Developer Experience
+
 - **Easy Execution**: Simple bash script and Python runner
 - **Flexible Filtering**: Run tests by category, component, or marker
 - **Detailed Output**: Verbose logging and error reporting
@@ -155,23 +170,25 @@ The framework uses pytest markers for test organization:
 
 The framework includes performance thresholds aligned with production requirements:
 
-| Component | Threshold | Test Coverage |
-|-----------|-----------|---------------|
+| Component       | Threshold         | Test Coverage            |
+| --------------- | ----------------- | ------------------------ |
 | Data Processing | >1000 records/sec | ✅ Bulk upload, cleaning |
-| ML Predictions | >100 pred/sec | ✅ Batch predictions |
-| API Response | <2.0 seconds | ✅ All endpoints |
-| Memory Usage | <1024 MB | ✅ Stress testing |
-| CPU Usage | <80% | ✅ Load testing |
+| ML Predictions  | >100 pred/sec     | ✅ Batch predictions     |
+| API Response    | <2.0 seconds      | ✅ All endpoints         |
+| Memory Usage    | <1024 MB          | ✅ Stress testing        |
+| CPU Usage       | <80%              | ✅ Load testing          |
 
 ## 🛡️ Quality Assurance
 
 ### Test Quality Metrics
+
 - **Unit Test Coverage**: Individual component functionality
 - **Integration Coverage**: Component interaction and data flow
-- **System Coverage**: Complete workflow validation  
+- **System Coverage**: Complete workflow validation
 - **Performance Coverage**: Load, stress, and benchmark testing
 
 ### Validation Features
+
 - **Data Quality**: Schema validation, constraint checking
 - **ML Quality**: Model performance, prediction accuracy
 - **API Quality**: Response validation, error handling
@@ -186,8 +203,8 @@ The framework is designed for CI/CD integration:
 test:
   script:
     - ./tests/test_runner.sh setup
-    - ./tests/test_runner.sh smoke  # Quick validation
-    - ./tests/test_runner.sh all    # Full suite
+    - ./tests/test_runner.sh smoke # Quick validation
+    - ./tests/test_runner.sh all # Full suite
   artifacts:
     reports:
       junit: tests/reports/*.xml
@@ -199,21 +216,25 @@ test:
 ## 📈 Benefits Delivered
 
 ### 1. **Comprehensive System Validation**
+
 - All major components have dedicated test coverage
 - Critical business workflows are validated end-to-end
 - Performance requirements are continuously monitored
 
 ### 2. **Development Confidence**
+
 - Immediate feedback on code changes
 - Regression prevention through automated testing
 - Clear error reporting and debugging support
 
 ### 3. **Production Readiness**
+
 - Stress testing validates system limits
 - Error handling ensures graceful degradation
 - Performance monitoring prevents bottlenecks
 
 ### 4. **Maintainability**
+
 - Well-organized test structure matches system architecture
 - Modern pytest framework with clear documentation
 - Easy extension for new components and features
@@ -223,9 +244,10 @@ test:
 This test framework perfectly aligns with the **Horse Racing AI v2.04** system:
 
 - ✅ **Bulk Uploader**: Tests 8 file types, 12,591 records processing capability
-- ✅ **Pipeline Fixes**: Validates all fixes from CRITICAL_PIPELINE_FINDINGS_REPORT.md  
+- ✅ **Pipeline Fixes**: Validates all fixes from CRITICAL_PIPELINE_FINDINGS_REPORT.md
 - ✅ **ML Training**: Tests real RandomForest, LogisticRegression, ensemble models
 - ✅ **API Systems**: Tests ML management, prediction endpoints, web application
+- ✅ **Web Application**: Tests dashboard, race cards, live tracking with Playwright
 - ✅ **Docker Infrastructure**: Tests container execution, PostgreSQL integration
 - ✅ **Database Architecture**: Tests multi-database support (cards + results)
 

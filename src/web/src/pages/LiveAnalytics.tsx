@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from 'react'
 import {
     Timeline,
     TrendingUp,
@@ -17,23 +18,50 @@ import {
 } from '@mui/material'
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, BarChart, Bar } from 'recharts'
 
-const liveData = [
-    { time: '10:00', predictions: 85, accuracy: 78 },
-    { time: '10:30', predictions: 92, accuracy: 81 },
-    { time: '11:00', predictions: 88, accuracy: 79 },
-    { time: '11:30', predictions: 95, accuracy: 83 },
-    { time: '12:00', predictions: 91, accuracy: 85 },
-    { time: '12:30', predictions: 97, accuracy: 87 }
-]
-
-const modelPerformance = [
-    { model: 'Random Forest', accuracy: 76.2, predictions: 245 },
-    { model: 'Gradient Boost', accuracy: 78.5, predictions: 238 },
-    { model: 'Neural Network', accuracy: 74.1, predictions: 251 },
-    { model: 'SVM', accuracy: 72.8, predictions: 229 }
-]
-
 export default function LiveAnalytics() {
+    const [liveData, setLiveData] = useState<any[]>([]);
+    const [modelPerformance, setModelPerformance] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+        const fetchLiveAnalytics = async () => {
+            try {
+                setLoading(true);
+                const response = await fetch('/api/live_analytics');
+                if (!response.ok) {
+                    throw new Error('Failed to fetch live analytics');
+                }
+                const data = await response.json();
+                setLiveData(data.live_data || []);
+                setModelPerformance(data.model_performance || []);
+            } catch (err) {
+                setError(err instanceof Error ? err.message : 'An error occurred');
+                // Fallback data in case of error
+                setLiveData([
+                    { time: '10:00', predictions: 85, accuracy: 78 },
+                    { time: '10:30', predictions: 92, accuracy: 81 },
+                    { time: '11:00', predictions: 88, accuracy: 79 },
+                    { time: '11:30', predictions: 95, accuracy: 83 },
+                    { time: '12:00', predictions: 91, accuracy: 85 },
+                    { time: '12:30', predictions: 97, accuracy: 87 }
+                ]);
+                setModelPerformance([
+                    { model: 'Random Forest', accuracy: 76.2, predictions: 245 },
+                    { model: 'Gradient Boost', accuracy: 78.5, predictions: 238 },
+                    { model: 'Neural Network', accuracy: 74.1, predictions: 251 },
+                    { model: 'SVM', accuracy: 72.8, predictions: 229 }
+                ]);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchLiveAnalytics();
+    }, []);
+
+    if (loading) return <div>Loading live analytics...</div>;
+    if (error) console.warn('Live analytics error:', error);
     return (
         <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
             <Typography variant="h3" component="h1" gutterBottom sx={{ mb: 4, fontWeight: 'bold' }}>

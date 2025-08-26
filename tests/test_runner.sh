@@ -51,7 +51,7 @@ print_usage() {
     echo "  $0 smoke                      # Run smoke tests only"
     echo ""
     echo -e "${YELLOW}Components:${NC}"
-    echo "  bulk_uploader, pipeline, ml, api, database"
+    echo "  bulk_uploader, pipeline, ml, api, database, web_app"
 }
 
 # Function to setup test environment

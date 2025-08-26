@@ -967,5 +967,109 @@
     "created": "2025-08-25T08:00:00",
     "business_value": "System accessibility and third-party integration",
     "priority_level": "Next Phase"
+  },
+  {
+    "id": 40,
+    "title": "Playwright Test Environment Enhancement",
+    "description": "Set up proper test environment variables and configuration for Playwright tests",
+    "priority": "MEDIUM",
+    "category": "Testing Infrastructure",
+    "estimated_time": "6 hours",
+    "solution_steps": [
+      "Configure test environment variables for Playwright tests",
+      "Set up test database isolation and cleanup procedures",
+      "Implement test data factories and fixtures",
+      "Add cross-browser testing automation",
+      "Create test configuration management",
+      "Add test result reporting and coverage"
+    ],
+    "files_to_modify": [
+      "tests/integration/web_app_integration/test_playwright_integration.py",
+      "src/web/playwright.config.ts",
+      "tests/pytest.ini",
+      "tests/conftest.py"
+    ],
+    "status": "PENDING",
+    "created": "2025-08-26T17:50:00",
+    "business_value": "Reliable end-to-end testing and quality assurance",
+    "priority_level": "Next Phase"
+  },
+  {
+    "id": 41,
+    "title": "Real-Time API Performance Monitoring",
+    "description": "Add real-time API performance metrics and tracking systems",
+    "priority": "MEDIUM",
+    "category": "Performance Monitoring",
+    "estimated_time": "8 hours",
+    "solution_steps": [
+      "Implement API response time monitoring and alerting",
+      "Create performance dashboards for API endpoints",
+      "Add database query performance monitoring",
+      "Set up automated performance regression detection",
+      "Implement real-time metrics collection",
+      "Add performance analytics and reporting"
+    ],
+    "files_to_modify": [
+      "src/web/api_server_enhanced.py",
+      "monitoring/performance_monitor.py",
+      "config/monitoring_config.json",
+      "docker-compose.clean.yml"
+    ],
+    "status": "PENDING",
+    "created": "2025-08-26T17:50:00",
+    "business_value": "System performance optimization and reliability",
+    "priority_level": "Next Phase"
+  },
+  {
+    "id": 42,
+    "title": "Enhanced Redis Caching Strategy Implementation",
+    "description": "Implement Redis caching for frequently requested data with intelligent cache management",
+    "priority": "MEDIUM",
+    "category": "Performance Optimization",
+    "estimated_time": "10 hours",
+    "solution_steps": [
+      "Implement Redis caching for frequently requested API data",
+      "Add intelligent cache warming strategies",
+      "Optimize API response caching with proper TTL",
+      "Implement cache hit/miss metrics and monitoring",
+      "Add cache invalidation strategies for real-time data",
+      "Create cache performance analytics dashboard"
+    ],
+    "files_to_modify": [
+      "src/web/api_server_enhanced.py",
+      "src/cache/redis_manager.py",
+      "config/cache_config.json",
+      "docker-compose.clean.yml"
+    ],
+    "status": "PENDING",
+    "created": "2025-08-26T17:50:00",
+    "business_value": "Improved API response times and system scalability",
+    "priority_level": "Next Phase"
+  },
+  {
+    "id": 43,
+    "title": "WebSocket Real-Time Data Integration",
+    "description": "Add real-time data updates for live components using WebSocket technology",
+    "priority": "MEDIUM",
+    "category": "Real-Time Features",
+    "estimated_time": "12 hours",
+    "solution_steps": [
+      "Implement WebSocket connection management system",
+      "Add real-time data updates for live components",
+      "Create real-time event broadcasting system",
+      "Add live race data streaming capabilities",
+      "Implement connection resilience and reconnection logic",
+      "Add real-time notification system for critical events"
+    ],
+    "files_to_modify": [
+      "src/web/api_server_enhanced.py",
+      "src/web/src/services/websocket.ts",
+      "src/web/src/hooks/useWebSocket.ts",
+      "src/web/src/pages/LiveAnalytics.tsx"
+    ],
+    "status": "PENDING",
+    "created": "2025-08-26T17:50:00",
+    "business_value": "Enhanced user experience with real-time data updates",
+    "priority_level": "Next Phase"
   }
 ]

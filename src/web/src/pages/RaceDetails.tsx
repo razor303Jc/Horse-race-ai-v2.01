@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from 'react'
 import {
     EmojiEvents,
     Speed,
@@ -118,15 +119,6 @@ const runners = [
     }
 ]
 
-const performanceData = [
-    { metric: 'Speed', value: 85 },
-    { metric: 'Stamina', value: 78 },
-    { metric: 'Track Record', value: 92 },
-    { metric: 'Recent Form', value: 88 },
-    { metric: 'Jockey Form', value: 95 },
-    { metric: 'Trainer Record', value: 82 }
-]
-
 const oddsHistory = [
     { time: '9:00', lightning: 7/2, thunder: 3/1, storm: 9/2 },
     { time: '12:00', lightning: 3/1, thunder: 5/2, storm: 4/1 },
@@ -135,6 +127,32 @@ const oddsHistory = [
 ]
 
 export default function RaceDetails() {
+    const [raceData, setRaceData] = useState<any>(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+        const fetchRaceDetails = async () => {
+            try {
+                setLoading(true);
+                const response = await fetch('/api/race_details');
+                if (!response.ok) {
+                    throw new Error('Failed to fetch race details');
+                }
+                const data = await response.json();
+                setRaceData(data);
+            } catch (err) {
+                setError(err instanceof Error ? err.message : 'An error occurred');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchRaceDetails();
+    }, []);
+
+    if (loading) return <div>Loading race details...</div>;
+    if (error) return <div>Error: {error}</div>;
     return (
         <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
             {/* Race Header */}

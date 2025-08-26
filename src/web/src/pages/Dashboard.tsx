@@ -75,16 +75,8 @@ export default function Dashboard() {
         );
     }
 
-    // Prepare chart data from performance
-    const chartData = performance.recent_performance || [
-        { date: 'Mon', pnl: 65 },
-        { date: 'Tue', pnl: 78 },
-        { date: 'Wed', pnl: 82 },
-        { date: 'Thu', pnl: 76 },
-        { date: 'Fri', pnl: 88 },
-        { date: 'Sat', pnl: 95 },
-        { date: 'Sun', pnl: 92 }
-    ];
+    // Prepare chart data from performance - no fallback data
+    const chartData = performance?.recent_performance || [];
 
     return (
         <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
