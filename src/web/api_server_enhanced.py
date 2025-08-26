@@ -147,11 +147,11 @@ async def get_system_status():
     cards_conn = get_cards_db_connection()
     results_conn = get_results_db_connection()
     advanced_conn = get_advanced_db_connection()
-    
+
     cards_status = "CONNECTED" if cards_conn else "DISCONNECTED"
     results_status = "CONNECTED" if results_conn else "DISCONNECTED"
     advanced_status = "CONNECTED" if advanced_conn else "DISCONNECTED"
-    
+
     # Close connections
     if cards_conn:
         cards_conn.close()
@@ -159,11 +159,15 @@ async def get_system_status():
         results_conn.close()
     if advanced_conn:
         advanced_conn.close()
-    
+
     # Overall status is excellent if all databases are connected
-    all_connected = all([cards_status == "CONNECTED",
-                        results_status == "CONNECTED",
-                        advanced_status == "CONNECTED"])
+    all_connected = all(
+        [
+            cards_status == "CONNECTED",
+            results_status == "CONNECTED",
+            advanced_status == "CONNECTED",
+        ]
+    )
 
     return {
         "overall_status": "EXCELLENT" if all_connected else "DEGRADED",
@@ -285,10 +289,68 @@ async def get_database_stats():
         raise HTTPException(status_code=500, detail=f"Database query failed: {str(e)}")
 
 
+@app.get("/api/races_by_date/{date}")
+async def get_races_by_date(date: str):
+    """Get races for a specific date (format: YYYY-MM-DD)"""
+
+    conn = get_cards_db_connection()
+    if not conn:
+        raise HTTPException(status_code=503, detail="Cards database connection failed")
+
+    try:
+        cursor = conn.cursor(cursor_factory=RealDictCursor)
+
+        # Parse the date
+        try:
+            search_date = datetime.strptime(date, "%Y-%m-%d").date()
+        except ValueError:
+            raise HTTPException(
+                status_code=400, detail="Invalid date format. Use YYYY-MM-DD"
+            )
+
+        query = """
+        SELECT 
+            race_id,
+            race_number,
+            race_time,
+            course,
+            race_name,
+            class,
+            distance,
+            surface,
+            prize,
+            date,
+            runners,
+            race_type
+        FROM races
+        WHERE date = %s
+        ORDER BY race_time, race_number;
+        """
+
+        cursor.execute(query, (search_date,))
+        races = cursor.fetchall()
+
+        cursor.close()
+        conn.close()
+
+        return {
+            "status": "success",
+            "search_date": date,
+            "total_races": len(races),
+            "races": [dict(race) for race in races],
+            "timestamp": datetime.now().isoformat(),
+        }
+
+    except Exception as e:
+        if conn:
+            conn.close()
+        raise HTTPException(status_code=500, detail=f"Database query failed: {str(e)}")
+
+
 @app.get("/api/real_race_cards")
 async def get_real_race_cards():
     """Get today's race cards from cards database with helpful guidance"""
-    
+
     conn = get_cards_db_connection()  # Use cards database for race cards
     if not conn:
         raise HTTPException(status_code=503, detail="Cards database connection failed")
@@ -298,7 +360,7 @@ async def get_real_race_cards():
 
         # Get today's date
         today = datetime.now().date()
-        
+
         # Query for today's races only
         race_query = """
         SELECT * FROM races
@@ -313,7 +375,7 @@ async def get_real_race_cards():
         if not races:
             cursor.close()
             conn.close()
-            
+
             return {
                 "status": "no_data",
                 "message": "No race cards found for today",
@@ -323,13 +385,13 @@ async def get_real_race_cards():
                         "1. Check if the daily data pipeline is running",
                         "2. Verify race card download scripts are scheduled",
                         "3. Manually trigger race card download if needed",
-                        "4. Ensure racing websites are accessible"
+                        "4. Ensure racing websites are accessible",
                     ],
                     "troubleshooting": {
                         "check_pipeline": "Run the pipeline diagnostic tool",
                         "manual_download": "Use the manual download scripts in tools/",
-                        "verify_sources": "Check if racing data sources are available"
-                    }
+                        "verify_sources": "Check if racing data sources are available",
+                    },
                 },
                 "races": [],
                 "total_races": 0,
@@ -342,8 +404,10 @@ async def get_real_race_cards():
         for race in races:
             race_dict = dict(race)
             # Format race time for display
-            if race_dict.get('race_time'):
-                race_dict['race_time_formatted'] = race_dict['race_time'].strftime("%H:%M")
+            if race_dict.get("race_time"):
+                race_dict["race_time_formatted"] = race_dict["race_time"].strftime(
+                    "%H:%M"
+                )
             race_list.append(race_dict)
 
         cursor.close()
@@ -576,10 +640,10 @@ async def get_daily_races():
 
     try:
         cursor = conn.cursor(cursor_factory=RealDictCursor)
-        
+
         # Get today's races from the races table
         today = datetime.now().date()
-        
+
         query = """
         SELECT 
             race_id,
@@ -606,7 +670,7 @@ async def get_daily_races():
         if not races:
             cursor.close()
             conn.close()
-            
+
             return {
                 "status": "no_data",
                 "message": "No races scheduled for today",
@@ -616,13 +680,13 @@ async def get_daily_races():
                         "1. Run the daily race card downloader",
                         "2. Check racing calendar for today's meetings",
                         "3. Verify data sources are available",
-                        "4. Check if it's a non-racing day"
+                        "4. Check if it's a non-racing day",
                     ],
                     "manual_commands": [
                         "Run: python tools/data_processing/daily_downloads_manager.py",
                         "Check: Racing calendar for today's date",
-                        "Verify: Internet connection and racing site access"
-                    ]
+                        "Verify: Internet connection and racing site access",
+                    ],
                 },
                 "races": [],
                 "total_races": 0,
@@ -649,7 +713,8 @@ async def get_daily_races():
                 "race_type": race["race_type"],
                 "race_date": (
                     race["date"].strftime("%Y-%m-%d")
-                    if race["date"] else today.isoformat()
+                    if race["date"]
+                    else today.isoformat()
                 ),
             }
             daily_races.append(race_data)

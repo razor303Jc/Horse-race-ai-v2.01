@@ -43,7 +43,7 @@ class PipelineOrchestrator:
 
         # Database connection for pipeline stages
         self.db_config = {
-            "host": "horse_racing_postgres_clean",
+            "host": "postgres",
             "port": 5432,
             "database": "horse_racing_db",
             "user": "horse_racing",

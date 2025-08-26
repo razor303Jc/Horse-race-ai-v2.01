@@ -21,7 +21,7 @@ def main():
     # Database connection with correct credentials
     try:
         conn = psycopg2.connect(
-            host="horse_racing_postgres_clean",
+            host="postgres",
             port=5432,
             database="horse_racing_db",
             user="horse_racing",

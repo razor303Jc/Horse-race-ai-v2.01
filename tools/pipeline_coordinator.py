@@ -77,21 +77,21 @@ class PipelineOrchestrator:
         # Database configuration for multiple specialized databases
         self.db_configs = {
             "cards": {
-                "host": "horse_racing_postgres_clean",
+                "host": "postgres",
                 "port": 5432,
                 "database": "cards_horse_racing_db",
                 "user": "horse_racing",
                 "password": "secure_password_123",
             },
             "results": {
-                "host": "horse_racing_postgres_clean",
+                "host": "postgres",
                 "port": 5432,
                 "database": "results_horse_racing_db",
                 "user": "horse_racing",
                 "password": "secure_password_123",
             },
             "advanced": {
-                "host": "horse_racing_postgres_clean",
+                "host": "postgres",
                 "port": 5432,
                 "database": "advanced_racing_metrics_db",
                 "user": "horse_racing",
