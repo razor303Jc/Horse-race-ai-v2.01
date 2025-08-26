@@ -28,6 +28,9 @@ import CourseDetail from './pages/CourseDetail'
 import RaceDetail from './pages/RaceDetail'
 import RaceDetails from './pages/RaceDetails'
 import DatabaseManagement from './pages/DatabaseManagement'
+import EnhancedFormAnalysisTools from './components/analysis/EnhancedFormAnalysisTools'
+import EnhancedDashboardWidgets from './components/dashboard/EnhancedDashboardWidgets'
+import AdvancedRaceCardFeatures from './components/racecard/AdvancedRaceCardFeatures'
 import ErrorPage from './pages/ErrorPage'
 import { RaceSelection } from './components/RaceSelection'
 import AdvancedBettingDashboard from './components/betting/AdvancedBettingDashboard'
@@ -81,7 +84,10 @@ function App() {
                 <Button color="inherit" href="/analyzer" startIcon={<AnalyticsIcon />}>
                   AI Analyzer
                 </Button>
-                <Button color="inherit" href="/live" startIcon={<Assessment />}>
+                <Button color="inherit" href="/form-analysis" startIcon={<Assessment />}>
+                  Form Analysis
+                </Button>
+                <Button color="inherit" href="/live" startIcon={<LiveTv />}>
                   Live Analytics
                 </Button>
                 <Button color="inherit" href="/live-racing" startIcon={<LiveTv />}>
@@ -117,6 +123,9 @@ function App() {
               <Route path="/" element={<Dashboard />} />
               <Route path="/dashboard" element={<Navigate to="/" replace />} />
               <Route path="/analyzer" element={<RacingAnalyzer />} />
+              <Route path="/form-analysis" element={<EnhancedFormAnalysisTools />} />
+              <Route path="/widgets" element={<EnhancedDashboardWidgets />} />
+              <Route path="/advanced-cards" element={<AdvancedRaceCardFeatures />} />
               <Route path="/live" element={<LiveAnalytics />} />
               <Route path="/live-racing" element={<RaceSelection />} />
               <Route path="/betting" element={<AdvancedBettingDashboard />} />
