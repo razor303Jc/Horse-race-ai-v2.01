@@ -141,18 +141,38 @@ def get_advanced_db_connection():
 
 @app.get("/api/system_status")
 async def get_system_status():
-    """Get system status with real database connection check"""
+    """Get system status with all database connection checks"""
 
-    # Check database connection
-    conn = get_db_connection()
-    db_status = "CONNECTED" if conn else "DISCONNECTED"
-    if conn:
-        conn.close()
+    # Check all database connections
+    cards_conn = get_cards_db_connection()
+    results_conn = get_results_db_connection()
+    advanced_conn = get_advanced_db_connection()
+    
+    cards_status = "CONNECTED" if cards_conn else "DISCONNECTED"
+    results_status = "CONNECTED" if results_conn else "DISCONNECTED"
+    advanced_status = "CONNECTED" if advanced_conn else "DISCONNECTED"
+    
+    # Close connections
+    if cards_conn:
+        cards_conn.close()
+    if results_conn:
+        results_conn.close()
+    if advanced_conn:
+        advanced_conn.close()
+    
+    # Overall status is excellent if all databases are connected
+    all_connected = all([cards_status == "CONNECTED",
+                        results_status == "CONNECTED",
+                        advanced_status == "CONNECTED"])
 
     return {
-        "overall_status": "EXCELLENT" if db_status == "CONNECTED" else "DEGRADED",
+        "overall_status": "EXCELLENT" if all_connected else "DEGRADED",
         "timestamp": datetime.now().isoformat(),
-        "database": db_status,
+        "database": {
+            "cards_database": cards_status,
+            "results_database": results_status,
+            "advanced_database": advanced_status,
+        },
         "ml_models": "OPERATIONAL",
         "betting_integration": "CONNECTED",
         "contextual_ai": "ACTIVE",
@@ -348,9 +368,9 @@ async def get_real_race_cards():
 async def get_race_details(race_id: str):
     """Get detailed information for a specific race"""
 
-    conn = get_db_connection()
+    conn = get_cards_db_connection()  # Use cards database for race details
     if not conn:
-        raise HTTPException(status_code=503, detail="Database connection failed")
+        raise HTTPException(status_code=503, detail="Cards database connection failed")
 
     try:
         cursor = conn.cursor()
@@ -728,9 +748,9 @@ async def get_dashboard_data():
 async def get_betting_recommendations():
     """Get betting recommendations based on current race data and ML models"""
 
-    conn = get_db_connection()
+    conn = get_cards_db_connection()  # Use cards database for race data
     if not conn:
-        raise HTTPException(status_code=503, detail="Database connection failed")
+        raise HTTPException(status_code=503, detail="Cards database connection failed")
 
     try:
         cursor = conn.cursor()
