@@ -1,6 +1,38 @@
 # 🐎 ADVANCED AI HORSE RACING SYSTEM - COMPREHENSIVE TODO LIST
 
-_Last Updated: August 25, 2025_
+_Last Updated: August 27, 2025_
+
+## 🔍 PRIORITY 1 - REVIEW & IMPROVEMENT REQUIRED
+
+### 🔄 1.1 Review & Improve Unique Reference Tables System
+
+- **Status:** 🔍 NEEDS REVIEW - Recently Created (August 27, 2025)
+- **Purpose:** Review and enhance the unique reference tables implementation
+- **What Was Created:**
+  - `unique_horses` table (965 unique horses)
+  - `unique_jockeys` table (6,606 unique jockeys)  
+  - `unique_trainers` table (4,260 unique trainers)
+  - Python automation script: `tools/create_unique_reference_tables.py`
+  - SQL scripts in `/queries/` folder
+- **Areas for Review:**
+  - ✅ Verify data accuracy and completeness
+  - ✅ Optimize query performance and indexing
+  - ✅ Enhance error handling and validation
+  - ✅ Integrate with existing bulk uploader system
+  - ✅ Add data synchronization for ongoing updates
+  - ✅ Review duplicate detection logic
+  - ✅ Test with actual CSV processing workflow
+- **Files to Review:**
+  - `tools/create_unique_reference_tables.py`
+  - `CREATE_UNIQUE_REFERENCE_TABLES.sql`
+  - `UNIQUE_REFERENCE_TABLES_COMPLETION_REPORT.md`
+  - Database tables: `unique_horses`, `unique_jockeys`, `unique_trainers`
+- **Integration Points:**
+  - Bulk uploader enhancement for duplicate prevention
+  - CSV processing workflow optimization
+  - Data integrity validation improvements
+- **Estimated Time:** 2-3 hours
+- **Priority:** Medium-High (affects data quality and processing efficiency)
 
 ## 🚨 CRITICAL PRIORITY 0 - IMMEDIATE FIXES REQUIRED (NEXT 30 MINUTES)
 
