@@ -586,44 +586,50 @@ class BulkUploadEngine:
                             row_data.append(None)
                         else:
                             # Escape % characters in string values to prevent psycopg2 placeholder conflicts
-                            if isinstance(value, str) and '%' in value:
+                            if isinstance(value, str) and "%" in value:
                                 # Double the % to escape it for psycopg2
-                                value = value.replace('%', '%%')
+                                value = value.replace("%", "%%")
                             row_data.append(value)
                     data_tuples.append(tuple(row_data))
 
                 # Build bulk insert query using psycopg2.sql for safety
                 columns_identifiers = [psycopg2.sql.Identifier(col) for col in columns]
                 columns_list = psycopg2.sql.SQL(", ").join(columns_identifiers)
-                
+
                 # Create placeholder list without using %s strings
                 placeholders_list = psycopg2.sql.SQL(",").join(
                     [psycopg2.sql.Placeholder()] * len(columns)
                 )
 
                 if self.config.conflict_resolution == "ignore":
-                    query = psycopg2.sql.SQL("""
+                    query = psycopg2.sql.SQL(
+                        """
                         INSERT INTO {} ({})
                         VALUES ({})
                         ON CONFLICT DO NOTHING
-                    """).format(
+                    """
+                    ).format(
                         psycopg2.sql.Identifier(table_name),
                         columns_list,
-                        placeholders_list
+                        placeholders_list,
                     )
                 else:
-                    query = psycopg2.sql.SQL("""
+                    query = psycopg2.sql.SQL(
+                        """
                         INSERT INTO {} ({})
                         VALUES ({})
-                    """).format(
+                    """
+                    ).format(
                         psycopg2.sql.Identifier(table_name),
                         columns_list,
-                        placeholders_list
+                        placeholders_list,
                     )
 
                 # Debug: Log the query and first few data points
                 self.logger.info(f"Query: {query.as_string(conn)}")
-                self.logger.info(f"Sample data: {data_tuples[:2] if data_tuples else 'No data'}")
+                self.logger.info(
+                    f"Sample data: {data_tuples[:2] if data_tuples else 'No data'}"
+                )
 
                 # Execute bulk insert with progress tracking
                 batch_size = self.config.batch_size
@@ -638,10 +644,10 @@ class BulkUploadEngine:
                         try:
                             # Convert psycopg2.sql.SQL object to string for execute_values
                             query_string = query.as_string(conn)
-                            
+
                             # Debug: Try simple executemany instead of execute_values
                             self.logger.info("Trying executemany approach...")
-                            
+
                             # Create simple insert query for executemany
                             placeholders = ",".join(["%s"] * len(columns))
                             simple_query = f"""
@@ -649,7 +655,7 @@ class BulkUploadEngine:
                                 VALUES ({placeholders})
                                 ON CONFLICT DO NOTHING
                             """
-                            
+
                             cur.executemany(simple_query, batch)
                             uploaded_count += len(batch)
 

@@ -10,7 +10,7 @@ _Last Updated: August 27, 2025_
 - **Purpose:** Review and enhance the unique reference tables implementation
 - **What Was Created:**
   - `unique_horses` table (965 unique horses)
-  - `unique_jockeys` table (6,606 unique jockeys)  
+  - `unique_jockeys` table (6,606 unique jockeys)
   - `unique_trainers` table (4,260 unique trainers)
   - Python automation script: `tools/create_unique_reference_tables.py`
   - SQL scripts in `/queries/` folder
