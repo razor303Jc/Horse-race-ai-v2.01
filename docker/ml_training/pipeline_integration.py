@@ -16,6 +16,14 @@ import sys
 # Add project paths
 sys.path.insert(0, "/app")
 
+# Try to import enhanced logging
+try:
+    from tools.logging.enhanced_logging import get_enhanced_logger
+
+    ENHANCED_LOGGING = True
+except ImportError:
+    ENHANCED_LOGGING = False
+
 # Try to import ML training components
 try:
     import pandas as pd
@@ -33,8 +41,14 @@ except ImportError as e:
     logging.warning(f"ML libraries not available: {e}")
     ML_AVAILABLE = False
 
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+# Initialize enhanced logging if available
+if ENHANCED_LOGGING:
+    enhanced_logger = get_enhanced_logger("ml_trainer", "DEBUG")
+    enhanced_logger.log_system_info()
+    logger = enhanced_logger.get_logger("pipeline")
+else:
+    logging.basicConfig(level=logging.INFO)
+    logger = logging.getLogger(__name__)
 
 
 class EarlyMorningPipelineIntegration:
@@ -42,10 +56,39 @@ class EarlyMorningPipelineIntegration:
         self.logger = logger
         self.is_running = False
         self.models_path = Path("/app/models")
+
+        # Use environment variables for database URLs
+        self.cards_db_url = os.getenv(
+            "CARDS_DATABASE_URL",
+            "postgresql://horse_racing:secure_password_123@postgres:5432/"
+            "cards_horse_racing_db",
+        )
+        self.results_db_url = os.getenv(
+            "RESULTS_DATABASE_URL",
+            "postgresql://horse_racing:secure_password_123@postgres:5432/"
+            "results_horse_racing_db",
+        )
+        self.advanced_db_url = os.getenv(
+            "ADVANCED_DATABASE_URL",
+            "postgresql://horse_racing:secure_password_123@postgres:5432/"
+            "advanced_racing_metrics_db",
+        )
+
+        # Log database configuration
+        if ENHANCED_LOGGING:
+            enhanced_logger.log_database_config(
+                {
+                    "cards": self.cards_db_url,
+                    "results": self.results_db_url,
+                    "advanced": self.advanced_db_url,
+                }
+            )
+
+        # Legacy config for backward compatibility (use advanced metrics as default)
         self.db_config = {
             "host": "postgres",
             "port": 5432,
-            "database": "horse_racing_db",
+            "database": "advanced_racing_metrics_db",
             "user": "horse_racing",
             "password": os.getenv("POSTGRES_PASSWORD", "secure_password_123"),
         }
@@ -96,29 +139,47 @@ class EarlyMorningPipelineIntegration:
         max_retries = 3
         for attempt in range(max_retries):
             try:
-                # Use SQLAlchemy for consistency with load_training_data()
-                connection_string = (
-                    f"postgresql://{self.db_config['user']}:{self.db_config['password']}"
-                    f"@{self.db_config['host']}:{self.db_config['port']}"
-                    f"/{self.db_config['database']}"
-                )
+                # Use the results database URL for ML training (has race results data)
+                connection_string = self.results_db_url
 
                 engine = create_engine(connection_string)
 
                 # Test connection and get counts using text() for raw SQL
                 with engine.connect() as conn:
-                    result = conn.execute(text("SELECT COUNT(*) FROM races"))
-                    race_count = result.fetchone()[0]
+                    # Check for any tables first
+                    result = conn.execute(
+                        text(
+                            "SELECT COUNT(*) FROM information_schema.tables "
+                            "WHERE table_schema = 'public'"
+                        )
+                    )
+                    table_count = result.fetchone()[0]
 
-                    result = conn.execute(text("SELECT COUNT(*) FROM records"))
-                    record_count = result.fetchone()[0]
+                    race_count = 0
+                    record_count = 0
+
+                    # Try to get data from standard tables if they exist
+                    try:
+                        result = conn.execute(text("SELECT COUNT(*) FROM races"))
+                        race_count = result.fetchone()[0]
+                    except Exception:
+                        # races table might not exist in advanced_metrics_db
+                        pass
+
+                    try:
+                        result = conn.execute(text("SELECT COUNT(*) FROM records"))
+                        record_count = result.fetchone()[0]
+                    except Exception:
+                        # records table might not exist in advanced_metrics_db
+                        pass
 
                 engine.dispose()
 
                 self.logger.info(
-                    f"📊 Database: {race_count} races, {record_count} records"
+                    f"📊 Database: {table_count} tables, {race_count} races, "
+                    f"{record_count} records"
                 )
-                return race_count > 0 and record_count > 0
+                return table_count > 0  # Return true if any tables exist
 
             except Exception as e:
                 self.logger.warning(
@@ -135,13 +196,9 @@ class EarlyMorningPipelineIntegration:
     def load_training_data(self):
         """Load training data from PostgreSQL database"""
         try:
+            # Use results database which has races and records tables
             # Create SQLAlchemy engine for pandas compatibility
-            # Build connection string for SQLAlchemy
-            connection_string = (
-                f"postgresql://{self.db_config['user']}:{self.db_config['password']}"
-                f"@{self.db_config['host']}:{self.db_config['port']}"
-                f"/{self.db_config['database']}"
-            )
+            connection_string = self.results_db_url
 
             engine = create_engine(connection_string)
 
@@ -152,10 +209,10 @@ class EarlyMorningPipelineIntegration:
                 r.distance,
                 r.race_type,
                 r.runners,
-                rec.horse,
-                rec.position,
+                rec.name as horse,
+                rec.place as position,
                 rec.age,
-                rec.or_rating,
+                rec.horse_rate as or_rating,
                 rec.weight,
                 rec.jockey,
                 rec.trainer,
@@ -163,8 +220,8 @@ class EarlyMorningPipelineIntegration:
                 rec.sp
             FROM races r
             JOIN records rec ON r.race_id = rec.race_id
-            WHERE rec.position IS NOT NULL
-            ORDER BY r.race_id, rec.position
+            WHERE rec.place IS NOT NULL
+            ORDER BY r.race_id, rec.place
             """
 
             df = pd.read_sql_query(query, engine)

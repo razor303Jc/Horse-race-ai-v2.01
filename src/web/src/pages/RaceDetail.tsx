@@ -77,9 +77,8 @@ export default function RaceDetail() {
                 
                 console.log('Loading race detail for ID:', raceId);
                 
-                // Load daily races to find the specific race
-                const dailyRaces = await HorseRacingAPI.getDailyRaces();
-                const raceDetail = dailyRaces.races.find(r => r.race_id === parseInt(raceId));
+                // Load race details with real horse data from the API
+                const raceDetail = await HorseRacingAPI.getRaceDetails(parseInt(raceId));
                 
                 if (!raceDetail) {
                     setError('Race not found');
@@ -92,29 +91,20 @@ export default function RaceDetail() {
                     race_number: raceDetail.race_number,
                     race_time: raceDetail.race_time,
                     course: raceDetail.course,
+                    race_type: raceDetail.race_type || 'Unknown',
+                    race_date: raceDetail.race_date || new Date().toISOString().split('T')[0],
                     race_name: raceDetail.race_name,
                     class: raceDetail.class || 'Unknown',
                     distance: raceDetail.distance || 'Unknown',
                     surface: raceDetail.surface || 'Unknown',
                     prize: raceDetail.prize || 'Unknown',
-                    runners: raceDetail.runners
+                    total_runners: raceDetail.total_runners,
+                    horses: raceDetail.horses
                 };
                 
                 setRace(raceCard);
-                
-                // Try to load race horses - for now, we'll create some placeholder data
-                // since we need to implement the race horses API endpoint
-                const placeholderHorses: RealHorse[] = Array.from({ length: raceCard.runners }, (_, i) => ({
-                    horse_name: `Horse ${i + 1}`,
-                    jockey: `Jockey ${i + 1}`,
-                    trainer: `Trainer ${i + 1}`,
-                    age: 3 + Math.floor(Math.random() * 5),
-                    odds: `${2 + Math.floor(Math.random() * 10)}/1`,
-                    form: '12345'.split('').sort(() => Math.random() - 0.5).join('')
-                }));
-                
-                setHorses(placeholderHorses);
-                console.log(`Loaded race ${raceId} with ${placeholderHorses.length} runners`);
+                setHorses(raceDetail.horses); // Use real horse data with actual names
+                console.log(`Loaded race ${raceId} with ${raceDetail.horses.length} real horses and jockeys`);
                 
             } catch (error) {
                 console.error('Error loading race detail:', error);

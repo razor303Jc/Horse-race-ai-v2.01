@@ -440,7 +440,7 @@ async def get_race_details(race_id: str):
     try:
         cursor = conn.cursor()
 
-        # Get race information from race_cards table
+        # Get race information from races table
         race_query = """
         SELECT 
             race_id,
@@ -448,14 +448,14 @@ async def get_race_details(race_id: str):
             race_time,
             course,
             race_type,
-            race_date,
+            date,
             race_name,
             class,
             distance,
             surface,
             prize,
             runners
-        FROM race_cards
+        FROM races
         WHERE race_id = %s
         LIMIT 1;
         """
@@ -469,27 +469,26 @@ async def get_race_details(race_id: str):
         # Get horse entries for this race
         entries_query = """
         SELECT 
-            h.name as horse_name,
-            h.age as horse_age,
-            h.country as horse_country,
-            h.color as horse_color,
-            h.sex as horse_sex,
-            h.total_races,
-            h.wins,
-            h.percentage_wins,
-            re.horse_number,
-            re.draw,
-            re.weight_kg,
-            re.jockey,
-            re.trainer,
-            re.odds,
-            re.favourite_position,
-            re.timeform_comments as form,
-            re.horse_rate as official_rating
-        FROM race_entries re
-        JOIN horses h ON re.horse_id = h.horse_id
-        WHERE re.race_id = %s
-        ORDER BY re.horse_number;
+            rd.name as horse_name,
+            rd.age as horse_age,
+            rd.country as horse_country,
+            NULL as horse_color,
+            NULL as horse_sex,
+            NULL as total_races,
+            NULL as wins,
+            NULL as percentage_wins,
+            rd.horse_number,
+            rd.draw,
+            rd.weight as weight_kg,
+            rd.jockey,
+            rd.trainer,
+            rd.odds,
+            rd.fav as favourite_position,
+            rd.timeform_comments as form,
+            rd.horse_rate as official_rating
+        FROM racecard_details rd
+        WHERE rd.race_id = %s
+        ORDER BY rd.horse_number;
         """
 
         cursor.execute(entries_query, (race_id,))
@@ -556,9 +555,7 @@ async def get_race_details(race_id: str):
             "course": race_info["course"],
             "race_type": race_info["race_type"],
             "race_date": (
-                race_info["race_date"].strftime("%Y-%m-%d")
-                if race_info["race_date"]
-                else ""
+                race_info["date"].strftime("%Y-%m-%d") if race_info["date"] else ""
             ),
             "race_name": race_info["race_name"] or f"Race {race_info['race_number']}",
             "class": race_info["class"],
