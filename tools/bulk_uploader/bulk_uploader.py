@@ -638,15 +638,20 @@ class BulkUploadEngine:
                         try:
                             # Convert psycopg2.sql.SQL object to string for execute_values
                             query_string = query.as_string(conn)
-                            # Create explicit template to avoid auto-generation issues
-                            template = f"({','.join(['%s'] * len(columns))})"
-                            psycopg2.extras.execute_values(
-                                cur, query_string, batch, template=template, 
-                                page_size=batch_size
-                            )
-
+                            
+                            # Debug: Try simple executemany instead of execute_values
+                            self.logger.info("Trying executemany approach...")
+                            
+                            # Create simple insert query for executemany
+                            placeholders = ",".join(["%s"] * len(columns))
+                            simple_query = f"""
+                                INSERT INTO {table_name} ({",".join(columns)}) 
+                                VALUES ({placeholders})
+                                ON CONFLICT DO NOTHING
+                            """
+                            
+                            cur.executemany(simple_query, batch)
                             uploaded_count += len(batch)
-                            job.records_processed = uploaded_count
 
                             # Log progress
                             self.logger.info(
