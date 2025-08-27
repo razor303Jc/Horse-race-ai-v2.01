@@ -28,6 +28,7 @@ import CourseDetail from './pages/CourseDetail'
 import RaceDetail from './pages/RaceDetail'
 import RaceDetails from './pages/RaceDetails'
 import DatabaseManagement from './pages/DatabaseManagement'
+import AISelectionsResults from './pages/AISelectionsResults'
 import EnhancedFormAnalysisTools from './components/analysis/EnhancedFormAnalysisTools'
 import EnhancedDashboardWidgets from './components/dashboard/EnhancedDashboardWidgets'
 import AdvancedRaceCardFeatures from './components/racecard/AdvancedRaceCardFeatures'
@@ -84,6 +85,9 @@ function App() {
                 <Button color="inherit" href="/analyzer" startIcon={<AnalyticsIcon />}>
                   AI Analyzer
                 </Button>
+                <Button color="inherit" href="/ai-results" startIcon={<Assessment />}>
+                  AI Results
+                </Button>
                 <Button color="inherit" href="/form-analysis" startIcon={<Assessment />}>
                   Form Analysis
                 </Button>
@@ -123,6 +127,7 @@ function App() {
               <Route path="/" element={<Dashboard />} />
               <Route path="/dashboard" element={<Navigate to="/" replace />} />
               <Route path="/analyzer" element={<RacingAnalyzer />} />
+              <Route path="/ai-results" element={<AISelectionsResults />} />
               <Route path="/form-analysis" element={<EnhancedFormAnalysisTools />} />
               <Route path="/widgets" element={<EnhancedDashboardWidgets />} />
               <Route path="/advanced-cards" element={<AdvancedRaceCardFeatures />} />

@@ -1142,8 +1142,8 @@ async def get_ai_selections_performance():
 
 
 @app.get("/api/ai_selections/recent")
-async def get_recent_ai_selections(limit: int = 50):
-    """Get recent AI selections with P&L results"""
+async def get_recent_ai_selections(limit: int = 50, offset: int = 0):
+    """Get recent AI selections with P&L results and pagination support"""
     try:
         import sys
         import os
@@ -1151,7 +1151,7 @@ async def get_recent_ai_selections(limit: int = 50):
         sys.path.append(os.path.dirname(__file__))
         from performance_api import performance_api
 
-        result = performance_api.get_recent_selections(limit=limit)
+        result = performance_api.get_recent_selections(limit=limit, offset=offset)
 
         if result["status"] == "success":
             return result

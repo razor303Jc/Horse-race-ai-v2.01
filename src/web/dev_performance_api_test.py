@@ -1,36 +1,24 @@
 #!/usr/bin/env python3
 """
-Enhanced Performance API Endpoints
-=================================
+Development Test for AI Selections Results API
+==============================================
 
-Real-time performance tracking API endpoints that connect to PostgreSQL
-and serve AI selection profit/loss data for the web app.
+This script tests the performance API endpoints and provides
+sample data for the React frontend development.
 """
 
 import psycopg2
-import logging
-import os
+import json
 from datetime import datetime, date, timedelta
-from typing import Dict, List, Optional, Any
 from psycopg2.extras import RealDictCursor
 
-logger = logging.getLogger(__name__)
 
-
-class PerformanceAPI:
-    """API class for performance data from PostgreSQL"""
+class DevPerformanceAPI:
+    """Development version of Performance API using localhost"""
 
     def __init__(self):
-        # Auto-detect if we're running in Docker or localhost
-        if os.path.exists("/.dockerenv") or os.environ.get("DOCKER_CONTAINER"):
-            # Running inside Docker container
-            host = "postgres"
-        else:
-            # Running outside Docker (development)
-            host = "localhost"
-
         self.db_params = {
-            "host": host,
+            "host": "localhost",  # Use localhost for development
             "port": 5432,
             "database": "advanced_racing_metrics_db",
             "user": "horse_racing",
@@ -41,7 +29,7 @@ class PerformanceAPI:
         """Get database connection"""
         return psycopg2.connect(**self.db_params)
 
-    def get_performance_summary(self, days_back: int = 30) -> Dict[str, Any]:
+    def get_performance_summary(self, days_back: int = 30):
         """Get comprehensive performance summary"""
         try:
             conn = self.get_database_connection()
@@ -265,7 +253,7 @@ class PerformanceAPI:
             return response
 
         except Exception as e:
-            logger.error(f"Error fetching performance summary: {e}")
+            print(f"Error fetching performance summary: {e}")
             return {
                 "status": "error",
                 "message": f"Failed to fetch performance data: {str(e)}",
@@ -279,7 +267,7 @@ class PerformanceAPI:
                 },
             }
 
-    def get_recent_selections(self, limit: int = 50, offset: int = 0) -> Dict[str, Any]:
+    def get_recent_selections(self, limit: int = 50, offset: int = 0):
         """Get recent AI selections with results and pagination support"""
         try:
             conn = self.get_database_connection()
@@ -369,59 +357,73 @@ class PerformanceAPI:
             }
 
         except Exception as e:
-            logger.error(f"Error fetching recent selections: {e}")
+            print(f"Error fetching recent selections: {e}")
             return {
                 "status": "error",
                 "message": f"Failed to fetch recent selections: {str(e)}",
-                "data": {"selections": [], "count": 0},
+                "data": {"selections": [], "count": 0, "total_count": 0},
             }
 
 
-# Create API instance
-performance_api = PerformanceAPI()
-
-
-# API endpoint functions
-def get_performance_summary_endpoint(days_back: int = 30):
-    """API endpoint for performance summary"""
-    return performance_api.get_performance_summary(days_back)
-
-
-def get_recent_selections_endpoint(limit: int = 50, offset: int = 0):
-    """API endpoint for recent selections with pagination"""
-    return performance_api.get_recent_selections(limit, offset)
-
-
-# Test the API
 if __name__ == "__main__":
-    api = PerformanceAPI()
+    # Test the development API
+    api = DevPerformanceAPI()
 
-    print("Testing Performance API...")
+    print("🧪 Testing AI Selections Performance API")
     print("=" * 50)
 
     # Test performance summary
-    summary = api.get_performance_summary(14)
-    print(f"Performance Summary Status: {summary['status']}")
+    print("📊 Testing Performance Summary...")
+    summary = api.get_performance_summary(30)
+    print(f"Status: {summary['status']}")
 
     if summary["status"] == "success" and "summary" in summary["data"]:
         s = summary["data"]["summary"]
-        print(f"Total Predictions: {s['total_predictions']}")
-        print(f"Accuracy Rate: {s['accuracy_rate']}%")
-        print(f"ROI: {s['roi_percentage']}%")
-        print(f"Total P&L: £{s['total_profit_loss']}")
-
-    # Test recent selections
-    recent = api.get_recent_selections(10)
-    print(f"\nRecent Selections Status: {recent['status']}")
-    print(f"Recent Selections Count: {recent['data']['count']}")
-
-    if recent["data"]["selections"]:
-        print("\nSample selection:")
-        sel = recent["data"]["selections"][0]
+        print(f"✅ Total Predictions: {s['total_predictions']}")
+        print(f"✅ Accuracy Rate: {s['accuracy_rate']}%")
+        print(f"✅ ROI: {s['roi_percentage']}%")
+        print(f"✅ Total P&L: £{s['total_profit_loss']}")
+        print(f"✅ Confidence Levels: {len(summary['data']['confidence_breakdown'])}")
         print(
-            f"  {sel['horse_name']} - {sel['race_result']} - P&L: £{sel['profit_loss']}"
+            f"✅ Daily Performance Records: {len(summary['data']['daily_performance'])}"
         )
 
+    # Test recent selections with pagination
+    print(f"\n📋 Testing Recent Selections (Pagination)...")
+    recent = api.get_recent_selections(limit=5, offset=0)
+    print(f"Status: {recent['status']}")
+    print(f"✅ Total Records: {recent['data']['total_count']}")
+    print(f"✅ Returned Records: {recent['data']['count']}")
+    print(f"✅ Offset: {recent['data']['offset']}")
+    print(f"✅ Limit: {recent['data']['limit']}")
 
-# Create global instance for import
-performance_api = PerformanceAPI()
+    if recent["data"]["selections"]:
+        print(f"\n🐎 Sample selections:")
+        for i, sel in enumerate(recent["data"]["selections"][:3]):
+            print(
+                f"  {i+1}. {sel['horse_name']} - {sel['race_result']} - P&L: £{sel['profit_loss']} - ROI: {sel['roi_percentage']}%"
+            )
+
+    # Test pagination (page 2)
+    print(f"\n📋 Testing Pagination (Page 2)...")
+    page2 = api.get_recent_selections(limit=5, offset=5)
+    print(f"Status: {page2['status']}")
+    print(f"✅ Page 2 Records: {page2['data']['count']}")
+
+    # Export sample data for development
+    print(f"\n💾 Exporting sample data for React development...")
+
+    sample_data = {
+        "performance_summary": summary,
+        "recent_selections_page1": recent,
+        "recent_selections_page2": page2,
+    }
+
+    with open(
+        "/home/jc/Documents/Horse-race-ai-v2.04/src/web/sample_ai_selections_data.json",
+        "w",
+    ) as f:
+        json.dump(sample_data, f, indent=2, default=str)
+
+    print(f"✅ Sample data exported to: src/web/sample_ai_selections_data.json")
+    print(f"\n🚀 API Test Complete!")

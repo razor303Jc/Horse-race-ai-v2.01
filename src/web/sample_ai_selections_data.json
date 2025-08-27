@@ -1,0 +1,459 @@
+{
+  "performance_summary": {
+    "status": "success",
+    "data": {
+      "summary": {
+        "total_predictions": 2378,
+        "correct_predictions": 647,
+        "accuracy_rate": 27.2,
+        "win_rate": 11.0,
+        "place_rate": 1.3,
+        "total_stakes": 23175.0,
+        "total_returns": 29172.24,
+        "total_profit_loss": 5996.99,
+        "roi_percentage": 25.88,
+        "avg_starting_price": 22.64103027654356,
+        "latest_running_roi": 3700.0,
+        "period_start": "2025-08-19",
+        "period_end": "2025-08-25"
+      },
+      "confidence_breakdown": {
+        "LOW": {
+          "total_bets": 2376,
+          "successful_bets": 645,
+          "accuracy_rate": 27.1,
+          "profit_loss": 5975.89,
+          "avg_roi": 26.932554713804713,
+          "total_stakes": 23155.0
+        },
+        "MEDIUM": {
+          "total_bets": 2,
+          "successful_bets": 2,
+          "accuracy_rate": 100.0,
+          "profit_loss": 21.1,
+          "avg_roi": 105.5,
+          "total_stakes": 20.0
+        }
+      },
+      "daily_performance": [
+        {
+          "date": "2025-08-19",
+          "bets": 239,
+          "wins": 77,
+          "profit": -7.12,
+          "roi": -0.29811715481171547,
+          "accuracy": 32.21757322175732
+        },
+        {
+          "date": "2025-08-20",
+          "bets": 342,
+          "wins": 81,
+          "profit": 2087.35,
+          "roi": 61.03362573099415,
+          "accuracy": 23.684210526315788
+        },
+        {
+          "date": "2025-08-21",
+          "bets": 493,
+          "wins": 123,
+          "profit": 635.62,
+          "roi": 12.893509127789047,
+          "accuracy": 24.94929006085193
+        },
+        {
+          "date": "2025-08-22",
+          "bets": 390,
+          "wins": 115,
+          "profit": 281.76,
+          "roi": 7.223717948717948,
+          "accuracy": 29.48717948717949
+        },
+        {
+          "date": "2025-08-23",
+          "bets": 533,
+          "wins": 134,
+          "profit": 2123.1,
+          "roi": 39.83255159474672,
+          "accuracy": 25.14071294559099
+        },
+        {
+          "date": "2025-08-25",
+          "bets": 381,
+          "wins": 117,
+          "profit": 876.28,
+          "roi": 34.110236220472444,
+          "accuracy": 30.708661417322837
+        }
+      ],
+      "best_performers": [
+        {
+          "horse_name": "Hannahs Story",
+          "race_result": "LOSE",
+          "profit_loss": 495.0,
+          "roi_percentage": 4950.0,
+          "starting_price": 201.0,
+          "confidence_level": "LOW",
+          "date": "2025-08-20"
+        },
+        {
+          "horse_name": "Hello Humphrey",
+          "race_result": "LOSE",
+          "profit_loss": 495.0,
+          "roi_percentage": 4950.0,
+          "starting_price": 201.0,
+          "confidence_level": "LOW",
+          "date": "2025-08-21"
+        },
+        {
+          "horse_name": "Birr Castle",
+          "race_result": "LOSE",
+          "profit_loss": 370.0,
+          "roi_percentage": 3700.0,
+          "starting_price": 151.0,
+          "confidence_level": "LOW",
+          "date": "2025-08-20"
+        },
+        {
+          "horse_name": "Champagne Eclipse",
+          "race_result": "LOSE",
+          "profit_loss": 307.5,
+          "roi_percentage": 3075.0,
+          "starting_price": 126.0,
+          "confidence_level": "LOW",
+          "date": "2025-08-23"
+        },
+        {
+          "horse_name": "Cash Me",
+          "race_result": "WIN",
+          "profit_loss": 250.0,
+          "roi_percentage": 2500.0,
+          "starting_price": 51.0,
+          "confidence_level": "LOW",
+          "date": "2025-08-23"
+        },
+        {
+          "horse_name": "Aint Nobody",
+          "race_result": "LOSE",
+          "profit_loss": 245.0,
+          "roi_percentage": 2450.0,
+          "starting_price": 101.0,
+          "confidence_level": "LOW",
+          "date": "2025-08-22"
+        },
+        {
+          "horse_name": "Taudeni",
+          "race_result": "LOSE",
+          "profit_loss": 245.0,
+          "roi_percentage": 2450.0,
+          "starting_price": 101.0,
+          "confidence_level": "LOW",
+          "date": "2025-08-21"
+        },
+        {
+          "horse_name": "Brooklyn Lullaby",
+          "race_result": "LOSE",
+          "profit_loss": 245.0,
+          "roi_percentage": 2450.0,
+          "starting_price": 101.0,
+          "confidence_level": "LOW",
+          "date": "2025-08-20"
+        },
+        {
+          "horse_name": "Purest Time",
+          "race_result": "LOSE",
+          "profit_loss": 195.0,
+          "roi_percentage": 1950.0,
+          "starting_price": 81.0,
+          "confidence_level": "LOW",
+          "date": "2025-08-21"
+        },
+        {
+          "horse_name": "Glens Sensation",
+          "race_result": "LOSE",
+          "profit_loss": 195.0,
+          "roi_percentage": 1950.0,
+          "starting_price": 81.0,
+          "confidence_level": "LOW",
+          "date": "2025-08-23"
+        }
+      ],
+      "worst_performers": [
+        {
+          "horse_name": "Serotonin",
+          "race_result": "LOSE",
+          "profit_loss": -10.0,
+          "roi_percentage": -100.0,
+          "starting_price": 6.0,
+          "confidence_level": "LOW",
+          "date": "2025-08-25"
+        },
+        {
+          "horse_name": "Notmiwadi",
+          "race_result": "LOSE",
+          "profit_loss": -10.0,
+          "roi_percentage": -100.0,
+          "starting_price": 126.0,
+          "confidence_level": "LOW",
+          "date": "2025-08-25"
+        },
+        {
+          "horse_name": "Lady Maxios",
+          "race_result": "LOSE",
+          "profit_loss": -10.0,
+          "roi_percentage": -100.0,
+          "starting_price": 7.5,
+          "confidence_level": "LOW",
+          "date": "2025-08-25"
+        },
+        {
+          "horse_name": "Cosielikeshim",
+          "race_result": "LOSE",
+          "profit_loss": -10.0,
+          "roi_percentage": -100.0,
+          "starting_price": 67.0,
+          "confidence_level": "LOW",
+          "date": "2025-08-25"
+        },
+        {
+          "horse_name": "Captain Cairney",
+          "race_result": "LOSE",
+          "profit_loss": -10.0,
+          "roi_percentage": -100.0,
+          "starting_price": 7.0,
+          "confidence_level": "LOW",
+          "date": "2025-08-25"
+        },
+        {
+          "horse_name": "Addmann",
+          "race_result": "LOSE",
+          "profit_loss": -10.0,
+          "roi_percentage": -100.0,
+          "starting_price": 101.0,
+          "confidence_level": "LOW",
+          "date": "2025-08-25"
+        },
+        {
+          "horse_name": "Gazal Almarmoom",
+          "race_result": "LOSE",
+          "profit_loss": -10.0,
+          "roi_percentage": -100.0,
+          "starting_price": 7.0,
+          "confidence_level": "LOW",
+          "date": "2025-08-25"
+        },
+        {
+          "horse_name": "Annagar",
+          "race_result": "LOSE",
+          "profit_loss": -10.0,
+          "roi_percentage": -100.0,
+          "starting_price": 34.0,
+          "confidence_level": "LOW",
+          "date": "2025-08-25"
+        },
+        {
+          "horse_name": "Forceful Lady",
+          "race_result": "LOSE",
+          "profit_loss": -10.0,
+          "roi_percentage": -100.0,
+          "starting_price": 51.0,
+          "confidence_level": "LOW",
+          "date": "2025-08-25"
+        },
+        {
+          "horse_name": "Shoot The Crows",
+          "race_result": "LOSE",
+          "profit_loss": -10.0,
+          "roi_percentage": -100.0,
+          "starting_price": 51.0,
+          "confidence_level": "LOW",
+          "date": "2025-08-25"
+        }
+      ],
+      "timestamp": "2025-08-27T18:23:37.452026"
+    }
+  },
+  "recent_selections_page1": {
+    "status": "success",
+    "data": {
+      "selections": [
+        {
+          "race_id": 155457,
+          "horse_name": "The Fitter",
+          "selection_date": "2025-08-25",
+          "ai_probability": 1.0,
+          "confidence_level": "LOW",
+          "recommended_stake": 10.0,
+          "value_rating": 0.0,
+          "starting_price": 81.0,
+          "market_rank": 11,
+          "finishing_position": 11,
+          "race_result": "LOSE",
+          "profit_loss": -10.0,
+          "roi_percentage": -100.0,
+          "created_at": "2025-08-27T17:00:38.727341"
+        },
+        {
+          "race_id": 151860,
+          "horse_name": "Jessie Roe",
+          "selection_date": "2025-08-25",
+          "ai_probability": 1.0,
+          "confidence_level": "LOW",
+          "recommended_stake": 10.0,
+          "value_rating": 0.0,
+          "starting_price": 151.0,
+          "market_rank": 10,
+          "finishing_position": 10,
+          "race_result": "LOSE",
+          "profit_loss": -10.0,
+          "roi_percentage": -100.0,
+          "created_at": "2025-08-27T17:00:38.727331"
+        },
+        {
+          "race_id": 156024,
+          "horse_name": "Marsh Lady",
+          "selection_date": "2025-08-25",
+          "ai_probability": 1.0,
+          "confidence_level": "LOW",
+          "recommended_stake": 10.0,
+          "value_rating": 0.0,
+          "starting_price": 26.0,
+          "market_rank": 9,
+          "finishing_position": 9,
+          "race_result": "LOSE",
+          "profit_loss": -10.0,
+          "roi_percentage": -100.0,
+          "created_at": "2025-08-27T17:00:38.727321"
+        },
+        {
+          "race_id": 153704,
+          "horse_name": "Likealightswitch",
+          "selection_date": "2025-08-25",
+          "ai_probability": 1.0,
+          "confidence_level": "LOW",
+          "recommended_stake": 10.0,
+          "value_rating": 0.0,
+          "starting_price": 13.0,
+          "market_rank": 8,
+          "finishing_position": 8,
+          "race_result": "LOSE",
+          "profit_loss": -10.0,
+          "roi_percentage": -100.0,
+          "created_at": "2025-08-27T17:00:38.727311"
+        },
+        {
+          "race_id": 156021,
+          "horse_name": "Hollys Diamond",
+          "selection_date": "2025-08-25",
+          "ai_probability": 1.8,
+          "confidence_level": "LOW",
+          "recommended_stake": 10.0,
+          "value_rating": 0.0,
+          "starting_price": 23.0,
+          "market_rank": 7,
+          "finishing_position": 7,
+          "race_result": "LOSE",
+          "profit_loss": -10.0,
+          "roi_percentage": -100.0,
+          "created_at": "2025-08-27T17:00:38.727301"
+        }
+      ],
+      "count": 5,
+      "total_count": 2378,
+      "offset": 0,
+      "limit": 5,
+      "timestamp": "2025-08-27T18:23:37.468336"
+    }
+  },
+  "recent_selections_page2": {
+    "status": "success",
+    "data": {
+      "selections": [
+        {
+          "race_id": 155569,
+          "horse_name": "Mysilverriverfeale",
+          "selection_date": "2025-08-25",
+          "ai_probability": 1.0,
+          "confidence_level": "LOW",
+          "recommended_stake": 10.0,
+          "value_rating": 0.0,
+          "starting_price": 12.0,
+          "market_rank": 6,
+          "finishing_position": 6,
+          "race_result": "LOSE",
+          "profit_loss": -10.0,
+          "roi_percentage": -100.0,
+          "created_at": "2025-08-27T17:00:38.727291"
+        },
+        {
+          "race_id": 153688,
+          "horse_name": "Baile Mhisteala",
+          "selection_date": "2025-08-25",
+          "ai_probability": 1.3,
+          "confidence_level": "LOW",
+          "recommended_stake": 10.0,
+          "value_rating": 0.0,
+          "starting_price": 10.0,
+          "market_rank": 5,
+          "finishing_position": 5,
+          "race_result": "LOSE",
+          "profit_loss": -10.0,
+          "roi_percentage": -100.0,
+          "created_at": "2025-08-27T17:00:38.727280"
+        },
+        {
+          "race_id": 155438,
+          "horse_name": "Let It Settle",
+          "selection_date": "2025-08-25",
+          "ai_probability": 1.5,
+          "confidence_level": "LOW",
+          "recommended_stake": 10.0,
+          "value_rating": 0.0,
+          "starting_price": 4.5,
+          "market_rank": 4,
+          "finishing_position": 4,
+          "race_result": "LOSE",
+          "profit_loss": -10.0,
+          "roi_percentage": -100.0,
+          "created_at": "2025-08-27T17:00:38.727270"
+        },
+        {
+          "race_id": 155568,
+          "horse_name": "Miss Jocund",
+          "selection_date": "2025-08-25",
+          "ai_probability": 1.0,
+          "confidence_level": "LOW",
+          "recommended_stake": 10.0,
+          "value_rating": 0.0,
+          "starting_price": 4.5,
+          "market_rank": 3,
+          "finishing_position": 3,
+          "race_result": "LOSE",
+          "profit_loss": 3.75,
+          "roi_percentage": 37.5,
+          "created_at": "2025-08-27T17:00:38.727260"
+        },
+        {
+          "race_id": 152368,
+          "horse_name": "Maximillian Lady",
+          "selection_date": "2025-08-25",
+          "ai_probability": 1.0,
+          "confidence_level": "LOW",
+          "recommended_stake": 10.0,
+          "value_rating": 0.0,
+          "starting_price": 8.0,
+          "market_rank": 2,
+          "finishing_position": 2,
+          "race_result": "LOSE",
+          "profit_loss": 12.5,
+          "roi_percentage": 125.0,
+          "created_at": "2025-08-27T17:00:38.727248"
+        }
+      ],
+      "count": 5,
+      "total_count": 2378,
+      "offset": 5,
+      "limit": 5,
+      "timestamp": "2025-08-27T18:23:37.520055"
+    }
+  }
+}
