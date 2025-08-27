@@ -10,6 +10,7 @@ import json
 import pandas as pd
 import psycopg2
 import psycopg2.extras
+import psycopg2.sql
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple, Any
 from dataclasses import dataclass, field
@@ -574,6 +575,7 @@ class BulkUploadEngine:
                 columns = list(df.columns)
 
                 # Convert DataFrame to list of tuples for bulk insert
+                # Prepare data tuples and escape any % characters to avoid psycopg2 conflicts
                 data_tuples = []
                 for _, row in df.iterrows():
                     row_data = []
@@ -583,24 +585,45 @@ class BulkUploadEngine:
                         if pd.isna(value):
                             row_data.append(None)
                         else:
+                            # Escape % characters in string values to prevent psycopg2 placeholder conflicts
+                            if isinstance(value, str) and '%' in value:
+                                # Double the % to escape it for psycopg2
+                                value = value.replace('%', '%%')
                             row_data.append(value)
                     data_tuples.append(tuple(row_data))
 
-                # Build bulk insert query
-                placeholders = ",".join(["%s"] * len(columns))
-                columns_str = ",".join(columns)
+                # Build bulk insert query using psycopg2.sql for safety
+                columns_identifiers = [psycopg2.sql.Identifier(col) for col in columns]
+                columns_list = psycopg2.sql.SQL(", ").join(columns_identifiers)
+                
+                # Create placeholder list without using %s strings
+                placeholders_list = psycopg2.sql.SQL(",").join(
+                    [psycopg2.sql.Placeholder()] * len(columns)
+                )
 
                 if self.config.conflict_resolution == "ignore":
-                    query = f"""
-                        INSERT INTO {table_name} ({columns_str}) 
-                        VALUES ({placeholders})
+                    query = psycopg2.sql.SQL("""
+                        INSERT INTO {} ({})
+                        VALUES ({})
                         ON CONFLICT DO NOTHING
-                    """
+                    """).format(
+                        psycopg2.sql.Identifier(table_name),
+                        columns_list,
+                        placeholders_list
+                    )
                 else:
-                    query = f"""
-                        INSERT INTO {table_name} ({columns_str}) 
-                        VALUES ({placeholders})
-                    """
+                    query = psycopg2.sql.SQL("""
+                        INSERT INTO {} ({})
+                        VALUES ({})
+                    """).format(
+                        psycopg2.sql.Identifier(table_name),
+                        columns_list,
+                        placeholders_list
+                    )
+
+                # Debug: Log the query and first few data points
+                self.logger.info(f"Query: {query.as_string(conn)}")
+                self.logger.info(f"Sample data: {data_tuples[:2] if data_tuples else 'No data'}")
 
                 # Execute bulk insert with progress tracking
                 batch_size = self.config.batch_size
@@ -610,17 +633,22 @@ class BulkUploadEngine:
                 with conn.cursor() as cur:
                     for i in range(0, len(data_tuples), batch_size):
                         batch = data_tuples[i : i + batch_size]
+                        current_batch = (i // batch_size) + 1
 
                         try:
+                            # Convert psycopg2.sql.SQL object to string for execute_values
+                            query_string = query.as_string(conn)
+                            # Create explicit template to avoid auto-generation issues
+                            template = f"({','.join(['%s'] * len(columns))})"
                             psycopg2.extras.execute_values(
-                                cur, query, batch, template=None, page_size=batch_size
+                                cur, query_string, batch, template=template, 
+                                page_size=batch_size
                             )
 
                             uploaded_count += len(batch)
                             job.records_processed = uploaded_count
 
                             # Log progress
-                            current_batch = (i // batch_size) + 1
                             self.logger.info(
                                 f"Uploaded batch {current_batch}/{total_batches} "
                                 f"({uploaded_count}/{len(data_tuples)} records)"
