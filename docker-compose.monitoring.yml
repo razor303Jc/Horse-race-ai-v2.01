@@ -1,0 +1,193 @@
+version: '3.8'
+
+services:
+  # =============================================================================
+  # PERFORMANCE MONITORING STACK
+  # =============================================================================
+  
+  # Prometheus - Metrics collection and storage
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: horse_racing_prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=30d'
+      - '--web.enable-lifecycle'
+      - '--web.enable-admin-api'
+    volumes:
+      - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./monitoring/prometheus/rules:/etc/prometheus/rules:ro
+      - prometheus_data:/prometheus
+    ports:
+      - "9090:9090"
+    networks:
+      - horse_racing_network
+      - traefik-dev
+    restart: unless-stopped
+    depends_on:
+      - redis-exporter
+      - postgres-exporter
+      - node-exporter
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.prometheus.rule=Host(`prometheus.horserace.local`)"
+      - "traefik.http.routers.prometheus.service=prometheus"
+      - "traefik.http.services.prometheus.loadbalancer.server.port=9090"
+
+  # Grafana - Metrics visualization and dashboards
+  grafana:
+    image: grafana/grafana:latest
+    container_name: horse_racing_grafana
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD:-grafana_admin_123}
+      GF_USERS_ALLOW_SIGN_UP: false
+      GF_INSTALL_PLUGINS: grafana-clock-panel,grafana-simple-json-datasource,grafana-piechart-panel
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards:ro
+    ports:
+      - "3001:3000"
+    networks:
+      - horse_racing_network
+      - traefik-dev
+    restart: unless-stopped
+    depends_on:
+      - prometheus
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.grafana.rule=Host(`grafana.horserace.local`)"
+      - "traefik.http.routers.grafana.service=grafana"
+      - "traefik.http.services.grafana.loadbalancer.server.port=3000"
+
+  # Node Exporter - System metrics
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: horse_racing_node_exporter
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.rootfs=/rootfs'
+      - '--path.sysfs=/host/sys'
+      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    ports:
+      - "9100:9100"
+    networks:
+      - horse_racing_network
+    restart: unless-stopped
+
+  # Redis Exporter - Redis metrics
+  redis-exporter:
+    image: oliver006/redis_exporter:latest
+    container_name: horse_racing_redis_exporter
+    environment:
+      REDIS_ADDR: redis://redis:6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-redis_password_123}
+    ports:
+      - "9121:9121"
+    networks:
+      - horse_racing_network
+    restart: unless-stopped
+    depends_on:
+      - redis
+
+  # PostgreSQL Exporter - Database metrics
+  postgres-exporter:
+    image: prometheuscommunity/postgres-exporter:latest
+    container_name: horse_racing_postgres_exporter
+    environment:
+      DATA_SOURCE_NAME: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/cards_horse_racing_db?sslmode=disable
+    ports:
+      - "9187:9187"
+    networks:
+      - horse_racing_network
+    restart: unless-stopped
+    depends_on:
+      - postgres
+
+  # Application Performance Monitoring - Custom metrics
+  app-metrics:
+    build:
+      context: .
+      dockerfile: docker/dockerfiles/Dockerfile.metrics
+    container_name: horse_racing_app_metrics
+    environment:
+      CARDS_DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/cards_horse_racing_db
+      RESULTS_DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/results_horse_racing_db
+      ADVANCED_DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/advanced_racing_metrics_db
+      REDIS_URL: redis://:${REDIS_PASSWORD:-redis_password_123}@redis:6379/0
+      METRICS_PORT: 8080
+      PYTHONPATH: /app
+    volumes:
+      - ./tools/monitoring:/app/tools/monitoring:ro
+      - ./src:/app/src:ro
+      - ./logs:/app/logs:rw
+    ports:
+      - "8080:8080"
+    networks:
+      - horse_racing_network
+    restart: unless-stopped
+    depends_on:
+      - postgres
+      - redis
+    command: ["python", "/app/tools/monitoring/app_metrics_server.py"]
+
+  # AlertManager - Alert handling and routing
+  alertmanager:
+    image: prom/alertmanager:latest
+    container_name: horse_racing_alertmanager
+    command:
+      - '--config.file=/etc/alertmanager/config.yml'
+      - '--storage.path=/alertmanager'
+    volumes:
+      - ./monitoring/alertmanager:/etc/alertmanager:ro
+      - alertmanager_data:/alertmanager
+    ports:
+      - "9093:9093"
+    networks:
+      - horse_racing_network
+      - traefik-dev
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.alertmanager.rule=Host(`alerts.horserace.local`)"
+      - "traefik.http.routers.alertmanager.service=alertmanager"
+      - "traefik.http.services.alertmanager.loadbalancer.server.port=9093"
+
+volumes:
+  prometheus_data:
+    name: horse_racing_prometheus_data
+  grafana_data:
+    name: horse_racing_grafana_data
+  alertmanager_data:
+    name: horse_racing_alertmanager_data
+
+networks:
+  horse_racing_network:
+    external: true
+    name: horse_racing_network
+  traefik-dev:
+    external: true
+    name: traefik-dev
+
+# =============================================================================
+# MONITORING USAGE EXAMPLES
+# =============================================================================
+# 
+# Start monitoring stack:
+# docker-compose -f docker-compose.monitoring.yml up -d
+#
+# Access dashboards:
+# - Prometheus: http://localhost:9090 or http://prometheus.horserace.local
+# - Grafana: http://localhost:3001 or http://grafana.horserace.local
+# - AlertManager: http://localhost:9093 or http://alerts.horserace.local
+#
+# Start with main services:
+# docker-compose -f docker-compose.clean.yml -f docker-compose.monitoring.yml up -d

@@ -25,9 +25,9 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-    # Removed external port mapping - use internal network only
-    expose:
-      - "5432"
+    # Temporarily add external port mapping for database access
+    ports:
+      - "5432:5432"
 
   # Redis Cache - Shared caching layer for all services
   redis:
@@ -488,6 +488,9 @@ services:
       PGADMIN_LISTEN_PORT: 80
     volumes:
       - pgadmin_data:/var/lib/pgadmin
+      - ./config/pgadmin/servers.json:/pgadmin4/servers.json:ro
+      - ./config/pgadmin/config_local.py:/pgladmin4/config_local.py:ro
+      - ./config/pgadmin/pgpass:/var/lib/pgladmin/storage/admin_horseracing.com/pgpass:ro
     # Expose on port 8083 (unused) as alternative to Traefik
     ports:
       - "8083:80"

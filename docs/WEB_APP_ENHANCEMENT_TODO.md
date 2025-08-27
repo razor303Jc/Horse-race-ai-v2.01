@@ -22,7 +22,7 @@
 ### 🎯 **COMPLETION STATUS UPDATE - August 26, 2025**
 
 - **✅ PRIORITY 1 (Critical): 100% COMPLETE** - ✅ ALL CRITICAL FEATURES COMPLETED
-- **✅ PRIORITY 2 (Advanced): 85% COMPLETE** - Major advanced features done
+- **⏳ PRIORITY 2 (Advanced): 80% COMPLETE** - Major advanced features done, real names display needed
 - **⏳ PRIORITY 3 (Technical): 90% COMPLETE** - Performance and security - **NEXT FOCUS**
 - **⏳ PRIORITY 4 (Integrations): 60% COMPLETE** - ML features done, some integrations pending
 
@@ -76,6 +76,7 @@
   ```
 
 - [x] **Database Connection Error Resolution** ✅ **COMPLETED**
+
   - ✅ Fixed PostgreSQL table name references (races.race_id vs races.id)
   - ✅ Updated SQL queries to use proper column names
   - ✅ Fixed cross-database queries (cards + results databases)
@@ -184,10 +185,28 @@
   - ✅ Automatic bet placement integration with paper trading mode
 
 - [ ] **Enhanced form analysis tools** ⏳
+
   - Pattern recognition in horse performance
   - Advanced statistical analysis display
   - Historical performance correlations
   - Interactive form analysis interface
+
+- [ ] **🏇 Real Names Display Enhancement** ⏳ **NEW REQUIREMENT - Aug 26, 2025**
+  - **Problem**: Race cards currently display placeholder names (Horse 1, Jockey 1, Trainer 1, etc.)
+  - **Solution Needed**: Replace placeholders with actual database names from real Racing Post data
+  - **Scope**: Race card table display showing:
+    ```
+    No. | Horse        | Jockey       | Trainer      | Age | Odds | Form
+    1   | Real Horse   | Real Jockey  | Real Trainer | 3yo | 9/1  | 2345
+    2   | Another Horse| Joe Smith    | Bob Jones    | 4yo | 3/1  | 3524
+    ```
+  - **Data Sources**:
+    - horses table (horse_name)
+    - jockeys table (jockey_name)
+    - trainers table (trainer_name)
+  - **Tables Affected**: cards_horse_racing_db with 265 real entries available
+  - **Priority**: HIGH - Improves user experience with real racing data
+  - **Estimated Time**: 2-3 hours (API + Frontend updates)
 
 **🎉 MAJOR MILESTONE ACHIEVED:**
 TODO #2 Enhanced User Experience & Interface is **80% COMPLETE** with all major dashboard components implemented successfully!
