@@ -36,8 +36,6 @@ class AISelectionTestRunner:
             "tests/unit/test_ai_migration.py",
             "-v",
             "--tb=short",
-            f"--html={self.reports_dir}/unit_test_report.html",
-            "--self-contained-html",
         ]
 
         return pytest.main(unit_test_args)
@@ -47,14 +45,9 @@ class AISelectionTestRunner:
         print("🔗 Running Integration Tests for AI Selection P&L Tracking...")
 
         integration_test_args = [
-            "tests/integration/web_app_integration/test_ai_selections_api.py",
-            "tests/integration/database_integration/test_ai_selections_db.py",
+            "tests/integration/test_ai_selections_integration.py",
             "-v",
             "--tb=short",
-            "-m",
-            "integration",
-            f"--html={self.reports_dir}/integration_test_report.html",
-            "--self-contained-html",
         ]
 
         return pytest.main(integration_test_args)
@@ -64,16 +57,11 @@ class AISelectionTestRunner:
         print("⚡ Running Performance Tests for AI Selection P&L Tracking...")
 
         performance_test_args = [
-            "tests/unit/test_performance_api.py",
-            "tests/unit/test_ai_migration.py",
-            "tests/integration/web_app_integration/test_ai_selections_api.py",
-            "tests/integration/database_integration/test_ai_selections_db.py",
+            "tests/integration/test_ai_selections_integration.py",
             "-v",
             "--tb=short",
-            "-m",
-            "performance",
-            f"--html={self.reports_dir}/performance_test_report.html",
-            "--self-contained-html",
+            "-k",
+            "performance or load or memory",
         ]
 
         return pytest.main(performance_test_args)
@@ -86,17 +74,9 @@ class AISelectionTestRunner:
         all_test_args = [
             "tests/unit/test_performance_api.py",
             "tests/unit/test_ai_migration.py",
-            "tests/integration/web_app_integration/test_ai_selections_api.py",
-            "tests/integration/database_integration/test_ai_selections_db.py",
+            "tests/integration/test_ai_selections_integration.py",
             "-v",
             "--tb=short",
-            "--cov=scripts",
-            "--cov=src/web",
-            "--cov-report=html",
-            f"--cov-report=html:{self.reports_dir}/coverage_report",
-            f"--html={self.reports_dir}/complete_test_report.html",
-            "--self-contained-html",
-            "--junit-xml=" + str(self.reports_dir / "junit_results.xml"),
         ]
 
         return pytest.main(all_test_args)

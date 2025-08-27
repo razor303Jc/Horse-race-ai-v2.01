@@ -82,7 +82,8 @@ class TestPerformanceAPI:
 
     def test_performance_api_initialization(self, performance_api):
         """Test PerformanceAPI initialization"""
-        assert performance_api.db_params["host"] == "postgres"
+        # Host should be localhost when not in Docker, postgres when in Docker
+        assert performance_api.db_params["host"] in ["localhost", "postgres"]
         assert performance_api.db_params["database"] == "advanced_racing_metrics_db"
         assert performance_api.db_params["user"] == "horse_racing"
         assert performance_api.db_params["port"] == 5432
