@@ -1108,49 +1108,22 @@ async def get_betting_recommendations():
 
 @app.get("/api/ai_selections/performance")
 async def get_ai_selections_performance():
-    """Get AI selections performance analytics"""
+    """Get AI selections performance analytics from PostgreSQL"""
     try:
-        # Import AI selections tracker
-        sys.path.append(str(project_root / "src"))
-        from horse_racing_ai.analytics.ai_selections_tracker import AISelectionsTracker
+        # Import our new performance API
+        import sys
+        import os
 
-        # Initialize tracker
-        tracker = AISelectionsTracker("data/ai_selections_tracking.db")
+        sys.path.append(os.path.dirname(__file__))
+        from performance_api import performance_api
 
-        # Get analytics
-        analytics = tracker.get_selection_analytics()
+        # Get comprehensive performance data
+        result = performance_api.get_performance_summary(days_back=30)
 
-        return {
-            "status": "success",
-            "data": {
-                "total_selections": (
-                    analytics.total_selections
-                    if hasattr(analytics, "total_selections")
-                    else 0
-                ),
-                "win_accuracy": (
-                    analytics.win_accuracy
-                    if hasattr(analytics, "win_accuracy")
-                    else 0.0
-                ),
-                "place_accuracy": (
-                    analytics.place_accuracy
-                    if hasattr(analytics, "place_accuracy")
-                    else 0.0
-                ),
-                "total_profit_loss": (
-                    analytics.total_profit_loss
-                    if hasattr(analytics, "total_profit_loss")
-                    else 0.0
-                ),
-                "roi_percentage": (
-                    analytics.roi_percentage
-                    if hasattr(analytics, "roi_percentage")
-                    else 0.0
-                ),
-                "timestamp": datetime.now().isoformat(),
-            },
-        }
+        if result["status"] == "success":
+            return result
+        else:
+            raise HTTPException(status_code=500, detail=result["message"])
 
     except Exception as e:
         logger.error(f"Error fetching AI selections performance: {e}")
@@ -1158,13 +1131,101 @@ async def get_ai_selections_performance():
             "status": "error",
             "message": f"Failed to fetch performance data: {str(e)}",
             "data": {
-                "total_selections": 0,
-                "win_accuracy": 0.0,
-                "place_accuracy": 0.0,
-                "total_profit_loss": 0.0,
-                "roi_percentage": 0.0,
-                "timestamp": datetime.now().isoformat(),
+                "summary": {
+                    "total_predictions": 0,
+                    "accuracy_rate": 0.0,
+                    "roi_percentage": 0.0,
+                    "total_profit_loss": 0.0,
+                }
             },
+        }
+
+
+@app.get("/api/ai_selections/recent")
+async def get_recent_ai_selections(limit: int = 50):
+    """Get recent AI selections with P&L results"""
+    try:
+        import sys
+        import os
+
+        sys.path.append(os.path.dirname(__file__))
+        from performance_api import performance_api
+
+        result = performance_api.get_recent_selections(limit=limit)
+
+        if result["status"] == "success":
+            return result
+        else:
+            raise HTTPException(status_code=500, detail=result["message"])
+
+    except Exception as e:
+        logger.error(f"Error fetching recent AI selections: {e}")
+        return {
+            "status": "error",
+            "message": f"Failed to fetch recent selections: {str(e)}",
+            "data": {"selections": [], "count": 0},
+        }
+
+
+@app.get("/api/ai_selections/dashboard")
+async def get_ai_selections_dashboard():
+    """Get comprehensive dashboard data for AI selections"""
+    try:
+        import sys
+        import os
+
+        sys.path.append(os.path.dirname(__file__))
+        from performance_api import performance_api
+
+        # Get performance summary
+        performance_result = performance_api.get_performance_summary(days_back=30)
+
+        # Get recent selections
+        recent_result = performance_api.get_recent_selections(limit=20)
+
+        if (
+            performance_result["status"] == "success"
+            and recent_result["status"] == "success"
+        ):
+            dashboard_data = {
+                "status": "success",
+                "data": {
+                    "performance": performance_result["data"],
+                    "recent_selections": recent_result["data"]["selections"][
+                        :10
+                    ],  # Top 10 for dashboard
+                    "system_status": {
+                        "ai_system": "ACTIVE",
+                        "database": "CONNECTED",
+                        "profit_tracking": "ENABLED",
+                        "last_update": datetime.now().isoformat(),
+                    },
+                    "quick_stats": {
+                        "total_predictions": performance_result["data"]["summary"][
+                            "total_predictions"
+                        ],
+                        "current_roi": performance_result["data"]["summary"][
+                            "roi_percentage"
+                        ],
+                        "profit_today": 0.0,  # Could be calculated from today's data
+                        "accuracy_rate": performance_result["data"]["summary"][
+                            "accuracy_rate"
+                        ],
+                    },
+                },
+            }
+            return dashboard_data
+        else:
+            raise HTTPException(
+                status_code=500, detail="Failed to fetch dashboard data"
+            )
+
+    except Exception as e:
+        logger.error(f"Error fetching dashboard data: {e}")
+        return {
+            "status": "error",
+            "message": f"Failed to fetch dashboard data: {str(e)}",
+            "data": {},
         }
 
 
