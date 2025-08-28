@@ -1,29 +1,29 @@
 Race_ID,race_number,race_time,course_id,Course,Race_type,Date,Race_name,Class,Years,Distance,Surface,Prize,Runners_racecard,Runners,Draw,EW_racecard,EW,Places_EW_racecard,Places_EW
-183508,1,16:25,,Bellewstown,Flat Turf,2025-08-26,Irish Stallion Farms EBF Median Auction Maiden,No Class,3YO plus,7f 195y,Yielding,"€9,000",17,17,Low,5,,3,
-183509,2,16:55,,Bellewstown,Flat Turf,2025-08-26,Gibneys Malahide Handicap,No Class,4YO plus,7f 195y,Yielding,"€6,000",15,15,Low,4,,3,
-183510,3,17:25,,Bellewstown,Flat Turf,2025-08-26,Gibneys Malahide Handicap,No Class,4YO plus,7f 195y,Yielding,"€6,000",15,15,Low,4,,3,
-183511,4,17:55,,Bellewstown,Flat Turf,2025-08-26,Peadar Kearney's Pub Handicap,No Class,3YO only,7f 195y,Yielding,"€7,800",8,8,Low,5,,3,
-183512,5,18:25,,Bellewstown,Flat Turf,2025-08-26,Irish EBF Auction Series Maiden,No Class,2YO only,5f 3y,Yielding,"€12,000",13,13,High,5,,3,
-183513,6,18:55,,Bellewstown,Flat Turf,2025-08-26,Dolly's Bar &amp; Pantry Handicap,No Class,3YO plus,5f 3y,Yielding,"€7,800",9,9,High,5,,3,
-183514,7,19:25,,Bellewstown,Flat Turf,2025-08-26,Gibneys Gormanston Fillies Maiden,No Class,3YO plus,1m 4f 97y,Yielding,"€7,200",10,10,None,5,,3,
-183515,8,19:55,,Bellewstown,Flat Turf,2025-08-26,Ploughman Bar &amp; Grill,No Class,4YO plus,2m 1f 110y,Yielding,"€9,600",9,9,None,5,,3,
-183488,1,16:10,44.0,Lingfield,Flat AW,2025-08-26,Sky Sports Racing Virgin 519 Amateur Jockeys' Handicap,Class 5,4YO plus,1m 7f 169y,Standard  (AW - Polytrack),"£3,775",8,8,High,5,,3,
-183489,2,16:40,44.0,Lingfield,Flat AW,2025-08-26,Download The At The Races App EBF Restricted Maiden Fillies' Stakes,Class 4,2YO only,7f 1y,Standard  (AW - Polytrack),"£5,184",10,10,None,5,,3,
-183490,3,17:10,44.0,Lingfield,Flat AW,2025-08-26,Download The At The Races App EBF Restricted Maiden Fillies' Stakes,Class 4,2YO only,7f 1y,Standard  (AW - Polytrack),"£5,184",8,8,None,5,,3,
-183491,4,17:40,44.0,Lingfield,Flat AW,2025-08-26,Sky Sports Racing Sky 415 Classified Stakes,Class 6,3YO plus,1m 4f,Standard  (AW - Polytrack),"£3,245",12,12,None,5,,3,
-183492,5,18:10,,Lingfield,Flat AW,2025-08-26,AtmosClear Handicap,Class 6,3YO only,1m 1y,Standard  (AW - Polytrack),"£4,083",11,11,None,5,,3,
-183493,6,18:40,,Lingfield,Flat AW,2025-08-26,AtmosClear Handicap,Class 6,3YO only,1m 1y,Standard  (AW - Polytrack),"£4,083",9,9,None,5,,3,
-183494,7,19:10,,Lingfield,Flat AW,2025-08-26,attheraces.com/marketmovers Handicap,Class 5,3YO plus,7f 1y,Standard  (AW - Polytrack),"£3,978",9,9,None,5,,3,
-183495,8,19:40,,Lingfield,Flat AW,2025-08-26,Free Bets On attheraces.com Handicap,Class 6,3YO plus,6f 1y,Standard  (AW - Polytrack),"£4,711",10,10,None,5,,3,
-183502,1,14:20,,Musselburgh,Flat Turf,2025-08-26,Alan Steel Asset Management 50th Anniversary Restricted Maiden Stakes,Class 5,3YO to,1m 2y,Good,"£3,780",4,4,None,1,,1,
-183503,2,14:50,,Musselburgh,Flat Turf,2025-08-26,Celebrate National Racehorse Week Nursery,Class 6,2YO only,1m 2y,Good,"£3,664",7,7,None,4,,2,
-183504,3,15:20,,Musselburgh,Flat Turf,2025-08-26,Alan Steel For Independent Advice Handicap,Class 6,3YO plus,5f 1y,Good,"£3,664",8,8,High,5,,3,
-183505,4,15:50,,Musselburgh,Flat Turf,2025-08-26,Racing TV Handicap,Class 6,4YO plus,1m 2y,Good,"£6,281",9,9,None,5,,3,
-183506,5,16:20,,Musselburgh,Flat Turf,2025-08-26,Ina And Ella MacGregor Handicap,Class 6,3YO only,7f 15y,Good,"£3,664",8,8,None,5,,3,
-183507,6,16:50,,Musselburgh,Flat Turf,2025-08-26,Join Racing TV Now Handicap,Class 6,3YO plus,1m 4f 104y,Good,"£4,187",5,5,Low,4,,2,
-183496,1,14:05,,Ripon,Flat Turf,2025-08-26,Thank You Joan Easey Apprentice Handicap,Class 5,4YO plus,1m 1f 170y,Good-good to firm in places,"£4,711",7,7,None,4,,2,
-183497,2,14:35,,Ripon,Flat Turf,2025-08-26,British Stallion Studs EBF Maiden Stakes,Class 4,2YO only,5f,Good-good to firm in places,"£4,860",8,8,None,5,,3,
-183498,3,15:05,,Ripon,Flat Turf,2025-08-26,21 Engineer Regiment Sapper Nursery,Class 5,2YO only,5f,Good-good to firm in places,"£4,711",8,8,None,5,,3,
-183499,4,15:35,,Ripon,Flat Turf,2025-08-26,Ripon Yorkshire's Garden Racecourse Handicap,Class 4,3YO plus,6f,Good-good to firm in places,"£6,281",13,13,High,4,,3,
-183500,5,16:05,,Ripon,Flat Turf,2025-08-26,Queen Ethelburga's Collegiate Handicap,Class 5,3YO plus,1m,Good-good to firm in places,"£4,711",8,8,None,5,,3,
-183501,6,16:35,,Ripon,Flat Turf,2025-08-26,National Racehorse Week 23rd To 31st August Handicap,Class 6,3YO plus,2m,Good-good to firm in places,"£3,664",7,7,High,4,,2,
+183508,1,16:25,,Bellewstown,Flat Turf,2025-08-26,Irish Stallion Farms EBF Median Auction Maiden,No Class,3YO plus,7f 195y,Yielding,9000,17,17,Low,5,0,3,0
+183509,2,16:55,,Bellewstown,Flat Turf,2025-08-26,Gibneys Malahide Handicap,No Class,4YO plus,7f 195y,Yielding,6000,15,15,Low,4,0,3,0
+183510,3,17:25,,Bellewstown,Flat Turf,2025-08-26,Gibneys Malahide Handicap,No Class,4YO plus,7f 195y,Yielding,6000,15,15,Low,4,0,3,0
+183511,4,17:55,,Bellewstown,Flat Turf,2025-08-26,Peadar Kearney's Pub Handicap,No Class,3YO only,7f 195y,Yielding,7800,8,8,Low,5,0,3,0
+183512,5,18:25,,Bellewstown,Flat Turf,2025-08-26,Irish EBF Auction Series Maiden,No Class,2YO only,5f 3y,Yielding,12000,13,13,High,5,0,3,0
+183513,6,18:55,,Bellewstown,Flat Turf,2025-08-26,Dolly's Bar &amp; Pantry Handicap,No Class,3YO plus,5f 3y,Yielding,7800,9,9,High,5,0,3,0
+183514,7,19:25,,Bellewstown,Flat Turf,2025-08-26,Gibneys Gormanston Fillies Maiden,No Class,3YO plus,1m 4f 97y,Yielding,7200,10,10,,5,0,3,0
+183515,8,19:55,,Bellewstown,Flat Turf,2025-08-26,Ploughman Bar &amp; Grill,No Class,4YO plus,2m 1f 110y,Yielding,9600,9,9,,5,0,3,0
+183488,1,16:10,44.0,Lingfield,Flat AW,2025-08-26,Sky Sports Racing Virgin 519 Amateur Jockeys' Handicap,Class 5,4YO plus,1m 7f 169y,Standard  (AW - Polytrack),3775,8,8,High,5,0,3,0
+183489,2,16:40,44.0,Lingfield,Flat AW,2025-08-26,Download The At The Races App EBF Restricted Maiden Fillies' Stakes,Class 4,2YO only,7f 1y,Standard  (AW - Polytrack),5184,10,10,,5,0,3,0
+183490,3,17:10,44.0,Lingfield,Flat AW,2025-08-26,Download The At The Races App EBF Restricted Maiden Fillies' Stakes,Class 4,2YO only,7f 1y,Standard  (AW - Polytrack),5184,8,8,,5,0,3,0
+183491,4,17:40,44.0,Lingfield,Flat AW,2025-08-26,Sky Sports Racing Sky 415 Classified Stakes,Class 6,3YO plus,1m 4f,Standard  (AW - Polytrack),3245,12,12,,5,0,3,0
+183492,5,18:10,,Lingfield,Flat AW,2025-08-26,AtmosClear Handicap,Class 6,3YO only,1m 1y,Standard  (AW - Polytrack),4083,11,11,,5,0,3,0
+183493,6,18:40,,Lingfield,Flat AW,2025-08-26,AtmosClear Handicap,Class 6,3YO only,1m 1y,Standard  (AW - Polytrack),4083,9,9,,5,0,3,0
+183494,7,19:10,,Lingfield,Flat AW,2025-08-26,attheraces.com/marketmovers Handicap,Class 5,3YO plus,7f 1y,Standard  (AW - Polytrack),3978,9,9,,5,0,3,0
+183495,8,19:40,,Lingfield,Flat AW,2025-08-26,Free Bets On attheraces.com Handicap,Class 6,3YO plus,6f 1y,Standard  (AW - Polytrack),4711,10,10,,5,0,3,0
+183502,1,14:20,,Musselburgh,Flat Turf,2025-08-26,Alan Steel Asset Management 50th Anniversary Restricted Maiden Stakes,Class 5,3YO to,1m 2y,Good,3780,4,4,,1,0,1,0
+183503,2,14:50,,Musselburgh,Flat Turf,2025-08-26,Celebrate National Racehorse Week Nursery,Class 6,2YO only,1m 2y,Good,3664,7,7,,4,0,2,0
+183504,3,15:20,,Musselburgh,Flat Turf,2025-08-26,Alan Steel For Independent Advice Handicap,Class 6,3YO plus,5f 1y,Good,3664,8,8,High,5,0,3,0
+183505,4,15:50,,Musselburgh,Flat Turf,2025-08-26,Racing TV Handicap,Class 6,4YO plus,1m 2y,Good,6281,9,9,,5,0,3,0
+183506,5,16:20,,Musselburgh,Flat Turf,2025-08-26,Ina And Ella MacGregor Handicap,Class 6,3YO only,7f 15y,Good,3664,8,8,,5,0,3,0
+183507,6,16:50,,Musselburgh,Flat Turf,2025-08-26,Join Racing TV Now Handicap,Class 6,3YO plus,1m 4f 104y,Good,4187,5,5,Low,4,0,2,0
+183496,1,14:05,,Ripon,Flat Turf,2025-08-26,Thank You Joan Easey Apprentice Handicap,Class 5,4YO plus,1m 1f 170y,Good-good to firm in places,4711,7,7,,4,0,2,0
+183497,2,14:35,,Ripon,Flat Turf,2025-08-26,British Stallion Studs EBF Maiden Stakes,Class 4,2YO only,5f,Good-good to firm in places,4860,8,8,,5,0,3,0
+183498,3,15:05,,Ripon,Flat Turf,2025-08-26,21 Engineer Regiment Sapper Nursery,Class 5,2YO only,5f,Good-good to firm in places,4711,8,8,,5,0,3,0
+183499,4,15:35,,Ripon,Flat Turf,2025-08-26,Ripon Yorkshire's Garden Racecourse Handicap,Class 4,3YO plus,6f,Good-good to firm in places,6281,13,13,High,4,0,3,0
+183500,5,16:05,,Ripon,Flat Turf,2025-08-26,Queen Ethelburga's Collegiate Handicap,Class 5,3YO plus,1m,Good-good to firm in places,4711,8,8,,5,0,3,0
+183501,6,16:35,,Ripon,Flat Turf,2025-08-26,National Racehorse Week 23rd To 31st August Handicap,Class 6,3YO plus,2m,Good-good to firm in places,3664,7,7,High,4,0,2,0

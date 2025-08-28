@@ -178,15 +178,15 @@ class AISelectionsPerformanceTracker:
                     ra.race_number,
                     ra.course,
                     ra.date as race_date,
-                    r.name as horse_name,
-                    r.place as actual_position,
-                    r.sp as actual_starting_price,
+                    r.horse_name,
+                    r.position as actual_position,
+                    r.starting_price as actual_starting_price,
                     r.jockey as actual_jockey,
                     r.trainer as actual_trainer
                 FROM records r
                 JOIN races ra ON r.race_id = ra.race_id
                 WHERE ra.date = %s
-                ORDER BY ra.course, ra.race_number, r.place
+                ORDER BY ra.course, ra.race_number, r.position
             """
 
             df = pd.read_sql_query(query, conn, params=[target_date])
@@ -202,7 +202,7 @@ class AISelectionsPerformanceTracker:
             raise
 
     def calculate_performance_metrics(
-        self, ai_selections: pd.DataFrame, race_results: pd.DataFrame, target_date: str
+        self, ai_selections: pd.DataFrame, race_results: pd.DataFrame
     ) -> pd.DataFrame:
         """Calculate performance metrics by comparing AI selections with actual results"""
         logger.info("🔢 Calculating performance metrics...")
@@ -250,9 +250,6 @@ class AISelectionsPerformanceTracker:
         merged["rank_difference"] = (
             merged["ai_probability_rank"] - merged["actual_finish_rank"]
         )
-
-        # Ensure race_date is available
-        merged["race_date"] = target_date
 
         logger.info(f"✅ Calculated performance metrics for {len(merged)} selections")
         return merged
@@ -355,7 +352,7 @@ class AISelectionsPerformanceTracker:
 
             # Calculate performance metrics
             performance_df = self.calculate_performance_metrics(
-                ai_selections, race_results, target_date
+                ai_selections, race_results
             )
             if len(performance_df) == 0:
                 logger.warning(

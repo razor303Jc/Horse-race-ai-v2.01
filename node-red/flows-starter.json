@@ -1,0 +1,414 @@
+[
+  {
+    "id": "tab_main_automation",
+    "type": "tab",
+    "label": "🏇 Main Automation",
+    "disabled": false,
+    "info": "Primary automation flows for horse racing AI system"
+  },
+  {
+    "id": "tab_data_pipeline",
+    "type": "tab",
+    "label": "📊 Data Pipeline",
+    "disabled": false,
+    "info": "Data download, processing, and upload automation"
+  },
+  {
+    "id": "tab_dashboard",
+    "type": "tab",
+    "label": "📈 Dashboard",
+    "disabled": false,
+    "info": "Real-time dashboards and visualization"
+  },
+  {
+    "id": "tab_alerts",
+    "type": "tab",
+    "label": "🚨 Alerts",
+    "disabled": false,
+    "info": "Alert system and notifications"
+  },
+  {
+    "id": "tab_api_orchestration",
+    "type": "tab",
+    "label": "🔗 API Orchestration",
+    "disabled": false,
+    "info": "API management and integration"
+  },
+  {
+    "id": "tab_reporting",
+    "type": "tab",
+    "label": "📄 Reporting",
+    "disabled": false,
+    "info": "Automated reporting and distribution"
+  },
+  {
+    "id": "daily_schedule",
+    "type": "cronplus",
+    "z": "tab_data_pipeline",
+    "name": "Daily Data Collection",
+    "outputField": "payload",
+    "timeZone": "",
+    "persistDynamic": false,
+    "commandResponseMsgOutput": "output1",
+    "outputs": 1,
+    "options": [
+      {
+        "name": "morning_download",
+        "topic": "morning_download",
+        "payloadType": "default",
+        "payload": "",
+        "expressionType": "cron",
+        "expression": "0 6 * * *",
+        "location": "",
+        "offset": "0",
+        "solarType": "all",
+        "solarEvents": "sunrise,sunset"
+      },
+      {
+        "name": "evening_results",
+        "topic": "evening_results",
+        "payloadType": "default",
+        "payload": "",
+        "expressionType": "cron",
+        "expression": "0 22 * * *",
+        "location": "",
+        "offset": "0",
+        "solarType": "all",
+        "solarEvents": "sunrise,sunset"
+      }
+    ],
+    "x": 160,
+    "y": 100,
+    "wires": [
+      ["data_router"]
+    ]
+  },
+  {
+    "id": "data_router",
+    "type": "switch",
+    "z": "tab_data_pipeline",
+    "name": "Route Data Tasks",
+    "property": "topic",
+    "propertyType": "msg",
+    "rules": [
+      {
+        "t": "eq",
+        "v": "morning_download",
+        "vt": "str"
+      },
+      {
+        "t": "eq",
+        "v": "evening_results",
+        "vt": "str"
+      }
+    ],
+    "checkall": "true",
+    "repair": false,
+    "outputs": 2,
+    "x": 360,
+    "y": 100,
+    "wires": [
+      ["download_racecards"],
+      ["download_results"]
+    ]
+  },
+  {
+    "id": "download_racecards",
+    "type": "exec",
+    "z": "tab_data_pipeline",
+    "command": "cd /workspace && python tools/daily_downloader.py --type racecards",
+    "addpay": false,
+    "append": "",
+    "useSpawn": "false",
+    "timer": "",
+    "oldrc": false,
+    "name": "Download Racecards",
+    "x": 580,
+    "y": 80,
+    "wires": [
+      ["process_download_success"],
+      ["handle_download_error"],
+      []
+    ]
+  },
+  {
+    "id": "download_results",
+    "type": "exec",
+    "z": "tab_data_pipeline",
+    "command": "cd /workspace && python tools/daily_downloader.py --type results",
+    "addpay": false,
+    "append": "",
+    "useSpawn": "false",
+    "timer": "",
+    "oldrc": false,
+    "name": "Download Results",
+    "x": 580,
+    "y": 120,
+    "wires": [
+      ["process_download_success"],
+      ["handle_download_error"],
+      []
+    ]
+  },
+  {
+    "id": "process_download_success",
+    "type": "function",
+    "z": "tab_data_pipeline",
+    "name": "Process Success",
+    "func": "msg.payload = {\n    status: 'success',\n    timestamp: new Date(),\n    type: msg.topic,\n    message: 'Data download completed successfully'\n};\nreturn msg;",
+    "outputs": 1,
+    "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "libs": [],
+    "x": 800,
+    "y": 80,
+    "wires": [
+      ["trigger_csv_cleaning"]
+    ]
+  },
+  {
+    "id": "handle_download_error",
+    "type": "function",
+    "z": "tab_data_pipeline",
+    "name": "Handle Error",
+    "func": "msg.payload = {\n    status: 'error',\n    timestamp: new Date(),\n    type: msg.topic,\n    error: msg.payload,\n    message: 'Data download failed'\n};\nreturn msg;",
+    "outputs": 1,
+    "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "libs": [],
+    "x": 800,
+    "y": 120,
+    "wires": [
+      ["send_error_alert"]
+    ]
+  },
+  {
+    "id": "trigger_csv_cleaning",
+    "type": "exec",
+    "z": "tab_data_pipeline",
+    "command": "cd /workspace && python tools/data_quality/csv_data_cleaner.py",
+    "addpay": false,
+    "append": "",
+    "useSpawn": "false",
+    "timer": "",
+    "oldrc": false,
+    "name": "Clean CSV Data",
+    "x": 1020,
+    "y": 80,
+    "wires": [
+      ["trigger_db_import"],
+      ["send_error_alert"],
+      []
+    ]
+  },
+  {
+    "id": "trigger_db_import",
+    "type": "exec",
+    "z": "tab_data_pipeline",
+    "command": "cd /workspace && python tools/database/import_clean_data.py",
+    "addpay": false,
+    "append": "",
+    "useSpawn": "false",
+    "timer": "",
+    "oldrc": false,
+    "name": "Import to Database",
+    "x": 1240,
+    "y": 80,
+    "wires": [
+      ["trigger_ai_predictions"],
+      ["send_error_alert"],
+      []
+    ]
+  },
+  {
+    "id": "trigger_ai_predictions",
+    "type": "exec",
+    "z": "tab_data_pipeline",
+    "command": "cd /workspace && python tools/ml_training/generate_predictions.py",
+    "addpay": false,
+    "append": "",
+    "useSpawn": "false",
+    "timer": "",
+    "oldrc": false,
+    "name": "Generate AI Predictions",
+    "x": 1480,
+    "y": 80,
+    "wires": [
+      ["pipeline_complete"],
+      ["send_error_alert"],
+      []
+    ]
+  },
+  {
+    "id": "pipeline_complete",
+    "type": "function",
+    "z": "tab_data_pipeline",
+    "name": "Pipeline Complete",
+    "func": "msg.payload = {\n    status: 'pipeline_complete',\n    timestamp: new Date(),\n    message: 'Full pipeline completed successfully'\n};\nreturn msg;",
+    "outputs": 1,
+    "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "libs": [],
+    "x": 1720,
+    "y": 80,
+    "wires": [
+      ["send_success_notification", "update_dashboard_status"]
+    ]
+  },
+  {
+    "id": "send_error_alert",
+    "type": "e-mail",
+    "z": "tab_alerts",
+    "server": "smtp.gmail.com",
+    "port": "465",
+    "secure": true,
+    "tls": true,
+    "name": "Error Alert Email",
+    "dname": "Horse Racing AI Alert",
+    "x": 400,
+    "y": 200,
+    "wires": []
+  },
+  {
+    "id": "send_success_notification",
+    "type": "e-mail",
+    "z": "tab_alerts",
+    "server": "smtp.gmail.com",
+    "port": "465",
+    "secure": true,
+    "tls": true,
+    "name": "Success Notification",
+    "dname": "Horse Racing AI Success",
+    "x": 400,
+    "y": 160,
+    "wires": []
+  },
+  {
+    "id": "system_status_gauge",
+    "type": "ui_gauge",
+    "z": "tab_dashboard",
+    "name": "System Status",
+    "group": "system_group",
+    "order": 1,
+    "width": 6,
+    "height": 4,
+    "gtype": "gage",
+    "title": "System Health",
+    "label": "%",
+    "format": "{{value}}",
+    "min": 0,
+    "max": 100,
+    "colors": [
+      "#ca3838",
+      "#e6e600",
+      "#62a0ea"
+    ],
+    "seg1": "50",
+    "seg2": "80",
+    "x": 400,
+    "y": 300,
+    "wires": []
+  },
+  {
+    "id": "pipeline_status_text",
+    "type": "ui_text",
+    "z": "tab_dashboard",
+    "group": "system_group",
+    "order": 2,
+    "width": 6,
+    "height": 2,
+    "name": "Pipeline Status",
+    "label": "Last Update:",
+    "format": "{{msg.payload}}",
+    "layout": "row-spread",
+    "x": 400,
+    "y": 340,
+    "wires": []
+  },
+  {
+    "id": "update_dashboard_status",
+    "type": "function",
+    "z": "tab_dashboard",
+    "name": "Update Status",
+    "func": "// Update system status gauge\nvar statusMsg = {\n    payload: 95,\n    topic: 'system_health'\n};\n\n// Update pipeline status text\nvar textMsg = {\n    payload: new Date().toLocaleString() + ' - Pipeline Complete',\n    topic: 'pipeline_status'\n};\n\nreturn [statusMsg, textMsg];",
+    "outputs": 2,
+    "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "libs": [],
+    "x": 400,
+    "y": 380,
+    "wires": [
+      ["system_status_gauge"],
+      ["pipeline_status_text"]
+    ]
+  },
+  {
+    "id": "ai_predictions_chart",
+    "type": "ui_chart",
+    "z": "tab_dashboard",
+    "name": "AI Prediction Accuracy",
+    "group": "predictions_group",
+    "order": 1,
+    "width": 12,
+    "height": 6,
+    "label": "Prediction Accuracy Over Time",
+    "chartType": "line",
+    "legend": "true",
+    "xformat": "HH:mm:ss",
+    "interpolate": "linear",
+    "nodata": "No Data",
+    "dot": false,
+    "ymin": "0",
+    "ymax": "100",
+    "removeOlder": "24",
+    "removeOlderPoints": "",
+    "removeOlderUnit": "3600",
+    "cutout": 0,
+    "useOneColor": false,
+    "useUTC": false,
+    "colors": [
+      "#1f77b4",
+      "#aec7e8",
+      "#ff7f0e",
+      "#2ca02c",
+      "#98df8a"
+    ],
+    "outputs": 1,
+    "x": 400,
+    "y": 420,
+    "wires": [[]]
+  },
+  {
+    "id": "system_group",
+    "type": "ui_group",
+    "name": "System Status",
+    "tab": "main_tab",
+    "order": 1,
+    "disp": true,
+    "width": "12",
+    "collapse": false
+  },
+  {
+    "id": "predictions_group",
+    "type": "ui_group",
+    "name": "AI Predictions",
+    "tab": "main_tab",
+    "order": 2,
+    "disp": true,
+    "width": "12",
+    "collapse": false
+  },
+  {
+    "id": "main_tab",
+    "type": "ui_tab",
+    "name": "🏇 Horse Racing AI",
+    "icon": "dashboard",
+    "order": 1,
+    "disabled": false,
+    "hidden": false
+  }
+]
