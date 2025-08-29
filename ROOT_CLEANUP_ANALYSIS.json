@@ -1,0 +1,1154 @@
+{
+  "total_files": 177,
+  "total_size": 3942970,
+  "protected_files": [
+    {
+      "path": ".gitignore",
+      "size": 4394,
+      "reason": "Protected as git config",
+      "category": "git_config"
+    },
+    {
+      "path": "docker-compose.monitoring.yml",
+      "size": 6528,
+      "reason": "Protected as docker compose",
+      "category": "docker_compose"
+    },
+    {
+      "path": ".env",
+      "size": 1662,
+      "reason": "Protected as environment",
+      "category": "environment"
+    },
+    {
+      "path": "pyproject.toml",
+      "size": 2213,
+      "reason": "Protected as build tools",
+      "category": "build_tools"
+    },
+    {
+      "path": ".flake8",
+      "size": 275,
+      "reason": "Protected as config files",
+      "category": "config_files"
+    },
+    {
+      "path": "docker-compose.clean.yml",
+      "size": 22369,
+      "reason": "Protected as docker compose",
+      "category": "docker_compose"
+    },
+    {
+      "path": "pytest.ini",
+      "size": 687,
+      "reason": "Protected as config files",
+      "category": "config_files"
+    },
+    {
+      "path": "docker-compose.node-red.yml",
+      "size": 6412,
+      "reason": "Protected as docker compose",
+      "category": "docker_compose"
+    },
+    {
+      "path": "example.env",
+      "size": 990,
+      "reason": "Protected as environment",
+      "category": "environment"
+    },
+    {
+      "path": "Makefile",
+      "size": 12593,
+      "reason": "Protected as build tools",
+      "category": "build_tools"
+    },
+    {
+      "path": "docker-compose.traefik.yml",
+      "size": 628,
+      "reason": "Protected as docker compose",
+      "category": "docker_compose"
+    }
+  ],
+  "move_candidates": {
+    "config": [
+      {
+        "path": "REVIEW_FILES_BY_DIRECTORY_ANALYSIS.json",
+        "size": 1894851,
+        "type": "Configuration file",
+        "priority": "medium"
+      },
+      {
+        "path": "ML_CONFIG.yaml",
+        "size": 4068,
+        "type": "Configuration file",
+        "priority": "medium"
+      },
+      {
+        "path": "SYSTEM_FUNCTIONALITY_VALIDATION_REPORT.json",
+        "size": 1920,
+        "type": "Configuration file",
+        "priority": "medium"
+      },
+      {
+        "path": "CRITICAL_FILES_VALIDATION_REPORT.json",
+        "size": 3856,
+        "type": "Configuration file",
+        "priority": "medium"
+      },
+      {
+        "path": "enhanced_feedback_flows.json",
+        "size": 14841,
+        "type": "Configuration file",
+        "priority": "medium"
+      },
+      {
+        "path": "NODE_JS_CLEANUP_SUCCESS_REPORT.json",
+        "size": 1065,
+        "type": "Configuration file",
+        "priority": "medium"
+      },
+      {
+        "path": "ENHANCED_CLEANUP_REPORT_20250829_112730.json",
+        "size": 1004,
+        "type": "Configuration file",
+        "priority": "medium"
+      },
+      {
+        "path": "horse_racing_flows_corrected.json",
+        "size": 11618,
+        "type": "Configuration file",
+        "priority": "medium"
+      },
+      {
+        "path": "ENHANCED_CLEANUP_REPORT_20250829_152900.json",
+        "size": 992,
+        "type": "Configuration file",
+        "priority": "medium"
+      },
+      {
+        "path": "MEDIUM_PRIORITY_REVIEW_ANALYSIS.json",
+        "size": 811533,
+        "type": "Configuration file",
+        "priority": "medium"
+      },
+      {
+        "path": "NODE_RED_PROTECTION_SUMMARY.json",
+        "size": 775,
+        "type": "Configuration file",
+        "priority": "medium"
+      },
+      {
+        "path": "OPTIMIZATION_EXECUTION_PLAN_20250829_154416.json",
+        "size": 5956,
+        "type": "Configuration file",
+        "priority": "medium"
+      },
+      {
+        "path": "horse_racing_working_integration_flows.json",
+        "size": 40521,
+        "type": "Configuration file",
+        "priority": "medium"
+      },
+      {
+        "path": "core_dashboard_flows_no_email.json",
+        "size": 4980,
+        "type": "Configuration file",
+        "priority": "medium"
+      },
+      {
+        "path": "COMPLETE_ANALYSIS_SUMMARY_20250829_154649.json",
+        "size": 7238,
+        "type": "Configuration file",
+        "priority": "medium"
+      },
+      {
+        "path": "ENHANCED_CLEANUP_REPORT_20250829_112702.json",
+        "size": 1004,
+        "type": "Configuration file",
+        "priority": "medium"
+      },
+      {
+        "path": "CRITICAL_FILES_CROSS_REFERENCE_REPORT.json",
+        "size": 6168,
+        "type": "Configuration file",
+        "priority": "medium"
+      },
+      {
+        "path": "horse_racing_automation_flows.json",
+        "size": 20180,
+        "type": "Configuration file",
+        "priority": "medium"
+      },
+      {
+        "path": "STREAMLINED_ANALYSIS_REPORT_20250829_154228.json",
+        "size": 5332,
+        "type": "Configuration file",
+        "priority": "medium"
+      },
+      {
+        "path": "horse_racing_python_integration_flows.json",
+        "size": 38849,
+        "type": "Configuration file",
+        "priority": "medium"
+      },
+      {
+        "path": "FINAL_VALIDATION_REPORT.json",
+        "size": 254,
+        "type": "Configuration file",
+        "priority": "medium"
+      },
+      {
+        "path": "enhanced_pipeline_dashboard.json",
+        "size": 59800,
+        "type": "Configuration file",
+        "priority": "medium"
+      },
+      {
+        "path": "NODE_RED_DEPENDENCY_ANALYSIS_REPORT.json",
+        "size": 73179,
+        "type": "Configuration file",
+        "priority": "medium"
+      },
+      {
+        "path": "horse_racing_flows_credentials.json",
+        "size": 326,
+        "type": "Configuration file",
+        "priority": "medium"
+      },
+      {
+        "path": "enhanced_task_execution_flows.json",
+        "size": 9860,
+        "type": "Configuration file",
+        "priority": "medium"
+      },
+      {
+        "path": "horse_racing_automation_flows_working.json",
+        "size": 11295,
+        "type": "Configuration file",
+        "priority": "medium"
+      },
+      {
+        "path": "node-red-test-flows.json",
+        "size": 0,
+        "type": "Configuration file",
+        "priority": "medium"
+      },
+      {
+        "path": "horse_racing_automation_flows_fixed.json",
+        "size": 12837,
+        "type": "Configuration file",
+        "priority": "medium"
+      }
+    ],
+    "scripts": [
+      {
+        "path": "test_email_config.py",
+        "size": 5288,
+        "type": "Python script",
+        "priority": "medium"
+      },
+      {
+        "path": "fix_node_red_protection.py",
+        "size": 0,
+        "type": "Python script",
+        "priority": "medium"
+      },
+      {
+        "path": "comprehensive_system_test.sh",
+        "size": 5879,
+        "type": "Shell script",
+        "priority": "medium"
+      },
+      {
+        "path": "verify_csv_protection.py",
+        "size": 0,
+        "type": "Python script",
+        "priority": "medium"
+      },
+      {
+        "path": "medium_priority_reviewer.py",
+        "size": 0,
+        "type": "Python script",
+        "priority": "medium"
+      },
+      {
+        "path": "start_pipeline_integration.sh",
+        "size": 9752,
+        "type": "Shell script",
+        "priority": "medium"
+      },
+      {
+        "path": "fix_node_red_paths.sh",
+        "size": 1423,
+        "type": "Shell script",
+        "priority": "medium"
+      },
+      {
+        "path": "fix_enhanced_feedback.sh",
+        "size": 4199,
+        "type": "Shell script",
+        "priority": "medium"
+      },
+      {
+        "path": "medium_priority_summary.py",
+        "size": 0,
+        "type": "Python script",
+        "priority": "medium"
+      },
+      {
+        "path": "deploy_dashboard.sh",
+        "size": 1234,
+        "type": "Shell script",
+        "priority": "medium"
+      },
+      {
+        "path": "switch_to_enhanced_ml.sh",
+        "size": 3197,
+        "type": "Shell script",
+        "priority": "medium"
+      },
+      {
+        "path": "setup_node_red.sh",
+        "size": 4393,
+        "type": "Shell script",
+        "priority": "medium"
+      },
+      {
+        "path": "final_validation_test.py",
+        "size": 6134,
+        "type": "Python script",
+        "priority": "high"
+      },
+      {
+        "path": "test_critical_files_functionality.py",
+        "size": 0,
+        "type": "Python script",
+        "priority": "medium"
+      },
+      {
+        "path": "import_core_dashboard.sh",
+        "size": 6406,
+        "type": "Shell script",
+        "priority": "medium"
+      },
+      {
+        "path": "verify_python_integration.sh",
+        "size": 2659,
+        "type": "Shell script",
+        "priority": "medium"
+      },
+      {
+        "path": "start_daily_watcher.sh",
+        "size": 6710,
+        "type": "Shell script",
+        "priority": "medium"
+      },
+      {
+        "path": "enhanced_pipeline_monitor.py",
+        "size": 26895,
+        "type": "Python script",
+        "priority": "medium"
+      },
+      {
+        "path": "upload_race_data.py",
+        "size": 9614,
+        "type": "Python script",
+        "priority": "medium"
+      },
+      {
+        "path": "quick_access.sh",
+        "size": 3824,
+        "type": "Shell script",
+        "priority": "medium"
+      },
+      {
+        "path": "process_manual_data.py",
+        "size": 7379,
+        "type": "Python script",
+        "priority": "medium"
+      },
+      {
+        "path": "verify_enhanced_dashboard.sh",
+        "size": 2936,
+        "type": "Shell script",
+        "priority": "medium"
+      },
+      {
+        "path": "demo_complete_protection_system.py",
+        "size": 0,
+        "type": "Python script",
+        "priority": "medium"
+      },
+      {
+        "path": "run_project_audit.sh",
+        "size": 6623,
+        "type": "Shell script",
+        "priority": "medium"
+      },
+      {
+        "path": "manual_pipeline_trigger.py",
+        "size": 7573,
+        "type": "Python script",
+        "priority": "medium"
+      },
+      {
+        "path": "verify_python_protection.py",
+        "size": 0,
+        "type": "Python script",
+        "priority": "medium"
+      },
+      {
+        "path": "import_enhanced_dashboard.sh",
+        "size": 2902,
+        "type": "Shell script",
+        "priority": "medium"
+      },
+      {
+        "path": "test_enhanced_feedback.sh",
+        "size": 6552,
+        "type": "Shell script",
+        "priority": "medium"
+      },
+      {
+        "path": "verify_fixed_flows.sh",
+        "size": 1956,
+        "type": "Shell script",
+        "priority": "medium"
+      },
+      {
+        "path": "fix_node_red_paths_v2.sh",
+        "size": 0,
+        "type": "Shell script",
+        "priority": "medium"
+      },
+      {
+        "path": "streamlined_deep_analyzer.py",
+        "size": 0,
+        "type": "Python script",
+        "priority": "medium"
+      },
+      {
+        "path": "integrate_enhanced_feedback.sh",
+        "size": 13237,
+        "type": "Shell script",
+        "priority": "medium"
+      },
+      {
+        "path": "extract_todays_cards.py",
+        "size": 0,
+        "type": "Python script",
+        "priority": "medium"
+      },
+      {
+        "path": "conservative_cleanup.sh",
+        "size": 5069,
+        "type": "Shell script",
+        "priority": "medium"
+      },
+      {
+        "path": "verify_node_red.sh",
+        "size": 1097,
+        "type": "Shell script",
+        "priority": "medium"
+      },
+      {
+        "path": "test_working_integration.sh",
+        "size": 4306,
+        "type": "Shell script",
+        "priority": "medium"
+      },
+      {
+        "path": "test_full_system.sh",
+        "size": 0,
+        "type": "Shell script",
+        "priority": "medium"
+      },
+      {
+        "path": "deep_system_analyzer.py",
+        "size": 0,
+        "type": "Python script",
+        "priority": "medium"
+      },
+      {
+        "path": "email_alternatives_test.py",
+        "size": 2764,
+        "type": "Python script",
+        "priority": "high"
+      },
+      {
+        "path": "optimization_executor.py",
+        "size": 0,
+        "type": "Python script",
+        "priority": "medium"
+      },
+      {
+        "path": "verify_json_protection.py",
+        "size": 0,
+        "type": "Python script",
+        "priority": "medium"
+      },
+      {
+        "path": "complete_analysis_summary.py",
+        "size": 0,
+        "type": "Python script",
+        "priority": "medium"
+      },
+      {
+        "path": "configure_node_red.sh",
+        "size": 12126,
+        "type": "Shell script",
+        "priority": "medium"
+      },
+      {
+        "path": "review_files_directory_analyzer.py",
+        "size": 0,
+        "type": "Python script",
+        "priority": "medium"
+      },
+      {
+        "path": "node_js_cleanup_success_report.py",
+        "size": 0,
+        "type": "Python script",
+        "priority": "medium"
+      },
+      {
+        "path": "detailed_directory_analysis.py",
+        "size": 0,
+        "type": "Python script",
+        "priority": "medium"
+      },
+      {
+        "path": "debug_jockeys.py",
+        "size": 1299,
+        "type": "Python script",
+        "priority": "high"
+      },
+      {
+        "path": "test_comprehensive_functionality.py",
+        "size": 0,
+        "type": "Python script",
+        "priority": "medium"
+      },
+      {
+        "path": "upload_missing_racecard_details.py",
+        "size": 5772,
+        "type": "Python script",
+        "priority": "medium"
+      },
+      {
+        "path": "demo_integrated_cleanup.py",
+        "size": 6928,
+        "type": "Python script",
+        "priority": "medium"
+      },
+      {
+        "path": "corrected_manual_pipeline_trigger.py",
+        "size": 8341,
+        "type": "Python script",
+        "priority": "medium"
+      },
+      {
+        "path": "test_system_functionality.py",
+        "size": 0,
+        "type": "Python script",
+        "priority": "medium"
+      },
+      {
+        "path": "quick_cleanup_analysis.py",
+        "size": 0,
+        "type": "Python script",
+        "priority": "medium"
+      },
+      {
+        "path": "run_tests.sh",
+        "size": 0,
+        "type": "Shell script",
+        "priority": "medium"
+      },
+      {
+        "path": "cross_reference_final_summary.py",
+        "size": 0,
+        "type": "Python script",
+        "priority": "medium"
+      },
+      {
+        "path": "analyze_node_red_dependencies.py",
+        "size": 0,
+        "type": "Python script",
+        "priority": "medium"
+      },
+      {
+        "path": "verify_sql_protection.py",
+        "size": 0,
+        "type": "Python script",
+        "priority": "medium"
+      },
+      {
+        "path": "final_validation_summary.py",
+        "size": 0,
+        "type": "Python script",
+        "priority": "medium"
+      },
+      {
+        "path": "node_red_protection_summary.py",
+        "size": 0,
+        "type": "Python script",
+        "priority": "medium"
+      }
+    ],
+    "docs": [
+      {
+        "path": "UPDATED_TODO_POST_DOCKER_VALIDATION.md",
+        "size": 3253,
+        "type": "Markdown documentation",
+        "priority": "low"
+      },
+      {
+        "path": "CURRENT_STATUS_SUMMARY.md",
+        "size": 2675,
+        "type": "Markdown documentation",
+        "priority": "low"
+      },
+      {
+        "path": "PYTHON_INTEGRATION_COMPLETE.md",
+        "size": 6681,
+        "type": "Markdown documentation",
+        "priority": "low"
+      },
+      {
+        "path": "FEEDBACK_SYSTEM_FIXED_SUMMARY.md",
+        "size": 6711,
+        "type": "Markdown documentation",
+        "priority": "low"
+      },
+      {
+        "path": "SQL_PROTECTION_IMPLEMENTATION_SUMMARY.md",
+        "size": 0,
+        "type": "Markdown documentation",
+        "priority": "low"
+      },
+      {
+        "path": "INTEGRATION_SUCCESS_VERIFICATION.md",
+        "size": 4894,
+        "type": "Markdown documentation",
+        "priority": "low"
+      },
+      {
+        "path": "DATABASE_CONNECTIVITY_RESOLUTION_REPORT.md",
+        "size": 7950,
+        "type": "Markdown documentation",
+        "priority": "low"
+      },
+      {
+        "path": "NODE_RED_SETUP_WIZARD.md",
+        "size": 9360,
+        "type": "Markdown documentation",
+        "priority": "low"
+      },
+      {
+        "path": "FULL_STACK_DEPLOYMENT_SUCCESS_REPORT.md",
+        "size": 5951,
+        "type": "Markdown documentation",
+        "priority": "low"
+      },
+      {
+        "path": "BUY_ME_A_COFFEE_BLOG_POST.md",
+        "size": 11047,
+        "type": "Markdown documentation",
+        "priority": "low"
+      },
+      {
+        "path": "CURRENT_PRIORITY_TODO_AUG25.md",
+        "size": 11621,
+        "type": "Markdown documentation",
+        "priority": "low"
+      },
+      {
+        "path": "FINAL_DEPLOYMENT_SUCCESS_REPORT.md",
+        "size": 5501,
+        "type": "Markdown documentation",
+        "priority": "low"
+      },
+      {
+        "path": "DATA_UPLOAD_SUCCESS_REPORT.md",
+        "size": 4504,
+        "type": "Markdown documentation",
+        "priority": "low"
+      },
+      {
+        "path": "SYSTEM_FUNCTIONALITY_VALIDATION_SUMMARY.md",
+        "size": 0,
+        "type": "Markdown documentation",
+        "priority": "low"
+      },
+      {
+        "path": "EMERGENCY_FIXES_SUMMARY.md",
+        "size": 1468,
+        "type": "Markdown documentation",
+        "priority": "low"
+      },
+      {
+        "path": "DEPLOYMENT_OPERATIONS_GUIDE.md",
+        "size": 22610,
+        "type": "Markdown documentation",
+        "priority": "low"
+      },
+      {
+        "path": "ML_SYSTEM_UPGRADE_DOCUMENTATION.md",
+        "size": 8276,
+        "type": "Markdown documentation",
+        "priority": "low"
+      },
+      {
+        "path": "AI_SELECTIONS_RESULTS_PAGE_SUMMARY.md",
+        "size": 7214,
+        "type": "Markdown documentation",
+        "priority": "low"
+      },
+      {
+        "path": "DATABASE_PIPELINE_ANALYSIS.md",
+        "size": 5355,
+        "type": "Markdown documentation",
+        "priority": "low"
+      },
+      {
+        "path": "SCHEMA_COMPATIBILITY_FIX_REPORT.md",
+        "size": 5408,
+        "type": "Markdown documentation",
+        "priority": "low"
+      },
+      {
+        "path": "CSV_BACKUP_SYSTEM_SUMMARY.md",
+        "size": 6712,
+        "type": "Markdown documentation",
+        "priority": "high"
+      },
+      {
+        "path": "SYSTEM_AUDIT_REPORT_2025-08-27.md",
+        "size": 8620,
+        "type": "Markdown documentation",
+        "priority": "low"
+      },
+      {
+        "path": "PROJECT_AUDIT_COMPLETION_REPORT.md",
+        "size": 9235,
+        "type": "Markdown documentation",
+        "priority": "low"
+      },
+      {
+        "path": "NODE_RED_CONFIGURATION_GUIDE.md",
+        "size": 8234,
+        "type": "Markdown documentation",
+        "priority": "low"
+      },
+      {
+        "path": "FINAL_SCHEMA_GUARDIAN_SUCCESS_REPORT.md",
+        "size": 6126,
+        "type": "Markdown documentation",
+        "priority": "low"
+      },
+      {
+        "path": "REORGANIZATION_PLAN.md",
+        "size": 7780,
+        "type": "Markdown documentation",
+        "priority": "low"
+      },
+      {
+        "path": "NODE_RED_AUTOMATION_PLAN.md",
+        "size": 8026,
+        "type": "Markdown documentation",
+        "priority": "low"
+      },
+      {
+        "path": "RESULTS_SCHEMA_COMPATIBILITY_FIX_REPORT.md",
+        "size": 7293,
+        "type": "Markdown documentation",
+        "priority": "low"
+      },
+      {
+        "path": "AI_SELECTIONS_IMPLEMENTATION_DOCUMENTATION.md",
+        "size": 9474,
+        "type": "Markdown documentation",
+        "priority": "low"
+      },
+      {
+        "path": "AI_SELECTIONS_DASHBOARD_COMPLETION_REPORT.md",
+        "size": 0,
+        "type": "Markdown documentation",
+        "priority": "low"
+      },
+      {
+        "path": "NODE_RED_STEP_BY_STEP_GUIDE.md",
+        "size": 5792,
+        "type": "Markdown documentation",
+        "priority": "low"
+      },
+      {
+        "path": "CSV_SCHEMA_CONSISTENCY_ANALYSIS_REPORT.md",
+        "size": 5384,
+        "type": "Markdown documentation",
+        "priority": "low"
+      },
+      {
+        "path": "DOCKER_DEVELOPMENT_WORKFLOW_GUIDE.md",
+        "size": 7647,
+        "type": "Markdown documentation",
+        "priority": "low"
+      },
+      {
+        "path": "PROJECT_AUDIT_AND_VERSIONING_PLAN.md",
+        "size": 16834,
+        "type": "Markdown documentation",
+        "priority": "low"
+      },
+      {
+        "path": "FIXED_NODE_RED_SETUP_GUIDE.md",
+        "size": 2880,
+        "type": "Markdown documentation",
+        "priority": "low"
+      },
+      {
+        "path": "ROOT_DIRECTORY_INDEX.md",
+        "size": 6240,
+        "type": "Markdown documentation",
+        "priority": "low"
+      },
+      {
+        "path": "AI_SELECTIONS_COMPLETION_REPORT.md",
+        "size": 6863,
+        "type": "Markdown documentation",
+        "priority": "low"
+      },
+      {
+        "path": "DASH_SYMBOL_SOLUTION_SUMMARY.md",
+        "size": 5034,
+        "type": "Markdown documentation",
+        "priority": "low"
+      },
+      {
+        "path": "TECHNICAL_IMPLEMENTATION_GUIDE.md",
+        "size": 23496,
+        "type": "Markdown documentation",
+        "priority": "low"
+      },
+      {
+        "path": "PIPELINE_COMPLETION_SUCCESS_REPORT.md",
+        "size": 5458,
+        "type": "Markdown documentation",
+        "priority": "low"
+      },
+      {
+        "path": "CSV_DATA_CLEANING_REPORT_20250828_071120.md",
+        "size": 15647,
+        "type": "Markdown documentation",
+        "priority": "low"
+      },
+      {
+        "path": "morning_briefing.md",
+        "size": 10481,
+        "type": "Markdown documentation",
+        "priority": "low"
+      },
+      {
+        "path": "ENHANCEMENT_COMPLETE_SUMMARY.md",
+        "size": 7023,
+        "type": "Markdown documentation",
+        "priority": "low"
+      },
+      {
+        "path": "NODE_RED_CORRECTED_GUIDE.md",
+        "size": 4316,
+        "type": "Markdown documentation",
+        "priority": "low"
+      },
+      {
+        "path": "ADVANCED_SYSTEM_DOCUMENTATION.md",
+        "size": 19966,
+        "type": "Markdown documentation",
+        "priority": "low"
+      },
+      {
+        "path": "FINAL_ROOT_CAUSE_PERMANENT_SOLUTION.md",
+        "size": 8494,
+        "type": "Markdown documentation",
+        "priority": "low"
+      },
+      {
+        "path": "CSV_PROTECTION_IMPLEMENTATION_SUMMARY.md",
+        "size": 0,
+        "type": "Markdown documentation",
+        "priority": "low"
+      },
+      {
+        "path": "JSON_PROTECTION_IMPLEMENTATION_SUMMARY.md",
+        "size": 0,
+        "type": "Markdown documentation",
+        "priority": "low"
+      },
+      {
+        "path": "UNIQUE_REFERENCE_TABLES_COMPLETION_REPORT.md",
+        "size": 0,
+        "type": "Markdown documentation",
+        "priority": "low"
+      },
+      {
+        "path": "SQLITE_BACKUP_TRACKING_DOCUMENTATION.md",
+        "size": 8500,
+        "type": "Markdown documentation",
+        "priority": "high"
+      },
+      {
+        "path": "ENHANCED_FEEDBACK_SYSTEM_GUIDE.md",
+        "size": 10612,
+        "type": "Markdown documentation",
+        "priority": "low"
+      },
+      {
+        "path": "PIPELINE_DAILY_UPLOAD_FIX_SUMMARY.md",
+        "size": 7237,
+        "type": "Markdown documentation",
+        "priority": "low"
+      },
+      {
+        "path": "INTEGRATED_CLEANUP_SYSTEM_SUMMARY.md",
+        "size": 7326,
+        "type": "Markdown documentation",
+        "priority": "low"
+      },
+      {
+        "path": "ROOT_CAUSE_ANALYSIS_SCHEMA_FAILURES.md",
+        "size": 7347,
+        "type": "Markdown documentation",
+        "priority": "low"
+      },
+      {
+        "path": "DOCKER_DEVELOPMENT_SUCCESS_REPORT.md",
+        "size": 4290,
+        "type": "Markdown documentation",
+        "priority": "low"
+      },
+      {
+        "path": "EMAIL_FIX_GUIDE.md",
+        "size": 2016,
+        "type": "Markdown documentation",
+        "priority": "low"
+      },
+      {
+        "path": "PYTHON_PROTECTION_IMPLEMENTATION_SUMMARY.md",
+        "size": 0,
+        "type": "Markdown documentation",
+        "priority": "low"
+      },
+      {
+        "path": "PERMANENT_SCHEMA_SOLUTION_PLAN.md",
+        "size": 9577,
+        "type": "Markdown documentation",
+        "priority": "low"
+      },
+      {
+        "path": "PRIORITY_2_1_COMPLETION_REPORT.md",
+        "size": 6298,
+        "type": "Markdown documentation",
+        "priority": "low"
+      },
+      {
+        "path": "AI_SELECTIONS_PERFORMANCE_TRACKING_DOCUMENTATION.md",
+        "size": 6970,
+        "type": "Markdown documentation",
+        "priority": "low"
+      },
+      {
+        "path": "CSV_DATA_QUALITY_CRITICAL_ANALYSIS_20250828_071244.md",
+        "size": 48911,
+        "type": "Markdown documentation",
+        "priority": "low"
+      },
+      {
+        "path": "CRITICAL_PIPELINE_FINDINGS_REPORT.md",
+        "size": 5062,
+        "type": "Markdown documentation",
+        "priority": "low"
+      },
+      {
+        "path": "WATCHER_INTEGRATION_COMPLETE.md",
+        "size": 3406,
+        "type": "Markdown documentation",
+        "priority": "low"
+      },
+      {
+        "path": "evening_debrief.md",
+        "size": 25347,
+        "type": "Markdown documentation",
+        "priority": "low"
+      },
+      {
+        "path": "NODE_RED_SETUP_GUIDE.md",
+        "size": 5186,
+        "type": "Markdown documentation",
+        "priority": "low"
+      },
+      {
+        "path": "IMPLEMENTATION_CHECKLIST.md",
+        "size": 2121,
+        "type": "Markdown documentation",
+        "priority": "low"
+      },
+      {
+        "path": "NODE_RED_FINAL_SETUP_GUIDE.md",
+        "size": 5507,
+        "type": "Markdown documentation",
+        "priority": "low"
+      },
+      {
+        "path": "PYTHON_INTEGRATION_GUIDE.md",
+        "size": 6391,
+        "type": "Markdown documentation",
+        "priority": "low"
+      },
+      {
+        "path": "AI_SELECTIONS_STRATEGY_OPTIMIZATION_SUMMARY.md",
+        "size": 0,
+        "type": "Markdown documentation",
+        "priority": "low"
+      },
+      {
+        "path": "FILE_REORGANIZATION_NOTES.md",
+        "size": 3437,
+        "type": "Markdown documentation",
+        "priority": "low"
+      },
+      {
+        "path": "AI_SELECTIONS_COMPLETE_IMPLEMENTATION_REPORT.md",
+        "size": 15811,
+        "type": "Markdown documentation",
+        "priority": "low"
+      },
+      {
+        "path": "ENHANCED_PIPELINE_DASHBOARD_GUIDE.md",
+        "size": 9304,
+        "type": "Markdown documentation",
+        "priority": "low"
+      },
+      {
+        "path": "CURRENT_STATUS_REPORT.md",
+        "size": 8690,
+        "type": "Markdown documentation",
+        "priority": "low"
+      },
+      {
+        "path": "CSV_DATA_QUALITY_CRITICAL_ANALYSIS_20250828_070825.md",
+        "size": 66936,
+        "type": "Markdown documentation",
+        "priority": "low"
+      },
+      {
+        "path": "EMAIL_URGENT_FIX.md",
+        "size": 2283,
+        "type": "Markdown documentation",
+        "priority": "low"
+      }
+    ],
+    "misc": [
+      {
+        "path": "CREATE_UNIQUE_REFERENCE_TABLES.sql",
+        "size": 0,
+        "type": "SQL script",
+        "priority": "medium"
+      },
+      {
+        "path": "AI_SCHEMA.sql",
+        "size": 7286,
+        "type": "SQL script",
+        "priority": "medium"
+      },
+      {
+        "path": "NODE_RED_VISUAL_MAP.txt",
+        "size": 5986,
+        "type": "Other file",
+        "priority": "medium"
+      }
+    ],
+    "logs": [
+      {
+        "path": "training_output.log",
+        "size": 79,
+        "type": "Log file",
+        "priority": "medium"
+      }
+    ]
+  },
+  "cleanup_opportunities": [
+    {
+      "type": "temp_directory",
+      "path": "temp_card_processing",
+      "reason": "Temporary directory that may be cleaned up"
+    },
+    {
+      "type": "temp_directory",
+      "path": "temp_extract",
+      "reason": "Temporary directory that may be cleaned up"
+    },
+    {
+      "type": "temp_directory",
+      "path": "node-red-backup-20250829_111937",
+      "reason": "Temporary directory that may be cleaned up"
+    },
+    {
+      "type": "temp_directory",
+      "path": "ml_cache",
+      "reason": "Temporary directory that may be cleaned up"
+    },
+    {
+      "type": "temp_directory",
+      "path": "__pycache__",
+      "reason": "Temporary directory that may be cleaned up"
+    },
+    {
+      "type": "temp_directory",
+      "path": "horse-race-ai-backup-20250828_212304",
+      "reason": "Temporary directory that may be cleaned up"
+    }
+  ],
+  "directory_suggestions": {
+    "config": {
+      "total_files": 28,
+      "total_size": 3044302,
+      "high_priority": 0,
+      "medium_priority": 28,
+      "low_priority": 0,
+      "description": "Configuration files and settings"
+    },
+    "scripts": {
+      "total_files": 59,
+      "total_size": 194467,
+      "high_priority": 3,
+      "medium_priority": 56,
+      "low_priority": 0,
+      "description": "Executable scripts and utilities"
+    },
+    "docs": {
+      "total_files": 75,
+      "total_size": 632099,
+      "high_priority": 2,
+      "medium_priority": 0,
+      "low_priority": 73,
+      "description": "Documentation and markdown files"
+    },
+    "misc": {
+      "total_files": 3,
+      "total_size": 13272,
+      "high_priority": 0,
+      "medium_priority": 3,
+      "low_priority": 0,
+      "description": "Miscellaneous files"
+    },
+    "logs": {
+      "total_files": 1,
+      "total_size": 79,
+      "high_priority": 0,
+      "medium_priority": 1,
+      "low_priority": 0,
+      "description": "Log files and output"
+    }
+  }
+}

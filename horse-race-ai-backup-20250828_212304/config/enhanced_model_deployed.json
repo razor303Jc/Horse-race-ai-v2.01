@@ -1,7 +1,0 @@
-{
-  "deployment_date": "2025-08-24T21:01:43.881725",
-  "enhanced_model_version": "2.04",
-  "features_count": "52+",
-  "baseline_backup": "/home/jc/Documents/Horse-race-ai-v2.04/backups/model_backup_20250824_210143/ai_selections_backup.py",
-  "status": "DEPLOYED"
-}

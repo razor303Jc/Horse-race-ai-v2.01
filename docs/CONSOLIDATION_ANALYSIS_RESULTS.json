@@ -1,0 +1,1026 @@
+{
+  "total_files": 81,
+  "total_size": 603449,
+  "categories": {
+    "summary_reports": [
+      {
+        "path": "ML_TRAINING_COMPLETION_REPORT.md",
+        "size": 6131,
+        "modified": 1756238724.0636427,
+        "category": "summary_reports",
+        "content_summary": {
+          "title": "\ud83c\udfaf ML Training Cycle Completion Report",
+          "description": "**Date**: August 24, 2025",
+          "line_count": 182
+        },
+        "word_count": 784
+      },
+      {
+        "path": "V2_01_Enhancement_Analysis_Report.md",
+        "size": 8532,
+        "modified": 1755897640.8448682,
+        "category": "summary_reports",
+        "content_summary": {
+          "title": "V2.01 to V2.03 Enhancement Analysis Report",
+          "description": "This analysis implements the advanced ML ensemble approach discovered in the v2.01 archive to enhanc...",
+          "line_count": 216
+        },
+        "word_count": 1019
+      },
+      {
+        "path": "CSP_LIVE_RACE_IMPLEMENTATION_SUMMARY.md",
+        "size": 8302,
+        "modified": 1755897640.8436131,
+        "category": "summary_reports",
+        "content_summary": {
+          "title": "\ud83c\udfc7 Horse Racing AI v2.03 - CSP & Live Race Tracking Implementation Summary",
+          "description": "**Date:** August 19, 2025",
+          "line_count": 210
+        },
+        "word_count": 962
+      },
+      {
+        "path": "0001_KICKOFF_PREPARATION_SUMMARY.md",
+        "size": 5629,
+        "modified": 1755897640.8433416,
+        "category": "summary_reports",
+        "content_summary": {
+          "title": "\ud83d\ude80 00:01 AUTO DOWNLOAD & PIPELINE KICKOFF - PREPARATION COMPLETE",
+          "description": "**System Status:** \u2705 **FULLY READY**",
+          "line_count": 213
+        },
+        "word_count": 710
+      },
+      {
+        "path": "TIME_AWARE_ML_OPTIMIZATION_IMPLEMENTATION_SUMMARY.md",
+        "size": 11781,
+        "modified": 1755928717.3980188,
+        "category": "summary_reports",
+        "content_summary": {
+          "title": "Time-Aware ML Training Optimization Implementation Summary",
+          "description": "**Date:** January 20, 2025",
+          "line_count": 359
+        },
+        "word_count": 1467
+      },
+      {
+        "path": "ENHANCED_MONITORING_IMPLEMENTATION_SUMMARY.md",
+        "size": 7753,
+        "modified": 1755928717.3947792,
+        "category": "summary_reports",
+        "content_summary": {
+          "title": "Daily File Watcher Enhanced Monitoring - Implementation Summary",
+          "description": "We have successfully implemented comprehensive enhanced monitoring and logging for the daily file wa...",
+          "line_count": 260
+        },
+        "word_count": 892
+      },
+      {
+        "path": "ML_STRATEGY_INTEGRATION_SUMMARY.md",
+        "size": 7440,
+        "modified": 1755897640.8438683,
+        "category": "summary_reports",
+        "content_summary": {
+          "title": "ML Strategy Integration Complete \u2705",
+          "description": "The ML models now know about the 80/20 and Dutching betting strategies through a comprehensive integ...",
+          "line_count": 225
+        },
+        "word_count": 813
+      },
+      {
+        "path": "DATABASE_PIPELINE_FIXES_SUMMARY.md",
+        "size": 4498,
+        "modified": 1755928717.39368,
+        "category": "summary_reports",
+        "content_summary": {
+          "title": "\ud83d\udd27 Database Connection & Data Pipeline Fixes",
+          "description": "**Issue:** `/app/docker/ml_training/pipeline_integration.py:140: UserWarning: pandas only supports S...",
+          "line_count": 142
+        },
+        "word_count": 588
+      },
+      {
+        "path": "REORGANIZATION_SUMMARY.md",
+        "size": 1262,
+        "modified": 1755897640.8438683,
+        "category": "summary_reports",
+        "content_summary": {
+          "title": "Project Reorganization Summary",
+          "description": "- `analyze_project_files.py` - Project analysis script",
+          "line_count": 52
+        },
+        "word_count": 147
+      },
+      {
+        "path": "V2_01_Implementation_Summary.md",
+        "size": 11162,
+        "modified": 1755897640.8448682,
+        "category": "summary_reports",
+        "content_summary": {
+          "title": "V2.01 Enhanced Racing Intelligence Implementation Summary",
+          "description": "Through comprehensive analysis of the v2.01 archived codebase, we've successfully identified and imp...",
+          "line_count": 316
+        },
+        "word_count": 1358
+      },
+      {
+        "path": "ENHANCED_MONTE_CARLO_INTEGRATION_SUMMARY.md",
+        "size": 6057,
+        "modified": 1755897640.8438683,
+        "category": "summary_reports",
+        "content_summary": {
+          "title": "\ud83c\udfaf ENHANCED MONTE CARLO BETTING SYSTEM - INTEGRATION COMPLETE",
+          "description": "Successfully integrated both 80/20 and Dutching betting strategies into the Monte Carlo simulation s...",
+          "line_count": 183
+        },
+        "word_count": 787
+      },
+      {
+        "path": "enhanced_ai_selections_integration_summary.md",
+        "size": 6870,
+        "modified": 1755897640.8448682,
+        "category": "summary_reports",
+        "content_summary": {
+          "title": "\ud83c\udfaf Enhanced AI Selections Integration - COMPLETE \u2705",
+          "description": "Successfully integrated the advanced metrics ML models with the AI selections system, creating a pro...",
+          "line_count": 226
+        },
+        "word_count": 844
+      },
+      {
+        "path": "implementation/FINAL_PIPELINE_INTEGRATION_SUMMARY.md",
+        "size": 7124,
+        "modified": 1756238724.0656428,
+        "category": "summary_reports",
+        "content_summary": {
+          "title": "\ud83c\udf89 Pipeline Integration & Testing Complete!",
+          "description": "```",
+          "line_count": 180
+        },
+        "word_count": 882
+      }
+    ],
+    "todo_lists": [
+      {
+        "path": "AUTOMATED_DATA_QUALITY_INTEGRATION.md",
+        "size": 5551,
+        "modified": 1755897640.8436131,
+        "category": "todo_lists",
+        "content_summary": {
+          "title": "Automated Data Quality Pipeline Integration",
+          "description": "This document tracks the automated data quality pipeline integration that addresses the critical TOD...",
+          "line_count": 174
+        },
+        "word_count": 671
+      },
+      {
+        "path": "V2_01_FEATURES_INTEGRATION_COMPLETE.md",
+        "size": 7055,
+        "modified": 1755897640.8448682,
+        "category": "todo_lists",
+        "content_summary": {
+          "title": "V2.01 Features Integration Complete",
+          "description": "This document tracks the successful integration of all high-priority V2.01 features into the V2.03 a...",
+          "line_count": 203
+        },
+        "word_count": 839
+      },
+      {
+        "path": "COMPREHENSIVE_TODO_AUDIT.md",
+        "size": 8747,
+        "modified": 1755897640.8436131,
+        "category": "todo_lists",
+        "content_summary": {
+          "title": "\ud83d\udea8 COMPREHENSIVE TODO AUDIT - CRITICAL FINDINGS",
+          "description": "After reviewing the extensive documentation in `/docs/`, we've discovered that V2.03 has **MASSIVE**...",
+          "line_count": 259
+        },
+        "word_count": 1071
+      },
+      {
+        "path": "RACE_RESULTS_INTEGRATION_COMPLETION.md",
+        "size": 8799,
+        "modified": 1756238724.0646427,
+        "category": "todo_lists",
+        "content_summary": {
+          "title": "\ud83c\udfc7 Race Results Integration & Performance Tracking - COMPLETION REPORT",
+          "description": "**Date:** August 24, 2025",
+          "line_count": 243
+        },
+        "word_count": 1056
+      },
+      {
+        "path": "WEB_APP_ENHANCEMENT_TODO.md",
+        "size": 37921,
+        "modified": 1756240978.2929714,
+        "category": "todo_lists",
+        "content_summary": {
+          "title": "\ud83d\ude80 Horse Racing AI V2.03 - Web App & API Enhancement TODO List",
+          "description": "- **FastAPI/Enhanced API Server** with JWT authentication, WebSocket support, rate limiting",
+          "line_count": 1015
+        },
+        "word_count": 5034
+      },
+      {
+        "path": "BETTING_INTEGRATION_COMPLETE.md",
+        "size": 7968,
+        "modified": 1755897640.8436131,
+        "category": "todo_lists",
+        "content_summary": {
+          "title": "Betting Integration System - Implementation Complete",
+          "description": "The Betting Integration System (Point #6 from TODO list) has been successfully implemented and integ...",
+          "line_count": 239
+        },
+        "word_count": 1011
+      },
+      {
+        "path": "V2.03_IMPLEMENTATION_TODO.md",
+        "size": 24311,
+        "modified": 1755897640.8448682,
+        "category": "todo_lists",
+        "content_summary": {
+          "title": "Horse Racing AI V2.03 - Implementation TODO List",
+          "description": "> **Status**: Generated on August 19, 2025",
+          "line_count": 432
+        },
+        "word_count": 3011
+      },
+      {
+        "path": "CONTEXTUAL_AI_ENHANCEMENT_COMPLETE.md",
+        "size": 10270,
+        "modified": 1755897640.8436131,
+        "category": "todo_lists",
+        "content_summary": {
+          "title": "Contextual AI Enhancement System - V2.03",
+          "description": "The Contextual AI Enhancement System represents **Point #7** from the V2.03 TODO list, providing adv...",
+          "line_count": 287
+        },
+        "word_count": 1308
+      },
+      {
+        "path": "TODO_SUMMARY.md",
+        "size": 3685,
+        "modified": 1755897640.8448682,
+        "category": "todo_lists",
+        "content_summary": {
+          "title": "\ufffd Horse Racing AI V2.03 - CRITICAL INTEGRATION TODO",
+          "description": "- \ud83d\udd25 **CRITICAL Integration Gaps**: 0/4 (0% complete)",
+          "line_count": 141
+        },
+        "word_count": 486
+      },
+      {
+        "path": "TODO_STATUS_UPDATE.md",
+        "size": 7197,
+        "modified": 1755897640.8448682,
+        "category": "todo_lists",
+        "content_summary": {
+          "title": "System TODO List - Status Update",
+          "description": "_Last Updated: August 20, 2025 at 16:13_",
+          "line_count": 183
+        },
+        "word_count": 1005
+      },
+      {
+        "path": "README.md",
+        "size": 15525,
+        "modified": 1756238724.0646427,
+        "category": "todo_lists",
+        "content_summary": {
+          "title": "\ud83c\udfc7 Horse Racing AI v2.04 - Production Analytics Platform",
+          "description": "**Advanced Machine Learning System for Horse Racing Prediction & Analysis**",
+          "line_count": 460
+        },
+        "word_count": 1600
+      },
+      {
+        "path": "CRITICAL_PIPELINE_INTEGRATION_SUMMARY.md",
+        "size": 2981,
+        "modified": 1756238724.0626428,
+        "category": "todo_lists",
+        "content_summary": {
+          "title": "\ud83d\udea8 CRITICAL PIPELINE INTEGRATION SUMMARY",
+          "description": "Our ML models were training on **17 basic features** (odds, age, weights) while we have **advanced a...",
+          "line_count": 85
+        },
+        "word_count": 410
+      },
+      {
+        "path": "HORSE_RACING_DATA_MODEL_CORRECTION.md",
+        "size": 4547,
+        "modified": 1756238724.0626428,
+        "category": "todo_lists",
+        "content_summary": {
+          "title": "Horse Racing Data Model - Field Definitions",
+          "description": "**Date:** August 24, 2025",
+          "line_count": 172
+        },
+        "word_count": 652
+      },
+      {
+        "path": "IMPLEMENTATION_REVIEW_FINAL.md",
+        "size": 10788,
+        "modified": 1755897640.8438683,
+        "category": "todo_lists",
+        "content_summary": {
+          "title": "\ud83c\udfc7 Horse Racing AI v2.03 - Implementation Review & Status Report",
+          "description": "_Generated: August 19, 2025_",
+          "line_count": 244
+        },
+        "word_count": 1331
+      },
+      {
+        "path": "ADVANCED_AI_RACING_TODO_LIST.md",
+        "size": 24564,
+        "modified": 1756332001.212276,
+        "category": "todo_lists",
+        "content_summary": {
+          "title": "\ud83d\udc0e ADVANCED AI HORSE RACING SYSTEM - COMPREHENSIVE TODO LIST",
+          "description": "_Last Updated: August 25, 2025_",
+          "line_count": 817
+        },
+        "word_count": 3242
+      },
+      {
+        "path": "IMPORTANT_DATA_SCRIPTS.md",
+        "size": 3858,
+        "modified": 1755928717.3952065,
+        "category": "todo_lists",
+        "content_summary": {
+          "title": "Important Data Processing Scripts - V2.03",
+          "description": "- **`tools/data_processing/complete_csv_processor.py`** \u2b50\u2b50\u2b50",
+          "line_count": 101
+        },
+        "word_count": 462
+      },
+      {
+        "path": "CARDS_UPLOAD_QUICK_REFERENCE.md",
+        "size": 3864,
+        "modified": 1756238724.0616426,
+        "category": "todo_lists",
+        "content_summary": {
+          "title": "Cards Database Upload - Quick Reference",
+          "description": "**Date Completed**: August 24, 2025",
+          "line_count": 102
+        },
+        "word_count": 435
+      },
+      {
+        "path": "NEW_COMPREHENSIVE_TODO_2025.md",
+        "size": 12094,
+        "modified": 1755928717.3967915,
+        "category": "todo_lists",
+        "content_summary": {
+          "title": "\ud83c\udfc7 Horse Racing AI V2.03 - Comprehensive TODO List",
+          "description": "_Generated: August 21, 2025_",
+          "line_count": 399
+        },
+        "word_count": 1710
+      },
+      {
+        "path": "PIPELINE_INTEGRATION_TRACKING.md",
+        "size": 18662,
+        "modified": 1756238724.0636427,
+        "category": "todo_lists",
+        "content_summary": {
+          "title": "\ud83c\udfaf PIPELINE INTEGRATION TRACKING & MISSING ITEMS ANALYSIS",
+          "description": "**Date:** August 25, 2025",
+          "line_count": 587
+        },
+        "word_count": 2425
+      },
+      {
+        "path": "implementation/0001_PIPELINE_EXECUTION_SUCCESS_REPORT.md",
+        "size": 4614,
+        "modified": 1755897640.8458683,
+        "category": "todo_lists",
+        "content_summary": {
+          "title": "\ud83c\udf89 00:01 Pipeline Execution Success Report",
+          "description": "**Date:** August 20, 2025",
+          "line_count": 126
+        },
+        "word_count": 629
+      },
+      {
+        "path": "status/REORGANIZATION_PLAN.md",
+        "size": 7768,
+        "modified": 1756238724.0676427,
+        "category": "todo_lists",
+        "content_summary": {
+          "title": "\ud83d\udccb ROOT DIRECTORY REORGANIZATION PLAN",
+          "description": "**Safe File Organization Strategy - Horse Racing AI v2.04**",
+          "line_count": 238
+        },
+        "word_count": 805
+      },
+      {
+        "path": "status/ROOT_DIRECTORY_INDEX.md",
+        "size": 5775,
+        "modified": 1756238724.0676427,
+        "category": "todo_lists",
+        "content_summary": {
+          "title": "\ud83d\udcc1 ROOT DIRECTORY INDEX",
+          "description": "**Horse Racing AI v2.04 - Key Files Reference**",
+          "line_count": 184
+        },
+        "word_count": 744
+      }
+    ],
+    "general_docs": [
+      {
+        "path": "DATA_PROCESSING_ISSUES_CARDS_UPLOAD.md",
+        "size": 10382,
+        "modified": 1756238724.0626428,
+        "category": "general_docs",
+        "content_summary": {
+          "title": "Data Processing Issues - Historical Cards Upload",
+          "description": "This document details the data processing issues encountered during the historical cards database up...",
+          "line_count": 345
+        },
+        "word_count": 1198
+      },
+      {
+        "path": "V2_01_Advanced_Codebase_Analysis.md",
+        "size": 11189,
+        "modified": 1755897640.8448682,
+        "category": "general_docs",
+        "content_summary": {
+          "title": "V2.01 Advanced Codebase Analysis: Hidden Sophistication Revealed",
+          "description": "Deep analysis of the v2.01 codebase reveals a significantly more sophisticated system than initially...",
+          "line_count": 340
+        },
+        "word_count": 1220
+      },
+      {
+        "path": "PRODUCTION_DEPLOYMENT.md",
+        "size": 7595,
+        "modified": 1755897640.8438683,
+        "category": "general_docs",
+        "content_summary": {
+          "title": "Production System Deployment Guide",
+          "description": "Your Horse Racing AI system is now ready for live deployment! This guide walks you through the compl...",
+          "line_count": 337
+        },
+        "word_count": 958
+      },
+      {
+        "path": "OPERATIONAL_TIMING_ANALYSIS.md",
+        "size": 10462,
+        "modified": 1755897640.8438683,
+        "category": "general_docs",
+        "content_summary": {
+          "title": "\u23f0 Operational Timing & Testing Analysis",
+          "description": "Based on today's race data analysis:",
+          "line_count": 399
+        },
+        "word_count": 1184
+      },
+      {
+        "path": "POST.md",
+        "size": 2152,
+        "modified": 1755897640.8438683,
+        "category": "general_docs",
+        "content_summary": {
+          "title": "\ud83e\udd16 Major ML Training Components",
+          "description": "Your system trains on **100+ features** across these advanced analysis modules:",
+          "line_count": 52
+        },
+        "word_count": 289
+      },
+      {
+        "path": "PIPELINE_ANALYSIS.md",
+        "size": 6976,
+        "modified": 1755897640.8438683,
+        "category": "general_docs",
+        "content_summary": {
+          "title": "Horse Racing AI Pipeline Architecture Analysis",
+          "description": "Based on analysis of the codebase, here's the complete pipeline architecture and what advanced racin...",
+          "line_count": 267
+        },
+        "word_count": 876
+      },
+      {
+        "path": "stage8_data_architecture_improvements.md",
+        "size": 9551,
+        "modified": 1755897640.8463795,
+        "category": "general_docs",
+        "content_summary": {
+          "title": "Stage 8: Data Architecture Improvements - V2.03",
+          "description": "Advanced data architecture enhancement system providing enterprise-grade data management capabilitie...",
+          "line_count": 281
+        },
+        "word_count": 1176
+      },
+      {
+        "path": "reports/csv_preprocessing_pipeline_analysis.md",
+        "size": 10330,
+        "modified": 1756238724.0666428,
+        "category": "general_docs",
+        "content_summary": {
+          "title": "CSV Preprocessing Pipeline Analysis Report",
+          "description": "**Analysis Date:** August 26, 2025",
+          "line_count": 295
+        },
+        "word_count": 1256
+      }
+    ],
+    "guides_and_references": [
+      {
+        "path": "INTEGRATED_PIPELINE_GUIDE.md",
+        "size": 7346,
+        "modified": 1755928717.3958533,
+        "category": "guides_and_references",
+        "content_summary": {
+          "title": "\ud83d\ude80 Integrated Racing Data Pipeline - Complete Guide",
+          "description": "The racing data pipeline has been fully integrated to provide seamless automation from file watching...",
+          "line_count": 300
+        },
+        "word_count": 904
+      },
+      {
+        "path": "TESTING_README.md",
+        "size": 7756,
+        "modified": 1755897640.8438683,
+        "category": "guides_and_references",
+        "content_summary": {
+          "title": "\ud83e\uddea Comprehensive Testing Suite for Horse Racing AI v2.03",
+          "description": "This directory contains a complete testing framework for both the frontend (React/TypeScript) and ba...",
+          "line_count": 290
+        },
+        "word_count": 967
+      }
+    ],
+    "planning_docs": [
+      {
+        "path": "CRITICAL_ACTION_PLAN.md",
+        "size": 6958,
+        "modified": 1755897640.8436131,
+        "category": "planning_docs",
+        "content_summary": {
+          "title": "\ud83d\udea8 CRITICAL ACTION PLAN - Integration Priority",
+          "description": "**What We Thought We Had**: Simple enhanced selections with form/track/jockey/value analysis",
+          "line_count": 179
+        },
+        "word_count": 921
+      },
+      {
+        "path": "CLEANUP_ORGANIZATION_PLAN.md",
+        "size": 2059,
+        "modified": 1755897640.8436131,
+        "category": "planning_docs",
+        "content_summary": {
+          "title": "Root Directory Cleanup & Organization Plan",
+          "description": "- Multiple standalone scripts that should be in proper directories",
+          "line_count": 72
+        },
+        "word_count": 303
+      },
+      {
+        "path": "FILE_WATCHER_PLAN.md",
+        "size": 12050,
+        "modified": 1755897640.8438683,
+        "category": "planning_docs",
+        "content_summary": {
+          "title": "\ud83d\udcc1 File Watcher & Auto-Processing System",
+          "description": "Create a robust file watcher system that monitors `/data/daily_downloads/manual_download/` for new Z...",
+          "line_count": 407
+        },
+        "word_count": 1118
+      },
+      {
+        "path": "MANUAL_DATA_UPLOAD_PLAN.md",
+        "size": 8176,
+        "modified": 1755897640.8438683,
+        "category": "planning_docs",
+        "content_summary": {
+          "title": "\ud83d\udce4 Manual Data Upload System Plan",
+          "description": "Design a robust manual data upload system to replace unreliable auto-downloader, ensuring consistent...",
+          "line_count": 256
+        },
+        "word_count": 1103
+      },
+      {
+        "path": "implementation/CLEANUP_ORGANIZATION_PLAN.md",
+        "size": 2069,
+        "modified": 1755897640.8463795,
+        "category": "planning_docs",
+        "content_summary": {
+          "title": "Root Directory Cleanup & Organization Plan",
+          "description": "- Multiple standalone scripts that should be in proper directories",
+          "line_count": 84
+        },
+        "word_count": 303
+      }
+    ],
+    "implementation_docs": [
+      {
+        "path": "AI_SELECTIONS_TRACKING_IMPLEMENTATION.md",
+        "size": 8213,
+        "modified": 1755897640.8436131,
+        "category": "implementation_docs",
+        "content_summary": {
+          "title": "AI Horse Selections Tracking System Implementation Summary",
+          "description": "Successfully implemented a comprehensive AI horse selections tracking system with profit/loss ROI an...",
+          "line_count": 285
+        },
+        "word_count": 1034
+      },
+      {
+        "path": "DAILY_FILE_WATCHER_PIPELINE_INTEGRATION.md",
+        "size": 6882,
+        "modified": 1755928717.3933222,
+        "category": "implementation_docs",
+        "content_summary": {
+          "title": "Daily File Watcher Pipeline Integration",
+          "description": "The daily file watcher has been fully integrated into the existing pipeline infrastructure, providin...",
+          "line_count": 232
+        },
+        "word_count": 854
+      },
+      {
+        "path": "enhanced_monte_carlo_integration.md",
+        "size": 9550,
+        "modified": 1755897640.8448682,
+        "category": "implementation_docs",
+        "content_summary": {
+          "title": "Enhanced Monte Carlo Simulation System - Integration Complete",
+          "description": "The sophisticated Monte Carlo simulation engine from horse-bot v1.00 has been successfully integrate...",
+          "line_count": 281
+        },
+        "word_count": 1063
+      },
+      {
+        "path": "FORM_SCORE_INTEGRATION_COMPLETION.md",
+        "size": 3394,
+        "modified": 1756238724.0626428,
+        "category": "implementation_docs",
+        "content_summary": {
+          "title": "Form Score Integration - COMPLETED \u2705",
+          "description": "**Date Completed:** August 24, 2025",
+          "line_count": 112
+        },
+        "word_count": 408
+      },
+      {
+        "path": "guides/LIVE_SYSTEM_INTEGRATION_GUIDE.md",
+        "size": 7650,
+        "modified": 1755897640.8448682,
+        "category": "implementation_docs",
+        "content_summary": {
+          "title": "Live System Integration & Performance Monitoring",
+          "description": "The live system integration provides comprehensive monitoring and performance tracking for both 80/2...",
+          "line_count": 364
+        },
+        "word_count": 990
+      }
+    ],
+    "ml_ai_docs": [
+      {
+        "path": "ML_TRAINING_SETUP_DOCUMENTATION.md",
+        "size": 7819,
+        "modified": 1756238724.0636427,
+        "category": "ml_ai_docs",
+        "content_summary": {
+          "title": "ML Training Setup Documentation",
+          "description": "**Date**: August 24, 2025",
+          "line_count": 310
+        },
+        "word_count": 986
+      }
+    ],
+    "testing_docs": [
+      {
+        "path": "FINAL_TESTING_RESULTS.md",
+        "size": 6397,
+        "modified": 1755897640.8438683,
+        "category": "testing_docs",
+        "content_summary": {
+          "title": "\ud83c\udfaf ENHANCED MONTE CARLO SYSTEM - REAL DATA TESTING COMPLETE",
+          "description": "Successfully completed comprehensive real-world validation of the Enhanced Monte Carlo betting syste...",
+          "line_count": 214
+        },
+        "word_count": 909
+      }
+    ],
+    "completion_reports": [
+      {
+        "path": "FILE_WATCHER_COMPLETE.md",
+        "size": 6440,
+        "modified": 1755897640.8438683,
+        "category": "completion_reports",
+        "content_summary": {
+          "title": "\ud83c\udf89 File Watcher System - COMPLETE & OPERATIONAL",
+          "description": "A comprehensive, intelligent file watcher system that automatically processes racing data ZIP files ...",
+          "line_count": 238
+        },
+        "word_count": 838
+      },
+      {
+        "path": "CARDS_UPLOAD_COMPLETE_SUMMARY.md",
+        "size": 7097,
+        "modified": 1756238724.0616426,
+        "category": "completion_reports",
+        "content_summary": {
+          "title": "Cards Database Upload - Complete Implementation Summary",
+          "description": "This document summarizes the complete solution for automated cards database uploads, including all d...",
+          "line_count": 195
+        },
+        "word_count": 930
+      },
+      {
+        "path": "STRATEGY_INTEGRATION_COMPLETE.md",
+        "size": 7433,
+        "modified": 1755897640.8438683,
+        "category": "completion_reports",
+        "content_summary": {
+          "title": "\ud83c\udfc7 Strategy-Aware ML Models - Implementation Complete",
+          "description": "We have successfully implemented the integration of 80/20 and Dutching betting strategies into the M...",
+          "line_count": 203
+        },
+        "word_count": 881
+      },
+      {
+        "path": "PRODUCTION_INTEGRATION_COMPLETE.md",
+        "size": 6662,
+        "modified": 1755897640.8438683,
+        "category": "completion_reports",
+        "content_summary": {
+          "title": "\ud83c\udf89 Production System Integration Complete",
+          "description": "Successfully cleaned up the root directory, reorganized the production system with proper architectu...",
+          "line_count": 226
+        },
+        "word_count": 852
+      },
+      {
+        "path": "implementation/AI_SELECTIONS_IMPLEMENTATION_SUCCESS.md",
+        "size": 7813,
+        "modified": 1755897640.8463795,
+        "category": "completion_reports",
+        "content_summary": {
+          "title": "\ud83c\udf89 AI Horse Selections Tracking System - IMPLEMENTATION COMPLETE",
+          "description": "The comprehensive AI horse selections tracking system has been successfully implemented and validate...",
+          "line_count": 224
+        },
+        "word_count": 930
+      },
+      {
+        "path": "implementation/ADVANCED_METRICS_SUCCESS_SUMMARY.md",
+        "size": 3044,
+        "modified": 1755897640.8463795,
+        "category": "completion_reports",
+        "content_summary": {
+          "title": "\ud83d\udc0e ADVANCED RACING METRICS IMPLEMENTATION - SUCCESS SUMMARY",
+          "description": "\u2705 **DATABASE SCHEMA COMPLETE**",
+          "line_count": 82
+        },
+        "word_count": 379
+      },
+      {
+        "path": "implementation/AI_SELECTIONS_INTEGRATION_COMPLETE.md",
+        "size": 5116,
+        "modified": 1755897640.8463795,
+        "category": "completion_reports",
+        "content_summary": {
+          "title": "AI Selections Integration Complete! \ud83c\udf89",
+          "description": "- **Documentation** \u2192 `docs/` (with subdirectories: implementation/, guides/, reports/)",
+          "line_count": 155
+        },
+        "word_count": 611
+      },
+      {
+        "path": "implementation/CLEANUP_AND_INTEGRATION_SUCCESS.md",
+        "size": 4501,
+        "modified": 1755897640.8463795,
+        "category": "completion_reports",
+        "content_summary": {
+          "title": "\ud83c\udf89 INTEGRATION SUCCESS SUMMARY",
+          "description": "The project root has been completely cleaned and organized:",
+          "line_count": 123
+        },
+        "word_count": 572
+      },
+      {
+        "path": "implementation/80_20_STRATEGY_SUCCESS.md",
+        "size": 6111,
+        "modified": 1755897640.8463795,
+        "category": "completion_reports",
+        "content_summary": {
+          "title": "\ud83c\udfaf 80/20 BETTING STRATEGY - IMPLEMENTATION SUCCESS",
+          "description": "**Date**: August 20, 2025",
+          "line_count": 216
+        },
+        "word_count": 816
+      },
+      {
+        "path": "implementation/ADVANCED_METRICS_ML_SUCCESS.md",
+        "size": 6618,
+        "modified": 1755897640.8463795,
+        "category": "completion_reports",
+        "content_summary": {
+          "title": "\ud83c\udfaf ADVANCED METRICS ML TRAINING SUCCESS SUMMARY",
+          "description": "**Date:** August 20, 2025",
+          "line_count": 180
+        },
+        "word_count": 821
+      },
+      {
+        "path": "implementation/PIPELINE_INTEGRATION_COMPLETE.md",
+        "size": 3979,
+        "modified": 1756238724.0666428,
+        "category": "completion_reports",
+        "content_summary": {
+          "title": "Pipeline Integration Complete \u2705",
+          "description": "The complete pipeline integration has been successfully implemented! The file watcher now automatica...",
+          "line_count": 131
+        },
+        "word_count": 495
+      },
+      {
+        "path": "implementation/ADVANCED_METRICS_PIPELINE_SUCCESS.md",
+        "size": 3838,
+        "modified": 1755897640.8463795,
+        "category": "completion_reports",
+        "content_summary": {
+          "title": "\ud83c\udf89 ADVANCED METRICS PIPELINE - COMPLETE INTEGRATION SUCCESS!",
+          "description": "We have successfully implemented a comprehensive advanced metrics system that:",
+          "line_count": 92
+        },
+        "word_count": 477
+      },
+      {
+        "path": "implementation/DATABASE_SEPARATION_IMPLEMENTATION_COMPLETE.md",
+        "size": 8556,
+        "modified": 1756238724.0656428,
+        "category": "completion_reports",
+        "content_summary": {
+          "title": "\ud83c\udfc1 **DATABASE SEPARATION IMPLEMENTATION - COMPLETE**",
+          "description": "Successfully implemented **complete database separation** for the Horse Racing AI system, achieving ...",
+          "line_count": 242
+        },
+        "word_count": 1049
+      },
+      {
+        "path": "implementation/DUTCHING_STRATEGY_SUCCESS.md",
+        "size": 8358,
+        "modified": 1755897640.8463795,
+        "category": "completion_reports",
+        "content_summary": {
+          "title": "\ud83c\udfaf DUTCHING STRATEGY IMPLEMENTATION SUCCESS",
+          "description": "Successfully implemented the **Reduced Stake Dutching Strategy** from ProfitDuel into our Horse Raci...",
+          "line_count": 211
+        },
+        "word_count": 1027
+      },
+      {
+        "path": "implementation/DATABASE_PIPELINE_SUCCESS.md",
+        "size": 5297,
+        "modified": 1755897640.8463795,
+        "category": "completion_reports",
+        "content_summary": {
+          "title": "\ud83c\udf89 RACE CARD DATABASE PIPELINE - COMPLETE SUCCESS!",
+          "description": "We have successfully completed the **comprehensive database mapping, processing, validating, and upl...",
+          "line_count": 131
+        },
+        "word_count": 733
+      },
+      {
+        "path": "implementation/AI_SELECTIONS_WEB_INTEGRATION_COMPLETE.md",
+        "size": 6118,
+        "modified": 1755897640.8463795,
+        "category": "completion_reports",
+        "content_summary": {
+          "title": "\u2705 AI Selections Web Integration Complete!",
+          "description": "Successfully integrated the AI selections tracking system into the **existing web application** inst...",
+          "line_count": 206
+        },
+        "word_count": 749
+      },
+      {
+        "path": "guides/OPERATIONAL_GUIDE_COMPLETE.md",
+        "size": 7981,
+        "modified": 1755897640.8458683,
+        "category": "completion_reports",
+        "content_summary": {
+          "title": "\ud83c\udfaf OPERATIONAL GUIDE: Horse Racing AI File Watcher System",
+          "description": "```",
+          "line_count": 319
+        },
+        "word_count": 1127
+      }
+    ],
+    "status_tracking": [
+      {
+        "path": "DATABASE_UPLOAD_STATUS.md",
+        "size": 2802,
+        "modified": 1755897640.8436131,
+        "category": "status_tracking",
+        "content_summary": {
+          "title": "\ud83d\udcca RACE CARD DATABASE UPLOAD - COMPLETED \u2705",
+          "description": "- **Database Schema**: \u2705 Created successfully (race_cards, horses, race_entries, data_quality_log)",
+          "line_count": 77
+        },
+        "word_count": 399
+      },
+      {
+        "path": "status/Critical_path_to_resolution.md",
+        "size": 1644,
+        "modified": 1756238724.0666428,
+        "category": "status_tracking",
+        "content_summary": {
+          "title": "",
+          "description": "1. Database-Pipeline Connection Mismatch",
+          "line_count": 26
+        },
+        "word_count": 236
+      }
+    ]
+  },
+  "consolidation_opportunities": [
+    {
+      "type": "todo_consolidation",
+      "description": "Consolidate 22 TODO lists into master TODO",
+      "files": [
+        "AUTOMATED_DATA_QUALITY_INTEGRATION.md",
+        "V2_01_FEATURES_INTEGRATION_COMPLETE.md",
+        "COMPREHENSIVE_TODO_AUDIT.md",
+        "RACE_RESULTS_INTEGRATION_COMPLETION.md",
+        "WEB_APP_ENHANCEMENT_TODO.md",
+        "BETTING_INTEGRATION_COMPLETE.md",
+        "V2.03_IMPLEMENTATION_TODO.md",
+        "CONTEXTUAL_AI_ENHANCEMENT_COMPLETE.md",
+        "TODO_SUMMARY.md",
+        "TODO_STATUS_UPDATE.md",
+        "README.md",
+        "CRITICAL_PIPELINE_INTEGRATION_SUMMARY.md",
+        "HORSE_RACING_DATA_MODEL_CORRECTION.md",
+        "IMPLEMENTATION_REVIEW_FINAL.md",
+        "ADVANCED_AI_RACING_TODO_LIST.md",
+        "IMPORTANT_DATA_SCRIPTS.md",
+        "CARDS_UPLOAD_QUICK_REFERENCE.md",
+        "NEW_COMPREHENSIVE_TODO_2025.md",
+        "PIPELINE_INTEGRATION_TRACKING.md",
+        "implementation/0001_PIPELINE_EXECUTION_SUCCESS_REPORT.md",
+        "status/REORGANIZATION_PLAN.md",
+        "status/ROOT_DIRECTORY_INDEX.md"
+      ],
+      "estimated_reduction": 165580.8
+    },
+    {
+      "type": "completion_archive",
+      "description": "Archive 17 completion reports",
+      "files": [
+        "FILE_WATCHER_COMPLETE.md",
+        "CARDS_UPLOAD_COMPLETE_SUMMARY.md",
+        "STRATEGY_INTEGRATION_COMPLETE.md",
+        "PRODUCTION_INTEGRATION_COMPLETE.md",
+        "implementation/AI_SELECTIONS_IMPLEMENTATION_SUCCESS.md",
+        "implementation/ADVANCED_METRICS_SUCCESS_SUMMARY.md",
+        "implementation/AI_SELECTIONS_INTEGRATION_COMPLETE.md",
+        "implementation/CLEANUP_AND_INTEGRATION_SUCCESS.md",
+        "implementation/80_20_STRATEGY_SUCCESS.md",
+        "implementation/ADVANCED_METRICS_ML_SUCCESS.md",
+        "implementation/PIPELINE_INTEGRATION_COMPLETE.md",
+        "implementation/ADVANCED_METRICS_PIPELINE_SUCCESS.md",
+        "implementation/DATABASE_SEPARATION_IMPLEMENTATION_COMPLETE.md",
+        "implementation/DUTCHING_STRATEGY_SUCCESS.md",
+        "implementation/DATABASE_PIPELINE_SUCCESS.md",
+        "implementation/AI_SELECTIONS_WEB_INTEGRATION_COMPLETE.md",
+        "guides/OPERATIONAL_GUIDE_COMPLETE.md"
+      ],
+      "estimated_reduction": 83969.6
+    }
+  ],
+  "duplicate_content": [
+    {
+      "similar_title": "rootdirectorycleanuporganizationplan",
+      "files": [
+        "CLEANUP_ORGANIZATION_PLAN.md",
+        "implementation/CLEANUP_ORGANIZATION_PLAN.md"
+      ],
+      "potential_duplicates": 2
+    }
+  ],
+  "archive_candidates": [],
+  "empty_files": [
+    {
+      "path": "implementation/DATABASE_STRUCTURE_ANALYSIS_REPORT.md",
+      "size": 0
+    },
+    {
+      "path": "implementation/TEST_FRAMEWORK_PROGRESS_REPORT.md",
+      "size": 0
+    },
+    {
+      "path": "implementation/PIPELINE_SCRIPTS_ANALYSIS_REPORT.md",
+      "size": 0
+    },
+    {
+      "path": "implementation/SCRIPT_ANALYSIS_SYSTEM_REPORT.md",
+      "size": 0
+    },
+    {
+      "path": "implementation/PIPELINE_AUTOMATION_SUCCESS_SUMMARY.md",
+      "size": 0
+    }
+  ]
+}
