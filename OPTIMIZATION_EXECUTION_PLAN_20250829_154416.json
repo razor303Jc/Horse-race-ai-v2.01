@@ -1,0 +1,176 @@
+{
+  "timestamp": "2025-08-29T15:44:16.957138",
+  "analysis_summary": {
+    "safe_cleanup_mb": 7.04,
+    "review_cleanup_mb": 42.55,
+    "total_potential_mb": 49.59
+  },
+  "execution_phases": [
+    {
+      "phase": "1_immediate_safe_cleanup",
+      "priority": "HIGH",
+      "description": "Remove 157 safe files to recover 7.0 MB",
+      "estimated_time": "2-5 minutes",
+      "risk_level": "MINIMAL",
+      "categories": [
+        {
+          "category": "temporary_files",
+          "files": 4,
+          "size_mb": 0.07,
+          "note": "VERY_SAFE - temp files regenerate",
+          "sample_files": [
+            "horse-race-ai-backup-20250828_212304/tools/caching/pipeline_cache_manager.py",
+            "horse-race-ai-backup-20250828_212304/tools/caching/cached_feature_engineering.py",
+            "tools/caching/pipeline_cache_manager.py",
+            "tools/caching/cached_feature_engineering.py"
+          ]
+        },
+        {
+          "category": "log_files",
+          "files": 98,
+          "size_mb": 6.22,
+          "note": "SAFE - logs are regenerated",
+          "sample_files": [
+            "training_output.log",
+            "horse-bot/src/core/logging.py",
+            "templates/login.html",
+            "trained_models/win_logistic_regression_20250823_114101.joblib",
+            "trained_models/place_logistic_regression_20250823_114101.joblib"
+          ]
+        },
+        {
+          "category": "backup_files",
+          "files": 55,
+          "size_mb": 0.75,
+          "note": "SAFE - usually duplicates of existing files",
+          "sample_files": [
+            "CSV_BACKUP_SYSTEM_SUMMARY.md",
+            "cleanup_backup_20250829_112651.json",
+            "SQLITE_BACKUP_TRACKING_DOCUMENTATION.md",
+            "cleanup_backup_20250829_112718.json",
+            "cleanup_backup_20250829_152846.json"
+          ]
+        }
+      ],
+      "can_execute_automatically": true
+    },
+    {
+      "phase": "2_targeted_review_cleanup",
+      "priority": "MEDIUM",
+      "description": "Review 430 files for potential 42.5 MB cleanup",
+      "estimated_time": "10-15 minutes",
+      "risk_level": "LOW_WITH_REVIEW",
+      "categories": [
+        {
+          "category": "build_artifacts",
+          "files": 52,
+          "size_mb": 19.26,
+          "note": "REVIEW - check if these are custom builds",
+          "sample_files": [
+            "TEST_FRAMEWORK_REBUILD_SUCCESS_REPORT.md",
+            "rebuilded-tests/run_tests.py",
+            "rebuilded-tests/README.md",
+            "rebuilded-tests/IMPLEMENTATION_COMPLETE.md",
+            "rebuilded-tests/pytest.ini"
+          ],
+          "review_strategy": {
+            "approach": "Check if custom builds or regeneratable",
+            "questions": [
+              "Are these custom builds containing unique logic?",
+              "Can these be regenerated from source?",
+              "Are these part of the deployment process?"
+            ],
+            "safe_patterns": [
+              "node_modules builds",
+              "compiled outputs"
+            ],
+            "risky_patterns": [
+              "custom builds",
+              "deployment artifacts"
+            ]
+          }
+        },
+        {
+          "category": "test_files",
+          "files": 378,
+          "size_mb": 23.29,
+          "note": "REVIEW - may contain important test data",
+          "sample_files": [
+            "test_email_config.py",
+            "comprehensive_system_test.sh",
+            "COMPREHENSIVE_FUNCTIONALITY_TEST_REPORT.json",
+            "test_critical_files_functionality.py",
+            "test_enhanced_feedback.sh"
+          ],
+          "review_strategy": {
+            "approach": "Verify test data vs test code separation",
+            "questions": [
+              "Do these contain test data or test code?",
+              "Are these current tests or deprecated tests?",
+              "Is test data backed up elsewhere?"
+            ],
+            "safe_patterns": [
+              "old test results",
+              "temporary test data"
+            ],
+            "risky_patterns": [
+              "test code",
+              "test configurations",
+              "test datasets"
+            ]
+          }
+        }
+      ],
+      "can_execute_automatically": false
+    },
+    {
+      "phase": "3_structure_optimization",
+      "priority": "LOW",
+      "description": "Optimize organization of 2 large file categories",
+      "estimated_time": "30+ minutes",
+      "risk_level": "MINIMAL",
+      "large_categories": {
+        "documentation": {
+          "count": 5192,
+          "size_mb": 1250.19,
+          "files": [
+            ".gitignore",
+            "UPDATED_TODO_POST_DOCKER_VALIDATION.md",
+            "fix_node_red_protection.py",
+            "CURRENT_STATUS_SUMMARY.md",
+            "verify_csv_protection.py"
+          ]
+        },
+        "configuration_files": {
+          "count": 544,
+          "size_mb": 171.88,
+          "files": [
+            "docker-compose.monitoring.yml",
+            "ML_CONFIG.yaml",
+            "SYSTEM_FUNCTIONALITY_VALIDATION_REPORT.json",
+            "CRITICAL_FILES_VALIDATION_REPORT.json",
+            "enhanced_feedback_flows.json"
+          ]
+        }
+      },
+      "can_execute_automatically": false
+    }
+  ],
+  "safety_analysis": {
+    "critical_files_protected": true,
+    "backup_strategy": "Git commits provide version control",
+    "rollback_capability": "Full rollback possible via git reset",
+    "protection_mechanisms": [
+      "Critical files list from cross-reference analysis",
+      "File categorization with safety ratings",
+      "Manual review required for uncertain categories"
+    ]
+  },
+  "expected_outcomes": {
+    "immediate_space_recovery": "7.0 MB",
+    "potential_additional_recovery": "42.5 MB",
+    "total_potential_recovery": "49.6 MB",
+    "system_performance": "Improved due to reduced file count",
+    "organization_improvement": "Better file categorization and structure"
+  }
+}

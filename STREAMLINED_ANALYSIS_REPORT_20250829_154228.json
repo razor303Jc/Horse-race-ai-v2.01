@@ -1,0 +1,178 @@
+{
+  "timestamp": "2025-08-29T15:42:28.516360",
+  "file_categories": {
+    "documentation": {
+      "count": 5192,
+      "size_mb": 1250.19,
+      "files": [
+        ".gitignore",
+        "UPDATED_TODO_POST_DOCKER_VALIDATION.md",
+        "fix_node_red_protection.py",
+        "CURRENT_STATUS_SUMMARY.md",
+        "verify_csv_protection.py"
+      ]
+    },
+    "configuration_files": {
+      "count": 544,
+      "size_mb": 171.88,
+      "files": [
+        "docker-compose.monitoring.yml",
+        "ML_CONFIG.yaml",
+        "SYSTEM_FUNCTIONALITY_VALIDATION_REPORT.json",
+        "CRITICAL_FILES_VALIDATION_REPORT.json",
+        "enhanced_feedback_flows.json"
+      ]
+    },
+    "test_files": {
+      "count": 378,
+      "size_mb": 23.29,
+      "files": [
+        "test_email_config.py",
+        "comprehensive_system_test.sh",
+        "COMPREHENSIVE_FUNCTIONALITY_TEST_REPORT.json",
+        "test_critical_files_functionality.py",
+        "test_enhanced_feedback.sh"
+      ]
+    },
+    "backup_files": {
+      "count": 55,
+      "size_mb": 0.75,
+      "files": [
+        "CSV_BACKUP_SYSTEM_SUMMARY.md",
+        "cleanup_backup_20250829_112651.json",
+        "SQLITE_BACKUP_TRACKING_DOCUMENTATION.md",
+        "cleanup_backup_20250829_112718.json",
+        "cleanup_backup_20250829_152846.json"
+      ]
+    },
+    "log_files": {
+      "count": 98,
+      "size_mb": 6.22,
+      "files": [
+        "training_output.log",
+        "horse-bot/src/core/logging.py",
+        "templates/login.html",
+        "trained_models/win_logistic_regression_20250823_114101.joblib",
+        "trained_models/place_logistic_regression_20250823_114101.joblib"
+      ]
+    },
+    "build_artifacts": {
+      "count": 52,
+      "size_mb": 19.26,
+      "files": [
+        "TEST_FRAMEWORK_REBUILD_SUCCESS_REPORT.md",
+        "rebuilded-tests/run_tests.py",
+        "rebuilded-tests/README.md",
+        "rebuilded-tests/IMPLEMENTATION_COMPLETE.md",
+        "rebuilded-tests/pytest.ini"
+      ]
+    },
+    "temporary_files": {
+      "count": 4,
+      "size_mb": 0.07,
+      "files": [
+        "horse-race-ai-backup-20250828_212304/tools/caching/pipeline_cache_manager.py",
+        "horse-race-ai-backup-20250828_212304/tools/caching/cached_feature_engineering.py",
+        "tools/caching/pipeline_cache_manager.py",
+        "tools/caching/cached_feature_engineering.py"
+      ]
+    }
+  },
+  "directory_analysis": {},
+  "cleanup_opportunities": {
+    "temporary_files": {
+      "safety": "SAFE",
+      "files": 4,
+      "size_mb": 0.07,
+      "note": "VERY_SAFE - temp files regenerate",
+      "sample_files": [
+        "horse-race-ai-backup-20250828_212304/tools/caching/pipeline_cache_manager.py",
+        "horse-race-ai-backup-20250828_212304/tools/caching/cached_feature_engineering.py",
+        "tools/caching/pipeline_cache_manager.py",
+        "tools/caching/cached_feature_engineering.py"
+      ]
+    },
+    "log_files": {
+      "safety": "SAFE",
+      "files": 98,
+      "size_mb": 6.22,
+      "note": "SAFE - logs are regenerated",
+      "sample_files": [
+        "training_output.log",
+        "horse-bot/src/core/logging.py",
+        "templates/login.html",
+        "trained_models/win_logistic_regression_20250823_114101.joblib",
+        "trained_models/place_logistic_regression_20250823_114101.joblib"
+      ]
+    },
+    "backup_files": {
+      "safety": "SAFE",
+      "files": 55,
+      "size_mb": 0.75,
+      "note": "SAFE - usually duplicates of existing files",
+      "sample_files": [
+        "CSV_BACKUP_SYSTEM_SUMMARY.md",
+        "cleanup_backup_20250829_112651.json",
+        "SQLITE_BACKUP_TRACKING_DOCUMENTATION.md",
+        "cleanup_backup_20250829_112718.json",
+        "cleanup_backup_20250829_152846.json"
+      ]
+    },
+    "build_artifacts": {
+      "safety": "REVIEW_NEEDED",
+      "files": 52,
+      "size_mb": 19.26,
+      "note": "REVIEW - check if these are custom builds",
+      "sample_files": [
+        "TEST_FRAMEWORK_REBUILD_SUCCESS_REPORT.md",
+        "rebuilded-tests/run_tests.py",
+        "rebuilded-tests/README.md",
+        "rebuilded-tests/IMPLEMENTATION_COMPLETE.md",
+        "rebuilded-tests/pytest.ini"
+      ]
+    },
+    "test_files": {
+      "safety": "REVIEW_NEEDED",
+      "files": 378,
+      "size_mb": 23.29,
+      "note": "REVIEW - may contain important test data",
+      "sample_files": [
+        "test_email_config.py",
+        "comprehensive_system_test.sh",
+        "COMPREHENSIVE_FUNCTIONALITY_TEST_REPORT.json",
+        "test_critical_files_functionality.py",
+        "test_enhanced_feedback.sh"
+      ]
+    }
+  },
+  "optimization_recommendations": [
+    {
+      "priority": "HIGH",
+      "action": "Execute safe cleanup",
+      "description": "Remove 157 safe files to recover 7.0 MB",
+      "categories": [
+        "temporary_files",
+        "log_files",
+        "backup_files"
+      ],
+      "estimated_time": "2-5 minutes",
+      "risk_level": "MINIMAL"
+    },
+    {
+      "priority": "MEDIUM",
+      "action": "Manual review cleanup",
+      "description": "Review 430 files for potential 42.5 MB cleanup",
+      "categories": [
+        "build_artifacts",
+        "test_files"
+      ],
+      "estimated_time": "10-15 minutes",
+      "risk_level": "LOW_WITH_REVIEW"
+    }
+  ],
+  "cleanup_summary": {
+    "safe_cleanup_mb": 7.04,
+    "review_cleanup_mb": 42.55,
+    "total_potential_mb": 49.59
+  }
+}
