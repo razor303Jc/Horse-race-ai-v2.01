@@ -1,0 +1,528 @@
+{
+  "timestamp": "20250817_225647",
+  "organization_plan": {
+    "scripts/": {
+      "description": "Organize Python and shell scripts",
+      "target_files": [
+        {
+          "file": "enhanced_preprocessing_pipeline.py",
+          "destination": "scripts/pipeline/",
+          "reason": "Pipeline management script"
+        },
+        {
+          "file": "upload_all_fresh_data.py",
+          "destination": "scripts/automation/",
+          "reason": "Automation script"
+        },
+        {
+          "file": "integrated_auto_pipeline.py",
+          "destination": "scripts/pipeline/",
+          "reason": "Pipeline management script"
+        },
+        {
+          "file": "fixed_upload_test.py",
+          "destination": "scripts/automation/",
+          "reason": "Automation script"
+        },
+        {
+          "file": "production_integration_summary.py",
+          "destination": "scripts/automation/",
+          "reason": "General automation script"
+        },
+        {
+          "file": "fix_schema_sizes.py",
+          "destination": "scripts/maintenance/",
+          "reason": "Maintenance script"
+        },
+        {
+          "file": "check_root_protection.py",
+          "destination": "scripts/testing/",
+          "reason": "Testing script"
+        },
+        {
+          "file": "pipeline_performance_monitor.py",
+          "destination": "scripts/pipeline/",
+          "reason": "Pipeline management script"
+        },
+        {
+          "file": "simple_csv_uploader.py",
+          "destination": "scripts/automation/",
+          "reason": "Automation script"
+        },
+        {
+          "file": "working_csv_uploader.py",
+          "destination": "scripts/automation/",
+          "reason": "Automation script"
+        },
+        {
+          "file": "upload_to_recovered_db.py",
+          "destination": "scripts/automation/",
+          "reason": "Automation script"
+        },
+        {
+          "file": "process_monitor.py",
+          "destination": "scripts/automation/",
+          "reason": "Automation script"
+        },
+        {
+          "file": "test_ml_cycles.py",
+          "destination": "scripts/testing/",
+          "reason": "Testing script"
+        },
+        {
+          "file": "quick_status_check.py",
+          "destination": "scripts/testing/",
+          "reason": "Testing script"
+        },
+        {
+          "file": "test_pipeline_timeline.py",
+          "destination": "scripts/pipeline/",
+          "reason": "Pipeline management script"
+        },
+        {
+          "file": "debug_upload_test.py",
+          "destination": "scripts/automation/",
+          "reason": "Automation script"
+        },
+        {
+          "file": "implementation_complete_summary.py",
+          "destination": "scripts/automation/",
+          "reason": "General automation script"
+        },
+        {
+          "file": "test_early_morning_schedule.py",
+          "destination": "scripts/testing/",
+          "reason": "Testing script"
+        },
+        {
+          "file": "integrated_ai_launcher.py",
+          "destination": "scripts/automation/",
+          "reason": "Automation script"
+        },
+        {
+          "file": "docker_debug_and_fix.py",
+          "destination": "scripts/deployment/",
+          "reason": "Deployment script"
+        },
+        {
+          "file": "simulate_downloads.py",
+          "destination": "scripts/automation/",
+          "reason": "General automation script"
+        },
+        {
+          "file": "pipeline_process_tracker.py",
+          "destination": "scripts/pipeline/",
+          "reason": "Pipeline management script"
+        },
+        {
+          "file": "validate_complete_docker_setup.py",
+          "destination": "scripts/deployment/",
+          "reason": "Deployment script"
+        },
+        {
+          "file": "manual_pipeline_trigger.py",
+          "destination": "scripts/pipeline/",
+          "reason": "Pipeline management script"
+        },
+        {
+          "file": "container_training_launcher.py",
+          "destination": "scripts/automation/",
+          "reason": "Automation script"
+        },
+        {
+          "file": "simple_form_analyzer.py",
+          "destination": "scripts/automation/",
+          "reason": "General automation script"
+        },
+        {
+          "file": "test_unified_trainer_basic.py",
+          "destination": "scripts/testing/",
+          "reason": "Testing script"
+        },
+        {
+          "file": "test_cached_features.py",
+          "destination": "scripts/testing/",
+          "reason": "Testing script"
+        },
+        {
+          "file": "integrate_event_driven_pipeline.py",
+          "destination": "scripts/pipeline/",
+          "reason": "Pipeline management script"
+        },
+        {
+          "file": "working_auto_downloader.py",
+          "destination": "scripts/automation/",
+          "reason": "Automation script"
+        },
+        {
+          "file": "test_pipeline_integration.py",
+          "destination": "scripts/pipeline/",
+          "reason": "Pipeline management script"
+        },
+        {
+          "file": "create_proper_schema.py",
+          "destination": "scripts/automation/",
+          "reason": "Data management script"
+        },
+        {
+          "file": "direct_csv_upload.py",
+          "destination": "scripts/automation/",
+          "reason": "Automation script"
+        },
+        {
+          "file": "comprehensive_pipeline_monitor.py",
+          "destination": "scripts/pipeline/",
+          "reason": "Pipeline management script"
+        },
+        {
+          "file": "git_pattern_upload.py",
+          "destination": "scripts/automation/",
+          "reason": "Automation script"
+        },
+        {
+          "file": "incremental_test_upload.py",
+          "destination": "scripts/automation/",
+          "reason": "Automation script"
+        },
+        {
+          "file": "complete_event_demo.py",
+          "destination": "scripts/automation/",
+          "reason": "General automation script"
+        },
+        {
+          "file": "test_updated_pipeline_timing.py",
+          "destination": "scripts/pipeline/",
+          "reason": "Pipeline management script"
+        },
+        {
+          "file": "complete_data_fix_upload.py",
+          "destination": "scripts/automation/",
+          "reason": "Automation script"
+        },
+        {
+          "file": "data_validator.py",
+          "destination": "scripts/automation/",
+          "reason": "Data management script"
+        },
+        {
+          "file": "test_cache_simple.py",
+          "destination": "scripts/testing/",
+          "reason": "Testing script"
+        },
+        {
+          "file": "complete_data_management.py",
+          "destination": "scripts/maintenance/",
+          "reason": "Maintenance script"
+        },
+        {
+          "file": "safe_upload_all.py",
+          "destination": "scripts/automation/",
+          "reason": "Automation script"
+        },
+        {
+          "file": "run_docker_auto_downloader.py",
+          "destination": "scripts/automation/",
+          "reason": "Automation script"
+        },
+        {
+          "file": "manual_upload.py",
+          "destination": "scripts/automation/",
+          "reason": "Automation script"
+        },
+        {
+          "file": "upload_fresh_data.py",
+          "destination": "scripts/automation/",
+          "reason": "Automation script"
+        },
+        {
+          "file": "check_schema.py",
+          "destination": "scripts/testing/",
+          "reason": "Testing script"
+        },
+        {
+          "file": "pipeline_comprehensive_fixes.py",
+          "destination": "scripts/pipeline/",
+          "reason": "Pipeline management script"
+        },
+        {
+          "file": "simple_pipeline_monitor.py",
+          "destination": "scripts/pipeline/",
+          "reason": "Pipeline management script"
+        },
+        {
+          "file": "database_viewer.py",
+          "destination": "scripts/automation/",
+          "reason": "Data management script"
+        },
+        {
+          "file": "complete_codebase_cleanup.sh",
+          "destination": "scripts/automation/",
+          "reason": "General shell script"
+        },
+        {
+          "file": "test_system_health.sh",
+          "destination": "scripts/automation/",
+          "reason": "General shell script"
+        }
+      ],
+      "subdirectories": {
+        "automation/": "Automation scripts",
+        "deployment/": "Deployment scripts",
+        "maintenance/": "Maintenance scripts",
+        "testing/": "Testing scripts",
+        "pipeline/": "Pipeline scripts"
+      }
+    },
+    "docker/scripts/": {
+      "description": "Docker-specific scripts",
+      "target_files": [
+        {
+          "file": "start_dev.sh",
+          "destination": "docker/scripts/",
+          "reason": "Docker deployment script"
+        },
+        {
+          "file": "start_ml_training_1000.sh",
+          "destination": "docker/scripts/",
+          "reason": "Docker deployment script"
+        },
+        {
+          "file": "start_ml_training_2000.sh",
+          "destination": "docker/scripts/",
+          "reason": "Docker deployment script"
+        },
+        {
+          "file": "enable_optional_services.sh",
+          "destination": "docker/scripts/",
+          "reason": "Docker deployment script"
+        },
+        {
+          "file": "run_reports_docker.sh",
+          "destination": "docker/scripts/",
+          "reason": "Docker deployment script"
+        },
+        {
+          "file": "startup-optimized.sh",
+          "destination": "docker/scripts/",
+          "reason": "Docker deployment script"
+        },
+        {
+          "file": "verify_startup.sh",
+          "destination": "docker/scripts/",
+          "reason": "Docker deployment script"
+        },
+        {
+          "file": "enable_ml_service.sh",
+          "destination": "docker/scripts/",
+          "reason": "Docker deployment script"
+        },
+        {
+          "file": "start_ml_training.sh",
+          "destination": "docker/scripts/",
+          "reason": "Docker deployment script"
+        },
+        {
+          "file": "fix_core_services.sh",
+          "destination": "docker/scripts/",
+          "reason": "Docker deployment script"
+        },
+        {
+          "file": "fresh_start_status.sh",
+          "destination": "docker/scripts/",
+          "reason": "Docker deployment script"
+        },
+        {
+          "file": "deploy_early_morning_ml.sh",
+          "destination": "docker/scripts/",
+          "reason": "Docker deployment script"
+        }
+      ],
+      "move_from_root": true
+    },
+    "docs/": {
+      "description": "Centralize all documentation",
+      "target_files": [
+        "DOCKER_SERVICES_STATUS_REPORT.md",
+        "STEP_1_VALIDATION_REPORT.md",
+        "DOCKER_STRUCTURE_ORGANIZATION_COMPLETE.md",
+        "BUY_ME_A_COFFEE_BLOG_POST.md",
+        "COMPREHENSIVE_PIPELINE_ARCHITECTURE.md",
+        "PIPELINE_SUCCESS_REPORT.md",
+        "AUTO_DOWNLOADER_DEPLOYMENT_GUIDE.md",
+        "ML_TRAINING_50_CYCLE_CONFIG.md",
+        "ML_TRAINING_COMPONENTS_ANALYSIS.md",
+        "EARLY_MORNING_ML_IMPLEMENTATION.md",
+        "service_startup_plan.md",
+        "MICROSERVICES_CLEANUP_COMPLETE.md",
+        "docker-microservices-analysis.md",
+        "ROOT_PROTECTION_IMPLEMENTATION.md",
+        "SYSTEM_STATUS_REPORT.md",
+        "ML_TRAINING_AUTOMATION_SUMMARY.md",
+        "POST.md",
+        "DATABASE_ANALYSIS_REPORT.md",
+        "PROJECT_COMPLETION_REPORT.md"
+      ],
+      "merge_with_existing": true
+    },
+    "config/": {
+      "description": "Configuration files",
+      "target_files": [
+        "pipeline_monitoring_20250817_192543.json",
+        "mkdocs-improved.yml",
+        "mkdocs-clean.yml",
+        "mkdocs.yml"
+      ],
+      "merge_with_existing": true
+    },
+    "tests/": {
+      "description": "Test files organization",
+      "target_files": [],
+      "merge_with_existing": true
+    }
+  },
+  "files_to_keep_root": [
+    "docker-compose.yml",
+    "docker-compose.test.yml",
+    ".flake8",
+    "horse-racing-ai.code-workspace",
+    ".gitignore",
+    "docker-compose.auto-downloader.yml",
+    "pytest.ini",
+    "docker-compose.optimized.yml",
+    "Makefile",
+    "Dockerfile.enhanced-ml-training",
+    ".env",
+    "pyproject.toml",
+    "Dockerfile.pipeline-optimized",
+    "docker-compose.clean.yml",
+    "README.md",
+    "Dockerfile",
+    "Dockerfile.web-optimized",
+    "Dockerfile.ml-models",
+    "Dockerfile.data-optimized"
+  ],
+  "files_to_remove": [],
+  "file_categories": {
+    "essential_root": [
+      ".gitignore",
+      "horse-racing-ai.code-workspace",
+      ".env",
+      "pyproject.toml",
+      ".flake8",
+      "README.md",
+      "pytest.ini",
+      "Makefile"
+    ],
+    "docker_files": [
+      "Dockerfile.enhanced-ml-training",
+      "Dockerfile.web-optimized",
+      "docker-compose.test.yml",
+      "Dockerfile.ml-models",
+      "Dockerfile.pipeline-optimized",
+      "docker-compose.auto-downloader.yml",
+      "Dockerfile.data-optimized",
+      "docker-compose.clean.yml",
+      "docker-compose.optimized.yml",
+      "docker-compose.yml",
+      "Dockerfile"
+    ],
+    "python_scripts": [
+      "enhanced_preprocessing_pipeline.py",
+      "upload_all_fresh_data.py",
+      "integrated_auto_pipeline.py",
+      "fixed_upload_test.py",
+      "production_integration_summary.py",
+      "fix_schema_sizes.py",
+      "check_root_protection.py",
+      "pipeline_performance_monitor.py",
+      "simple_csv_uploader.py",
+      "working_csv_uploader.py",
+      "upload_to_recovered_db.py",
+      "process_monitor.py",
+      "test_ml_cycles.py",
+      "quick_status_check.py",
+      "test_pipeline_timeline.py",
+      "debug_upload_test.py",
+      "implementation_complete_summary.py",
+      "test_early_morning_schedule.py",
+      "integrated_ai_launcher.py",
+      "docker_debug_and_fix.py",
+      "simulate_downloads.py",
+      "pipeline_process_tracker.py",
+      "validate_complete_docker_setup.py",
+      "manual_pipeline_trigger.py",
+      "container_training_launcher.py",
+      "simple_form_analyzer.py",
+      "test_unified_trainer_basic.py",
+      "test_cached_features.py",
+      "integrate_event_driven_pipeline.py",
+      "working_auto_downloader.py",
+      "test_pipeline_integration.py",
+      "create_proper_schema.py",
+      "direct_csv_upload.py",
+      "comprehensive_pipeline_monitor.py",
+      "git_pattern_upload.py",
+      "incremental_test_upload.py",
+      "complete_event_demo.py",
+      "test_updated_pipeline_timing.py",
+      "complete_data_fix_upload.py",
+      "data_validator.py",
+      "test_cache_simple.py",
+      "complete_data_management.py",
+      "safe_upload_all.py",
+      "run_docker_auto_downloader.py",
+      "manual_upload.py",
+      "upload_fresh_data.py",
+      "check_schema.py",
+      "pipeline_comprehensive_fixes.py",
+      "simple_pipeline_monitor.py",
+      "database_viewer.py"
+    ],
+    "shell_scripts": [
+      "start_dev.sh",
+      "start_ml_training_1000.sh",
+      "start_ml_training_2000.sh",
+      "enable_optional_services.sh",
+      "run_reports_docker.sh",
+      "complete_codebase_cleanup.sh",
+      "startup-optimized.sh",
+      "test_system_health.sh",
+      "verify_startup.sh",
+      "enable_ml_service.sh",
+      "start_ml_training.sh",
+      "fix_core_services.sh",
+      "fresh_start_status.sh",
+      "deploy_early_morning_ml.sh"
+    ],
+    "config_files": [
+      "pipeline_monitoring_20250817_192543.json",
+      "mkdocs-improved.yml",
+      "mkdocs-clean.yml",
+      "mkdocs.yml"
+    ],
+    "documentation": [
+      "DOCKER_SERVICES_STATUS_REPORT.md",
+      "STEP_1_VALIDATION_REPORT.md",
+      "DOCKER_STRUCTURE_ORGANIZATION_COMPLETE.md",
+      "BUY_ME_A_COFFEE_BLOG_POST.md",
+      "COMPREHENSIVE_PIPELINE_ARCHITECTURE.md",
+      "PIPELINE_SUCCESS_REPORT.md",
+      "AUTO_DOWNLOADER_DEPLOYMENT_GUIDE.md",
+      "ML_TRAINING_50_CYCLE_CONFIG.md",
+      "ML_TRAINING_COMPONENTS_ANALYSIS.md",
+      "EARLY_MORNING_ML_IMPLEMENTATION.md",
+      "service_startup_plan.md",
+      "MICROSERVICES_CLEANUP_COMPLETE.md",
+      "docker-microservices-analysis.md",
+      "ROOT_PROTECTION_IMPLEMENTATION.md",
+      "SYSTEM_STATUS_REPORT.md",
+      "ML_TRAINING_AUTOMATION_SUMMARY.md",
+      "POST.md",
+      "DATABASE_ANALYSIS_REPORT.md",
+      "PROJECT_COMPLETION_REPORT.md"
+    ],
+    "test_files": [],
+    "temporary_files": [],
+    "deployment_files": []
+  }
+}

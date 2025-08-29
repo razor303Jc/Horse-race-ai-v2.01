@@ -1,0 +1,156 @@
+[
+    {
+        "id": "feedback_flows",
+        "type": "tab",
+        "label": "Enhanced Feedback System",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "feedback_function",
+        "type": "function",
+        "z": "feedback_flows",
+        "name": "Generate Task Feedback",
+        "func": "// Enhanced feedback generation for pipeline tasks\nconst fs = require('fs');\nconst { exec } = require('child_process');\n\n// Extract task information from incoming message\nconst taskName = msg.task_name || 'unknown';\nconst exitCode = msg.payload.code || 0;\nconst stdout = msg.payload.stdout || '';\nconst stderr = msg.payload.stderr || '';\nconst timestamp = new Date().toLocaleString();\n\n// Generate comprehensive feedback\nlet feedback = {\n    timestamp: timestamp,\n    task_name: taskName,\n    status: exitCode === 0 ? 'success' : 'failed',\n    exit_code: exitCode,\n    duration: msg.duration || 'unknown',\n    output_size: stdout.length + stderr.length,\n    statistics: null,\n    user_message: '',\n    detailed_info: ''\n};\n\n// Generate user-friendly messages\nif (exitCode === 0) {\n    feedback.user_message = `✅ ${taskName.toUpperCase()} COMPLETED SUCCESSFULLY`;\n    feedback.detailed_info = `Task finished at ${timestamp}\\n`;\n    \n    // Parse output for statistics\n    if (stdout.includes('Power Rating')) {\n        const ratings = stdout.match(/Power Rating: ([\\d\\.]+)/g);\n        if (ratings) {\n            feedback.detailed_info += `🔢 Generated ${ratings.length} power ratings\\n`;\n        }\n    }\n    \n    if (stdout.includes('Monte Carlo')) {\n        const simulations = stdout.match(/simulation/gi);\n        if (simulations) {\n            feedback.detailed_info += `🎲 Completed ${simulations.length} Monte Carlo simulations\\n`;\n        }\n    }\n    \n    if (stdout.includes('Model')) {\n        const models = stdout.match(/model trained/gi);\n        if (models) {\n            feedback.detailed_info += `🤖 Trained ${models.length} ML models\\n`;\n        }\n    }\n    \n    // Data processing stats\n    if (stdout.includes('processed')) {\n        const processed = stdout.match /(\\d+)\\s+records?\\s+processed/gi);\n        if (processed) {\n            feedback.detailed_info += `📊 ${processed[0]}\\n`;\n        }\n    }\n    \n    feedback.detailed_info += `📈 Output size: ${(feedback.output_size / 1024).toFixed(2)} KB`;\n    \n} else {\n    feedback.user_message = `❌ ${taskName.toUpperCase()} FAILED`;\n    feedback.detailed_info = `Task failed at ${timestamp}\\n`;\n    feedback.detailed_info += `❌ Exit code: ${exitCode}\\n`;\n    \n    if (stderr) {\n        const errorLines = stderr.split('\\n').slice(0, 3); // First 3 error lines\n        feedback.detailed_info += `🚨 Error: ${errorLines.join(' | ')}`;\n    }\n}\n\n// Try to get system statistics\ntry {\n    exec('python3 enhanced_pipeline_monitor.py stats ' + taskName, \n        { cwd: '/home/jc/Documents/Horse-race-ai-v2.04', timeout: 5000 },\n        (error, stdout, stderr) => {\n            if (!error && stdout) {\n                try {\n                    feedback.statistics = JSON.parse(stdout);\n                } catch (e) {\n                    // Ignore parse errors\n                }\n            }\n            \n            // Send the feedback message\n            msg.payload = feedback;\n            msg.topic = `feedback_${taskName}`;\n            node.send(msg);\n        }\n    );\n} catch (e) {\n    // If stats fail, send feedback without statistics\n    msg.payload = feedback;\n    msg.topic = `feedback_${taskName}`;\n    node.send(msg);\n}\n\n// Don't send message immediately - will be sent after stats are collected\nreturn null;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "x": 340,
+        "y": 140,
+        "wires": [["feedback_display"]]
+    },
+    {
+        "id": "feedback_display",
+        "type": "ui_template",
+        "z": "feedback_flows",
+        "group": "feedback_group",
+        "name": "Task Feedback Display",
+        "order": 1,
+        "width": 12,
+        "height": 8,
+        "format": "<div ng-bind-html=\"msg.payload | trusted\"></div>",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "x": 580,
+        "y": 140,
+        "wires": [[]]
+    },
+    {
+        "id": "feedback_formatter",
+        "type": "function",
+        "z": "feedback_flows",
+        "name": "Format Feedback HTML",
+        "func": "// Format the feedback data into attractive HTML\nconst feedback = msg.payload;\n\nif (!feedback || !feedback.task_name) {\n    return null;\n}\n\nlet html = `\n<div style=\"padding: 15px; margin: 10px 0; border-radius: 8px; \n    background: linear-gradient(135deg, ${feedback.status === 'success' ? '#4CAF50' : '#f44336'}, \n    ${feedback.status === 'success' ? '#8BC34A' : '#FF5722'});\n    color: white; box-shadow: 0 4px 8px rgba(0,0,0,0.2);\">\n    \n    <div style=\"display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;\">\n        <h3 style=\"margin: 0; font-size: 18px;\">\n            ${feedback.status === 'success' ? '✅' : '❌'} ${feedback.task_name.toUpperCase()}\n        </h3>\n        <span style=\"font-size: 14px; opacity: 0.9;\">${feedback.timestamp}</span>\n    </div>\n    \n    <div style=\"background: rgba(255,255,255,0.1); padding: 10px; border-radius: 5px; margin-bottom: 10px;\">\n        <strong>${feedback.user_message}</strong>\n    </div>\n    \n    <div style=\"background: rgba(255,255,255,0.1); padding: 10px; border-radius: 5px; font-family: monospace; font-size: 12px;\">\n        ${feedback.detailed_info.replace(/\\n/g, '<br>')}\n    </div>`;\n\n// Add statistics if available\nif (feedback.statistics && feedback.statistics.overall_stats) {\n    const stats = feedback.statistics.overall_stats;\n    html += `\n    <div style=\"margin-top: 10px; padding: 10px; background: rgba(255,255,255,0.1); border-radius: 5px;\">\n        <h4 style=\"margin: 0 0 5px 0;\">📊 Statistics Summary</h4>\n        <div style=\"display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; font-size: 12px;\">\n            <div><strong>Success Rate:</strong> ${stats.success_rate}%</div>\n            <div><strong>Duration:</strong> ${stats.average_duration}s</div>\n            <div><strong>Data Processed:</strong> ${stats.data_processed_mb.toFixed(2)} MB</div>\n            <div><strong>Tasks:</strong> ${stats.successful_tasks}/${stats.total_tasks}</div>\n        </div>\n    </div>`;\n}\n\n// Add recommendations if available\nif (feedback.statistics && feedback.statistics.success_summary && feedback.statistics.success_summary.recommendations) {\n    const recommendations = feedback.statistics.success_summary.recommendations;\n    html += `\n    <div style=\"margin-top: 10px; padding: 10px; background: rgba(255,255,255,0.1); border-radius: 5px;\">\n        <h4 style=\"margin: 0 0 5px 0;\">💡 Recommendations</h4>\n        <ul style=\"margin: 0; padding-left: 20px; font-size: 12px;\">\n            ${recommendations.map(rec => `<li>${rec}</li>`).join('')}\n        </ul>\n    </div>`;\n}\n\nhtml += '</div>';\n\n// Store in context for history\nlet feedbackHistory = flow.get('feedbackHistory') || [];\nfeedbackHistory.unshift({\n    task: feedback.task_name,\n    status: feedback.status,\n    timestamp: feedback.timestamp,\n    message: feedback.user_message\n});\n\n// Keep only last 10 items\nif (feedbackHistory.length > 10) {\n    feedbackHistory = feedbackHistory.slice(0, 10);\n}\nflow.set('feedbackHistory', feedbackHistory);\n\nmsg.payload = html;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "x": 340,
+        "y": 220,
+        "wires": [["feedback_display"]]
+    },
+    {
+        "id": "feedback_group",
+        "type": "ui_group",
+        "name": "Task Feedback",
+        "tab": "feedback_tab",
+        "order": 1,
+        "disp": true,
+        "width": "12",
+        "collapse": false
+    },
+    {
+        "id": "feedback_tab",
+        "type": "ui_tab",
+        "name": "💬 Feedback",
+        "icon": "dashboard",
+        "order": 8,
+        "disabled": false,
+        "hidden": false
+    },
+    {
+        "id": "stats_button",
+        "type": "ui_button",
+        "z": "feedback_flows",
+        "name": "Get Pipeline Statistics",
+        "group": "feedback_group",
+        "order": 2,
+        "width": 6,
+        "height": 1,
+        "passthru": false,
+        "label": "📊 Get Overall Stats",
+        "tooltip": "Get comprehensive pipeline statistics",
+        "color": "",
+        "bgcolor": "",
+        "icon": "",
+        "payload": "get_stats",
+        "payloadType": "str",
+        "topic": "",
+        "x": 140,
+        "y": 300,
+        "wires": [["stats_generator"]]
+    },
+    {
+        "id": "stats_generator",
+        "type": "exec",
+        "z": "feedback_flows",
+        "command": "python3",
+        "addpay": false,
+        "append": "enhanced_pipeline_monitor.py stats",
+        "useSpawn": "false",
+        "timer": "",
+        "oldrc": false,
+        "name": "Generate Statistics",
+        "x": 370,
+        "y": 300,
+        "wires": [["stats_formatter"], [], []]
+    },
+    {
+        "id": "stats_formatter",
+        "type": "function",
+        "z": "feedback_flows",
+        "name": "Format Statistics",
+        "func": "// Format comprehensive statistics for display\ntry {\n    const stats = JSON.parse(msg.payload);\n    \n    if (stats.message) {\n        msg.payload = `<div style=\"padding: 15px; background: #ff9800; color: white; border-radius: 8px;\">\n            <h3>📊 Pipeline Statistics</h3>\n            <p>${stats.message}</p>\n        </div>`;\n        return msg;\n    }\n    \n    const overall = stats.overall_stats;\n    const success = stats.success_summary;\n    \n    let html = `\n    <div style=\"padding: 15px; background: linear-gradient(135deg, #2196F3, #21CBF3); color: white; border-radius: 8px; margin: 10px 0;\">\n        <h3 style=\"margin: 0 0 15px 0;\">📊 Pipeline Statistics Overview</h3>\n        \n        <div style=\"display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 15px;\">\n            <div style=\"background: rgba(255,255,255,0.1); padding: 10px; border-radius: 5px;\">\n                <h4 style=\"margin: 0 0 5px 0;\">📈 Performance</h4>\n                <div>Success Rate: <strong>${overall.success_rate}%</strong></div>\n                <div>Average Duration: <strong>${overall.average_duration.toFixed(2)}s</strong></div>\n                <div>Total Runtime: <strong>${(overall.total_duration / 60).toFixed(1)} min</strong></div>\n            </div>\n            \n            <div style=\"background: rgba(255,255,255,0.1); padding: 10px; border-radius: 5px;\">\n                <h4 style=\"margin: 0 0 5px 0;\">📊 Task Summary</h4>\n                <div>Total Tasks: <strong>${overall.total_tasks}</strong></div>\n                <div>Successful: <strong style=\"color: #4CAF50;\">${overall.successful_tasks}</strong></div>\n                <div>Failed: <strong style=\"color: #f44336;\">${overall.failed_tasks}</strong></div>\n                <div>Running: <strong style=\"color: #FF9800;\">${overall.running_tasks}</strong></div>\n            </div>\n            \n            <div style=\"background: rgba(255,255,255,0.1); padding: 10px; border-radius: 5px;\">\n                <h4 style=\"margin: 0 0 5px 0;\">💾 Data Processing</h4>\n                <div>Data Processed: <strong>${overall.data_processed_mb.toFixed(2)} MB</strong></div>\n                <div>System Load: <strong>${stats.performance_metrics.system_load ? (stats.performance_metrics.system_load.cpu_percent || 0).toFixed(1) : 0}% CPU</strong></div>\n            </div>\n        </div>\n        \n        <div style=\"background: rgba(255,255,255,0.1); padding: 10px; border-radius: 5px;\">\n            <h4 style=\"margin: 0 0 10px 0;\">✅ ${success.message}</h4>\n            <p style=\"margin: 0; opacity: 0.9;\">${success.details}</p>\n        </div>`;\n    \n    // Add recommendations\n    if (success.recommendations && success.recommendations.length > 0) {\n        html += `\n        <div style=\"background: rgba(255,255,255,0.1); padding: 10px; border-radius: 5px; margin-top: 10px;\">\n            <h4 style=\"margin: 0 0 10px 0;\">💡 Recommendations</h4>\n            <ul style=\"margin: 0; padding-left: 20px;\">\n                ${success.recommendations.map(rec => `<li>${rec}</li>`).join('')}\n            </ul>\n        </div>`;\n    }\n    \n    // Add performance insights\n    if (stats.performance_metrics.fastest_task) {\n        html += `\n        <div style=\"background: rgba(255,255,255,0.1); padding: 10px; border-radius: 5px; margin-top: 10px;\">\n            <h4 style=\"margin: 0 0 5px 0;\">🏃 Performance Insights</h4>\n            <div style=\"font-size: 14px;\">\n                <div>⚡ Fastest Task: <strong>${stats.performance_metrics.fastest_task}</strong></div>\n                <div>🐌 Slowest Task: <strong>${stats.performance_metrics.slowest_task}</strong></div>\n                <div>📈 Most Data Produced: <strong>${stats.performance_metrics.most_data_produced}</strong></div>\n            </div>\n        </div>`;\n    }\n    \n    html += '</div>';\n    \n    msg.payload = html;\n    \n} catch (e) {\n    msg.payload = `<div style=\"padding: 15px; background: #f44336; color: white; border-radius: 8px;\">\n        <h3>❌ Statistics Error</h3>\n        <p>Failed to parse statistics: ${e.message}</p>\n        <p>Raw output: ${msg.payload}</p>\n    </div>`;\n}\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "x": 580,
+        "y": 300,
+        "wires": [["feedback_display"]]
+    },
+    {
+        "id": "task_feedback_inject",
+        "type": "inject",
+        "z": "feedback_flows",
+        "name": "Test Feedback",
+        "props": [
+            {
+                "p": "payload",
+                "v": "{\"code\": 0, \"stdout\": \"Power Rating: 85.2\\nMonte Carlo simulation completed\\n1000 records processed\", \"stderr\": \"\"}",
+                "vt": "json"
+            },
+            {
+                "p": "task_name",
+                "v": "power_ratings",
+                "vt": "str"
+            },
+            {
+                "p": "duration",
+                "v": "45.2",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "x": 140,
+        "y": 140,
+        "wires": [["feedback_function"]]
+    }
+]

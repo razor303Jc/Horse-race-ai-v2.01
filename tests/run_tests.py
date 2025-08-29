@@ -1,32 +1,96 @@
 #!/usr/bin/env python3
 """
-🧪 Rebuilded Test Framework Runner
-=================================
+🧪 Enhanced Test Framework Runner with Integrated Cleanup
+========================================================
 
-Main test runner for the rebuilded Horse Racing AI v2.04 test framework.
-Provides comprehensive test execution with categorization, reporting, and CI/CD integration.
+Main test runner for the Horse Racing AI v2.04 system with integrated
+file/function analysis and cleanup capabilities.
+
+This enhanced runner:
+- Executes comprehensive unit and integration tests
+- Performs automated file and function analysis
+- Generates cleanup recommendations
+- Creates combined test + cleanup reports
+- Maintains organized project structure
+
+Author: AI Assistant
+Date: August 29, 2025
+Version: 2.1.0 (Enhanced with Cleanup Integration)
 """
 
 import argparse
 import sys
 import subprocess
 import time
+import json
+import logging
 from pathlib import Path
 from typing import List, Dict, Optional
-import json
+from datetime import datetime
 
-# Test framework root
+# Test framework and project roots
 TEST_ROOT = Path(__file__).parent
 PROJECT_ROOT = TEST_ROOT.parent
 
+# Add enhanced test runner to path
+sys.path.insert(0, str(PROJECT_ROOT / "tools" / "testing"))
+
+try:
+    from enhanced_test_runner import EnhancedTestRunner
+except ImportError:
+    print("⚠️  Enhanced test runner not available - falling back to basic mode")
+    EnhancedTestRunner = None
+
+# Setup logging
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
+logger = logging.getLogger(__name__)
+
 
 class TestFrameworkRunner:
-    """Main test framework runner"""
+    """Enhanced test framework runner with integrated cleanup analysis"""
 
     def __init__(self):
         self.test_root = TEST_ROOT
         self.reports_dir = TEST_ROOT / "reports"
         self.reports_dir.mkdir(exist_ok=True)
+
+        # Initialize enhanced runner if available
+        self.enhanced_runner = None
+        if EnhancedTestRunner:
+            try:
+                self.enhanced_runner = EnhancedTestRunner(str(PROJECT_ROOT))
+                logger.info("✅ Enhanced test runner with cleanup integration loaded")
+            except Exception as e:
+                logger.warning(f"Enhanced runner failed to initialize: {e}")
+
+    def run_enhanced_test_suite(
+        self, include_cleanup: bool = True, execute_cleanup: bool = False
+    ) -> Optional[str]:
+        """Run the enhanced test suite with integrated cleanup analysis"""
+        if not self.enhanced_runner:
+            logger.warning(
+                "Enhanced runner not available - use --enhanced flag "
+                "requires enhanced_test_runner.py"
+            )
+            return None
+
+        logger.info("🚀 Running enhanced test suite with cleanup integration...")
+
+        try:
+            report_path = self.enhanced_runner.run_full_test_suite(
+                include_cleanup=include_cleanup, execute_cleanup=execute_cleanup
+            )
+
+            logger.info("✅ Enhanced test suite completed")
+            logger.info(f"📋 Combined report: {report_path}")
+
+            return report_path
+
+        except Exception as e:
+            logger.error(f"Enhanced test suite failed: {e}")
+            return None
 
     def run_unit_tests(
         self, components: Optional[List[str]] = None, verbose: bool = False
@@ -350,7 +414,8 @@ class TestFrameworkRunner:
 def main():
     """Main CLI interface"""
     parser = argparse.ArgumentParser(
-        description="Rebuilded Test Framework Runner for Horse Racing AI v2.04"
+        description="Enhanced Test Framework Runner for Horse Racing AI v2.04 "
+        "with Integrated Cleanup Analysis"
     )
 
     parser.add_argument(
@@ -380,6 +445,31 @@ def main():
 
     parser.add_argument("--verbose", "-v", action="store_true", help="Verbose output")
 
+    # Enhanced runner options
+    parser.add_argument(
+        "--enhanced",
+        action="store_true",
+        help="Use enhanced test runner with integrated cleanup analysis",
+    )
+
+    parser.add_argument(
+        "--no-cleanup",
+        action="store_true",
+        help="Skip cleanup analysis when using enhanced runner",
+    )
+
+    parser.add_argument(
+        "--execute-cleanup",
+        action="store_true",
+        help="Execute safe cleanup operations after analysis",
+    )
+
+    parser.add_argument(
+        "--cleanup-only",
+        action="store_true",
+        help="Run only cleanup analysis (no tests)",
+    )
+
     parser.add_argument(
         "--components", nargs="+", help="Filter unit tests by components"
     )
@@ -388,7 +478,35 @@ def main():
 
     runner = TestFrameworkRunner()
 
-    # Determine what to run
+    # Handle enhanced runner requests
+    if args.enhanced or args.cleanup_only:
+        if args.cleanup_only:
+            # Run only cleanup analysis
+            if runner.enhanced_runner:
+                logger.info("🧹 Running cleanup analysis only...")
+                runner.enhanced_runner.run_cleanup_analysis()
+                analyzer = runner.enhanced_runner.cleanup_analyzer
+                report_path = analyzer.generate_comprehensive_report()
+                print(f"\\n📋 Cleanup analysis complete! Report: {report_path}")
+                sys.exit(0)
+            else:
+                print("❌ Enhanced runner not available for cleanup analysis")
+                sys.exit(1)
+        else:
+            # Run enhanced test suite
+            report_path = runner.run_enhanced_test_suite(
+                include_cleanup=not args.no_cleanup,
+                execute_cleanup=args.execute_cleanup,
+            )
+            if report_path:
+                print("\\n🎉 Enhanced test suite completed!")
+                print(f"📋 Combined report: {report_path}")
+                sys.exit(0)
+            else:
+                print("❌ Enhanced test suite failed")
+                sys.exit(1)
+
+    # Determine what to run (original logic)
     success = True
 
     if args.smoke:

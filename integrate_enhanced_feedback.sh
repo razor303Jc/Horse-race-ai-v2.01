@@ -1,0 +1,189 @@
+#!/bin/bash
+
+# Enhanced Feedback Integration Script
+# Adds comprehensive feedback and statistics to the pipeline dashboard
+
+echo "🎯 Enhanced Feedback Integration"
+echo "==============================="
+
+# Check if Node-RED is running
+echo -n "📊 Checking Node-RED status... "
+if curl -s http://localhost:1881 > /dev/null; then
+    echo "✅ Node-RED running"
+else
+    echo "❌ Node-RED not running. Please start Node-RED first."
+    exit 1
+fi
+
+# Backup current flows
+echo -n "💾 Creating backup... "
+timestamp=$(date +%Y%m%d_%H%M%S)
+backup_dir="/home/jc/Documents/Horse-race-ai-v2.04/backups/nodered_flows_backup_$timestamp"
+mkdir -p "$backup_dir"
+
+# Get current flows
+curl -s http://localhost:1881/flows > "$backup_dir/flows_backup.json"
+echo "✅ Backup created at $backup_dir"
+
+# Import enhanced feedback flows
+echo -n "📥 Importing enhanced feedback flows... "
+if curl -X POST -H "Content-Type: application/json" \
+    -d @enhanced_feedback_flows.json \
+    http://localhost:1881/flows > /dev/null 2>&1; then
+    echo "✅ Feedback flows imported"
+else
+    echo "❌ Failed to import feedback flows"
+    exit 1
+fi
+
+# Create enhanced exec nodes configuration
+echo -n "🔧 Creating enhanced task execution flows... "
+
+cat > enhanced_task_execution_flows.json << 'EOF'
+[
+    {
+        "id": "enhanced_exec_flows",
+        "type": "tab",
+        "label": "Enhanced Task Execution",
+        "disabled": false,
+        "info": "Enhanced task execution with comprehensive feedback"
+    },
+    {
+        "id": "enhanced_pipeline_exec",
+        "type": "exec",
+        "z": "enhanced_exec_flows",
+        "command": "python3",
+        "addpay": false,
+        "append": "enhanced_pipeline_monitor.py run complete_pipeline",
+        "useSpawn": "false",
+        "timer": "",
+        "oldrc": false,
+        "name": "Enhanced Complete Pipeline",
+        "x": 200,
+        "y": 80,
+        "wires": [
+            ["pipeline_success_feedback"],
+            ["pipeline_error_feedback"],
+            ["pipeline_error_feedback"]
+        ]
+    },
+    {
+        "id": "pipeline_success_feedback",
+        "type": "function",
+        "z": "enhanced_exec_flows",
+        "name": "Pipeline Success Handler",
+        "func": "// Enhanced success feedback with statistics\nconst timestamp = new Date().toLocaleString();\nconst outputLines = msg.payload.split('\\n');\n\n// Parse output for statistics\nlet stats = {\n    races_processed: 0,\n    models_trained: 0,\n    ratings_generated: 0,\n    predictions_made: 0,\n    data_mb: 0\n};\n\n// Extract statistics from output\noutputLines.forEach(line => {\n    if (line.includes('races processed')) {\n        const match = line.match(/(\\d+)\\s+races?\\s+processed/i);\n        if (match) stats.races_processed = parseInt(match[1]);\n    }\n    if (line.includes('model') && line.includes('trained')) {\n        stats.models_trained++;\n    }\n    if (line.includes('rating') && line.includes('generated')) {\n        const match = line.match(/(\\d+)\\s+rating/i);\n        if (match) stats.ratings_generated = parseInt(match[1]);\n    }\n    if (line.includes('prediction')) {\n        stats.predictions_made++;\n    }\n});\n\n// Calculate data size\nstats.data_mb = (msg.payload.length / 1024 / 1024).toFixed(2);\n\n// Create comprehensive success message\nlet successMessage = `\n<div style=\"padding: 20px; background: linear-gradient(135deg, #4CAF50, #8BC34A); color: white; border-radius: 10px; margin: 10px 0; box-shadow: 0 4px 8px rgba(0,0,0,0.3);\">\n    <div style=\"display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;\">\n        <h2 style=\"margin: 0; font-size: 24px;\">🏇 PIPELINE COMPLETED SUCCESSFULLY!</h2>\n        <span style=\"font-size: 14px; opacity: 0.9;\">${timestamp}</span>\n    </div>\n    \n    <div style=\"display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 15px;\">\n        <div style=\"background: rgba(255,255,255,0.2); padding: 10px; border-radius: 5px; text-align: center;\">\n            <div style=\"font-size: 24px; font-weight: bold;\">${stats.races_processed}</div>\n            <div style=\"font-size: 12px;\">Races Processed</div>\n        </div>\n        <div style=\"background: rgba(255,255,255,0.2); padding: 10px; border-radius: 5px; text-align: center;\">\n            <div style=\"font-size: 24px; font-weight: bold;\">${stats.models_trained}</div>\n            <div style=\"font-size: 12px;\">Models Trained</div>\n        </div>\n        <div style=\"background: rgba(255,255,255,0.2); padding: 10px; border-radius: 5px; text-align: center;\">\n            <div style=\"font-size: 24px; font-weight: bold;\">${stats.ratings_generated}</div>\n            <div style=\"font-size: 12px;\">Ratings Generated</div>\n        </div>\n        <div style=\"background: rgba(255,255,255,0.2); padding: 10px; border-radius: 5px; text-align: center;\">\n            <div style=\"font-size: 24px; font-weight: bold;\">${stats.predictions_made}</div>\n            <div style=\"font-size: 12px;\">Predictions Made</div>\n        </div>\n    </div>\n    \n    <div style=\"background: rgba(255,255,255,0.1); padding: 10px; border-radius: 5px; margin-bottom: 10px;\">\n        <h4 style=\"margin: 0 0 5px 0;\">📊 Processing Summary:</h4>\n        <div style=\"font-family: monospace; font-size: 12px;\">\n            • Data processed: ${stats.data_mb} MB<br>\n            • Execution time: ${msg.duration || 'Unknown'}<br>\n            • Status: All components executed successfully<br>\n            • Next action: Results available in dashboard tabs\n        </div>\n    </div>\n    \n    <div style=\"text-align: center; font-size: 14px; opacity: 0.9;\">\n        ✅ All pipeline components completed successfully. Check individual tabs for detailed results.\n    </div>\n</div>`;\n\n// Store statistics in flow context\nflow.set('lastPipelineStats', stats);\nflow.set('lastPipelineTime', timestamp);\nflow.set('lastPipelineStatus', 'success');\n\nmsg.payload = successMessage;\nmsg.topic = 'pipeline_success';\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 450,
+        "y": 80,
+        "wires": [["success_display"]]
+    },
+    {
+        "id": "pipeline_error_feedback", 
+        "type": "function",
+        "z": "enhanced_exec_flows",
+        "name": "Pipeline Error Handler",
+        "func": "// Enhanced error feedback with diagnostics\nconst timestamp = new Date().toLocaleString();\nconst errorOutput = msg.payload || 'Unknown error';\n\n// Parse error for common issues\nlet errorType = 'Unknown Error';\nlet solution = 'Check logs for details';\n\nif (errorOutput.includes('Permission denied')) {\n    errorType = 'Permission Error';\n    solution = 'Check file permissions and user access';\n} else if (errorOutput.includes('No such file')) {\n    errorType = 'File Not Found';\n    solution = 'Verify script paths and file locations';\n} else if (errorOutput.includes('Connection')) {\n    errorType = 'Database Connection Error';\n    solution = 'Check database connectivity and credentials';\n} else if (errorOutput.includes('Memory')) {\n    errorType = 'Memory Error';\n    solution = 'Reduce data batch size or increase system memory';\n} else if (errorOutput.includes('Import')) {\n    errorType = 'Python Module Error';\n    solution = 'Install missing Python dependencies';\n}\n\n// Create comprehensive error message\nlet errorMessage = `\n<div style=\"padding: 20px; background: linear-gradient(135deg, #f44336, #FF5722); color: white; border-radius: 10px; margin: 10px 0; box-shadow: 0 4px 8px rgba(0,0,0,0.3);\">\n    <div style=\"display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;\">\n        <h2 style=\"margin: 0; font-size: 24px;\">❌ PIPELINE EXECUTION FAILED</h2>\n        <span style=\"font-size: 14px; opacity: 0.9;\">${timestamp}</span>\n    </div>\n    \n    <div style=\"background: rgba(255,255,255,0.2); padding: 15px; border-radius: 5px; margin-bottom: 15px;\">\n        <h4 style=\"margin: 0 0 10px 0; color: #ffeb3b;\">🚨 Error Type: ${errorType}</h4>\n        <div style=\"background: rgba(0,0,0,0.3); padding: 10px; border-radius: 3px; font-family: monospace; font-size: 12px; margin-bottom: 10px;\">\n            ${errorOutput.split('\\n').slice(0, 5).join('<br>')}\n        </div>\n        <div style=\"background: rgba(255,255,255,0.1); padding: 10px; border-radius: 3px;\">\n            <strong>💡 Suggested Solution:</strong><br>\n            ${solution}\n        </div>\n    </div>\n    \n    <div style=\"display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-bottom: 15px;\">\n        <div style=\"background: rgba(255,255,255,0.1); padding: 10px; border-radius: 5px; text-align: center;\">\n            <div style=\"font-size: 16px; font-weight: bold;\">🔍</div>\n            <div style=\"font-size: 12px;\">Check Logs</div>\n        </div>\n        <div style=\"background: rgba(255,255,255,0.1); padding: 10px; border-radius: 5px; text-align: center;\">\n            <div style=\"font-size: 16px; font-weight: bold;\">🔧</div>\n            <div style=\"font-size: 12px;\">System Diagnostics</div>\n        </div>\n        <div style=\"background: rgba(255,255,255,0.1); padding: 10px; border-radius: 5px; text-align: center;\">\n            <div style=\"font-size: 16px; font-weight: bold;\">🔄</div>\n            <div style=\"font-size: 12px;\">Retry Operation</div>\n        </div>\n    </div>\n    \n    <div style=\"text-align: center; font-size: 14px; opacity: 0.9;\">\n        ⚠️ Pipeline execution stopped due to errors. Review the error details above and take corrective action.\n    </div>\n</div>`;\n\n// Store error information in flow context\nflow.set('lastPipelineError', errorOutput);\nflow.set('lastPipelineTime', timestamp);\nflow.set('lastPipelineStatus', 'error');\n\nmsg.payload = errorMessage;\nmsg.topic = 'pipeline_error';\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 450,
+        "y": 120,
+        "wires": [["error_display"]]
+    },
+    {
+        "id": "success_display",
+        "type": "ui_template",
+        "z": "enhanced_exec_flows",
+        "group": "feedback_group",
+        "name": "Success Display",
+        "order": 3,
+        "width": 12,
+        "height": 6,
+        "format": "<div ng-bind-html=\"msg.payload | trusted\"></div>",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "x": 670,
+        "y": 80,
+        "wires": [[]]
+    },
+    {
+        "id": "error_display",
+        "type": "ui_template",
+        "z": "enhanced_exec_flows",
+        "group": "feedback_group", 
+        "name": "Error Display",
+        "order": 4,
+        "width": 12,
+        "height": 6,
+        "format": "<div ng-bind-html=\"msg.payload | trusted\"></div>",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "x": 670,
+        "y": 120,
+        "wires": [[]]
+    }
+]
+EOF
+
+echo "✅ Enhanced task execution flows created"
+
+# Import enhanced task execution flows
+echo -n "📥 Importing enhanced task execution flows... "
+if curl -X POST -H "Content-Type: application/json" \
+    -d @enhanced_task_execution_flows.json \
+    http://localhost:1881/flows > /dev/null 2>&1; then
+    echo "✅ Task execution flows imported"
+else
+    echo "❌ Failed to import task execution flows"
+fi
+
+# Deploy flows
+echo -n "🚀 Deploying enhanced flows... "
+if curl -X POST -H "Content-Type: application/json" \
+    -d '{"type":"full"}' \
+    http://localhost:1881/flows > /dev/null 2>&1; then
+    echo "✅ Flows deployed successfully"
+else
+    echo "❌ Failed to deploy flows"
+fi
+
+# Test the statistics endpoint
+echo -n "🧪 Testing statistics endpoint... "
+if python3 enhanced_pipeline_monitor.py stats > /dev/null 2>&1; then
+    echo "✅ Statistics endpoint working"
+else
+    echo "⚠️  Statistics endpoint needs dependencies"
+fi
+
+echo ""
+echo "🎉 ENHANCED FEEDBACK INTEGRATION COMPLETE"
+echo "========================================"
+echo ""
+echo "✅ Enhanced Features Added:"
+echo "   • 💬 Real-time task feedback with statistics"
+echo "   • 📊 Comprehensive pipeline statistics display"
+echo "   • 🎯 Success/error handling with diagnostics"
+echo "   • 📈 Performance metrics and recommendations"
+echo "   • 🔍 Detailed error analysis and solutions"
+echo ""
+echo "🎮 How to Use:"
+echo "   1. Open dashboard: http://localhost:1881/ui"
+echo "   2. New '💬 Feedback' tab shows task results"
+echo "   3. Click '📊 Get Overall Stats' for comprehensive statistics"
+echo "   4. All buttons now provide detailed feedback"
+echo "   5. Errors include diagnostic information and solutions"
+echo ""
+echo "📋 Available Features:"
+echo "   • Real-time task execution feedback"
+echo "   • Detailed statistics with performance metrics"
+echo "   • Error diagnostics with suggested solutions"
+echo "   • Visual success/failure indicators"
+echo "   • Historical task tracking"
+echo ""
+echo "🚀 Your enhanced feedback system is ready!"
+echo ""

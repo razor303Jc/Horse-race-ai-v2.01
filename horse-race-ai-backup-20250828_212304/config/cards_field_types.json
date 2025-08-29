@@ -1,0 +1,43 @@
+{
+  "races": {
+    "integer_fields": [
+      "race_id", 
+      "race_number", 
+      "course_id", 
+      "runners_racecard", 
+      "runners", 
+      "draw", 
+      "ew_racecard", 
+      "ew", 
+      "places_ew_racecard", 
+      "places_ew"
+    ],
+    "numeric_fields": ["prize", "distance"],
+    "percentage_fields": [],
+    "id_fields": []
+  },
+  "racecard_details": {
+    "integer_fields": ["race_id", "number", "age"],
+    "numeric_fields": ["odds", "weight"],
+    "percentage_fields": [],
+    "id_fields": ["detail_id"]
+  },
+  "horses": {
+    "integer_fields": ["horse_id", "age"],
+    "numeric_fields": [],
+    "percentage_fields": [],
+    "id_fields": []
+  },
+  "jockeys_stats": {
+    "integer_fields": ["jockey_id"],
+    "numeric_fields": [],
+    "percentage_fields": ["win_rate", "place_rate"],
+    "id_fields": []
+  },
+  "trainers_stats": {
+    "integer_fields": ["trainer_id"],
+    "numeric_fields": [],
+    "percentage_fields": ["win_rate", "place_rate"],
+    "id_fields": []
+  }
+}

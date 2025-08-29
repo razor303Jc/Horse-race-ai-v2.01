@@ -1,0 +1,456 @@
+[
+    {
+        "id": "main_tab",
+        "type": "tab",
+        "label": "🏇 Horse Racing AI Dashboard",
+        "disabled": false,
+        "info": "Main dashboard for Horse Racing AI automation workflows"
+    },
+    {
+        "id": "database_tab",
+        "type": "tab",
+        "label": "💾 Database Operations",
+        "disabled": false,
+        "info": "Database connection and data processing workflows"
+    },
+    {
+        "id": "email_tab",
+        "type": "tab",
+        "label": "📧 Email Notifications",
+        "disabled": false,
+        "info": "Email notification and alert systems"
+    },
+    {
+        "id": "scheduling_tab",
+        "type": "tab",
+        "label": "⏰ Scheduled Tasks",
+        "disabled": false,
+        "info": "Automated scheduling and cron job management"
+    },
+    {
+        "id": "monitoring_tab",
+        "type": "tab",
+        "label": "📊 System Monitoring",
+        "disabled": false,
+        "info": "System health monitoring and performance tracking"
+    },
+    {
+        "id": "test_cards_db",
+        "type": "inject",
+        "z": "database_tab",
+        "name": "Test Cards DB",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "SELECT 1 as test_connection, now() as current_time",
+        "payloadType": "str",
+        "x": 140,
+        "y": 80,
+        "wires": [
+            [
+                "cards_db_query"
+            ]
+        ]
+    },
+    {
+        "id": "cards_db_query",
+        "type": "PostgreSql",
+        "z": "database_tab",
+        "name": "Cards Database Query",
+        "query": "",
+        "postgreSqlConfig": "",
+        "split": false,
+        "rowsPerMsg": 1,
+        "outputs": 1,
+        "x": 340,
+        "y": 80,
+        "wires": [
+            [
+                "db_result_debug"
+            ]
+        ],
+        "info": "Query the cards_horse_racing_db database"
+    },
+    {
+        "id": "test_results_db",
+        "type": "inject",
+        "z": "database_tab",
+        "name": "Test Results DB",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "SELECT 1 as test_connection, now() as current_time",
+        "payloadType": "str",
+        "x": 140,
+        "y": 140,
+        "wires": [
+            [
+                "results_db_query"
+            ]
+        ]
+    },
+    {
+        "id": "results_db_query",
+        "type": "PostgreSql",
+        "z": "database_tab",
+        "name": "Results Database Query",
+        "query": "",
+        "postgreSqlConfig": "",
+        "split": false,
+        "rowsPerMsg": 1,
+        "outputs": 1,
+        "x": 340,
+        "y": 140,
+        "wires": [
+            [
+                "db_result_debug"
+            ]
+        ],
+        "info": "Query the results_horse_racing_db database"
+    },
+    {
+        "id": "test_metrics_db",
+        "type": "inject",
+        "z": "database_tab",
+        "name": "Test Metrics DB",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "SELECT 1 as test_connection, now() as current_time",
+        "payloadType": "str",
+        "x": 140,
+        "y": 200,
+        "wires": [
+            [
+                "metrics_db_query"
+            ]
+        ]
+    },
+    {
+        "id": "metrics_db_query",
+        "type": "PostgreSql",
+        "z": "database_tab",
+        "name": "Metrics Database Query",
+        "query": "",
+        "postgreSqlConfig": "",
+        "split": false,
+        "rowsPerMsg": 1,
+        "outputs": 1,
+        "x": 340,
+        "y": 200,
+        "wires": [
+            [
+                "db_result_debug"
+            ]
+        ],
+        "info": "Query the advanced_racing_metrics_db database"
+    },
+    {
+        "id": "db_result_debug",
+        "type": "debug",
+        "z": "database_tab",
+        "name": "DB Results",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 580,
+        "y": 140,
+        "wires": []
+    },
+    {
+        "id": "test_email",
+        "type": "inject",
+        "z": "email_tab",
+        "name": "Send Test Email",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "🏇 Horse Racing AI Test Email",
+        "payload": "This is a test email from your Horse Racing AI automation system.\\n\\nSystem Status: All services operational\\nTimestamp: {{timestamp}}\\n\\nBest regards,\\nHorse Racing AI Bot",
+        "payloadType": "str",
+        "x": 140,
+        "y": 80,
+        "wires": [
+            [
+                "format_email"
+            ]
+        ]
+    },
+    {
+        "id": "format_email",
+        "type": "function",
+        "z": "email_tab",
+        "name": "Format Email",
+        "func": "msg.payload = msg.payload.replace('{{timestamp}}', new Date().toLocaleString());\\nmsg.to = 'your-email@example.com'; // Update this with your email\\nmsg.subject = msg.topic;\\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 320,
+        "y": 80,
+        "wires": [
+            [
+                "send_email"
+            ]
+        ]
+    },
+    {
+        "id": "send_email",
+        "type": "email",
+        "z": "email_tab",
+        "server": "smtp.gmail.com",
+        "port": "465",
+        "secure": true,
+        "tls": true,
+        "name": "Gmail SMTP",
+        "dname": "Horse Racing AI",
+        "userid": "razoremail31@gmail.com",
+        "password": "awmf ulio rtjv qybx",
+        "x": 500,
+        "y": 80,
+        "wires": []
+    },
+    {
+        "id": "daily_schedule",
+        "type": "cronplus",
+        "z": "scheduling_tab",
+        "name": "Daily AI Processing",
+        "outputField": "payload",
+        "timeZone": "",
+        "persistDynamic": false,
+        "commandResponseMsgOutput": "output1",
+        "outputs": 1,
+        "options": [
+            {
+                "name": "daily_6am",
+                "topic": "daily_processing",
+                "payloadType": "default",
+                "payload": "",
+                "expressionType": "cron",
+                "expression": "0 6 * * *",
+                "location": "",
+                "offset": "0",
+                "solarType": "all",
+                "solarEvents": "sunrise,sunset"
+            }
+        ],
+        "x": 150,
+        "y": 80,
+        "wires": [
+            [
+                "schedule_debug"
+            ]
+        ]
+    },
+    {
+        "id": "evening_schedule",
+        "type": "cronplus",
+        "z": "scheduling_tab",
+        "name": "Evening Reports",
+        "outputField": "payload",
+        "timeZone": "",
+        "persistDynamic": false,
+        "commandResponseMsgOutput": "output1",
+        "outputs": 1,
+        "options": [
+            {
+                "name": "evening_8pm",
+                "topic": "evening_report",
+                "payloadType": "default",
+                "payload": "",
+                "expressionType": "cron",
+                "expression": "0 20 * * *",
+                "location": "",
+                "offset": "0",
+                "solarType": "all",
+                "solarEvents": "sunrise,sunset"
+            }
+        ],
+        "x": 150,
+        "y": 140,
+        "wires": [
+            [
+                "schedule_debug"
+            ]
+        ]
+    },
+    {
+        "id": "schedule_debug",
+        "type": "debug",
+        "z": "scheduling_tab",
+        "name": "Schedule Events",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 400,
+        "y": 110,
+        "wires": []
+    },
+    {
+        "id": "system_status",
+        "type": "ui_template",
+        "z": "monitoring_tab",
+        "group": "system_group",
+        "name": "System Status",
+        "order": 1,
+        "width": 12,
+        "height": 6,
+        "format": "<div class=\\"system-status\\">\\n  <h2>🏇 Horse Racing AI System Status</h2>\\n  <div class=\\"status-grid\\">\\n    <div class=\\"status-card\\">\\n      <h3>🗄️ Databases</h3>\\n      <div class=\\"status-indicator green\\">●</div>\\n      <span>All Connected</span>\\n    </div>\\n    <div class=\\"status-card\\">\\n      <h3>📧 Email Service</h3>\\n      <div class=\\"status-indicator green\\">●</div>\\n      <span>Operational</span>\\n    </div>\\n    <div class=\\"status-card\\">\\n      <h3>⏰ Automation</h3>\\n      <div class=\\"status-indicator green\\">●</div>\\n      <span>Scheduled</span>\\n    </div>\\n    <div class=\\"status-card\\">\\n      <h3>🔍 Monitoring</h3>\\n      <div class=\\"status-indicator green\\">●</div>\\n      <span>Active</span>\\n    </div>\\n  </div>\\n</div>\\n\\n<style>\\n.system-status {\\n  padding: 20px;\\n  font-family: Arial, sans-serif;\\n}\\n.status-grid {\\n  display: grid;\\n  grid-template-columns: repeat(2, 1fr);\\n  gap: 15px;\\n  margin-top: 20px;\\n}\\n.status-card {\\n  background: #f5f5f5;\\n  padding: 15px;\\n  border-radius: 8px;\\n  border-left: 4px solid #4CAF50;\\n}\\n.status-indicator {\\n  font-size: 20px;\\n  display: inline-block;\\n  margin-right: 10px;\\n}\\n.green { color: #4CAF50; }\\n.red { color: #f44336; }\\n.yellow { color: #ff9800; }\\n</style>",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "className": "",
+        "x": 140,
+        "y": 80,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "db_health_check",
+        "type": "ui_button",
+        "z": "monitoring_tab",
+        "name": "Test Database Health",
+        "group": "control_group",
+        "order": 1,
+        "width": 6,
+        "height": 1,
+        "passthru": false,
+        "label": "🔍 Test Databases",
+        "tooltip": "Test all database connections",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "health_check",
+        "payloadType": "str",
+        "topic": "database_health",
+        "topicType": "str",
+        "x": 140,
+        "y": 180,
+        "wires": [
+            [
+                "health_check_debug"
+            ]
+        ]
+    },
+    {
+        "id": "email_test_button",
+        "type": "ui_button",
+        "z": "monitoring_tab",
+        "name": "Send Test Email",
+        "group": "control_group",
+        "order": 2,
+        "width": 6,
+        "height": 1,
+        "passthru": false,
+        "label": "📧 Test Email",
+        "tooltip": "Send a test email notification",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "test_email",
+        "payloadType": "str",
+        "topic": "email_test",
+        "topicType": "str",
+        "x": 140,
+        "y": 220,
+        "wires": [
+            [
+                "health_check_debug"
+            ]
+        ]
+    },
+    {
+        "id": "health_check_debug",
+        "type": "debug",
+        "z": "monitoring_tab",
+        "name": "Health Check Results",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 400,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "system_group",
+        "type": "ui_group",
+        "name": "System Overview",
+        "tab": "main_dashboard",
+        "order": 1,
+        "disp": true,
+        "width": "12",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "control_group",
+        "type": "ui_group",
+        "name": "Control Panel",
+        "tab": "main_dashboard",
+        "order": 2,
+        "disp": true,
+        "width": "12",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "main_dashboard",
+        "type": "ui_tab",
+        "name": "🏇 Horse Racing AI",
+        "icon": "dashboard",
+        "order": 1,
+        "disabled": false,
+        "hidden": false
+    }
+]

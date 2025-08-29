@@ -1,0 +1,24 @@
+{
+  "session_id": "session_20250822_213732",
+  "function_statistics": [
+    {
+      "function_name": "download_csv_files",
+      "success": true,
+      "duration_ms": 100.18444061279297
+    },
+    {
+      "function_name": "process_race_data",
+      "success": true,
+      "duration_ms": 50.124168395996094
+    },
+    {
+      "function_name": "train_models",
+      "success": true,
+      "duration_ms": 200.1953125
+    }
+  ],
+  "summary": {
+    "total_functions_tracked": 3,
+    "total_function_calls": 3
+  }
+}

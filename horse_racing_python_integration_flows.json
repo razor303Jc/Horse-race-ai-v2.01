@@ -1,0 +1,1532 @@
+[
+    {
+        "id": "main_tab",
+        "type": "tab",
+        "label": "🏇 Horse Racing AI Dashboard",
+        "disabled": false,
+        "info": "Main dashboard for Horse Racing AI automation workflows"
+    },
+    {
+        "id": "database_tab",
+        "type": "tab",
+        "label": "💾 Database Operations",
+        "disabled": false,
+        "info": "Database connection and data processing workflows"
+    },
+    {
+        "id": "python_integration_tab",
+        "type": "tab",
+        "label": "🐍 Python Integration",
+        "disabled": false,
+        "info": "Python script execution and automation workflows"
+    },
+    {
+        "id": "ml_training_tab",
+        "type": "tab",
+        "label": "🤖 ML Training",
+        "disabled": false,
+        "info": "Machine learning training and model management"
+    },
+    {
+        "id": "email_tab",
+        "type": "tab",
+        "label": "📧 Email Notifications",
+        "disabled": false,
+        "info": "Email notification and alert systems"
+    },
+    {
+        "id": "scheduling_tab",
+        "type": "tab",
+        "label": "⏰ Scheduled Tasks",
+        "disabled": false,
+        "info": "Automated scheduling and cron job management"
+    },
+    {
+        "id": "monitoring_tab",
+        "type": "tab",
+        "label": "📊 System Monitoring",
+        "disabled": false,
+        "info": "System health monitoring and performance tracking"
+    },
+    {
+        "id": "db_cards_config",
+        "type": "postgresdb",
+        "hostname": "host.docker.internal",
+        "port": "5432",
+        "db": "cards_horse_racing_db",
+        "ssl": false
+    },
+    {
+        "id": "db_results_config",
+        "type": "postgresdb",
+        "hostname": "host.docker.internal",
+        "port": "5432",
+        "db": "results_horse_racing_db",
+        "ssl": false
+    },
+    {
+        "id": "db_metrics_config",
+        "type": "postgresdb",
+        "hostname": "host.docker.internal",
+        "port": "5432",
+        "db": "advanced_racing_metrics_db",
+        "ssl": false
+    },
+    {
+        "id": "test_cards_db",
+        "type": "inject",
+        "z": "database_tab",
+        "name": "Test Cards DB",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "SELECT COUNT(*) as race_count, MAX(race_date) as latest_date FROM race_cards",
+        "payloadType": "str",
+        "x": 140,
+        "y": 80,
+        "wires": [
+            [
+                "cards_db_query"
+            ]
+        ]
+    },
+    {
+        "id": "cards_db_query",
+        "type": "postgres",
+        "z": "database_tab",
+        "name": "Cards Database Query",
+        "postgresdb": "db_cards_config",
+        "output": true,
+        "outputs": 1,
+        "x": 340,
+        "y": 80,
+        "wires": [
+            [
+                "db_result_debug"
+            ]
+        ]
+    },
+    {
+        "id": "test_results_db",
+        "type": "inject",
+        "z": "database_tab",
+        "name": "Test Results DB",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "SELECT COUNT(*) as result_count, MAX(race_date) as latest_result FROM race_results",
+        "payloadType": "str",
+        "x": 140,
+        "y": 140,
+        "wires": [
+            [
+                "results_db_query"
+            ]
+        ]
+    },
+    {
+        "id": "results_db_query",
+        "type": "postgres",
+        "z": "database_tab",
+        "name": "Results Database Query",
+        "postgresdb": "db_results_config",
+        "output": true,
+        "outputs": 1,
+        "x": 340,
+        "y": 140,
+        "wires": [
+            [
+                "db_result_debug"
+            ]
+        ]
+    },
+    {
+        "id": "test_metrics_db",
+        "type": "inject",
+        "z": "database_tab",
+        "name": "Test Metrics DB",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "SELECT COUNT(*) as metric_count FROM power_ratings UNION ALL SELECT COUNT(*) FROM speed_figures",
+        "payloadType": "str",
+        "x": 140,
+        "y": 200,
+        "wires": [
+            [
+                "metrics_db_query"
+            ]
+        ]
+    },
+    {
+        "id": "metrics_db_query",
+        "type": "postgres",
+        "z": "database_tab",
+        "name": "Metrics Database Query",
+        "postgresdb": "db_metrics_config",
+        "output": true,
+        "outputs": 1,
+        "x": 340,
+        "y": 200,
+        "wires": [
+            [
+                "db_result_debug"
+            ]
+        ]
+    },
+    {
+        "id": "db_result_debug",
+        "type": "debug",
+        "z": "database_tab",
+        "name": "DB Results",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 580,
+        "y": 140,
+        "wires": []
+    },
+    {
+        "id": "run_data_pipeline",
+        "type": "inject",
+        "z": "python_integration_tab",
+        "name": "Run Data Pipeline",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "data_pipeline",
+        "payload": "",
+        "payloadType": "str",
+        "x": 140,
+        "y": 80,
+        "wires": [
+            [
+                "execute_pipeline"
+            ]
+        ]
+    },
+    {
+        "id": "execute_pipeline",
+        "type": "exec",
+        "z": "python_integration_tab",
+        "command": "cd /app && python tools/automation/automated_data_pipeline.py",
+        "addpay": false,
+        "append": "",
+        "useSpawn": "false",
+        "timer": "",
+        "oldrc": false,
+        "name": "Execute Data Pipeline",
+        "x": 350,
+        "y": 80,
+        "wires": [
+            [
+                "pipeline_success"
+            ],
+            [
+                "pipeline_error"
+            ],
+            [
+                "python_debug"
+            ]
+        ]
+    },
+    {
+        "id": "run_race_analysis",
+        "type": "inject",
+        "z": "python_integration_tab",
+        "name": "Run Race Analysis",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "race_analysis",
+        "payload": "",
+        "payloadType": "str",
+        "x": 140,
+        "y": 140,
+        "wires": [
+            [
+                "execute_analysis"
+            ]
+        ]
+    },
+    {
+        "id": "execute_analysis",
+        "type": "exec",
+        "z": "python_integration_tab",
+        "command": "cd /app && python src/contextual_ai/race_data_quality_analyzer.py",
+        "addpay": false,
+        "append": "",
+        "useSpawn": "false",
+        "timer": "",
+        "oldrc": false,
+        "name": "Execute Race Analysis",
+        "x": 350,
+        "y": 140,
+        "wires": [
+            [
+                "analysis_success"
+            ],
+            [
+                "analysis_error"
+            ],
+            [
+                "python_debug"
+            ]
+        ]
+    },
+    {
+        "id": "run_selections",
+        "type": "inject",
+        "z": "python_integration_tab",
+        "name": "Generate AI Selections",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "ai_selections",
+        "payload": "",
+        "payloadType": "str",
+        "x": 140,
+        "y": 200,
+        "wires": [
+            [
+                "execute_selections"
+            ]
+        ]
+    },
+    {
+        "id": "execute_selections",
+        "type": "exec",
+        "z": "python_integration_tab",
+        "command": "cd /app && python scripts/run_real_selections.py",
+        "addpay": false,
+        "append": "",
+        "useSpawn": "false",
+        "timer": "",
+        "oldrc": false,
+        "name": "Execute AI Selections",
+        "x": 350,
+        "y": 200,
+        "wires": [
+            [
+                "selections_success"
+            ],
+            [
+                "selections_error"
+            ],
+            [
+                "python_debug"
+            ]
+        ]
+    },
+    {
+        "id": "run_performance_tracking",
+        "type": "inject",
+        "z": "python_integration_tab",
+        "name": "Track Performance",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "performance_tracking",
+        "payload": "",
+        "payloadType": "str",
+        "x": 140,
+        "y": 260,
+        "wires": [
+            [
+                "execute_tracking"
+            ]
+        ]
+    },
+    {
+        "id": "execute_tracking",
+        "type": "exec",
+        "z": "python_integration_tab",
+        "command": "cd /app && python tools/performance/race_results_tracker.py",
+        "addpay": false,
+        "append": "",
+        "useSpawn": "false",
+        "timer": "",
+        "oldrc": false,
+        "name": "Execute Performance Tracking",
+        "x": 350,
+        "y": 260,
+        "wires": [
+            [
+                "tracking_success"
+            ],
+            [
+                "tracking_error"
+            ],
+            [
+                "python_debug"
+            ]
+        ]
+    },
+    {
+        "id": "pipeline_success",
+        "type": "function",
+        "z": "python_integration_tab",
+        "name": "Pipeline Success Handler",
+        "func": "msg.payload = `✅ Data Pipeline completed successfully at ${new Date().toLocaleString()}`;\nmsg.topic = '🏇 Data Pipeline Success';\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 600,
+        "y": 60,
+        "wires": [
+            [
+                "send_success_email",
+                "python_debug"
+            ]
+        ]
+    },
+    {
+        "id": "pipeline_error",
+        "type": "function",
+        "z": "python_integration_tab",
+        "name": "Pipeline Error Handler",
+        "func": "msg.payload = `❌ Data Pipeline failed at ${new Date().toLocaleString()}: ${msg.payload}`;\nmsg.topic = '🚨 Data Pipeline Error';\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 600,
+        "y": 100,
+        "wires": [
+            [
+                "send_error_email",
+                "python_debug"
+            ]
+        ]
+    },
+    {
+        "id": "analysis_success",
+        "type": "function",
+        "z": "python_integration_tab",
+        "name": "Analysis Success Handler",
+        "func": "msg.payload = `✅ Race Analysis completed successfully at ${new Date().toLocaleString()}`;\nmsg.topic = '📊 Race Analysis Success';\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 600,
+        "y": 140,
+        "wires": [
+            [
+                "python_debug"
+            ]
+        ]
+    },
+    {
+        "id": "analysis_error",
+        "type": "function",
+        "z": "python_integration_tab",
+        "name": "Analysis Error Handler",
+        "func": "msg.payload = `❌ Race Analysis failed at ${new Date().toLocaleString()}: ${msg.payload}`;\nmsg.topic = '🚨 Race Analysis Error';\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 600,
+        "y": 180,
+        "wires": [
+            [
+                "send_error_email",
+                "python_debug"
+            ]
+        ]
+    },
+    {
+        "id": "selections_success",
+        "type": "function",
+        "z": "python_integration_tab",
+        "name": "Selections Success Handler",
+        "func": "msg.payload = `✅ AI Selections generated successfully at ${new Date().toLocaleString()}`;\nmsg.topic = '🎯 AI Selections Success';\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 600,
+        "y": 200,
+        "wires": [
+            [
+                "send_success_email",
+                "python_debug"
+            ]
+        ]
+    },
+    {
+        "id": "selections_error",
+        "type": "function",
+        "z": "python_integration_tab",
+        "name": "Selections Error Handler",
+        "func": "msg.payload = `❌ AI Selections failed at ${new Date().toLocaleString()}: ${msg.payload}`;\nmsg.topic = '🚨 AI Selections Error';\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 600,
+        "y": 240,
+        "wires": [
+            [
+                "send_error_email",
+                "python_debug"
+            ]
+        ]
+    },
+    {
+        "id": "tracking_success",
+        "type": "function",
+        "z": "python_integration_tab",
+        "name": "Tracking Success Handler",
+        "func": "msg.payload = `✅ Performance Tracking completed successfully at ${new Date().toLocaleString()}`;\nmsg.topic = '📈 Performance Tracking Success';\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 600,
+        "y": 260,
+        "wires": [
+            [
+                "python_debug"
+            ]
+        ]
+    },
+    {
+        "id": "tracking_error",
+        "type": "function",
+        "z": "python_integration_tab",
+        "name": "Tracking Error Handler",
+        "func": "msg.payload = `❌ Performance Tracking failed at ${new Date().toLocaleString()}: ${msg.payload}`;\nmsg.topic = '🚨 Performance Tracking Error';\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 600,
+        "y": 300,
+        "wires": [
+            [
+                "send_error_email",
+                "python_debug"
+            ]
+        ]
+    },
+    {
+        "id": "python_debug",
+        "type": "debug",
+        "z": "python_integration_tab",
+        "name": "Python Execution Results",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 860,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "run_ml_training",
+        "type": "inject",
+        "z": "ml_training_tab",
+        "name": "Start ML Training",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "ml_training",
+        "payload": "",
+        "payloadType": "str",
+        "x": 140,
+        "y": 80,
+        "wires": [
+            [
+                "execute_ml_training"
+            ]
+        ]
+    },
+    {
+        "id": "execute_ml_training",
+        "type": "exec",
+        "z": "ml_training_tab",
+        "command": "cd /app && python tools/ml_training/unified_ml_trainer.py",
+        "addpay": false,
+        "append": "",
+        "useSpawn": "false",
+        "timer": "",
+        "oldrc": false,
+        "name": "Execute ML Training",
+        "x": 340,
+        "y": 80,
+        "wires": [
+            [
+                "training_success"
+            ],
+            [
+                "training_error"
+            ],
+            [
+                "ml_debug"
+            ]
+        ]
+    },
+    {
+        "id": "run_cyclic_training",
+        "type": "inject",
+        "z": "ml_training_tab",
+        "name": "Start Cyclic Training",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "cyclic_training",
+        "payload": "",
+        "payloadType": "str",
+        "x": 140,
+        "y": 140,
+        "wires": [
+            [
+                "execute_cyclic_training"
+            ]
+        ]
+    },
+    {
+        "id": "execute_cyclic_training",
+        "type": "exec",
+        "z": "ml_training_tab",
+        "command": "cd /app && python scripts/run_cyclic_training.py",
+        "addpay": false,
+        "append": "",
+        "useSpawn": "false",
+        "timer": "",
+        "oldrc": false,
+        "name": "Execute Cyclic Training",
+        "x": 340,
+        "y": 140,
+        "wires": [
+            [
+                "training_success"
+            ],
+            [
+                "training_error"
+            ],
+            [
+                "ml_debug"
+            ]
+        ]
+    },
+    {
+        "id": "run_model_retrainer",
+        "type": "inject",
+        "z": "ml_training_tab",
+        "name": "Run Model Retrainer",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "model_retrainer",
+        "payload": "",
+        "payloadType": "str",
+        "x": 140,
+        "y": 200,
+        "wires": [
+            [
+                "execute_retrainer"
+            ]
+        ]
+    },
+    {
+        "id": "execute_retrainer",
+        "type": "exec",
+        "z": "ml_training_tab",
+        "command": "cd /app && python tools/integration/automated_model_retrainer.py",
+        "addpay": false,
+        "append": "",
+        "useSpawn": "false",
+        "timer": "",
+        "oldrc": false,
+        "name": "Execute Model Retrainer",
+        "x": 340,
+        "y": 200,
+        "wires": [
+            [
+                "training_success"
+            ],
+            [
+                "training_error"
+            ],
+            [
+                "ml_debug"
+            ]
+        ]
+    },
+    {
+        "id": "training_success",
+        "type": "function",
+        "z": "ml_training_tab",
+        "name": "Training Success Handler",
+        "func": "msg.payload = `✅ ML Training completed successfully at ${new Date().toLocaleString()}`;\nmsg.topic = '🤖 ML Training Success';\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 580,
+        "y": 120,
+        "wires": [
+            [
+                "send_training_email",
+                "ml_debug"
+            ]
+        ]
+    },
+    {
+        "id": "training_error",
+        "type": "function",
+        "z": "ml_training_tab",
+        "name": "Training Error Handler",
+        "func": "msg.payload = `❌ ML Training failed at ${new Date().toLocaleString()}: ${msg.payload}`;\nmsg.topic = '🚨 ML Training Error';\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 580,
+        "y": 160,
+        "wires": [
+            [
+                "send_error_email",
+                "ml_debug"
+            ]
+        ]
+    },
+    {
+        "id": "ml_debug",
+        "type": "debug",
+        "z": "ml_training_tab",
+        "name": "ML Training Results",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 800,
+        "y": 140,
+        "wires": []
+    },
+    {
+        "id": "test_email",
+        "type": "inject",
+        "z": "email_tab",
+        "name": "Send Test Email",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "🏇 Horse Racing AI Test Email",
+        "payload": "This is a test email from your Horse Racing AI automation system. System Status: All services operational",
+        "payloadType": "str",
+        "x": 140,
+        "y": 80,
+        "wires": [
+            [
+                "format_email"
+            ]
+        ]
+    },
+    {
+        "id": "format_email",
+        "type": "function",
+        "z": "email_tab",
+        "name": "Format Email",
+        "func": "msg.to = 'your-email@example.com';\nmsg.subject = msg.topic;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 320,
+        "y": 80,
+        "wires": [
+            [
+                "send_email"
+            ]
+        ]
+    },
+    {
+        "id": "send_email",
+        "type": "email",
+        "z": "email_tab",
+        "server": "smtp.gmail.com",
+        "port": "465",
+        "secure": true,
+        "tls": true,
+        "name": "Gmail SMTP",
+        "dname": "Horse Racing AI",
+        "userid": "razoremail31@gmail.com",
+        "password": "awmf ulio rtjv qybx",
+        "x": 500,
+        "y": 80,
+        "wires": []
+    },
+    {
+        "id": "send_success_email",
+        "type": "function",
+        "z": "email_tab",
+        "name": "Format Success Email",
+        "func": "msg.to = 'your-email@example.com';\nmsg.subject = msg.topic;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 320,
+        "y": 140,
+        "wires": [
+            [
+                "send_email_notification"
+            ]
+        ]
+    },
+    {
+        "id": "send_error_email",
+        "type": "function",
+        "z": "email_tab",
+        "name": "Format Error Email",
+        "func": "msg.to = 'your-email@example.com';\nmsg.subject = msg.topic;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 320,
+        "y": 180,
+        "wires": [
+            [
+                "send_email_notification"
+            ]
+        ]
+    },
+    {
+        "id": "send_training_email",
+        "type": "function",
+        "z": "email_tab",
+        "name": "Format Training Email",
+        "func": "msg.to = 'your-email@example.com';\nmsg.subject = msg.topic;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 320,
+        "y": 220,
+        "wires": [
+            [
+                "send_email_notification"
+            ]
+        ]
+    },
+    {
+        "id": "send_email_notification",
+        "type": "email",
+        "z": "email_tab",
+        "server": "smtp.gmail.com",
+        "port": "465",
+        "secure": true,
+        "tls": true,
+        "name": "Gmail SMTP Notifications",
+        "dname": "Horse Racing AI",
+        "userid": "razoremail31@gmail.com",
+        "password": "awmf ulio rtjv qybx",
+        "x": 520,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "early_morning_training",
+        "type": "cronplus",
+        "z": "scheduling_tab",
+        "name": "Early Morning ML Training",
+        "outputField": "payload",
+        "timeZone": "",
+        "persistDynamic": false,
+        "commandResponseMsgOutput": "output1",
+        "outputs": 1,
+        "options": [
+            {
+                "name": "early_training",
+                "topic": "early_ml_training",
+                "payloadType": "default",
+                "payload": "",
+                "expressionType": "cron",
+                "expression": "30 0 * * *",
+                "location": "",
+                "offset": "0",
+                "solarType": "all",
+                "solarEvents": "sunrise,sunset"
+            }
+        ],
+        "x": 160,
+        "y": 80,
+        "wires": [
+            [
+                "trigger_ml_training"
+            ]
+        ]
+    },
+    {
+        "id": "daily_data_pipeline",
+        "type": "cronplus",
+        "z": "scheduling_tab",
+        "name": "Daily Data Pipeline",
+        "outputField": "payload",
+        "timeZone": "",
+        "persistDynamic": false,
+        "commandResponseMsgOutput": "output1",
+        "outputs": 1,
+        "options": [
+            {
+                "name": "daily_pipeline",
+                "topic": "daily_processing",
+                "payloadType": "default",
+                "payload": "",
+                "expressionType": "cron",
+                "expression": "0 6 * * *",
+                "location": "",
+                "offset": "0",
+                "solarType": "all",
+                "solarEvents": "sunrise,sunset"
+            }
+        ],
+        "x": 160,
+        "y": 140,
+        "wires": [
+            [
+                "trigger_data_pipeline"
+            ]
+        ]
+    },
+    {
+        "id": "evening_analysis",
+        "type": "cronplus",
+        "z": "scheduling_tab",
+        "name": "Evening Analysis",
+        "outputField": "payload",
+        "timeZone": "",
+        "persistDynamic": false,
+        "commandResponseMsgOutput": "output1",
+        "outputs": 1,
+        "options": [
+            {
+                "name": "evening_analysis",
+                "topic": "evening_analysis",
+                "payloadType": "default",
+                "payload": "",
+                "expressionType": "cron",
+                "expression": "0 20 * * *",
+                "location": "",
+                "offset": "0",
+                "solarType": "all",
+                "solarEvents": "sunrise,sunset"
+            }
+        ],
+        "x": 160,
+        "y": 200,
+        "wires": [
+            [
+                "trigger_analysis"
+            ]
+        ]
+    },
+    {
+        "id": "weekend_selections",
+        "type": "cronplus",
+        "z": "scheduling_tab",
+        "name": "Weekend AI Selections",
+        "outputField": "payload",
+        "timeZone": "",
+        "persistDynamic": false,
+        "commandResponseMsgOutput": "output1",
+        "outputs": 1,
+        "options": [
+            {
+                "name": "weekend_selections",
+                "topic": "weekend_selections",
+                "payloadType": "default",
+                "payload": "",
+                "expressionType": "cron",
+                "expression": "0 8 * * 6,0",
+                "location": "",
+                "offset": "0",
+                "solarType": "all",
+                "solarEvents": "sunrise,sunset"
+            }
+        ],
+        "x": 160,
+        "y": 260,
+        "wires": [
+            [
+                "trigger_selections"
+            ]
+        ]
+    },
+    {
+        "id": "trigger_ml_training",
+        "type": "function",
+        "z": "scheduling_tab",
+        "name": "Trigger ML Training",
+        "func": "msg.payload = '';\nmsg.topic = 'scheduled_ml_training';\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 400,
+        "y": 80,
+        "wires": [
+            [
+                "execute_ml_training_scheduled"
+            ]
+        ]
+    },
+    {
+        "id": "trigger_data_pipeline",
+        "type": "function",
+        "z": "scheduling_tab",
+        "name": "Trigger Data Pipeline",
+        "func": "msg.payload = '';\nmsg.topic = 'scheduled_pipeline';\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 400,
+        "y": 140,
+        "wires": [
+            [
+                "execute_pipeline_scheduled"
+            ]
+        ]
+    },
+    {
+        "id": "trigger_analysis",
+        "type": "function",
+        "z": "scheduling_tab",
+        "name": "Trigger Analysis",
+        "func": "msg.payload = '';\nmsg.topic = 'scheduled_analysis';\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 400,
+        "y": 200,
+        "wires": [
+            [
+                "execute_analysis_scheduled"
+            ]
+        ]
+    },
+    {
+        "id": "trigger_selections",
+        "type": "function",
+        "z": "scheduling_tab",
+        "name": "Trigger Selections",
+        "func": "msg.payload = '';\nmsg.topic = 'scheduled_selections';\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 400,
+        "y": 260,
+        "wires": [
+            [
+                "execute_selections_scheduled"
+            ]
+        ]
+    },
+    {
+        "id": "execute_ml_training_scheduled",
+        "type": "exec",
+        "z": "scheduling_tab",
+        "command": "cd /app && python tools/ml_training/unified_ml_trainer.py",
+        "addpay": false,
+        "append": "",
+        "useSpawn": "false",
+        "timer": "",
+        "oldrc": false,
+        "name": "Scheduled ML Training",
+        "x": 640,
+        "y": 80,
+        "wires": [
+            [
+                "schedule_debug"
+            ],
+            [
+                "schedule_debug"
+            ],
+            [
+                "schedule_debug"
+            ]
+        ]
+    },
+    {
+        "id": "execute_pipeline_scheduled",
+        "type": "exec",
+        "z": "scheduling_tab",
+        "command": "cd /app && python tools/automation/automated_data_pipeline.py",
+        "addpay": false,
+        "append": "",
+        "useSpawn": "false",
+        "timer": "",
+        "oldrc": false,
+        "name": "Scheduled Data Pipeline",
+        "x": 640,
+        "y": 140,
+        "wires": [
+            [
+                "schedule_debug"
+            ],
+            [
+                "schedule_debug"
+            ],
+            [
+                "schedule_debug"
+            ]
+        ]
+    },
+    {
+        "id": "execute_analysis_scheduled",
+        "type": "exec",
+        "z": "scheduling_tab",
+        "command": "cd /app && python src/contextual_ai/race_data_quality_analyzer.py",
+        "addpay": false,
+        "append": "",
+        "useSpawn": "false",
+        "timer": "",
+        "oldrc": false,
+        "name": "Scheduled Analysis",
+        "x": 640,
+        "y": 200,
+        "wires": [
+            [
+                "schedule_debug"
+            ],
+            [
+                "schedule_debug"
+            ],
+            [
+                "schedule_debug"
+            ]
+        ]
+    },
+    {
+        "id": "execute_selections_scheduled",
+        "type": "exec",
+        "z": "scheduling_tab",
+        "command": "cd /app && python scripts/run_real_selections.py",
+        "addpay": false,
+        "append": "",
+        "useSpawn": "false",
+        "timer": "",
+        "oldrc": false,
+        "name": "Scheduled Selections",
+        "x": 640,
+        "y": 260,
+        "wires": [
+            [
+                "schedule_debug"
+            ],
+            [
+                "schedule_debug"
+            ],
+            [
+                "schedule_debug"
+            ]
+        ]
+    },
+    {
+        "id": "schedule_debug",
+        "type": "debug",
+        "z": "scheduling_tab",
+        "name": "Schedule Events",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 880,
+        "y": 170,
+        "wires": []
+    },
+    {
+        "id": "system_status_text",
+        "type": "ui_text",
+        "z": "monitoring_tab",
+        "group": "system_group",
+        "order": 1,
+        "width": 12,
+        "height": 2,
+        "name": "System Status",
+        "label": "🏇 Horse Racing AI System Status",
+        "format": "All systems operational - Database: ✅ | Python Scripts: ✅ | ML Training: ✅ | Email: ✅",
+        "layout": "row-center",
+        "className": "",
+        "x": 140,
+        "y": 80,
+        "wires": []
+    },
+    {
+        "id": "run_pipeline_button",
+        "type": "ui_button",
+        "z": "monitoring_tab",
+        "name": "Run Data Pipeline",
+        "group": "control_group",
+        "order": 1,
+        "width": 6,
+        "height": 1,
+        "passthru": false,
+        "label": "🔄 Run Pipeline",
+        "tooltip": "Execute the automated data pipeline",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "data_pipeline",
+        "payloadType": "str",
+        "topic": "manual_pipeline",
+        "topicType": "str",
+        "x": 140,
+        "y": 180,
+        "wires": [
+            [
+                "manual_pipeline_trigger"
+            ]
+        ]
+    },
+    {
+        "id": "run_training_button",
+        "type": "ui_button",
+        "z": "monitoring_tab",
+        "name": "Start ML Training",
+        "group": "control_group",
+        "order": 2,
+        "width": 6,
+        "height": 1,
+        "passthru": false,
+        "label": "🤖 Train Models",
+        "tooltip": "Start ML model training",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "ml_training",
+        "payloadType": "str",
+        "topic": "manual_training",
+        "topicType": "str",
+        "x": 140,
+        "y": 220,
+        "wires": [
+            [
+                "manual_training_trigger"
+            ]
+        ]
+    },
+    {
+        "id": "run_selections_button",
+        "type": "ui_button",
+        "z": "monitoring_tab",
+        "name": "Generate Selections",
+        "group": "control_group",
+        "order": 3,
+        "width": 6,
+        "height": 1,
+        "passthru": false,
+        "label": "🎯 AI Selections",
+        "tooltip": "Generate AI race selections",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "ai_selections",
+        "payloadType": "str",
+        "topic": "manual_selections",
+        "topicType": "str",
+        "x": 140,
+        "y": 260,
+        "wires": [
+            [
+                "manual_selections_trigger"
+            ]
+        ]
+    },
+    {
+        "id": "check_db_button",
+        "type": "ui_button",
+        "z": "monitoring_tab",
+        "name": "Check Database Health",
+        "group": "control_group",
+        "order": 4,
+        "width": 6,
+        "height": 1,
+        "passthru": false,
+        "label": "🔍 Check DB",
+        "tooltip": "Check database health and metrics",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "db_check",
+        "payloadType": "str",
+        "topic": "manual_db_check",
+        "topicType": "str",
+        "x": 140,
+        "y": 300,
+        "wires": [
+            [
+                "manual_db_check_trigger"
+            ]
+        ]
+    },
+    {
+        "id": "manual_pipeline_trigger",
+        "type": "exec",
+        "z": "monitoring_tab",
+        "command": "cd /app && python tools/automation/automated_data_pipeline.py",
+        "addpay": false,
+        "append": "",
+        "useSpawn": "false",
+        "timer": "",
+        "oldrc": false,
+        "name": "Manual Pipeline Execution",
+        "x": 400,
+        "y": 180,
+        "wires": [
+            [
+                "dashboard_debug"
+            ],
+            [
+                "dashboard_debug"
+            ],
+            [
+                "dashboard_debug"
+            ]
+        ]
+    },
+    {
+        "id": "manual_training_trigger",
+        "type": "exec",
+        "z": "monitoring_tab",
+        "command": "cd /app && python tools/ml_training/unified_ml_trainer.py",
+        "addpay": false,
+        "append": "",
+        "useSpawn": "false",
+        "timer": "",
+        "oldrc": false,
+        "name": "Manual Training Execution",
+        "x": 400,
+        "y": 220,
+        "wires": [
+            [
+                "dashboard_debug"
+            ],
+            [
+                "dashboard_debug"
+            ],
+            [
+                "dashboard_debug"
+            ]
+        ]
+    },
+    {
+        "id": "manual_selections_trigger",
+        "type": "exec",
+        "z": "monitoring_tab",
+        "command": "cd /app && python scripts/run_real_selections.py",
+        "addpay": false,
+        "append": "",
+        "useSpawn": "false",
+        "timer": "",
+        "oldrc": false,
+        "name": "Manual Selections Execution",
+        "x": 400,
+        "y": 260,
+        "wires": [
+            [
+                "dashboard_debug"
+            ],
+            [
+                "dashboard_debug"
+            ],
+            [
+                "dashboard_debug"
+            ]
+        ]
+    },
+    {
+        "id": "manual_db_check_trigger",
+        "type": "exec",
+        "z": "monitoring_tab",
+        "command": "cd /app && python scripts/check_db_metrics.py",
+        "addpay": false,
+        "append": "",
+        "useSpawn": "false",
+        "timer": "",
+        "oldrc": false,
+        "name": "Manual DB Check",
+        "x": 400,
+        "y": 300,
+        "wires": [
+            [
+                "dashboard_debug"
+            ],
+            [
+                "dashboard_debug"
+            ],
+            [
+                "dashboard_debug"
+            ]
+        ]
+    },
+    {
+        "id": "dashboard_debug",
+        "type": "debug",
+        "z": "monitoring_tab",
+        "name": "Dashboard Actions",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 680,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "system_group",
+        "type": "ui_group",
+        "name": "System Overview",
+        "tab": "main_dashboard",
+        "order": 1,
+        "disp": true,
+        "width": "12",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "control_group",
+        "type": "ui_group",
+        "name": "Control Panel",
+        "tab": "main_dashboard",
+        "order": 2,
+        "disp": true,
+        "width": "12",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "main_dashboard",
+        "type": "ui_tab",
+        "name": "🏇 Horse Racing AI",
+        "icon": "dashboard",
+        "order": 1,
+        "disabled": false,
+        "hidden": false
+    }
+]

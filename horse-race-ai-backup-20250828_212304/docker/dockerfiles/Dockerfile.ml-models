@@ -1,0 +1,56 @@
+# Dockerfile for ML Models Service (Heavy Build - Only When Needed)
+# Build time: 15-25 minutes (only for ML training/prediction)
+
+FROM python:3.12
+
+# Set working directory
+WORKDIR /app
+
+# Install system dependencies for ML
+RUN apt-get update && apt-get install -y \
+    libpq-dev \
+    gcc \
+    g++ \
+    libblas-dev \
+    liblapack-dev \
+    libopenblas-dev \
+    gfortran \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy ML requirements
+COPY docker/requirements/requirements-ml-models.txt .
+
+# Install ML dependencies (this takes time but only when needed)
+RUN pip install --no-cache-dir -r requirements-ml-models.txt
+
+# Copy model training code and tools
+COPY models/ ./models/
+COPY tools/ ./tools/
+COPY data/ ./data/
+COPY config/ ./config/
+COPY docker/ml_training/ ./docker/ml_training/
+COPY docker/pipeline_management/ ./docker/pipeline_management/
+
+# Create directories
+RUN mkdir -p logs trained_models results reports cache && \
+    chmod 777 logs trained_models results reports cache
+
+# Set Python path
+ENV PYTHONPATH=/app
+
+# Create non-root user for security using environment variable
+ARG USER_NAME=jc
+ARG USER_ID=1000
+ARG GROUP_ID=1000
+
+RUN groupadd -g ${GROUP_ID} ${USER_NAME} && \
+    useradd -u ${USER_ID} -g ${GROUP_ID} -m -s /bin/bash ${USER_NAME} && \
+    chown -R ${USER_NAME}:${USER_NAME} /app
+USER ${USER_NAME}
+
+# Health check
+HEALTHCHECK --interval=60s --timeout=30s --start-period=30s --retries=3 \
+    CMD python -c "import tensorflow; import torch; print('ML Ready')" || exit 1
+
+# Default command (early morning ML training system)
+CMD ["python", "/app/docker/ml_training/pipeline_integration.py"]

@@ -1,0 +1,28 @@
+{
+  "dashboard_config": {
+    "title": "Horse Racing AI Dashboard",
+    "theme": "dark",
+    "layout": {
+      "system_status": {
+        "group": "System Status",
+        "order": 1,
+        "components": ["health_gauge", "last_update", "error_count"]
+      },
+      "predictions": {
+        "group": "AI Predictions", 
+        "order": 2,
+        "components": ["accuracy_chart", "best_bets", "roi_tracker"]
+      },
+      "data_quality": {
+        "group": "Data Quality",
+        "order": 3,
+        "components": ["files_processed", "validation_status", "import_progress"]
+      },
+      "controls": {
+        "group": "Manual Controls",
+        "order": 4,
+        "components": ["trigger_pipeline", "emergency_stop", "refresh_data"]
+      }
+    }
+  }
+}

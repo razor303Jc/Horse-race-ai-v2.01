@@ -1,0 +1,28 @@
+{
+  "api": {
+    "base_url": "https://api.example.com",
+    "version": "v1",
+    "timeout": 30,
+    "max_retries": 3
+  },
+  "database": {
+    "host": "localhost",
+    "port": 5432,
+    "database": "horse_racing_dev",
+    "pool_size": 5
+  },
+  "betting": {
+    "max_stake_percentage": 0.05,
+    "kelly_multiplier": 0.25,
+    "confidence_threshold": 0.70
+  },
+  "ml_models": {
+    "retrain_interval_hours": 24,
+    "model_path": "./trained_models/",
+    "feature_importance_threshold": 0.01
+  },
+  "notifications": {
+    "enabled": true,
+    "channels": ["email", "webhook"]
+  }
+}

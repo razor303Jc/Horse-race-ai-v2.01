@@ -1,0 +1,27 @@
+# Content Security Policy (CSP) Configuration Guide
+
+This document provides guidance for configuring Content Security Policy headers in production deployments of the Horse Racing AI v2.03 web application.
+
+## Overview
+
+Content Security Policy (CSP) is a security feature that helps prevent XSS attacks by controlling which resources the browser is allowed to load. Our application uses different CSP configurations for development and production environments.
+
+## Production CSP Configuration
+
+For production deployments, use this more restrictive CSP header that removes unsafe-eval:
+
+# Nginx configuration example:
+
+# add_header Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' wss: https:; img-src 'self' data: https:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests";
+
+# Apache configuration example:
+
+# Header always set Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' wss: https:; img-src 'self' data: https:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests"
+
+# Development CSP (includes unsafe-eval for Vite HMR):
+
+default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' ws: wss: http: https:; img-src 'self' data: https:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests
+
+# Production CSP (stricter, no unsafe-eval):
+
+default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' wss: https:; img-src 'self' data: https:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests

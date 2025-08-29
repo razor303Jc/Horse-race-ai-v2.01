@@ -1,0 +1,69 @@
+# Advanced Analytics Dependencies for Horse Racing AI V2.03
+# Point 10: Advanced Analytics and Reporting System
+
+# Core Data Science Libraries
+pandas>=2.0.0
+numpy>=1.24.0
+scipy>=1.10.0
+scikit-learn>=1.3.0
+
+# Visualization Libraries
+matplotlib>=3.7.0
+seaborn>=0.12.0
+plotly>=5.15.0
+
+# Optional Enhanced Visualization
+bokeh>=3.0.0
+
+# Data Export Libraries
+openpyxl>=3.1.0  # Excel support
+reportlab>=4.0.0  # PDF generation
+
+# Database Connectivity
+# sqlite3 removed - using PostgreSQL only
+sqlalchemy>=2.0.0  # PostgreSQL database support
+psycopg2-binary>=2.9.0  # PostgreSQL adapter
+
+# Async Support
+asyncio  # Built-in with Python
+aiofiles>=23.0.0  # Async file operations
+
+# Utility Libraries
+python-dateutil>=2.8.0
+pytz>=2023.3
+pathlib  # Built-in with Python
+
+# Image Processing (for chart enhancements)
+Pillow>=10.0.0
+
+# Optional: Enhanced Statistical Analysis
+statsmodels>=0.14.0
+
+# Optional: Time Series Analysis
+# pandas-ta>=0.3.14b0
+
+# Optional: Advanced Plotting
+# mplfinance>=0.12.9a7
+
+# Development and Testing
+pytest>=7.4.0
+pytest-asyncio>=0.21.0
+
+# Configuration Management
+pyyaml>=6.0.1
+
+# Logging and Monitoring
+colorlog>=6.7.0
+
+# Optional: Web Framework (for API endpoints)
+fastapi>=0.100.0
+uvicorn>=0.23.0
+
+# Optional: Caching
+redis>=4.6.0
+
+# Optional: Progress Bars
+tqdm>=4.65.0
+
+# Memory Optimization
+psutil>=5.9.0

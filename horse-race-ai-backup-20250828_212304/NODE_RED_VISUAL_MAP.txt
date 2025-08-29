@@ -1,0 +1,90 @@
+```
+🎯 NODE-RED INTERFACE MAP
+=======================
+
+Browser: http://localhost:1881
+
+┌─────────────────────────────────────────────────────────────────┐
+│ Node-RED Editor                                    [Deploy] 🔴  │
+├─────────────────────────────────────────────────────────────────┤
+│ 🏇 Main │📊 Data │📈 Dashboard│🚨 Alerts│🔗 API │📄 Reports │
+│ Auto   │Pipeline│            │        │Orch  │          │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│ 📊 DATA PIPELINE TAB - CLICK HERE FIRST                        │
+│ ┌─────────────────────────────────────────────────────────────┐ │
+│ │ [📅] ──→ [⚙️] ──→ [💻] ──→ [✅] ──→ [🧹] ──→ [💾] ──→ [📧] │ │
+│ │Daily     Prep    Download Success   Clean    Import   Email │ │
+│ │Schedule         Script            CSV      Database       │ │
+│ │                                                            │ │
+│ │ [🧪] ──→ [🗄️] ──→ [📋]                                     │ │
+│ │Test      Test     Debug                                   │ │
+│ │Database  Query    Panel                                   │ │
+│ └─────────────────────────────────────────────────────────────┘ │
+│                                                                 │
+│ 🚨 ALERTS TAB - CONFIGURE EMAIL HERE                           │
+│ ┌─────────────────────────────────────────────────────────────┐ │
+│ │ [🧪] ──→ [📧] ──→ [📋]                                       │ │
+│ │Test      Send     Debug                                    │ │
+│ │Email     Alert    Panel                                    │ │
+│ └─────────────────────────────────────────────────────────────┘ │
+│                                                                 │
+│ RIGHT SIDEBAR:                                                  │
+│ ┌─────────────────┐                                            │
+│ │ [🐛] Debug      │ ← Look here for test results               │
+│ │ [ℹ️] Info        │                                            │
+│ │ [⚙️] Config      │                                            │
+│ └─────────────────┘                                            │
+└─────────────────────────────────────────────────────────────────┘
+
+🎯 CONFIGURATION TARGETS:
+
+1. DATABASE NODES (Purple 🗄️):
+   ┌─────────────────────────────┐
+   │ 🗄️ Test Query              │ ← Double-click this
+   │ Connected to: [+ Add new]   │ ← Click pencil ✏️
+   └─────────────────────────────┘
+
+2. EMAIL NODES (Envelope 📧):
+   ┌─────────────────────────────┐
+   │ 📧 Send Test Email          │ ← Double-click this  
+   │ Server: [+ Add new]         │ ← Click pencil ✏️
+   └─────────────────────────────┘
+
+3. INJECT BUTTONS (Blue squares):
+   ┌───┐
+   │[📅]│ ← Click to trigger flows
+   └───┘
+
+🔧 CONFIGURATION DIALOGS:
+
+DATABASE CONFIG:
+┌─────────────────────────────────┐
+│ Add new postgres-config node    │
+├─────────────────────────────────┤
+│ Name: Horse Racing DB          │
+│ Host: localhost               │
+│ Port: 5432                   │
+│ Database: postgres           │
+│ Username: horse_racing       │
+│ Password: secure_password_123 │
+│ SSL: ☐ (unchecked)          │
+│                             │
+│ [Add] [Cancel]              │
+└─────────────────────────────────┘
+
+EMAIL CONFIG:
+┌─────────────────────────────────┐
+│ Add new email-credentials       │
+├─────────────────────────────────┤
+│ Name: Gmail Alerts             │
+│ Server: smtp.gmail.com         │
+│ Port: 465                      │
+│ Secure: ☑ (checked)           │
+│ TLS: ☑ (checked)              │
+│ Username: your@gmail.com       │
+│ Password: awmf ulio rtjv qybx  │
+│                               │
+│ [Add] [Cancel]                │
+└─────────────────────────────────┘
+```

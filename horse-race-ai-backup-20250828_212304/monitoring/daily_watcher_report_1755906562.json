@@ -1,0 +1,655 @@
+{
+  "timestamp": "2025-08-23T00:49:21.620696",
+  "integration_status": {
+    "timestamp": "2025-08-23T00:49:21.620727",
+    "integration_running": true,
+    "watcher_running": false,
+    "processes": {
+      "integration": [
+        3077895
+      ]
+    },
+    "status_files": {
+      "pipeline_integration": {
+        "integration_active": true,
+        "current_target_date": "2025-08-23",
+        "files_status": {
+          "cards": false,
+          "results": false
+        },
+        "completed_days": [],
+        "pipeline_config": {
+          "trigger_on_completion": true,
+          "database_upload": true,
+          "ml_retrain": false,
+          "api_update": true,
+          "web_app_notify": true
+        },
+        "event_log_count": 0,
+        "last_updated": "2025-08-23T00:47:32.212298"
+      },
+      "daily_watcher": {
+        "watcher_status": "active",
+        "target_date": "2025-08-23",
+        "files_needed": {
+          "cards": true,
+          "results": true
+        },
+        "completed_days": [],
+        "total_processed": 0,
+        "last_updated": "2025-08-23T00:48:27.697586",
+        "instructions": {
+          "target_date": "2025-08-23",
+          "files_needed": [
+            {
+              "type": "race_cards",
+              "description": "Race cards for 2025-08-23",
+              "keywords": [
+                "racecard",
+                "card",
+                "meeting"
+              ]
+            },
+            {
+              "type": "results",
+              "description": "Race results for 2025-08-23",
+              "keywords": [
+                "result",
+                "outcome",
+                "winner"
+              ]
+            }
+          ],
+          "watch_directory": "/home/jc/Documents/Horse-race-ai-v2.04/data/daily_downloads/manual_download",
+          "file_naming": {
+            "cards": "racecards_2025-08-23.zip",
+            "results": "results_2025-08-23.zip"
+          }
+        }
+      }
+    },
+    "manual_download_files": [
+      {
+        "name": ".gitkeep",
+        "size": 159,
+        "modified": "2025-08-23T00:21:14.877353"
+      },
+      {
+        "name": "racecards_2025-08-23.zip",
+        "size": 222423,
+        "modified": "2025-08-23T00:48:52.866356"
+      }
+    ],
+    "current_target_date": "2025-08-23"
+  },
+  "file_usage_analysis": {
+    "timestamp": "2025-08-23T00:49:21.747083",
+    "pipeline_files": {
+      "**/daily_file_watcher*.py": [
+        {
+          "path": "tools/monitoring/daily_file_watcher_monitor.py",
+          "size": 16227,
+          "modified": "2025-08-23T00:36:54.449020"
+        },
+        {
+          "path": "tools/automation/daily_file_watcher.py",
+          "size": 23224,
+          "modified": "2025-08-23T00:47:44.334684"
+        },
+        {
+          "path": "tools/pipeline/daily_file_watcher_integration.py",
+          "size": 18078,
+          "modified": "2025-08-23T00:13:05.988395"
+        }
+      ],
+      "**/pipeline_integration*.py": [
+        {
+          "path": "docker/ml_training/pipeline_integration.py",
+          "size": 11281,
+          "modified": "2025-08-22T22:20:40.841868"
+        },
+        {
+          "path": "docker/pipeline_management/pipeline_integration_summary.py",
+          "size": 8297,
+          "modified": "2025-08-22T22:20:40.843095"
+        },
+        {
+          "path": "tools/analysis/pipeline_integration_analysis.py",
+          "size": 10435,
+          "modified": "2025-08-22T22:20:40.909869"
+        },
+        {
+          "path": "tools/integration/pipeline_integration_manager.py",
+          "size": 33780,
+          "modified": "2025-08-22T22:20:40.919869"
+        }
+      ],
+      "**/automation/*.py": [
+        {
+          "path": "docker/automation/working_auto_downloader.py",
+          "size": 30603,
+          "modified": "2025-08-22T22:20:40.841192"
+        },
+        {
+          "path": "docker/automation/data_validator.py",
+          "size": 20475,
+          "modified": "2025-08-22T22:20:40.841082"
+        },
+        {
+          "path": "docker/automation/run_docker_auto_downloader.py",
+          "size": 4280,
+          "modified": "2025-08-22T22:20:40.841192"
+        },
+        {
+          "path": "src/automation/human_like_downloader.py",
+          "size": 23837,
+          "modified": "2025-08-22T22:20:40.855885"
+        },
+        {
+          "path": "src/automation/docker_config.py",
+          "size": 1092,
+          "modified": "2025-08-22T22:20:40.855885"
+        },
+        {
+          "path": "src/automation/respectful_auto_downloader.py",
+          "size": 39764,
+          "modified": "2025-08-22T22:20:40.855885"
+        },
+        {
+          "path": "src/automation/daily_scheduler.py",
+          "size": 8346,
+          "modified": "2025-08-22T22:20:40.855885"
+        },
+        {
+          "path": "src/automation/clean_auto_downloader.py",
+          "size": 7623,
+          "modified": "2025-08-22T22:20:40.855885"
+        },
+        {
+          "path": "tools/automation/file_watcher_enhanced.py",
+          "size": 29767,
+          "modified": "2025-08-22T22:20:40.912616"
+        },
+        {
+          "path": "tools/automation/start_file_watcher.py",
+          "size": 1641,
+          "modified": "2025-08-22T22:20:40.912616"
+        },
+        {
+          "path": "tools/automation/daily_file_watcher.py",
+          "size": 23224,
+          "modified": "2025-08-23T00:47:44.334684"
+        },
+        {
+          "path": "tools/automation/simple_file_processor.py",
+          "size": 16140,
+          "modified": "2025-08-22T22:20:40.912616"
+        },
+        {
+          "path": "tools/automation/file_watcher_status.py",
+          "size": 6477,
+          "modified": "2025-08-22T22:20:40.912616"
+        },
+        {
+          "path": "tools/automation/test_timing_scenarios.py",
+          "size": 5739,
+          "modified": "2025-08-22T22:20:40.912616"
+        },
+        {
+          "path": "tools/automation/file_watcher.py",
+          "size": 19850,
+          "modified": "2025-08-22T22:20:40.912009"
+        },
+        {
+          "path": "src/horse_racing_ai/automation/scheduler.py",
+          "size": 8376,
+          "modified": "2025-08-22T22:20:40.859801"
+        },
+        {
+          "path": "src/horse_racing_ai/automation/playwright_scraper.py",
+          "size": 13251,
+          "modified": "2025-08-22T22:20:40.859801"
+        },
+        {
+          "path": "src/horse_racing_ai/automation/__init__.py",
+          "size": 170,
+          "modified": "2025-08-22T22:20:40.859549"
+        }
+      ],
+      "**/pipeline/*.py": [
+        {
+          "path": "tools/pipeline/test_phase5_phase6_triggers.py",
+          "size": 12311,
+          "modified": "2025-08-22T22:20:40.926869"
+        },
+        {
+          "path": "tools/pipeline/generate_17_stage_config.py",
+          "size": 3295,
+          "modified": "2025-08-22T22:20:40.924869"
+        },
+        {
+          "path": "tools/pipeline/enhanced_trigger_demo.py",
+          "size": 15651,
+          "modified": "2025-08-22T22:20:40.924869"
+        },
+        {
+          "path": "tools/pipeline/race_staging_manager.py",
+          "size": 23062,
+          "modified": "2025-08-22T22:20:40.925869"
+        },
+        {
+          "path": "tools/pipeline/contextual_ai_pipeline_integration.py",
+          "size": 35469,
+          "modified": "2025-08-22T22:20:40.923869"
+        },
+        {
+          "path": "tools/pipeline/stage14_security_pipeline.py",
+          "size": 37515,
+          "modified": "2025-08-22T22:20:40.926869"
+        },
+        {
+          "path": "tools/pipeline/event_driven_orchestrator.py",
+          "size": 21076,
+          "modified": "2025-08-22T22:20:40.924869"
+        },
+        {
+          "path": "tools/pipeline/run_data_architecture_stage.py",
+          "size": 7190,
+          "modified": "2025-08-22T22:20:40.925869"
+        },
+        {
+          "path": "tools/pipeline/daily_file_watcher_integration.py",
+          "size": 18078,
+          "modified": "2025-08-23T00:13:05.988395"
+        },
+        {
+          "path": "tools/pipeline/integrated_pipeline.py",
+          "size": 7666,
+          "modified": "2025-08-22T22:20:40.924869"
+        },
+        {
+          "path": "tools/pipeline/daily_orchestrator.py",
+          "size": 81276,
+          "modified": "2025-08-22T22:20:40.923869"
+        },
+        {
+          "path": "tools/pipeline/quick_csv_import.py",
+          "size": 5118,
+          "modified": "2025-08-22T22:20:40.925869"
+        },
+        {
+          "path": "tools/pipeline/phase6_prediction_service.py",
+          "size": 12273,
+          "modified": "2025-08-22T22:20:40.924869"
+        },
+        {
+          "path": "tools/pipeline/automated_data_quality_pipeline.py",
+          "size": 11683,
+          "modified": "2025-08-22T22:20:40.923779"
+        },
+        {
+          "path": "tools/pipeline/performance_tracking_integration.py",
+          "size": 26103,
+          "modified": "2025-08-22T22:20:40.924869"
+        },
+        {
+          "path": "tools/pipeline/pipeline_enhancement_integration.py",
+          "size": 20247,
+          "modified": "2025-08-22T22:20:40.925869"
+        },
+        {
+          "path": "tools/pipeline/stage11_integration_pipeline.py",
+          "size": 39860,
+          "modified": "2025-08-22T22:20:40.925869"
+        },
+        {
+          "path": "tools/pipeline/manual_pipeline_trigger.py",
+          "size": 2076,
+          "modified": "2025-08-22T22:20:40.924869"
+        },
+        {
+          "path": "tools/pipeline/advanced_data_processing_integration.py",
+          "size": 16107,
+          "modified": "2025-08-22T22:20:40.923779"
+        },
+        {
+          "path": "tools/pipeline/betting_integration_system.py",
+          "size": 50053,
+          "modified": "2025-08-22T22:20:40.923779"
+        },
+        {
+          "path": "tools/pipeline/enhanced_pipeline_ml_integration.py",
+          "size": 14886,
+          "modified": "2025-08-22T22:20:40.924869"
+        },
+        {
+          "path": "tools/pipeline/stage12_performance_optimization_pipeline.py",
+          "size": 45168,
+          "modified": "2025-08-22T22:20:40.925869"
+        },
+        {
+          "path": "tools/pipeline/advanced_analytics_pipeline_integration.py",
+          "size": 20136,
+          "modified": "2025-08-22T22:20:40.923429"
+        },
+        {
+          "path": "tools/pipeline/run_contextual_ai_stage.py",
+          "size": 10554,
+          "modified": "2025-08-22T22:20:40.925869"
+        },
+        {
+          "path": "tools/pipeline/event_driven_orchestrator_phase1.py",
+          "size": 22889,
+          "modified": "2025-08-22T22:20:40.924869"
+        },
+        {
+          "path": "tools/pipeline/enhanced_ml_ensemble_integration.py",
+          "size": 16974,
+          "modified": "2025-08-22T22:20:40.924869"
+        },
+        {
+          "path": "tools/pipeline/stage13_code_quality_pipeline.py",
+          "size": 35654,
+          "modified": "2025-08-22T22:20:40.925869"
+        },
+        {
+          "path": "tools/pipeline/phase5_model_validator.py",
+          "size": 10656,
+          "modified": "2025-08-22T22:20:40.924869"
+        },
+        {
+          "path": "tools/pipeline/pipeline_ml_integration.py",
+          "size": 14478,
+          "modified": "2025-08-22T22:20:40.925869"
+        },
+        {
+          "path": "tools/pipeline/betting_pipeline_integration.py",
+          "size": 19709,
+          "modified": "2025-08-22T22:20:40.923779"
+        },
+        {
+          "path": "tools/pipeline/proper_pipeline_orchestrator.py",
+          "size": 29346,
+          "modified": "2025-08-22T22:20:40.925869"
+        },
+        {
+          "path": "tools/pipeline/critical_fixes.py",
+          "size": 12445,
+          "modified": "2025-08-22T22:20:40.923869"
+        },
+        {
+          "path": "tools/pipeline/reliability_fixes.py",
+          "size": 20872,
+          "modified": "2025-08-22T22:20:40.925869"
+        },
+        {
+          "path": "tools/pipeline/phase1_event_orchestrator.py",
+          "size": 23414,
+          "modified": "2025-08-22T22:20:40.924869"
+        },
+        {
+          "path": "tools/pipeline/early_morning_ml_optimizer.py",
+          "size": 18255,
+          "modified": "2025-08-22T22:20:40.924869"
+        },
+        {
+          "path": "tools/pipeline/data_architecture_pipeline_integration.py",
+          "size": 25324,
+          "modified": "2025-08-22T22:20:40.923869"
+        },
+        {
+          "path": "tools/pipeline/show_17_stages.py",
+          "size": 4296,
+          "modified": "2025-08-22T22:20:40.925869"
+        },
+        {
+          "path": "tools/pipeline/contextual_ai_enhancement.py",
+          "size": 57495,
+          "modified": "2025-08-22T22:20:40.923869"
+        },
+        {
+          "path": "src/horse_racing_ai/pipeline/ai_selections_pipeline_integration.py",
+          "size": 13176,
+          "modified": "2025-08-22T22:20:40.863542"
+        }
+      ],
+      "**/data_processing/*.py": [
+        {
+          "path": "tools/data_processing/assign_courses.py",
+          "size": 5323,
+          "modified": "2025-08-22T22:20:40.915092"
+        },
+        {
+          "path": "tools/data_processing/advanced_csv_mapper.py",
+          "size": 13413,
+          "modified": "2025-08-22T22:20:40.915092"
+        },
+        {
+          "path": "tools/data_processing/fixed_uploader.py",
+          "size": 8055,
+          "modified": "2025-08-22T22:20:40.915869"
+        },
+        {
+          "path": "tools/data_processing/upload_integration_hook.py",
+          "size": 12369,
+          "modified": "2025-08-22T22:20:40.916869"
+        },
+        {
+          "path": "tools/data_processing/smart_csv_processor.py",
+          "size": 6921,
+          "modified": "2025-08-22T22:20:40.915869"
+        },
+        {
+          "path": "tools/data_processing/smart_relationship_mapper_v2.py",
+          "size": 13330,
+          "modified": "2025-08-22T22:20:40.916869"
+        },
+        {
+          "path": "tools/data_processing/race_card_fetcher.py",
+          "size": 9984,
+          "modified": "2025-08-22T22:20:40.915869"
+        },
+        {
+          "path": "tools/data_processing/distance_converter.py",
+          "size": 7962,
+          "modified": "2025-08-22T22:20:40.915869"
+        },
+        {
+          "path": "tools/data_processing/complete_upload_solution.py",
+          "size": 8679,
+          "modified": "2025-08-22T22:20:40.915092"
+        },
+        {
+          "path": "tools/data_processing/upload_mapped_data.py",
+          "size": 3185,
+          "modified": "2025-08-22T22:20:40.916869"
+        },
+        {
+          "path": "tools/data_processing/daily_downloads_cleanup.py",
+          "size": 14109,
+          "modified": "2025-08-22T22:20:40.915092"
+        },
+        {
+          "path": "tools/data_processing/corrected_uploader.py",
+          "size": 10828,
+          "modified": "2025-08-22T22:20:40.915092"
+        },
+        {
+          "path": "tools/data_processing/pipeline_scheduler.py",
+          "size": 5614,
+          "modified": "2025-08-22T22:20:40.915869"
+        },
+        {
+          "path": "tools/data_processing/database_uploader.py",
+          "size": 15516,
+          "modified": "2025-08-22T22:20:40.915869"
+        },
+        {
+          "path": "tools/data_processing/daily_downloads_manager.py",
+          "size": 24273,
+          "modified": "2025-08-22T22:45:21.832492"
+        },
+        {
+          "path": "tools/data_processing/probabilistic_data_fixer.py",
+          "size": 16312,
+          "modified": "2025-08-22T22:20:40.915869"
+        },
+        {
+          "path": "tools/data_processing/daily_uploader.py",
+          "size": 8557,
+          "modified": "2025-08-22T22:20:40.915092"
+        },
+        {
+          "path": "tools/data_processing/qwen_auto_downloader.py",
+          "size": 8496,
+          "modified": "2025-08-22T22:20:40.915869"
+        },
+        {
+          "path": "tools/data_processing/clean_data.py",
+          "size": 7632,
+          "modified": "2025-08-22T22:20:40.915092"
+        },
+        {
+          "path": "tools/data_processing/simple_clean_slate.py",
+          "size": 9537,
+          "modified": "2025-08-22T22:20:40.915869"
+        },
+        {
+          "path": "tools/data_processing/data_validation_uploader.py",
+          "size": 17757,
+          "modified": "2025-08-22T22:20:40.915869"
+        },
+        {
+          "path": "tools/data_processing/weight_converter.py",
+          "size": 7730,
+          "modified": "2025-08-22T22:20:40.916869"
+        },
+        {
+          "path": "tools/data_processing/data_validator.py",
+          "size": 20475,
+          "modified": "2025-08-22T22:20:40.915869"
+        },
+        {
+          "path": "tools/data_processing/column_mapper.py",
+          "size": 8449,
+          "modified": "2025-08-22T22:20:40.915092"
+        },
+        {
+          "path": "tools/data_processing/deploy_automated_pipeline.py",
+          "size": 8192,
+          "modified": "2025-08-22T22:20:40.915869"
+        },
+        {
+          "path": "tools/data_processing/integrated_data_processor.py",
+          "size": 8076,
+          "modified": "2025-08-22T22:45:21.840076"
+        },
+        {
+          "path": "tools/data_processing/clean_slate_upload.py",
+          "size": 8066,
+          "modified": "2025-08-22T22:20:40.915092"
+        },
+        {
+          "path": "tools/data_processing/csv_column_mapper_fixed.py",
+          "size": 11394,
+          "modified": "2025-08-22T22:20:40.915092"
+        },
+        {
+          "path": "tools/data_processing/complete_csv_processor.py",
+          "size": 6313,
+          "modified": "2025-08-22T22:20:40.915092"
+        },
+        {
+          "path": "tools/data_processing/csv_column_mapper_broken.py",
+          "size": 8987,
+          "modified": "2025-08-22T22:20:40.915092"
+        },
+        {
+          "path": "tools/data_processing/smart_uploader.py",
+          "size": 8150,
+          "modified": "2025-08-22T22:20:40.916869"
+        },
+        {
+          "path": "tools/data_processing/smart_relationship_mapper.py",
+          "size": 13731,
+          "modified": "2025-08-22T22:20:40.915869"
+        },
+        {
+          "path": "tools/data_processing/fix_data_relationships.py",
+          "size": 15667,
+          "modified": "2025-08-22T22:20:40.915869"
+        },
+        {
+          "path": "tools/data_processing/automated_relationships_pipeline.py",
+          "size": 25317,
+          "modified": "2025-08-22T22:20:40.915092"
+        },
+        {
+          "path": "tools/data_processing/enhanced_database_uploader.py",
+          "size": 20868,
+          "modified": "2025-08-22T22:20:40.915869"
+        },
+        {
+          "path": "tools/data_processing/csv_uploader.py",
+          "size": 6242,
+          "modified": "2025-08-22T22:20:40.915092"
+        }
+      ]
+    },
+    "function_calls": {},
+    "import_dependencies": {},
+    "error": null,
+    "manual_downloads": {
+      "directory": "/home/jc/Documents/Horse-race-ai-v2.03/data/daily_downloads/manual_download",
+      "files_found": [],
+      "file_types": {},
+      "total_size": 0,
+      "analysis_timestamp": 1755906561.7471142
+    }
+  },
+  "watcher_health": {
+    "timestamp": "2025-08-23T00:49:22.436501",
+    "status": "error",
+    "issues": [
+      "Errors found in pipeline_integration.log"
+    ],
+    "directories": {
+      "data/daily_downloads/manual_download": {
+        "exists": true,
+        "writable": true,
+        "file_count": 2
+      },
+      "data/daily_downloads/cards_data": {
+        "exists": true,
+        "writable": true,
+        "file_count": 5
+      },
+      "data/daily_downloads/results_data": {
+        "exists": true,
+        "writable": true,
+        "file_count": 7
+      },
+      "data/daily_downloads/processed": {
+        "exists": true,
+        "writable": true,
+        "file_count": 6
+      }
+    },
+    "expected_files": [
+      "racecards_2025-08-23.zip",
+      "results_2025-08-23.zip"
+    ],
+    "received_files": [
+      "racecards_2025-08-23.zip"
+    ],
+    "processing_status": "partial_files_received"
+  },
+  "summary": {
+    "overall_status": "warning",
+    "pipeline_running": true,
+    "watcher_running": false,
+    "files_ready": false,
+    "issues_count": 1,
+    "manual_files_count": 2
+  }
+}

@@ -266,7 +266,15 @@ class CleanupValidator:
 
         try:
             result = subprocess.run(
-                ["docker", "exec", "horse_racing_redis_clean", "redis-cli", "ping"],
+                [
+                    "docker",
+                    "exec",
+                    "horse_racing_redis_clean",
+                    "redis-cli",
+                    "-a",
+                    "redis_password_123",
+                    "ping",
+                ],
                 capture_output=True,
                 text=True,
                 timeout=10,
@@ -346,7 +354,7 @@ class CleanupValidator:
         critical_modules = [
             "src.web.api_server_enhanced",
             "tools.pipeline_coordinator",
-            "src.database.connection_manager",
+            "src.database.database_manager",
         ]
 
         all_imports_ok = True
