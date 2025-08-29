@@ -1,0 +1,248 @@
+{
+  "timestamp": "2025-08-29",
+  "analysis_type": "cross_reference_critical_files",
+  "critical_files": {
+    "api/prediction_api.py": {
+      "score": 100,
+      "category": "Core Entry Point",
+      "exists": true,
+      "size": 38779
+    },
+    "api/ml_management_api.py": {
+      "score": 100,
+      "category": "Core Entry Point",
+      "exists": true,
+      "size": 23022
+    },
+    "tools/data_processing/daily_downloads_manager.py": {
+      "score": 100,
+      "category": "Core Entry Point",
+      "exists": true,
+      "size": 24273
+    },
+    "tools/pipeline/quick_csv_import.py": {
+      "score": 100,
+      "category": "Core Entry Point",
+      "exists": true,
+      "size": 5099
+    },
+    "tools/data_quality/csv_data_cleaner.py": {
+      "score": 100,
+      "category": "Core Entry Point",
+      "exists": true,
+      "size": 14758
+    },
+    "src/automation/human_like_downloader.py": {
+      "score": 100,
+      "category": "Core Entry Point",
+      "exists": true,
+      "size": 23837
+    },
+    "tools/analysis/integrated_cleanup_analyzer.py": {
+      "score": 100,
+      "category": "Core Entry Point",
+      "exists": true,
+      "size": 49164
+    },
+    "config/pipeline_integration_config.json": {
+      "score": 90,
+      "category": "Critical Configuration",
+      "exists": true,
+      "size": 7110
+    },
+    "config/daily_watcher_config.json": {
+      "score": 90,
+      "category": "Critical Configuration",
+      "exists": true,
+      "size": 4321
+    },
+    "ML_CONFIG.yaml": {
+      "score": 90,
+      "category": "Critical Configuration",
+      "exists": true,
+      "size": 4068
+    },
+    "pyproject.toml": {
+      "score": 90,
+      "category": "Critical Configuration",
+      "exists": true,
+      "size": 2213
+    },
+    "AI_SCHEMA.sql": {
+      "score": 85,
+      "category": "Database Schema",
+      "exists": true,
+      "size": 7286
+    },
+    "database/ai_predictions_enhanced_schema.sql": {
+      "score": 85,
+      "category": "Database Schema",
+      "exists": true,
+      "size": 12794
+    },
+    "node-red/flows-enhanced.json": {
+      "score": 80,
+      "category": "Automation Flow",
+      "exists": true,
+      "size": 13574
+    },
+    "node-red/working-flows.json": {
+      "score": 80,
+      "category": "Automation Flow",
+      "exists": true,
+      "size": 9015
+    },
+    "docker/node-red/settings.js": {
+      "score": 80,
+      "category": "Automation Flow",
+      "exists": true,
+      "size": 2507
+    },
+    "scripts/enhanced_model_optimizer.py": {
+      "score": 78,
+      "category": "High Dependency",
+      "exists": true,
+      "size": 27738
+    },
+    "horse-bot/main.py": {
+      "score": 77,
+      "category": "High Dependency",
+      "exists": true,
+      "size": 3354
+    },
+    "scripts/train_strategy_aware_models.py": {
+      "score": 73,
+      "category": "High Dependency",
+      "exists": true,
+      "size": 15110
+    },
+    "test_email_config.py": {
+      "score": 72,
+      "category": "High Dependency",
+      "exists": true,
+      "size": 5288
+    },
+    "email_alternatives_test.py": {
+      "score": 72,
+      "category": "High Dependency",
+      "exists": true,
+      "size": 2764
+    },
+    "test_system_functionality.py": {
+      "score": 72,
+      "category": "High Dependency",
+      "exists": true,
+      "size": 19934
+    },
+    "fix_node_red_protection.py": {
+      "score": 71,
+      "category": "High Dependency",
+      "exists": true,
+      "size": 12228
+    },
+    "verify_csv_protection.py": {
+      "score": 71,
+      "category": "High Dependency",
+      "exists": true,
+      "size": 7398
+    },
+    "upload_race_data.py": {
+      "score": 71,
+      "category": "High Dependency",
+      "exists": true,
+      "size": 9614
+    },
+    "process_manual_data.py": {
+      "score": 71,
+      "category": "High Dependency",
+      "exists": true,
+      "size": 7379
+    }
+  },
+  "elevated_protection_files": [
+    "api/prediction_api.py",
+    "api/ml_management_api.py",
+    "tools/data_processing/daily_downloads_manager.py",
+    "tools/pipeline/quick_csv_import.py",
+    "tools/data_quality/csv_data_cleaner.py",
+    "src/automation/human_like_downloader.py",
+    "tools/analysis/integrated_cleanup_analyzer.py",
+    "config/pipeline_integration_config.json",
+    "config/daily_watcher_config.json",
+    "ML_CONFIG.yaml",
+    "pyproject.toml",
+    "AI_SCHEMA.sql",
+    "database/ai_predictions_enhanced_schema.sql",
+    "node-red/flows-enhanced.json",
+    "node-red/working-flows.json",
+    "docker/node-red/settings.js"
+  ],
+  "unwanted_files_stats": {
+    "Backup Files": {
+      "files": 102,
+      "size_mb": 1.04
+    },
+    "Temporary Files": {
+      "files": 85,
+      "size_mb": 0.25
+    },
+    "Cache Files": {
+      "files": 6064,
+      "size_mb": 95.2
+    },
+    "Log Files": {
+      "files": 89,
+      "size_mb": 5.74
+    },
+    "Git Artifacts": {
+      "files": 321,
+      "size_mb": 0.08
+    },
+    "Node Modules": {
+      "files": 652,
+      "size_mb": 1.31
+    },
+    "Build Artifacts": {
+      "files": 1241,
+      "size_mb": 28.73
+    },
+    "IDE Files": {
+      "files": 25,
+      "size_mb": 0.02
+    }
+  },
+  "total_unwanted_files": 8579,
+  "total_potential_savings_mb": 132.37,
+  "protection_recommendations": {
+    "critical_never_delete": [
+      "api/prediction_api.py",
+      "api/ml_management_api.py",
+      "tools/data_processing/daily_downloads_manager.py",
+      "tools/pipeline/quick_csv_import.py",
+      "tools/data_quality/csv_data_cleaner.py",
+      "src/automation/human_like_downloader.py",
+      "tools/analysis/integrated_cleanup_analyzer.py"
+    ],
+    "important_careful_review": [
+      "config/pipeline_integration_config.json",
+      "config/daily_watcher_config.json",
+      "ML_CONFIG.yaml",
+      "pyproject.toml",
+      "AI_SCHEMA.sql",
+      "database/ai_predictions_enhanced_schema.sql",
+      "node-red/flows-enhanced.json",
+      "node-red/working-flows.json",
+      "docker/node-red/settings.js"
+    ],
+    "safe_cleanup_categories": [
+      "Backup Files",
+      "Temporary Files",
+      "Cache Files",
+      "Log Files",
+      "Git Artifacts",
+      "Node Modules",
+      "Build Artifacts",
+      "IDE Files"
+    ]
+  }
+}

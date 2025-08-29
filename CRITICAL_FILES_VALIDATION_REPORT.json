@@ -1,0 +1,184 @@
+{
+  "timestamp": "2025-08-29",
+  "health_score": 100,
+  "critical_files_passed": 7,
+  "critical_files_total": 7,
+  "important_files_passed": 9,
+  "important_files_total": 9,
+  "critical_issues": [],
+  "important_issues": [],
+  "detailed_results": {
+    "critical_files": {
+      "api/prediction_api.py": {
+        "accessibility": [
+          true,
+          "Accessible (38779 bytes)"
+        ],
+        "syntax": [
+          true,
+          "Syntax OK"
+        ],
+        "imports": [
+          true,
+          "Imports OK"
+        ]
+      },
+      "api/ml_management_api.py": {
+        "accessibility": [
+          true,
+          "Accessible (23022 bytes)"
+        ],
+        "syntax": [
+          true,
+          "Syntax OK"
+        ],
+        "imports": [
+          true,
+          "Imports OK"
+        ]
+      },
+      "tools/data_processing/daily_downloads_manager.py": {
+        "accessibility": [
+          true,
+          "Accessible (24273 bytes)"
+        ],
+        "syntax": [
+          true,
+          "Syntax OK"
+        ],
+        "imports": [
+          true,
+          "Imports OK"
+        ]
+      },
+      "tools/pipeline/quick_csv_import.py": {
+        "accessibility": [
+          true,
+          "Accessible (5099 bytes)"
+        ],
+        "syntax": [
+          true,
+          "Syntax OK"
+        ],
+        "imports": [
+          true,
+          "Imports OK"
+        ]
+      },
+      "tools/data_quality/csv_data_cleaner.py": {
+        "accessibility": [
+          true,
+          "Accessible (14758 bytes)"
+        ],
+        "syntax": [
+          true,
+          "Syntax OK"
+        ],
+        "imports": [
+          true,
+          "Imports OK"
+        ]
+      },
+      "src/automation/human_like_downloader.py": {
+        "accessibility": [
+          true,
+          "Accessible (23837 bytes)"
+        ],
+        "syntax": [
+          true,
+          "Syntax OK"
+        ],
+        "imports": [
+          true,
+          "Imports OK"
+        ]
+      },
+      "tools/analysis/integrated_cleanup_analyzer.py": {
+        "accessibility": [
+          true,
+          "Accessible (50893 bytes)"
+        ],
+        "syntax": [
+          true,
+          "Syntax OK"
+        ],
+        "imports": [
+          true,
+          "Imports OK"
+        ]
+      }
+    },
+    "important_files": {
+      "config/pipeline_integration_config.json": {
+        "accessibility": [
+          true,
+          "Accessible (7110 bytes)"
+        ],
+        "json_validity": [
+          true,
+          "JSON Valid"
+        ]
+      },
+      "config/daily_watcher_config.json": {
+        "accessibility": [
+          true,
+          "Accessible (4321 bytes)"
+        ],
+        "json_validity": [
+          true,
+          "JSON Valid"
+        ]
+      },
+      "ML_CONFIG.yaml": {
+        "accessibility": [
+          true,
+          "Accessible (4068 bytes)"
+        ]
+      },
+      "pyproject.toml": {
+        "accessibility": [
+          true,
+          "Accessible (2213 bytes)"
+        ]
+      },
+      "AI_SCHEMA.sql": {
+        "accessibility": [
+          true,
+          "Accessible (7286 bytes)"
+        ]
+      },
+      "database/ai_predictions_enhanced_schema.sql": {
+        "accessibility": [
+          true,
+          "Accessible (12794 bytes)"
+        ]
+      },
+      "node-red/flows-enhanced.json": {
+        "accessibility": [
+          true,
+          "Accessible (13574 bytes)"
+        ],
+        "json_validity": [
+          true,
+          "JSON Valid"
+        ]
+      },
+      "node-red/working-flows.json": {
+        "accessibility": [
+          true,
+          "Accessible (9015 bytes)"
+        ],
+        "json_validity": [
+          true,
+          "JSON Valid"
+        ]
+      },
+      "docker/node-red/settings.js": {
+        "accessibility": [
+          true,
+          "Accessible (2507 bytes)"
+        ]
+      }
+    }
+  }
+}

@@ -230,6 +230,10 @@ class EnhancedTestRunner:
             # Executive Summary
             f.write("## 📈 Executive Summary\\n\\n")
 
+            # Important notice
+            f.write("**Note**: SQL and database files are excluded from cleanup ")
+            f.write("analysis as they require special handling.\\n\\n")
+
             # Test Results Summary
             test_status = self.test_results.get("status", "unknown")
             test_emoji = {

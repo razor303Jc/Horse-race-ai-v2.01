@@ -1,0 +1,43 @@
+{
+  "timestamp": "2025-08-29T11:27:02.527690",
+  "mode": "DRY RUN",
+  "total_files_processed": 6213,
+  "total_size_mb": 130.98000000000002,
+  "protected_files_count": 26,
+  "cleanup_stats": {
+    "Backup Files": {
+      "would_remove_count": 69,
+      "would_remove_size_mb": 1.04
+    },
+    "Temporary Files": {
+      "would_remove_count": 64,
+      "would_remove_size_mb": 0.25
+    },
+    "Cache Files": {
+      "would_remove_count": 4853,
+      "would_remove_size_mb": 95.2
+    },
+    "Log Files": {
+      "would_remove_count": 78,
+      "would_remove_size_mb": 5.74
+    },
+    "Build Artifacts": {
+      "would_remove_count": 1130,
+      "would_remove_size_mb": 28.73
+    },
+    "IDE Files": {
+      "would_remove_count": 19,
+      "would_remove_size_mb": 0.02
+    },
+    "Test Coverage": {
+      "would_remove_count": 0,
+      "would_remove_size_mb": 0.0
+    },
+    "Old Versions": {
+      "would_remove_count": 0,
+      "would_remove_size_mb": 0.0
+    }
+  },
+  "removed_files": [],
+  "errors": []
+}

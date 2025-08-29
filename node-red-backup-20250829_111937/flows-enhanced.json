@@ -7,11 +7,18 @@
     "info": "Primary automation flows for horse racing AI system"
   },
   {
-    "id": "tab_data_pipeline",
-    "type": "tab", 
+    "id": "tab_data_pipeline", 
+    "type": "tab",
     "label": "📊 Data Pipeline",
     "disabled": false,
     "info": "Data download, processing, and upload automation"
+  },
+  {
+    "id": "tab_dashboard",
+    "type": "tab",
+    "label": "📈 Dashboard",
+    "disabled": false,
+    "info": "Real-time dashboards and visualization"
   },
   {
     "id": "tab_alerts",
@@ -19,6 +26,54 @@
     "label": "🚨 Alerts",
     "disabled": false,
     "info": "Alert system and notifications"
+  },
+  {
+    "id": "tab_api_orchestration",
+    "type": "tab",
+    "label": "🔗 API Orchestration", 
+    "disabled": false,
+    "info": "API management and integration"
+  },
+  {
+    "id": "tab_reporting",
+    "type": "tab",
+    "label": "📄 Reporting",
+    "disabled": false,
+    "info": "Automated reporting and distribution"
+  },
+  {
+    "id": "postgres_config",
+    "type": "postgres-config",
+    "name": "Horse Racing DB",
+    "host": "postgres",
+    "hostFieldType": "str",
+    "port": "5432",
+    "portFieldType": "num", 
+    "database": "postgres",
+    "databaseFieldType": "str",
+    "ssl": "false",
+    "sslFieldType": "bool",
+    "max": "10",
+    "maxFieldType": "num",
+    "idle": "1000",
+    "idleFieldType": "num",
+    "connectionTimeout": "10000",
+    "connectionTimeoutFieldType": "num",
+    "user": "horse_racing",
+    "userFieldType": "str",
+    "password": "secure_password_123",
+    "passwordFieldType": "str"
+  },
+  {
+    "id": "email_config",
+    "type": "email-credentials",
+    "name": "Alert Email Config",
+    "service": "gmail",
+    "host": "smtp.gmail.com",
+    "port": "465",
+    "secure": true,
+    "userid": "your-email@gmail.com",
+    "password": "your-app-password"
   },
   {
     "id": "daily_schedule",
@@ -67,7 +122,7 @@
     "id": "download_executor",
     "type": "exec",
     "z": "tab_data_pipeline",
-    "command": "cd /home/jc/Documents/Horse-race-ai-v2.04 && python tools/data_processing/daily_downloads_manager.py",
+    "command": "cd /workspace && python scripts/daily_downloader.py",
     "addpay": false,
     "append": "",
     "useSpawn": "false",
@@ -113,7 +168,7 @@
     "id": "csv_cleaner",
     "type": "exec",
     "z": "tab_data_pipeline",
-    "command": "cd /home/jc/Documents/Horse-race-ai-v2.04 && python tools/data_quality/csv_data_cleaner.py",
+    "command": "cd /workspace && python tools/data_quality/csv_data_cleaner.py",
     "addpay": false,
     "append": "",
     "useSpawn": "false",
@@ -159,7 +214,7 @@
     "id": "db_import",
     "type": "exec",
     "z": "tab_data_pipeline",
-    "command": "cd /home/jc/Documents/Horse-race-ai-v2.04 && python tools/bulk_uploader/bulk_upload_processor.py",
+    "command": "cd /workspace && python tools/bulk_uploader/bulk_upload_processor.py",
     "addpay": false,
     "append": "",
     "useSpawn": "false",
@@ -184,7 +239,7 @@
     "libs": [],
     "x": 1580,
     "y": 40,
-    "wires": [["success_notification"]]
+    "wires": [["success_notification", "update_dashboard"]]
   },
   {
     "id": "import_error",
@@ -233,7 +288,7 @@
     "id": "manual_trigger",
     "type": "inject",
     "z": "tab_data_pipeline",
-    "name": "🚀 Manual Pipeline Trigger",
+    "name": "Manual Pipeline Trigger",
     "props": [
       {
         "p": "payload"
@@ -255,10 +310,63 @@
     "wires": [["data_download_trigger"]]
   },
   {
+    "id": "database_test",
+    "type": "inject",
+    "z": "tab_data_pipeline",
+    "name": "Test Database",
+    "props": [
+      {
+        "p": "payload"
+      }
+    ],
+    "repeat": "",
+    "crontab": "",
+    "once": false,
+    "onceDelay": 0.1,
+    "topic": "",
+    "payload": "",
+    "payloadType": "date",
+    "x": 180,
+    "y": 300,
+    "wires": [["db_test_query"]]
+  },
+  {
+    "id": "db_test_query",
+    "type": "postgres",
+    "z": "tab_data_pipeline",
+    "postgresdb": "postgres_config",
+    "name": "Test Query",
+    "query": "SELECT current_timestamp as test_time, version() as postgres_version, current_database() as database_name;",
+    "postgreSQLConfig": "",
+    "split": false,
+    "rowsPerMsg": 1,
+    "outputs": 1,
+    "x": 380,
+    "y": 300,
+    "wires": [["db_test_result"]]
+  },
+  {
+    "id": "db_test_result",
+    "type": "debug",
+    "z": "tab_data_pipeline",
+    "name": "DB Test Result",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "payload",
+    "targetType": "msg",
+    "statusVal": "",
+    "statusType": "auto",
+    "x": 580,
+    "y": 300,
+    "wires": []
+  },
+  {
     "id": "email_test",
     "type": "inject",
     "z": "tab_alerts",
-    "name": "🧪 Test Email",
+    "name": "Test Email",
     "props": [
       {
         "p": "payload"
@@ -272,8 +380,8 @@
     "crontab": "",
     "once": false,
     "onceDelay": 0.1,
-    "topic": "Test Email from Horse Racing AI",
-    "payload": "🏇 This is a test email from your Horse Racing AI Node-RED system. If you receive this, email alerts are working correctly!",
+    "topic": "Test Email",
+    "payload": "This is a test email from your Horse Racing AI Node-RED system. If you receive this, email alerts are working correctly!",
     "payloadType": "str",
     "x": 170,
     "y": 220,
@@ -287,21 +395,106 @@
     "port": "465",
     "secure": true,
     "tls": true,
-    "name": "📧 Send Test Email",
+    "name": "Send Test Email",
     "dname": "Email Test",
     "x": 370,
     "y": 220,
     "wires": []
   },
   {
-    "id": "email_config",
-    "type": "email-credentials",
-    "name": "📧 Gmail Alert System",
-    "service": "gmail",
-    "host": "smtp.gmail.com",
-    "port": "465",
-    "secure": true,
-    "userid": "your-email@gmail.com",
-    "password": "awmf ulio rtjv qybx"
+    "id": "system_status",
+    "type": "ui_gauge",
+    "z": "tab_dashboard",
+    "name": "System Health",
+    "group": "system_group",
+    "order": 1,
+    "width": 0,
+    "height": 0,
+    "gtype": "gage",
+    "title": "System Health %",
+    "label": "%",
+    "format": "{{value}}",
+    "min": 0,
+    "max": 100,
+    "colors": [
+      "#ca3838",
+      "#e6e600",
+      "#62a0ea"
+    ],
+    "seg1": "50",
+    "seg2": "80",
+    "className": "",
+    "x": 200,
+    "y": 100,
+    "wires": []
+  },
+  {
+    "id": "last_update",
+    "type": "ui_text",
+    "z": "tab_dashboard",
+    "group": "system_group",
+    "order": 2,
+    "width": 0,
+    "height": 0,
+    "name": "Last Update",
+    "label": "Last Update:",
+    "format": "{{msg.payload}}",
+    "layout": "row-spread",
+    "className": "",
+    "x": 200,
+    "y": 140,
+    "wires": []
+  },
+  {
+    "id": "error_count",
+    "type": "ui_text",
+    "z": "tab_dashboard",
+    "group": "system_group", 
+    "order": 3,
+    "width": 0,
+    "height": 0,
+    "name": "Error Count",
+    "label": "Errors Today:",
+    "format": "{{msg.payload}}",
+    "layout": "row-spread",
+    "className": "",
+    "x": 200,
+    "y": 180,
+    "wires": []
+  },
+  {
+    "id": "update_dashboard",
+    "type": "function",
+    "z": "tab_dashboard",
+    "name": "Update System Status",
+    "func": "// Update dashboard with latest system status\nconst timestamp = new Date().toLocaleString();\n\n// System health (example calculation)\nconst health = 95; // Would be calculated based on system metrics\n\n// Send updates to dashboard components\nnode.send([\n    {payload: health, topic: \"system_health\"},\n    {payload: timestamp, topic: \"last_update\"},\n    {payload: 0, topic: \"error_count\"} // Would be actual error count\n]);\n\nreturn null;",
+    "outputs": 3,
+    "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "libs": [],
+    "x": 400,
+    "y": 140,
+    "wires": [["system_status"], ["last_update"], ["error_count"]]
+  },
+  {
+    "id": "system_group",
+    "type": "ui_group",
+    "name": "System Status",
+    "tab": "main_tab",
+    "order": 1,
+    "disp": true,
+    "width": "6",
+    "collapse": false,
+    "className": ""
+  },
+  {
+    "id": "main_tab",
+    "type": "ui_tab",
+    "name": "Horse Racing AI",
+    "icon": "dashboard",
+    "order": 1,
+    "disabled": false,
+    "hidden": false
   }
 ]

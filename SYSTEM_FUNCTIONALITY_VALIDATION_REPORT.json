@@ -1,0 +1,31 @@
+{
+  "validation_date": "2025-08-29T11:39:16.866691",
+  "health_status": "\ud83d\udfe2 EXCELLENT",
+  "health_score": 100,
+  "file_summary": {
+    "protected_files": 2049,
+    "review_files": 214,
+    "cleanup_files": 0,
+    "protection_rate": 90.54352629253204
+  },
+  "dependency_analysis": {
+    "missing_dependencies": 0,
+    "files_with_missing_deps": 0,
+    "critical_issues": 0,
+    "warnings": 25
+  },
+  "critical_issues": [],
+  "warnings": [
+    "WARNING: tools/pipeline/proper_pipeline_orchestrator.py references data tools/temp_card_processing/2025-08-23/races/races.csv flagged for review",
+    "WARNING: tools/pipeline/proper_pipeline_orchestrator.py references data temp_card_processing/races/races.csv flagged for review",
+    "WARNING: tools/pipeline/proper_pipeline_orchestrator.py references data temp_card_processing/2025-08-23/races/races.csv flagged for review",
+    "WARNING: tools/pipeline/proper_pipeline_orchestrator.py references data tools/temp_card_processing/races/races.csv flagged for review",
+    "WARNING: tools/pipeline/proper_pipeline_orchestrator.py references data temp_extract/races/races.csv flagged for review",
+    "WARNING: tools/pipeline/proper_pipeline_orchestrator.py references data temp_extract/racecards_2025-08-27/races/races.csv flagged for review",
+    "WARNING: tools/pipeline/proper_pipeline_orchestrator.py references data data/backups/csv_backup_20250828_071119/races.csv flagged for review",
+    "WARNING: src/horse_racing_ai/ml/enhanced_ml_pipeline.py references data tools/temp_card_processing/2025-08-23/races/races.csv flagged for review",
+    "WARNING: src/horse_racing_ai/ml/enhanced_ml_pipeline.py references data tools/temp_card_processing/2025-08-23/horses/horses.csv flagged for review",
+    "WARNING: src/horse_racing_ai/ml/enhanced_ml_pipeline.py references data temp_card_processing/races/races.csv flagged for review"
+  ],
+  "missing_dependencies": {}
+}

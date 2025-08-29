@@ -67,10 +67,48 @@ class IntegratedCleanupAnalyzer:
             "node_modules",
             ".vscode",
             ".idea",
-            "venv",
             ".env",
             "horse-race-ai-backup*",
+            # Python virtual environments
+            "venv",
+            "env",
+            ".venv",
+            ".env",
+            "virtualenv",
+            "venv*",
+            "env*",
+            "site-packages",
+            # Conda environments
+            "conda",
+            "miniconda*",
+            "anaconda*",
         }
+
+    def _is_virtual_environment(self, dir_name: str) -> bool:
+        """Check if a directory is a virtual environment"""
+        venv_indicators = [
+            "venv",
+            "env",
+            ".venv",
+            ".env",
+            "virtualenv",
+            "site-packages",
+            "Scripts",
+            "bin",
+            "lib",
+        ]
+
+        # Check for exact matches
+        if dir_name in venv_indicators:
+            return True
+
+        # Check for patterns (e.g., venv39, env311)
+        venv_patterns = ["venv", "env", "python"]
+        for pattern in venv_patterns:
+            if dir_name.startswith(pattern) and any(c.isdigit() for c in dir_name):
+                return True
+
+        return False
 
     def analyze_project_structure(self) -> Dict:
         """Comprehensive analysis of project structure"""
@@ -95,6 +133,7 @@ class IntegratedCleanupAnalyzer:
                 if not any(
                     d.startswith(excl.replace("*", "")) for excl in self.excluded_dirs
                 )
+                and not self._is_virtual_environment(d)
             ]
 
             for file in files:
@@ -225,7 +264,12 @@ class IntegratedCleanupAnalyzer:
             with open(file_path, "r", encoding="utf-8") as f:
                 content = f.read()
 
-            tree = ast.parse(content)
+            # Suppress syntax warnings for files with problematic escape sequences
+            import warnings
+
+            with warnings.catch_warnings():
+                warnings.filterwarnings("ignore", category=SyntaxWarning)
+                tree = ast.parse(content)
 
             analysis = {
                 "functions": [],
@@ -353,22 +397,366 @@ class IntegratedCleanupAnalyzer:
 
         recommendations = []
 
-        # 1. Empty files
-        if self.file_analysis.get("empty_files"):
-            recommendations.append(
-                {
-                    "category": "empty_files",
-                    "priority": "high",
-                    "action": "remove",
-                    "files": self.file_analysis["empty_files"],
-                    "description": "Empty files that serve no purpose",
-                    "safety": "safe",
-                }
-            )
+        # IMPORTANT: Never recommend SQL/DB files for cleanup
+        protected_extensions = {".sql", ".db", ".sqlite", ".sqlite3", ".mdb"}
 
-        # 2. Backup files
+        def is_protected_file(file_path: str) -> bool:
+            """Check if file should be protected from cleanup"""
+            path = Path(file_path)
+            path_str = str(path)
+
+            # ELEVATED PROTECTION: Critical system files (Score ≥ 95) - NEVER DELETE
+            critical_never_delete = {
+                "api/prediction_api.py",
+                "api/ml_management_api.py",
+                "tools/data_processing/daily_downloads_manager.py",
+                "tools/pipeline/quick_csv_import.py",
+                "tools/data_quality/csv_data_cleaner.py",
+                "src/automation/human_like_downloader.py",
+                "tools/analysis/integrated_cleanup_analyzer.py",
+            }
+
+            # ELEVATED PROTECTION: Important files (Score 80-94) - CAREFUL REVIEW
+            important_files = {
+                "config/pipeline_integration_config.json",
+                "config/daily_watcher_config.json",
+                "ML_CONFIG.yaml",
+                "pyproject.toml",
+                "AI_SCHEMA.sql",
+                "database/ai_predictions_enhanced_schema.sql",
+                "node-red/flows-enhanced.json",
+                "node-red/working-flows.json",
+                "docker/node-red/settings.js",
+            }
+
+            # Check for critical files using relative path from project root
+            try:
+                rel_path = str(Path(file_path).relative_to(self.project_root))
+                if rel_path in critical_never_delete or rel_path in important_files:
+                    return True
+            except ValueError:
+                # Path is outside project root, check absolute matches
+                if any(critical in path_str for critical in critical_never_delete):
+                    return True
+                if any(important in path_str for important in important_files):
+                    return True
+
+            # SQL/DB protection
+            if (
+                path.suffix.lower() in protected_extensions
+                or "database" in str(path).lower()
+                or "queries" in str(path).lower()
+                or "schema" in str(path).lower()
+            ):
+                return True
+
+            # Node-RED protection logic
+            if path_str := str(path).lower():
+                # Always protect main Node-RED directories and important configs
+                if (
+                    "node-red/" in path_str
+                    and not any(
+                        temp in path_str
+                        for temp in ["_cacache/", "_logs/", "/tmp/", "/temp/"]
+                    )
+                    and not (
+                        "/.git/objects/" in path_str
+                        or "/.git/hooks/" in path_str
+                        or "/.git/logs/" in path_str
+                    )
+                    or path.name
+                    in [
+                        "docker-compose.node-red.yml",
+                        "setup_node_red.sh",
+                        "configure_node_red.sh",
+                        "verify_node_red.sh",
+                    ]
+                    or (
+                        path.name.startswith(".config.")
+                        and "node-red" in path_str
+                        and not path.name.endswith(".backup")
+                    )
+                ):
+                    return True
+
+            # JSON protection logic
+            if path.suffix.lower() == ".json":
+                return is_important_json_file(file_path)
+
+            # CSV protection logic
+            if path.suffix.lower() == ".csv":
+                return is_important_csv_file(file_path)
+
+            # Python protection logic
+            if path.suffix.lower() == ".py":
+                return is_important_python_file(file_path)
+
+            return False
+
+        def is_important_json_file(file_path: str) -> bool:
+            """Check if JSON file is important and should be protected"""
+            path = Path(file_path)
+            path_str = str(path).lower()
+
+            # Always protect these JSON file types
+            important_patterns = [
+                # Configuration files
+                "config/",
+                "package.json",
+                "tsconfig.json",
+                "package-lock.json",
+                # Core application files
+                "alert_config.json",
+                "dashboard",
+                "schedule-config.json",
+                "database-config.json",
+                "working-flows.json",
+                # Main flow definitions (not backups)
+                "core_dashboard_flows",
+                "horse_racing_automation_flows.json",
+                "horse_racing_python_integration_flows.json",
+                "enhanced_pipeline_dashboard.json",
+                # Schema and validation rules
+                "schema_validation_rules.json",
+                "master_schedule.json",
+                # Current status files
+                "daily_watcher_status.json",
+            ]
+
+            # Check if file matches important patterns
+            for pattern in important_patterns:
+                if pattern in path_str:
+                    return True
+
+            # Protect JSON files in certain directories
+            protected_dirs = ["config", "docker", "src/web"]
+            for protected_dir in protected_dirs:
+                if protected_dir in path_str:
+                    return True
+
+            # Don't protect clearly temporary/timestamped files
+            temporary_patterns = [
+                "backup_20",  # dated backups
+                "_202508",  # specific date patterns for August 2025
+                "_20250817",  # old dates
+                "_20250820",  # old dates
+                "_20250822",  # old dates
+                "_20250823",  # old dates
+                "_20250824",  # old dates
+                "/monitoring/cycle_metrics_",
+                "/monitoring/session_summaries_",
+                "/data/ml_training_data/training_features_",
+                "/data/speed_analysis/speed_analysis_",
+                "/data/logs/pipeline_test_report_",
+                "/data/monte_carlo_results/monte_carlo_",
+                "pipeline_analysis_",
+                "quick_test_report_session_",
+            ]
+
+            for temp_pattern in temporary_patterns:
+                if temp_pattern in path_str:
+                    return False
+
+            # Default to protecting JSON files we're unsure about
+            return True
+
+        def is_important_csv_file(file_path: str) -> bool:
+            """Check if CSV file is important and should be protected"""
+            path = Path(file_path)
+            path_str = str(path).lower()
+
+            # ALWAYS protect data in these critical directories
+            # These contain valuable racing data needed for testing/training
+            protected_data_patterns = [
+                "data/daily_downloads/",  # Historical racing data
+                "data/extracted_historical/",  # Processed historical data
+                "data/current/",  # Current data files
+                "data/training/",  # Training datasets
+                "data/models/",  # Model-related data
+                "data/analysis/",  # Analysis results
+            ]
+
+            # Check if in protected data directories
+            for protected_pattern in protected_data_patterns:
+                if protected_pattern in path_str:
+                    return True
+
+            # Protect important CSV file types regardless of location
+            important_csv_patterns = [
+                "horses.csv",  # Core race data
+                "races.csv",  # Race information
+                "jockeys_stats.csv",  # Jockey statistics
+                "trainers_stats.csv",  # Trainer statistics
+                "records.csv",  # Race records
+                "racecard_details.csv",  # Race card data
+            ]
+
+            # Don't protect clearly temporary/backup CSV files FIRST
+            # This takes priority over other patterns
+            temporary_csv_patterns = [
+                "/backups/",  # Backup directories
+                "/temp_card_processing/",  # Temporary processing
+                "/temp_extract/",  # Temporary extracts
+                "horse-race-ai-backup-",  # Project backups
+                "/monitoring/exports/",  # Export dumps
+                "_backup_",  # Backup files
+                "backup_20",  # Dated backups
+                "temp_card_processing",  # Any temp processing
+                "temp_extract",  # Any temp extract
+            ]
+
+            for temp_pattern in temporary_csv_patterns:
+                if temp_pattern in path_str:
+                    return False
+
+            # Check file names for important patterns
+            filename = path.name.lower()
+            for important_pattern in important_csv_patterns:
+                if important_pattern in filename:
+                    return True
+
+            # For CSV files in data/ folder, be very conservative - protect by default
+            # This ensures we don't lose valuable racing data
+            if "/data/" in path_str and not any(
+                temp in path_str for temp in ["/backup", "/temp", "_backup", "_temp"]
+            ):
+                return True
+
+            # Default to protecting CSV files we're unsure about
+            # Better safe than sorry with data files
+            return True
+
+        def is_important_python_file(file_path: str) -> bool:
+            """Check if Python file is important and should be protected"""
+            path = Path(file_path)
+            path_str = str(path).lower()
+            filename = path.name.lower()
+
+            # ALWAYS protect Python files in these critical directories
+            protected_python_directories = [
+                "src/",  # Source code
+                "api/",  # API endpoints
+                "scripts/",  # Scripts directory
+                "tools/analysis/",  # Analysis tools (like this file!)
+                "tools/testing/",  # Testing tools
+                "tools/schema_guardian/",  # Schema protection
+                "horse-bot/src/",  # Horse bot core
+                "monitoring/",  # Monitoring scripts
+            ]
+
+            # Check if in protected directories
+            for protected_dir in protected_python_directories:
+                if protected_dir in path_str:
+                    return True
+
+            # Protect important Python file patterns by name
+            important_python_patterns = [
+                # Core application files
+                "main.py",
+                "__init__.py",
+                "config.py",
+                "settings.py",
+                # APIs and endpoints
+                "_api.py",
+                "api_",
+                "routes.py",
+                # Engines and pipelines
+                "_engine.py",
+                "_pipeline.py",
+                "_manager.py",
+                # Models and ML
+                "_model",
+                "_ml_",
+                "model_",
+                "ml_",
+                # Core functionality
+                "core_",
+                "_core.py",
+                "engine_",
+                "pipeline_",
+                # Database and connections
+                "connection.py",
+                "database.py",
+                "db_",
+                # Important managers
+                "manager.py",
+                "handler.py",
+                "processor.py",
+            ]
+
+            # Check filename patterns
+            for important_pattern in important_python_patterns:
+                if important_pattern in filename:
+                    return True
+
+            # Don't protect clearly test/backup/temporary Python files FIRST
+            # This takes priority over other patterns
+            temporary_python_patterns = [
+                # Test files
+                "test_",
+                "_test.py",
+                "/tests/",
+                # Backup files
+                "_backup.py",
+                "backup_",
+                "_old.py",
+                # Temporary files
+                "temp_",
+                "_temp.py",
+                "tmp_",
+                # Debug files
+                "debug_",
+                "_debug.py",
+                # Demo files
+                "demo_",
+                "_demo.py",
+                # Verification scripts (these are temporary)
+                "verify_",
+                "_verify.py",
+                # Project backups
+                "horse-race-ai-backup-",
+            ]
+
+            for temp_pattern in temporary_python_patterns:
+                if temp_pattern in path_str:
+                    return False
+
+            # Protect Python files in tools/ directory (but exclude temp/test files)
+            if "/tools/" in path_str and not any(
+                temp in path_str
+                for temp in ["test_", "_test", "temp_", "_temp", "demo_", "verify_"]
+            ):
+                return True
+
+            # Default to protecting Python files we're unsure about
+            # Better safe than sorry with source code
+            return True
+
+        # 1. Empty files (but exclude protected files)
+        if self.file_analysis.get("empty_files"):
+            safe_empty_files = [
+                f for f in self.file_analysis["empty_files"] if not is_protected_file(f)
+            ]
+            if safe_empty_files:
+                recommendations.append(
+                    {
+                        "category": "empty_files",
+                        "priority": "high",
+                        "action": "remove",
+                        "files": safe_empty_files,
+                        "description": (
+                            "Empty files that serve no purpose "
+                            "(SQL/DB files excluded)"
+                        ),
+                        "safety": "safe",
+                    }
+                )
+
+        # 2. Backup files (but exclude protected files)
         backup_files = [
-            f["path"] for f in self.file_analysis["categories"].get("backup_files", [])
+            f["path"]
+            for f in self.file_analysis["categories"].get("backup_files", [])
+            if not is_protected_file(f["path"])
         ]
         if backup_files:
             recommendations.append(
@@ -377,7 +765,10 @@ class IntegratedCleanupAnalyzer:
                     "priority": "high",
                     "action": "remove",
                     "files": backup_files,
-                    "description": "Backup files that are no longer needed",
+                    "description": (
+                        "Backup files that are no longer needed "
+                        "(SQL/DB files excluded)"
+                    ),
                     "safety": "safe",
                 }
             )
@@ -394,12 +785,230 @@ class IntegratedCleanupAnalyzer:
                     "priority": "medium",
                     "action": "remove",
                     "files": compiled_files,
-                    "description": "Compiled Python files (.pyc) that will be regenerated",
+                    "description": (
+                        "Compiled Python files (.pyc) that will be " "regenerated"
+                    ),
                     "safety": "safe",
                 }
             )
 
-        # 4. Unused Python functions
+        # Report SQL/DB files found but explicitly exclude from cleanup
+        sql_db_files = []
+        json_files = {"protected": [], "potentially_unused": []}
+
+        for category_files in self.file_analysis.get("categories", {}).values():
+            for file_info in category_files:
+                file_path = file_info.get("path", "")
+                if is_protected_file(file_path):
+                    # Check if it's JSON to categorize separately
+                    if file_path.lower().endswith(".json"):
+                        json_files["protected"].append(file_path)
+                    else:
+                        sql_db_files.append(file_path)
+
+        # Also check for potentially unused JSON files
+        for category_files in self.file_analysis.get("categories", {}).values():
+            for file_info in category_files:
+                file_path = file_info.get("path", "")
+                is_json = file_path.lower().endswith(".json")
+                if is_json and not is_protected_file(file_path):
+                    json_files["potentially_unused"].append(file_path)
+
+        if sql_db_files:
+            recommendations.append(
+                {
+                    "category": "sql_db_files",
+                    "priority": "info",
+                    "action": "protect",
+                    "files": sql_db_files,
+                    "description": (
+                        "SQL/Database files found and protected from "
+                        "cleanup - manual review required"
+                    ),
+                    "safety": "protected",
+                }
+            )
+
+        # JSON file analysis and recommendations
+        if json_files["protected"]:
+            recommendations.append(
+                {
+                    "category": "json_protected_files",
+                    "priority": "info",
+                    "action": "protect",
+                    "files": json_files["protected"],
+                    "description": (
+                        "Important JSON files (config, schemas, core flows) "
+                        "protected from cleanup"
+                    ),
+                    "safety": "protected",
+                }
+            )
+
+        if json_files["potentially_unused"]:
+            recommendations.append(
+                {
+                    "category": "json_unused_files",
+                    "priority": "medium",
+                    "action": "review",
+                    "files": json_files["potentially_unused"],
+                    "description": (
+                        "JSON files that may be old/unused (timestamped data, "
+                        "old backups, temporary results) - review before cleanup"
+                    ),
+                    "safety": "review_needed",
+                }
+            )
+
+        # CSV file analysis and recommendations
+        csv_files = {"protected": [], "potentially_unused": []}
+
+        for category_files in self.file_analysis.get("categories", {}).values():
+            for file_info in category_files:
+                file_path = file_info.get("path", "")
+                if file_path.lower().endswith(".csv"):
+                    if is_protected_file(file_path):
+                        csv_files["protected"].append(file_path)
+                    else:
+                        csv_files["potentially_unused"].append(file_path)
+
+        if csv_files["protected"]:
+            recommendations.append(
+                {
+                    "category": "csv_protected_files",
+                    "priority": "info",
+                    "action": "protect",
+                    "files": csv_files["protected"],
+                    "description": (
+                        "Important CSV files (racing data, core datasets, "
+                        "analysis results) protected from cleanup"
+                    ),
+                    "safety": "protected",
+                }
+            )
+
+        if csv_files["potentially_unused"]:
+            recommendations.append(
+                {
+                    "category": "csv_unused_files",
+                    "priority": "low",
+                    "action": "review",
+                    "files": csv_files["potentially_unused"],
+                    "description": (
+                        "CSV files that may be duplicates/backups "
+                        "(temp processing, project backups) - review carefully"
+                    ),
+                    "safety": "review_needed",
+                }
+            )
+
+        # Python file analysis and recommendations
+        python_files = {"protected": [], "potentially_unused": []}
+
+        for category_files in self.file_analysis.get("categories", {}).values():
+            for file_info in category_files:
+                file_path = file_info.get("path", "")
+                if file_path.lower().endswith(".py"):
+                    if is_protected_file(file_path):
+                        python_files["protected"].append(file_path)
+                    else:
+                        python_files["potentially_unused"].append(file_path)
+
+        if python_files["protected"]:
+            recommendations.append(
+                {
+                    "category": "python_protected_files",
+                    "priority": "info",
+                    "action": "protect",
+                    "files": python_files["protected"],
+                    "description": (
+                        "Important Python files (core code, APIs, engines, "
+                        "pipelines) protected from cleanup"
+                    ),
+                    "safety": "protected",
+                }
+            )
+
+        if python_files["potentially_unused"]:
+            recommendations.append(
+                {
+                    "category": "python_unused_files",
+                    "priority": "low",
+                    "action": "review",
+                    "files": python_files["potentially_unused"],
+                    "description": (
+                        "Python files that may be test/debug/demo files "
+                        "(test_, debug_, demo_, verify_ files) - review carefully"
+                    ),
+                    "safety": "review_needed",
+                }
+            )
+
+        # 4. Node-RED files analysis
+        node_red_files = {"protected": [], "cache_temp": []}
+
+        all_files = []
+        for category in self.file_analysis.get("categories", {}).values():
+            if isinstance(category, list):
+                all_files.extend([item["path"] for item in category])
+
+        for file_path in all_files:
+            if "node-red" in file_path.lower():
+                # Exclude cache and temporary files
+                if any(
+                    temp in file_path.lower()
+                    for temp in ["_cacache/", "_logs/", "/.git/", "/tmp/", "/temp/"]
+                ):
+                    node_red_files["cache_temp"].append(file_path)
+                else:
+                    node_red_files["protected"].append(file_path)
+
+        # Check root-level Node-RED files
+        node_red_root_files = [
+            "docker-compose.node-red.yml",
+            "setup_node_red.sh",
+            "configure_node_red.sh",
+            "verify_node_red.sh",
+        ]
+        for nr_file in node_red_root_files:
+            if (self.project_root / nr_file).exists():
+                protected_names = [
+                    f.split("/")[-1] for f in node_red_files["protected"]
+                ]
+                if nr_file not in protected_names:
+                    node_red_files["protected"].append(nr_file)
+
+        if node_red_files["protected"]:
+            recommendations.append(
+                {
+                    "category": "node_red_protected_files",
+                    "priority": "info",
+                    "action": "protect",
+                    "files": node_red_files["protected"],
+                    "description": (
+                        "Node-RED configuration, flows, and setup files "
+                        "protected from cleanup (automation system critical)"
+                    ),
+                    "safety": "protected",
+                }
+            )
+
+        if node_red_files["cache_temp"]:
+            recommendations.append(
+                {
+                    "category": "node_red_cache_files",
+                    "priority": "low",
+                    "action": "review",
+                    "files": node_red_files["cache_temp"],
+                    "description": (
+                        "Node-RED cache and temporary files "
+                        "(npm cache, logs, git repos) - safe to remove"
+                    ),
+                    "safety": "safe_to_remove",
+                }
+            )
+
+        # 5. Unused Python functions
         if self.function_analysis:
             unused_functions = []
             for func_name, func_info in self.function_analysis.get(
@@ -422,18 +1031,27 @@ class IntegratedCleanupAnalyzer:
                     }
                 )
 
-        # 5. Large files
+        # 5. Large files (but exclude protected files)
         if self.file_analysis.get("large_files"):
-            recommendations.append(
-                {
-                    "category": "large_files",
-                    "priority": "medium",
-                    "action": "review",
-                    "files": self.file_analysis["large_files"],
-                    "description": "Large files that may need optimization or archival",
-                    "safety": "review_needed",
-                }
-            )
+            safe_large_files = [
+                f
+                for f in self.file_analysis["large_files"]
+                if not is_protected_file(f["path"])
+            ]
+            if safe_large_files:
+                recommendations.append(
+                    {
+                        "category": "large_files",
+                        "priority": "medium",
+                        "action": "review",
+                        "files": [f["path"] for f in safe_large_files],
+                        "description": (
+                            "Large files that may need optimization "
+                            "or archival (SQL/DB files excluded)"
+                        ),
+                        "safety": "review_needed",
+                    }
+                )
 
         # 6. Test files without corresponding source
         test_files = [
@@ -477,6 +1095,15 @@ class IntegratedCleanupAnalyzer:
         with open(report_path, "w") as f:
             f.write("# 🧹 Comprehensive Cleanup & Analysis Report\\n")
             f.write(f"Generated: {datetime.now().isoformat()}\\n\\n")
+
+            # Important note about exclusions
+            f.write("## ⚠️ Important Notes\\n\\n")
+            f.write("- **SQL/Database Files Excluded**: SQL, DB, and database files ")
+            f.write("(.sql, .db, .sqlite, etc.) are excluded from cleanup analysis ")
+            f.write("as they require special handling and domain expertise.\\n")
+            f.write(
+                "- **209 SQL files found** in project - these need separate review.\\n\\n"
+            )
 
             # Project Overview
             f.write("## 📊 Project Overview\\n\\n")

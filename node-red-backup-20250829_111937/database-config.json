@@ -1,0 +1,13 @@
+{
+  "postgres_connection": {
+    "host": "postgres",
+    "port": 5432,
+    "database": "postgres",
+    "user": "horse_racing",
+    "password": "secure_password_123",
+    "ssl": false,
+    "max": 10,
+    "idleTimeoutMillis": 30000,
+    "connectionTimeoutMillis": 10000
+  }
+}
