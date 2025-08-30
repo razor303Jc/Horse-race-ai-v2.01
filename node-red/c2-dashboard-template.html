@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>🎯 Horse Racing AI C2 Command Center</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body { 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+            min-height: 100vh; 
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+        .navbar { 
+            background: rgba(0,0,0,0.2) !important; 
+            backdrop-filter: blur(15px); 
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .card { 
+            background: rgba(255,255,255,0.95); 
+            backdrop-filter: blur(10px); 
+            border: 1px solid rgba(255,255,255,0.2); 
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1); 
+            border-radius: 15px;
+        }
+        .status-card { 
+            transition: all 0.3s ease; 
+            position: relative;
+            overflow: hidden;
+        }
+        .status-card:hover { 
+            transform: translateY(-8px); 
+            box-shadow: 0 15px 45px rgba(0,0,0,0.2); 
+        }
+        .status-online { 
+            color: #28a745; 
+            animation: pulse 2s infinite; 
+        }
+        .status-offline { 
+            color: #dc3545; 
+        }
+        .status-warning { 
+            color: #ffc107; 
+            animation: warning-blink 3s infinite;
+        }
+        .btn-action { 
+            margin: 5px; 
+            transition: all 0.2s; 
+            border-radius: 10px;
+        }
+        .btn-action:hover { 
+            transform: scale(1.05); 
+        }
+        .console-output { 
+            height: 280px; 
+            overflow-y: auto; 
+            background: linear-gradient(145deg, #1a1a1a, #2d2d2d); 
+            color: #00ff41; 
+            padding: 15px; 
+            border-radius: 15px; 
+            font-family: 'SF Mono', 'Fira Code', monospace; 
+            font-size: 13px;
+            box-shadow: inset 0 4px 8px rgba(0,0,0,0.3);
+        }
+        .ntfy-panel { 
+            background: linear-gradient(45deg, #ff6b6b, #ffd93d); 
+            color: white; 
+            border-radius: 15px;
+        }
+        .c2-header { 
+            background: linear-gradient(45deg, #667eea, #764ba2); 
+            color: white; 
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3); 
+            border-radius: 15px 15px 0 0;
+        }
+        .metric-card { 
+            text-align: center; 
+            padding: 25px; 
+            border-radius: 15px;
+            background: linear-gradient(145deg, #ffffff, #f8f9fa);
+        }
+        .metric-value { 
+            font-size: 3rem; 
+            font-weight: 700; 
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .real-time-indicator { 
+            position: absolute; 
+            top: 15px; 
+            right: 15px; 
+            width: 12px; 
+            height: 12px; 
+            background: #28a745; 
+            border-radius: 50%; 
+            animation: realtime-blink 1s infinite;
+            box-shadow: 0 0 10px #28a745;
+        }
+        .tab-content { 
+            margin-top: 25px; 
+        }
+        .nav-tabs { 
+            border: none; 
+            margin-bottom: 20px;
+        }
+        .nav-tabs .nav-link { 
+            color: #667eea; 
+            border: none;
+            border-radius: 15px 15px 0 0;
+            background: rgba(255,255,255,0.1);
+            margin-right: 5px;
+            transition: all 0.3s;
+        }
+        .nav-tabs .nav-link.active { 
+            background: linear-gradient(45deg, #667eea, #764ba2); 
+            color: white; 
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+        .system-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .command-palette {
+            background: rgba(0,0,0,0.8);
+            color: #00ff41;
+            padding: 20px;
+            border-radius: 15px;
+            font-family: monospace;
+        }
+        .ntfy-status {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        .ntfy-connected { background: #28a745; }
+        .ntfy-disconnected { background: #dc3545; }
+        
+        @keyframes pulse { 
+            0% { opacity: 1; transform: scale(1); } 
+            50% { opacity: 0.7; transform: scale(1.05); } 
+            100% { opacity: 1; transform: scale(1); } 
+        }
+        @keyframes warning-blink { 
+            0%, 50% { opacity: 1; } 
+            25%, 75% { opacity: 0.5; } 
+        }
+        @keyframes realtime-blink { 
+            0% { opacity: 1; box-shadow: 0 0 10px #28a745; } 
+            50% { opacity: 0.3; box-shadow: 0 0 5px #28a745; } 
+            100% { opacity: 1; box-shadow: 0 0 10px #28a745; } 
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container-fluid">
+            <span class="navbar-brand">
+                <i class="fas fa-satellite-dish me-2"></i>
+                Horse Racing AI - C2 Command Center
+            </span>
+            <div class="d-flex align-items-center">
+                <span class="ntfy-status" id="ntfyStatus"></span>
+                <span class="text-light me-3" id="ntfyStatusText">NTFY: Connecting...</span>
+                <span class="navbar-text" id="lastUpdate">Last Update: Never</span>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="container-fluid pt-5 mt-4">
+        <!-- C2 Navigation Tabs -->
+        <ul class="nav nav-tabs" id="c2Tabs" role="tablist">
+            <li class="nav-item">
+                <button class="nav-link active" id="overview-tab" data-bs-toggle="tab" data-bs-target="#overview" type="button">
+                    <i class="fas fa-tachometer-alt me-2"></i>System Overview
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" id="operations-tab" data-bs-toggle="tab" data-bs-target="#operations" type="button">
+                    <i class="fas fa-cogs me-2"></i>Operations
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" id="notifications-tab" data-bs-toggle="tab" data-bs-target="#notifications" type="button">
+                    <i class="fas fa-bell me-2"></i>NTFY Control
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" id="console-tab" data-bs-toggle="tab" data-bs-target="#console" type="button">
+                    <i class="fas fa-terminal me-2"></i>Console
+                </button>
+            </li>
+        </ul>
+        
+        <div class="tab-content" id="c2TabContent">
+            <!-- System Overview Tab -->
+            <div class="tab-pane fade show active" id="overview" role="tabpanel">
+                <div class="system-grid">
+                    <!-- System Status Card -->
+                    <div class="card status-card">
+                        <div class="real-time-indicator"></div>
+                        <div class="card-header c2-header">
+                            <i class="fas fa-heartbeat me-2"></i>System Status Matrix
+                        </div>
+                        <div class="card-body">
+                            <div class="row text-center">
+                                <div class="col-4">
+                                    <div id="databaseStatus" class="status-offline mb-3">
+                                        <i class="fas fa-database fa-3x"></i>
+                                        <p class="mt-2 mb-0"><strong>Database</strong></p>
+                                        <small class="text-muted">Offline</small>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div id="apiStatus" class="status-offline mb-3">
+                                        <i class="fas fa-brain fa-3x"></i>
+                                        <p class="mt-2 mb-0"><strong>AI APIs</strong></p>
+                                        <small class="text-muted">Offline</small>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div id="pipelineStatus" class="status-warning mb-3">
+                                        <i class="fas fa-rocket fa-3x"></i>
+                                        <p class="mt-2 mb-0"><strong>Pipeline</strong></p>
+                                        <small class="text-muted">Standby</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row text-center">
+                                <div class="col-6">
+                                    <div id="ntfyServiceStatus" class="status-offline">
+                                        <i class="fas fa-satellite fa-2x"></i>
+                                        <p class="mt-2 mb-0"><strong>NTFY</strong></p>
+                                        <small class="text-muted">Disconnected</small>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div id="monitoringStatus" class="status-online">
+                                        <i class="fas fa-chart-line fa-2x"></i>
+                                        <p class="mt-2 mb-0"><strong>Monitoring</strong></p>
+                                        <small class="text-muted">Active</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Performance Metrics -->
+                    <div class="card status-card">
+                        <div class="card-header c2-header">
+                            <i class="fas fa-chart-pie me-2"></i>Performance Metrics
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-6 metric-card">
+                                    <div class="metric-value" id="cardsCount">0</div>
+                                    <p class="text-muted mb-0">Cards Today</p>
+                                </div>
+                                <div class="col-6 metric-card">
+                                    <div class="metric-value" id="resultsCount">0</div>
+                                    <p class="text-muted mb-0">Results Today</p>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col-6 metric-card">
+                                    <h4 class="text-info" id="totalCards">0</h4>
+                                    <p class="text-muted mb-0">Total Cards</p>
+                                </div>
+                                <div class="col-6 metric-card">
+                                    <h4 class="text-warning" id="totalResults">0</h4>
+                                    <p class="text-muted mb-0">Total Results</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Operations Tab -->
+            <div class="tab-pane fade" id="operations" role="tabpanel">
+                <div class="row">
+                    <!-- Quick Actions -->
+                    <div class="col-md-6 mb-4">
+                        <div class="card status-card">
+                            <div class="card-header c2-header">
+                                <i class="fas fa-bolt me-2"></i>Quick Actions
+                            </div>
+                            <div class="card-body">
+                                <div class="d-grid gap-2">
+                                    <button class="btn btn-primary btn-action" onclick="processData('cards', 'today')">
+                                        <i class="fas fa-file-alt me-2"></i>Process Cards Today
+                                    </button>
+                                    <button class="btn btn-success btn-action" onclick="processData('results', 'today')">
+                                        <i class="fas fa-chart-bar me-2"></i>Process Results Today
+                                    </button>
+                                    <button class="btn btn-info btn-action" onclick="processData('both', 'today')">
+                                        <i class="fas fa-sync me-2"></i>Process Both Today
+                                    </button>
+                                    <button class="btn btn-warning btn-action" onclick="runFullPipeline()">
+                                        <i class="fas fa-rocket me-2"></i>Launch Full Pipeline
+                                    </button>
+                                </div>
+                                <hr>
+                                <div class="row">
+                                    <div class="col-6">
+                                        <button class="btn btn-outline-secondary w-100 btn-action" onclick="startAPIs()">
+                                            <i class="fas fa-power-off me-2"></i>Start APIs
+                                        </button>
+                                    </div>
+                                    <div class="col-6">
+                                        <button class="btn btn-outline-info w-100 btn-action" onclick="testSystem()">
+                                            <i class="fas fa-stethoscope me-2"></i>Health Check
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Custom Processing -->
+                    <div class="col-md-6 mb-4">
+                        <div class="card">
+                            <div class="card-header c2-header">
+                                <i class="fas fa-calendar-alt me-2"></i>Custom Processing
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label class="form-label">Start Date</label>
+                                    <input type="date" class="form-control" id="startDate">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">End Date</label>
+                                    <input type="date" class="form-control" id="endDate">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Data Type</label>
+                                    <select class="form-select" id="dataType">
+                                        <option value="both">Both Cards & Results</option>
+                                        <option value="cards">Cards Only</option>
+                                        <option value="results">Results Only</option>
+                                    </select>
+                                </div>
+                                <button class="btn btn-primary w-100 btn-action" onclick="processCustomRange()">
+                                    <i class="fas fa-play me-2"></i>Execute Custom Range
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- NTFY Control Tab -->
+            <div class="tab-pane fade" id="notifications" role="tabpanel">
+                <div class="row">
+                    <!-- NTFY Controls -->
+                    <div class="col-md-6 mb-4">
+                        <div class="card ntfy-panel">
+                            <div class="card-header">
+                                <i class="fas fa-satellite me-2"></i>NTFY Notification Control
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label class="form-label text-white">Message</label>
+                                    <input type="text" class="form-control" id="ntfyMessage" placeholder="Enter notification message">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label text-white">Priority</label>
+                                    <select class="form-select" id="ntfyPriority">
+                                        <option value="3">Normal</option>
+                                        <option value="4">High</option>
+                                        <option value="5">Critical</option>
+                                        <option value="2">Low</option>
+                                        <option value="1">Minimal</option>
+                                    </select>
+                                </div>
+                                <div class="d-grid gap-2">
+                                    <button class="btn btn-light btn-action" onclick="sendNTFYNotification()">
+                                        <i class="fas fa-paper-plane me-2"></i>Send Notification
+                                    </button>
+                                    <button class="btn btn-outline-light btn-action" onclick="testNTFYConnection()">
+                                        <i class="fas fa-wifi me-2"></i>Test Connection
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- NTFY Status -->
+                    <div class="col-md-6 mb-4">
+                        <div class="card">
+                            <div class="card-header c2-header">
+                                <i class="fas fa-info-circle me-2"></i>NTFY Status
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <strong>Service URL:</strong> 
+                                    <code>http://localhost:8082</code>
+                                </div>
+                                <div class="mb-3">
+                                    <strong>Topic:</strong> 
+                                    <code>horse-racing-ai</code>
+                                </div>
+                                <div class="mb-3">
+                                    <strong>Connection Status:</strong> 
+                                    <span id="ntfyConnectionStatus" class="badge bg-secondary">Unknown</span>
+                                </div>
+                                <div class="mb-3">
+                                    <strong>Last Message:</strong> 
+                                    <span id="lastNTFYMessage" class="text-muted">None</span>
+                                </div>
+                                <button class="btn btn-outline-primary w-100" onclick="refreshNTFYStatus()">
+                                    <i class="fas fa-refresh me-2"></i>Refresh Status
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Console Tab -->
+            <div class="tab-pane fade" id="console" role="tabpanel">
+                <div class="row">
+                    <div class="col-12 mb-4">
+                        <div class="card">
+                            <div class="card-header c2-header d-flex justify-content-between align-items-center">
+                                <span><i class="fas fa-terminal me-2"></i>System Console</span>
+                                <button class="btn btn-sm btn-outline-light" onclick="clearConsole()">
+                                    <i class="fas fa-trash me-2"></i>Clear
+                                </button>
+                            </div>
+                            <div class="card-body p-0">
+                                <div class="console-output" id="systemConsole">
+                                    <div class="text-success">
+                                        [SYSTEM] C2 Command Center initialized...<br>
+                                        [READY] Awaiting commands...
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Command Palette -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="command-palette">
+                            <div class="mb-2">
+                                <strong>Quick Commands:</strong>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <button class="btn btn-outline-success w-100 mb-2" onclick="executeCommand('status')">
+                                        System Status
+                                    </button>
+                                </div>
+                                <div class="col-md-3">
+                                    <button class="btn btn-outline-warning w-100 mb-2" onclick="executeCommand('logs')">
+                                        View Logs
+                                    </button>
+                                </div>
+                                <div class="col-md-3">
+                                    <button class="btn btn-outline-info w-100 mb-2" onclick="executeCommand('metrics')">
+                                        System Metrics
+                                    </button>
+                                </div>
+                                <div class="col-md-3">
+                                    <button class="btn btn-outline-danger w-100 mb-2" onclick="executeCommand('emergency')">
+                                        Emergency Stop
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Initialize C2 Dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeC2Dashboard();
+        });
+        
+        function initializeC2Dashboard() {
+            // Set default date values
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('startDate').value = today;
+            document.getElementById('endDate').value = today;
+            
+            // Initialize NTFY connection check
+            checkNTFYConnection();
+            
+            // Start real-time updates
+            startRealTimeUpdates();
+            
+            addConsoleLog('[INIT] C2 Dashboard systems online', 'success');
+            addConsoleLog('[NTFY] Checking notification service...', 'info');
+        }
+        
+        function addConsoleLog(message, type = 'info') {
+            const console = document.getElementById('systemConsole');
+            const timestamp = new Date().toLocaleTimeString();
+            const entry = document.createElement('div');
+            
+            let className = 'text-success';
+            switch(type) {
+                case 'error': className = 'text-danger'; break;
+                case 'warning': className = 'text-warning'; break;
+                case 'info': className = 'text-info'; break;
+                case 'success': className = 'text-success'; break;
+            }
+            
+            entry.innerHTML = `<span class="text-muted">[${timestamp}]</span> <span class="${className}">${message}</span>`;
+            console.appendChild(entry);
+            console.scrollTop = console.scrollHeight;
+        }
+        
+        function clearConsole() {
+            document.getElementById('systemConsole').innerHTML = 
+                '<div class="text-success">[SYSTEM] Console cleared<br>[READY] Awaiting commands...</div>';
+        }
+        
+        function executeCommand(command) {
+            addConsoleLog(`[EXEC] Running command: ${command}`, 'warning');
+            
+            switch(command) {
+                case 'status':
+                    testSystem();
+                    break;
+                case 'logs':
+                    addConsoleLog('[LOGS] Fetching system logs...', 'info');
+                    // Implement log fetching
+                    break;
+                case 'metrics':
+                    updateStats();
+                    addConsoleLog('[METRICS] System metrics refreshed', 'success');
+                    break;
+                case 'emergency':
+                    addConsoleLog('[EMERGENCY] Emergency stop initiated!', 'error');
+                    sendNTFYNotification('EMERGENCY: System shutdown initiated', 5);
+                    break;
+            }
+        }
+        
+        function checkNTFYConnection() {
+            fetch('http://localhost:8082/horse-racing-ai', {
+                method: 'HEAD'
+            })
+            .then(response => {
+                if (response.ok) {
+                    updateNTFYStatus(true);
+                    addConsoleLog('[NTFY] Connection established successfully', 'success');
+                } else {
+                    updateNTFYStatus(false);
+                    addConsoleLog('[NTFY] Service not responding', 'error');
+                }
+            })
+            .catch(error => {
+                updateNTFYStatus(false);
+                addConsoleLog(`[NTFY] Connection failed: ${error.message}`, 'error');
+            });
+        }
+        
+        function updateNTFYStatus(connected) {
+            const statusDot = document.getElementById('ntfyStatus');
+            const statusText = document.getElementById('ntfyStatusText');
+            const connectionStatus = document.getElementById('ntfyConnectionStatus');
+            const serviceStatus = document.getElementById('ntfyServiceStatus');
+            
+            if (connected) {
+                statusDot.className = 'ntfy-status ntfy-connected';
+                statusText.textContent = 'NTFY: Connected';
+                connectionStatus.className = 'badge bg-success';
+                connectionStatus.textContent = 'Connected';
+                serviceStatus.className = 'status-online';
+                serviceStatus.innerHTML = '<i class="fas fa-satellite fa-2x"></i><p class="mt-2 mb-0"><strong>NTFY</strong></p><small class="text-muted">Connected</small>';
+            } else {
+                statusDot.className = 'ntfy-status ntfy-disconnected';
+                statusText.textContent = 'NTFY: Disconnected';
+                connectionStatus.className = 'badge bg-danger';
+                connectionStatus.textContent = 'Disconnected';
+                serviceStatus.className = 'status-offline';
+                serviceStatus.innerHTML = '<i class="fas fa-satellite fa-2x"></i><p class="mt-2 mb-0"><strong>NTFY</strong></p><small class="text-muted">Disconnected</small>';
+            }
+        }
+        
+        function sendNTFYNotification(customMessage = null, customPriority = null) {
+            const message = customMessage || document.getElementById('ntfyMessage').value;
+            const priority = customPriority || document.getElementById('ntfyPriority').value;
+            
+            if (!message) {
+                addConsoleLog('[NTFY] Error: Message cannot be empty', 'error');
+                return;
+            }
+            
+            addConsoleLog(`[NTFY] Sending notification: "${message}"`, 'info');
+            
+            fetch('/send-ntfy', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    message: message,
+                    priority: priority,
+                    topic: 'horse-racing-ai'
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    addConsoleLog('[NTFY] Notification sent successfully', 'success');
+                    document.getElementById('lastNTFYMessage').textContent = message;
+                    document.getElementById('ntfyMessage').value = '';
+                } else {
+                    addConsoleLog(`[NTFY] Failed to send: ${data.message}`, 'error');
+                }
+            })
+            .catch(error => {
+                addConsoleLog(`[NTFY] Send error: ${error.message}`, 'error');
+            });
+        }
+        
+        function testNTFYConnection() {
+            addConsoleLog('[NTFY] Testing connection...', 'info');
+            checkNTFYConnection();
+        }
+        
+        function refreshNTFYStatus() {
+            addConsoleLog('[NTFY] Refreshing status...', 'info');
+            checkNTFYConnection();
+        }
+        
+        function startRealTimeUpdates() {
+            // Update system status every 30 seconds
+            setInterval(() => {
+                updateStats();
+                testSystem();
+                checkNTFYConnection();
+            }, 30000);
+            
+            // Initial load
+            updateStats();
+            testSystem();
+        }
+        
+        // Processing Functions (Enhanced)
+        function processData(type, period) {
+            addConsoleLog(`[PROCESS] Starting ${type} processing for ${period}`, 'warning');
+            
+            const today = new Date().toISOString().split('T')[0];
+            let startDate = today;
+            let endDate = today;
+            
+            if (period === 'week') {
+                const weekAgo = new Date();
+                weekAgo.setDate(weekAgo.getDate() - 7);
+                startDate = weekAgo.toISOString().split('T')[0];
+            }
+            
+            fetch('/trigger-processing', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ type, startDate, endDate })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    addConsoleLog(`[PROCESS] ${type} processing started successfully`, 'success');
+                    sendNTFYNotification(`Processing started: ${type} (${period})`, 3);
+                    updateStats();
+                } else {
+                    addConsoleLog(`[PROCESS] Failed: ${data.message}`, 'error');
+                    sendNTFYNotification(`Processing failed: ${data.message}`, 4);
+                }
+            })
+            .catch(error => {
+                addConsoleLog(`[PROCESS] Error: ${error.message}`, 'error');
+                sendNTFYNotification(`Processing error: ${error.message}`, 5);
+            });
+        }
+        
+        function processCustomRange() {
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+            const dataType = document.getElementById('dataType').value;
+            
+            if (!startDate || !endDate) {
+                addConsoleLog('[PROCESS] Error: Date range required', 'error');
+                return;
+            }
+            
+            if (new Date(startDate) > new Date(endDate)) {
+                addConsoleLog('[PROCESS] Error: Invalid date range', 'error');
+                return;
+            }
+            
+            addConsoleLog(`[PROCESS] Custom range: ${startDate} to ${endDate} (${dataType})`, 'warning');
+            
+            fetch('/trigger-processing', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ type: dataType, startDate, endDate })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    addConsoleLog('[PROCESS] Custom range processing started', 'success');
+                    sendNTFYNotification(`Custom processing: ${startDate} to ${endDate}`, 3);
+                    updateStats();
+                } else {
+                    addConsoleLog(`[PROCESS] Custom range failed: ${data.message}`, 'error');
+                }
+            })
+            .catch(error => {
+                addConsoleLog(`[PROCESS] Custom range error: ${error.message}`, 'error');
+            });
+        }
+        
+        function runFullPipeline() {
+            addConsoleLog('[PIPELINE] Launching full pipeline...', 'warning');
+            sendNTFYNotification('Full pipeline launch initiated', 4);
+            
+            fetch('/trigger-pipeline', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    addConsoleLog('[PIPELINE] Full pipeline started successfully', 'success');
+                    sendNTFYNotification('Full pipeline is now running', 3);
+                    updateSystemStatus();
+                } else {
+                    addConsoleLog(`[PIPELINE] Launch failed: ${data.message}`, 'error');
+                    sendNTFYNotification(`Pipeline failed: ${data.message}`, 5);
+                }
+            })
+            .catch(error => {
+                addConsoleLog(`[PIPELINE] Launch error: ${error.message}`, 'error');
+                sendNTFYNotification(`Pipeline error: ${error.message}`, 5);
+            });
+        }
+        
+        function startAPIs() {
+            addConsoleLog('[API] Starting API services...', 'warning');
+            
+            fetch('/start-apis', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    addConsoleLog('[API] Services started successfully', 'success');
+                    sendNTFYNotification('API services are now online', 3);
+                    updateSystemStatus();
+                } else {
+                    addConsoleLog(`[API] Start failed: ${data.message}`, 'error');
+                }
+            })
+            .catch(error => {
+                addConsoleLog(`[API] Start error: ${error.message}`, 'error');
+            });
+        }
+        
+        function testSystem() {
+            addConsoleLog('[HEALTH] Running system health check...', 'info');
+            
+            fetch('/system-status')
+            .then(response => response.json())
+            .then(data => {
+                updateSystemStatus(data);
+                addConsoleLog('[HEALTH] System health check completed', 'success');
+                
+                let statusSummary = `Database: ${data?.database ? 'Online' : 'Offline'}, APIs: ${data?.apis ? 'Running' : 'Offline'}`;
+                sendNTFYNotification(`Health Check: ${statusSummary}`, 2);
+            })
+            .catch(error => {
+                addConsoleLog(`[HEALTH] Health check failed: ${error.message}`, 'error');
+                sendNTFYNotification(`Health check failed: ${error.message}`, 4);
+            });
+        }
+        
+        function updateSystemStatus(data) {
+            const dbStatus = document.getElementById('databaseStatus');
+            const apiStatus = document.getElementById('apiStatus');
+            const pipelineStatus = document.getElementById('pipelineStatus');
+            
+            if (data && data.database) {
+                dbStatus.className = 'status-online mb-3';
+                dbStatus.innerHTML = '<i class="fas fa-database fa-3x"></i><p class="mt-2 mb-0"><strong>Database</strong></p><small class="text-muted">Online</small>';
+            }
+            
+            if (data && data.apis) {
+                apiStatus.className = 'status-online mb-3';
+                apiStatus.innerHTML = '<i class="fas fa-brain fa-3x"></i><p class="mt-2 mb-0"><strong>AI APIs</strong></p><small class="text-muted">Running</small>';
+            }
+            
+            if (data && data.pipeline) {
+                pipelineStatus.className = 'status-online mb-3';
+                pipelineStatus.innerHTML = '<i class="fas fa-rocket fa-3x"></i><p class="mt-2 mb-0"><strong>Pipeline</strong></p><small class="text-muted">Active</small>';
+            }
+            
+            document.getElementById('lastUpdate').textContent = `Last Update: ${new Date().toLocaleString()}`;
+        }
+        
+        function updateStats() {
+            fetch('/processing-stats')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('cardsCount').textContent = data.cardsToday || 0;
+                document.getElementById('resultsCount').textContent = data.resultsToday || 0;
+                document.getElementById('totalCards').textContent = data.totalCards || 0;
+                document.getElementById('totalResults').textContent = data.totalResults || 0;
+                
+                addConsoleLog('[STATS] Performance metrics updated', 'info');
+            })
+            .catch(error => {
+                addConsoleLog(`[STATS] Update failed: ${error.message}`, 'error');
+            });
+        }
+    </script>
+</body>
+</html>

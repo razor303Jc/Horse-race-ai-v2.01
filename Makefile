@@ -333,3 +333,25 @@ ml-optimize-dry-run: ## Dry run of ML optimization (no actual training)
 	@echo "$(BLUE)🤖 Running ML optimization dry run...$(NC)"
 	$(PYTHON) tools/ml_training/time_aware_ml_optimizer.py --dry-run
 	@echo "$(GREEN)✓ ML optimization dry run completed$(NC)"
+
+# C2 Command Center Testing
+test-c2: ## Run comprehensive C2 Command Center tests (pytest + Postman)
+@echo "$(BLUE)🎯 Running comprehensive C2 Command Center tests...$(NC)"
+python tests/run_comprehensive_c2_tests.py
+@echo "$(GREEN)✓ C2 tests completed$(NC)"
+
+test-c2-pytest: ## Run C2 Command Center pytest tests only
+@echo "$(BLUE)🧪 Running C2 pytest tests...$(NC)"
+python tests/run_comprehensive_c2_tests.py --no-postman
+@echo "$(GREEN)✓ C2 pytest tests completed$(NC)"
+
+test-c2-prereq: ## Check C2 Command Center prerequisites
+@echo "$(BLUE)🔍 Checking C2 prerequisites...$(NC)"
+python tests/run_comprehensive_c2_tests.py --prereq-only
+@echo "$(GREEN)✓ C2 prerequisites check completed$(NC)"
+
+setup-newman: ## Install Newman for Postman API testing
+@echo "$(BLUE)📦 Setting up Newman for Postman API testing...$(NC)"
+./tests/setup_newman.sh
+@echo "$(GREEN)✓ Newman setup completed$(NC)"
+

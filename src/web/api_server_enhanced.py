@@ -33,6 +33,22 @@ sys.path.insert(0, str(project_root))
 
 app = FastAPI(title="Horse Racing AI API", version="2.0")
 
+# Import and setup C2 API endpoints
+try:
+    import sys
+    import os
+    # Add the current directory to the path for imports
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    sys.path.insert(0, current_dir)
+    
+    from c2_api_endpoints import setup_c2_api
+    setup_c2_api(app)
+    logger.info("C2 Command Center API endpoints loaded successfully")
+except ImportError as e:
+    logger.warning(f"Could not load C2 API endpoints: {e}")
+except Exception as e:
+    logger.error(f"Error setting up C2 API endpoints: {e}")
+
 # Setup templates
 templates = Jinja2Templates(directory="templates")
 

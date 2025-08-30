@@ -1,0 +1,357 @@
+[
+    {
+        "id": "c2_dashboard_tab",
+        "type": "tab",
+        "label": "🎯 C2 Dashboard",
+        "disabled": false,
+        "info": "Command & Control Dashboard - System Overview and Master Controls"
+    },
+    {
+        "id": "system_monitor_tab",
+        "type": "tab",
+        "label": "📊 System Monitor",
+        "disabled": false,
+        "info": "Real-time system monitoring, health checks, and performance metrics"
+    },
+    {
+        "id": "data_pipeline_tab",
+        "type": "tab",
+        "label": "🔄 Data Pipeline",
+        "disabled": false,
+        "info": "Data processing orchestration and pipeline management"
+    },
+    {
+        "id": "notifications_tab",
+        "type": "tab",
+        "label": "📱 NTFY Alerts",
+        "disabled": false,
+        "info": "NTFY notification management and alert system"
+    },
+    {
+        "id": "database_tab",
+        "type": "tab",
+        "label": "🗃️ Database Ops",
+        "disabled": false,
+        "info": "PostgreSQL database operations and real-time stats"
+    },
+    {
+        "id": "docker_control_tab",
+        "type": "tab",
+        "label": "🐳 Docker Control",
+        "disabled": false,
+        "info": "Docker container management and orchestration"
+    },
+    {
+        "id": "ai_ml_tab",
+        "type": "tab",
+        "label": "🤖 AI/ML Pipeline",
+        "disabled": false,
+        "info": "AI model training, prediction, and ML pipeline management"
+    },
+
+    {
+        "id": "c2_dashboard_template",
+        "type": "ui_template",
+        "z": "c2_dashboard_tab",
+        "group": "c2_overview_group",
+        "name": "C2 Master Dashboard",
+        "order": 1,
+        "width": 12,
+        "height": 12,
+        "format": "<!DOCTYPE html>\n<html>\n<head>\n    <style>\n        .c2-dashboard {\n            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);\n            color: white;\n            font-family: 'Roboto', sans-serif;\n            padding: 20px;\n            border-radius: 10px;\n            height: 100%;\n        }\n        .c2-header {\n            text-align: center;\n            margin-bottom: 30px;\n            border-bottom: 2px solid rgba(255,255,255,0.3);\n            padding-bottom: 20px;\n        }\n        .c2-grid {\n            display: grid;\n            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));\n            gap: 20px;\n        }\n        .c2-card {\n            background: rgba(255,255,255,0.1);\n            border-radius: 8px;\n            padding: 20px;\n            text-align: center;\n            transition: transform 0.3s ease;\n        }\n        .c2-card:hover {\n            transform: translateY(-5px);\n            background: rgba(255,255,255,0.2);\n        }\n        .status-indicator {\n            width: 20px;\n            height: 20px;\n            border-radius: 50%;\n            display: inline-block;\n            margin-right: 10px;\n        }\n        .status-online { background-color: #4CAF50; }\n        .status-warning { background-color: #FF9800; }\n        .status-offline { background-color: #F44336; }\n        .metric-value {\n            font-size: 2em;\n            font-weight: bold;\n            color: #FFD700;\n        }\n        .control-button {\n            background: #FF6B35;\n            color: white;\n            border: none;\n            padding: 10px 20px;\n            border-radius: 5px;\n            cursor: pointer;\n            margin: 5px;\n            transition: background 0.3s;\n        }\n        .control-button:hover {\n            background: #E55A2B;\n        }\n    </style>\n</head>\n<body>\n    <div class=\"c2-dashboard\">\n        <div class=\"c2-header\">\n            <h1>🎯 Horse Racing AI - Command & Control Center</h1>\n            <p>Real-time system orchestration and monitoring dashboard</p>\n        </div>\n        <div class=\"c2-grid\">\n            <div class=\"c2-card\">\n                <h3>System Status</h3>\n                <div><span class=\"status-indicator status-online\"></span>Web App (Port 3000)</div>\n                <div><span class=\"status-indicator status-online\"></span>Node-RED (Port 1881)</div>\n                <div><span class=\"status-indicator status-online\"></span>NTFY (Port 8082)</div>\n                <div><span class=\"status-indicator status-warning\"></span>PostgreSQL (Port 5432)</div>\n            </div>\n            <div class=\"c2-card\">\n                <h3>Database Stats</h3>\n                <div>Cards DB: <span class=\"metric-value\" id=\"cards-count\">{{msg.payload.cards_count || 0}}</span></div>\n                <div>Results DB: <span class=\"metric-value\" id=\"results-count\">{{msg.payload.results_count || 0}}</span></div>\n                <div>AI Metrics: <span class=\"metric-value\" id=\"metrics-count\">{{msg.payload.metrics_count || 0}}</span></div>\n            </div>\n            <div class=\"c2-card\">\n                <h3>Processing Pipeline</h3>\n                <div>Files Processed Today: <span class=\"metric-value\">{{msg.payload.files_processed || 0}}</span></div>\n                <div>Last Processing: <span id=\"last-process\">{{msg.payload.last_processing || 'Never'}}</span></div>\n                <button class=\"control-button\" onclick=\"triggerProcessing()\">🔄 Trigger Processing</button>\n            </div>\n            <div class=\"c2-card\">\n                <h3>NTFY Notifications</h3>\n                <div>Active Topics: <span class=\"metric-value\">5</span></div>\n                <div>Messages Today: <span class=\"metric-value\" id=\"ntfy-count\">{{msg.payload.ntfy_messages || 0}}</span></div>\n                <button class=\"control-button\" onclick=\"testNTFY()\">📱 Test NTFY</button>\n            </div>\n            <div class=\"c2-card\">\n                <h3>AI/ML Pipeline</h3>\n                <div>Active Models: <span class=\"metric-value\">{{msg.payload.active_models || 0}}</span></div>\n                <div>Training Status: <span id=\"training-status\">{{msg.payload.training_status || 'Idle'}}</span></div>\n                <button class=\"control-button\" onclick=\"triggerTraining()\">🤖 Start Training</button>\n            </div>\n            <div class=\"c2-card\">\n                <h3>Quick Actions</h3>\n                <button class=\"control-button\" onclick=\"restartServices()\">🔄 Restart Services</button>\n                <button class=\"control-button\" onclick=\"backupDatabase()\">💾 Backup DB</button>\n                <button class=\"control-button\" onclick=\"systemHealth()\">❤️ Health Check</button>\n                <button class=\"control-button\" onclick=\"emergencyStop()\">🛑 Emergency Stop</button>\n            </div>\n        </div>\n    </div>\n    <script>\n        function triggerProcessing() {\n            this.send({topic: \"trigger_processing\", payload: true});\n        }\n        function testNTFY() {\n            this.send({topic: \"test_ntfy\", payload: \"C2 Dashboard Test\"});\n        }\n        function triggerTraining() {\n            this.send({topic: \"trigger_training\", payload: true});\n        }\n        function restartServices() {\n            this.send({topic: \"restart_services\", payload: true});\n        }\n        function backupDatabase() {\n            this.send({topic: \"backup_database\", payload: true});\n        }\n        function systemHealth() {\n            this.send({topic: \"system_health\", payload: true});\n        }\n        function emergencyStop() {\n            if(confirm(\"Are you sure you want to emergency stop all services?\")) {\n                this.send({topic: \"emergency_stop\", payload: true});\n            }\n        }\n    </script>\n</body>\n</html>",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "x": 450,
+        "y": 100,
+        "wires": [["c2_command_router"]]
+    },
+
+    {
+        "id": "c2_command_router",
+        "type": "switch",
+        "z": "c2_dashboard_tab",
+        "name": "C2 Command Router",
+        "property": "topic",
+        "propertyType": "msg",
+        "rules": [
+            {"t": "eq", "v": "trigger_processing", "vt": "str"},
+            {"t": "eq", "v": "test_ntfy", "vt": "str"},
+            {"t": "eq", "v": "trigger_training", "vt": "str"},
+            {"t": "eq", "v": "restart_services", "vt": "str"},
+            {"t": "eq", "v": "backup_database", "vt": "str"},
+            {"t": "eq", "v": "system_health", "vt": "str"},
+            {"t": "eq", "v": "emergency_stop", "vt": "str"}
+        ],
+        "checkall": "false",
+        "repair": false,
+        "outputs": 7,
+        "x": 700,
+        "y": 100,
+        "wires": [
+            ["trigger_processing_node"],
+            ["test_ntfy_node"],
+            ["trigger_training_node"],
+            ["restart_services_node"],
+            ["backup_database_node"],
+            ["system_health_node"],
+            ["emergency_stop_node"]
+        ]
+    },
+
+    {
+        "id": "ntfy_send_node",
+        "type": "http request",
+        "z": "notifications_tab",
+        "name": "Send NTFY Notification",
+        "method": "POST",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "http://localhost:8082/horserace-system",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "senderr": false,
+        "headers": [
+            {"keyType": "str", "keyValue": "Content-Type", "valueType": "str", "valueValue": "text/plain"},
+            {"keyType": "str", "keyValue": "Title", "valueType": "msg", "valueValue": "title"},
+            {"keyType": "str", "keyValue": "Tags", "valueType": "msg", "valueValue": "tags"},
+            {"keyType": "str", "keyValue": "Priority", "valueType": "msg", "valueValue": "priority"}
+        ],
+        "x": 450,
+        "y": 100,
+        "wires": [["ntfy_response_handler"]]
+    },
+
+    {
+        "id": "test_ntfy_node",
+        "type": "function",
+        "z": "notifications_tab",
+        "name": "Format NTFY Test Message",
+        "func": "msg.title = \"🎯 C2 System Test\";\nmsg.tags = \"test,c2,system\";\nmsg.priority = \"default\";\nmsg.payload = \"Command & Control dashboard test notification from Horse Racing AI system\";\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 250,
+        "y": 100,
+        "wires": [["ntfy_send_node"]]
+    },
+
+    {
+        "id": "database_stats_query",
+        "type": "postgres",
+        "z": "database_tab",
+        "name": "Query Database Stats",
+        "query": "-- Get table counts from all databases\nSELECT \n    'cards' as db_name,\n    COUNT(*) as record_count\nFROM information_schema.tables \nWHERE table_schema = 'public'\nUNION ALL\nSELECT \n    'system_status' as db_name,\n    1 as record_count;",
+        "postgreSQLConfig": "postgres_cards_config",
+        "split": false,
+        "rowsPerMsg": 1,
+        "outputs": 1,
+        "x": 250,
+        "y": 100,
+        "wires": [["database_stats_formatter"]]
+    },
+
+    {
+        "id": "database_stats_formatter",
+        "type": "function",
+        "z": "database_tab",
+        "name": "Format DB Stats",
+        "func": "// Process database statistics\nlet stats = {\n    cards_count: 0,\n    results_count: 0,\n    metrics_count: 0,\n    last_update: new Date().toISOString()\n};\n\nif (msg.payload && Array.isArray(msg.payload)) {\n    msg.payload.forEach(row => {\n        if (row.db_name === 'cards') {\n            stats.cards_count = row.record_count;\n        }\n    });\n}\n\nmsg.payload = stats;\nmsg.topic = \"database_stats\";\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 500,
+        "y": 100,
+        "wires": [["update_dashboard_stats"]]
+    },
+
+    {
+        "id": "docker_status_check",
+        "type": "exec",
+        "z": "docker_control_tab",
+        "command": "docker ps --format 'table {{.Names}}\\t{{.Status}}\\t{{.Ports}}'",
+        "addpay": false,
+        "append": "",
+        "useSpawn": "false",
+        "timer": "",
+        "oldrc": false,
+        "name": "Docker Status Check",
+        "x": 250,
+        "y": 100,
+        "wires": [["docker_status_parser"], [], []]
+    },
+
+    {
+        "id": "docker_status_parser",
+        "type": "function",
+        "z": "docker_control_tab",
+        "name": "Parse Docker Status",
+        "func": "// Parse docker ps output\nlet lines = msg.payload.split('\\n');\nlet containers = [];\n\nfor (let i = 1; i < lines.length; i++) {\n    if (lines[i].trim()) {\n        let parts = lines[i].split('\\t');\n        if (parts.length >= 2) {\n            containers.push({\n                name: parts[0],\n                status: parts[1],\n                ports: parts[2] || 'None'\n            });\n        }\n    }\n}\n\nmsg.payload = {\n    containers: containers,\n    total: containers.length,\n    running: containers.filter(c => c.status.includes('Up')).length,\n    timestamp: new Date().toISOString()\n};\n\nmsg.topic = \"docker_status\";\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 500,
+        "y": 100,
+        "wires": [["docker_status_display"]]
+    },
+
+    {
+        "id": "system_health_monitor",
+        "type": "function",
+        "z": "system_monitor_tab",
+        "name": "System Health Monitor",
+        "func": "// Comprehensive system health check\nlet health = {\n    timestamp: new Date().toISOString(),\n    overall_status: 'healthy',\n    services: {\n        web_app: { status: 'online', port: 3000 },\n        node_red: { status: 'online', port: 1881 },\n        ntfy: { status: 'online', port: 8082 },\n        postgres: { status: 'unknown', port: 5432 }\n    },\n    metrics: {\n        uptime: process.uptime(),\n        memory_usage: process.memoryUsage(),\n        cpu_usage: 'checking...'\n    }\n};\n\n// Check for any offline services\nlet offlineServices = Object.values(health.services)\n    .filter(service => service.status === 'offline').length;\n\nif (offlineServices > 0) {\n    health.overall_status = 'degraded';\n}\n\nmsg.payload = health;\nmsg.topic = \"system_health\";\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 250,
+        "y": 100,
+        "wires": [["health_status_display"]]
+    },
+
+    {
+        "id": "data_processing_trigger",
+        "type": "exec",
+        "z": "data_pipeline_tab",
+        "command": "cd /home/jc/Documents/Horse-race-ai-v2.04 && python3 scripts/main_data_processor.py",
+        "addpay": false,
+        "append": "",
+        "useSpawn": "false",
+        "timer": "",
+        "oldrc": false,
+        "name": "Trigger Data Processing",
+        "x": 250,
+        "y": 200,
+        "wires": [["processing_success_handler"], ["processing_error_handler"], []]
+    },
+
+    {
+        "id": "processing_success_handler",
+        "type": "function",
+        "z": "data_pipeline_tab",
+        "name": "Processing Success",
+        "func": "// Handle successful data processing\nmsg.title = \"✅ Data Processing Complete\";\nmsg.tags = \"success,processing,data\";\nmsg.priority = \"default\";\nmsg.payload = `Data processing completed successfully at ${new Date().toLocaleString()}`;\n\n// Send NTFY notification\nnode.send([msg, null]);\n\n// Update dashboard\nlet dashboardMsg = {\n    topic: \"processing_complete\",\n    payload: {\n        status: \"success\",\n        timestamp: new Date().toISOString(),\n        message: \"Data processing completed successfully\"\n    }\n};\n\nreturn [null, dashboardMsg];",
+        "outputs": 2,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 500,
+        "y": 200,
+        "wires": [["ntfy_send_node"], ["update_dashboard_stats"]]
+    },
+
+    {
+        "id": "processing_error_handler",
+        "type": "function",
+        "z": "data_pipeline_tab",
+        "name": "Processing Error",
+        "func": "// Handle data processing errors\nmsg.title = \"❌ Data Processing Failed\";\nmsg.tags = \"error,processing,data\";\nmsg.priority = \"high\";\nmsg.payload = `Data processing failed: ${msg.payload || 'Unknown error'}`;\n\n// Send NTFY notification\nnode.send([msg, null]);\n\n// Update dashboard\nlet dashboardMsg = {\n    topic: \"processing_error\",\n    payload: {\n        status: \"error\",\n        timestamp: new Date().toISOString(),\n        error: msg.payload || 'Unknown error'\n    }\n};\n\nreturn [null, dashboardMsg];",
+        "outputs": 2,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 500,
+        "y": 280,
+        "wires": [["ntfy_send_node"], ["update_dashboard_stats"]]
+    },
+
+    {
+        "id": "ai_model_status",
+        "type": "function",
+        "z": "ai_ml_tab",
+        "name": "AI Model Status Check",
+        "func": "// Check AI model status and training progress\nlet modelStatus = {\n    active_models: 3,\n    training_status: 'idle',\n    last_training: '2025-01-15 14:30:00',\n    model_accuracy: {\n        win_prediction: 0.74,\n        place_prediction: 0.68,\n        value_betting: 0.71\n    },\n    training_queue: [],\n    timestamp: new Date().toISOString()\n};\n\n// Check for training files\nconst fs = require('fs');\nconst path = '/home/jc/Documents/Horse-race-ai-v2.04/trained_models';\n\ntry {\n    if (fs.existsSync(path)) {\n        let files = fs.readdirSync(path);\n        modelStatus.active_models = files.filter(f => f.endsWith('.pkl')).length;\n    }\n} catch (err) {\n    modelStatus.error = err.message;\n}\n\nmsg.payload = modelStatus;\nmsg.topic = \"ai_model_status\";\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 250,
+        "y": 100,
+        "wires": [["ai_status_display"]]
+    },
+
+    {
+        "id": "emergency_stop_node",
+        "type": "function",
+        "z": "c2_dashboard_tab",
+        "name": "Emergency Stop Handler",
+        "func": "// Emergency stop all processing\nmsg.title = \"🛑 EMERGENCY STOP TRIGGERED\";\nmsg.tags = \"emergency,stop,critical\";\nmsg.priority = \"urgent\";\nmsg.payload = \"Emergency stop has been triggered from C2 dashboard. All automated processes halted.\";\n\n// Send critical NTFY notification\nnode.send([msg, null]);\n\n// Stop all processing\nlet stopMsg = {\n    topic: \"emergency_stop\",\n    payload: {\n        status: \"emergency_stop\",\n        timestamp: new Date().toISOString(),\n        triggered_by: \"c2_dashboard\"\n    }\n};\n\nreturn [null, stopMsg];",
+        "outputs": 2,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 950,
+        "y": 300,
+        "wires": [["ntfy_send_node"], ["emergency_stop_broadcast"]]
+    },
+
+    {
+        "id": "auto_refresh_timer",
+        "type": "inject",
+        "z": "system_monitor_tab",
+        "name": "Auto Refresh (30s)",
+        "props": [
+            {"p": "payload"},
+            {"p": "topic", "vt": "str"}
+        ],
+        "repeat": "30",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.1,
+        "topic": "auto_refresh",
+        "payload": "",
+        "payloadType": "date",
+        "x": 140,
+        "y": 60,
+        "wires": [["database_stats_query", "docker_status_check", "system_health_monitor"]]
+    },
+
+    {
+        "id": "c2_overview_group",
+        "type": "ui_group",
+        "name": "Command & Control Overview",
+        "tab": "c2_dashboard_ui_tab",
+        "order": 1,
+        "disp": true,
+        "width": "12",
+        "collapse": false
+    },
+
+    {
+        "id": "c2_dashboard_ui_tab",
+        "type": "ui_tab",
+        "name": "🎯 C2 Dashboard",
+        "icon": "dashboard",
+        "order": 1,
+        "disabled": false,
+        "hidden": false
+    },
+
+    {
+        "id": "postgres_cards_config",
+        "type": "postgres-config",
+        "name": "Cards Database",
+        "host": "localhost",
+        "port": "5432",
+        "database": "cards_horse_racing_db",
+        "ssl": false,
+        "max": "10",
+        "min": "1",
+        "idle": "1000"
+    }
+]

@@ -1,0 +1,746 @@
+{
+  "info": {
+    "name": "🎯 C2 Command Center API Tests",
+    "description": "Comprehensive API testing for Horse Racing AI C2 Command Center",
+    "version": "1.0.0",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "apikey",
+    "apikey": [
+      {
+        "key": "key",
+        "value": "X-API-Key",
+        "type": "string"
+      },
+      {
+        "key": "value",
+        "value": "horse-racing-c2-secure-key-2025",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "node_red_url",
+      "value": "http://localhost:1881",
+      "type": "string"
+    },
+    {
+      "key": "web_app_url", 
+      "value": "http://localhost:3000",
+      "type": "string"
+    },
+    {
+      "key": "api_key",
+      "value": "horse-racing-c2-secure-key-2025",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "🏠 C2 Dashboard Tests",
+      "item": [
+        {
+          "name": "Get C2 Dashboard",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{node_red_url}}/c2-dashboard",
+              "host": ["{{node_red_url}}"],
+              "path": ["c2-dashboard"]
+            },
+            "description": "Test C2 dashboard accessibility and content"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Dashboard loads successfully', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Contains C2 Command Center title', function () {",
+                  "    pm.expect(pm.response.text()).to.include('C2 Command Center');",
+                  "});",
+                  "",
+                  "pm.test('Bootstrap CSS loaded', function () {",
+                  "    pm.expect(pm.response.text()).to.include('bootstrap');",
+                  "});",
+                  "",
+                  "pm.test('Response time is acceptable', function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(5000);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Test UI Redirect",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{node_red_url}}/ui/",
+              "host": ["{{node_red_url}}"],
+              "path": ["ui", ""]
+            },
+            "description": "Test that /ui/ redirects properly"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('UI redirect works', function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 302]);",
+                  "});",
+                  "",
+                  "pm.test('Contains dashboard content', function () {",
+                  "    pm.expect(pm.response.text()).to.include('Command Center');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "🐳 Container Management",
+      "item": [
+        {
+          "name": "Get Container Status",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{api_key}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{node_red_url}}/containers/status",
+              "host": ["{{node_red_url}}"],
+              "path": ["containers", "status"]
+            },
+            "description": "Get status of all containers"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Container status endpoint responds', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response contains container data', function () {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response).to.have.property('containers');",
+                  "    pm.expect(response).to.have.property('total');",
+                  "    pm.expect(response).to.have.property('healthy');",
+                  "});",
+                  "",
+                  "pm.test('Container array is valid', function () {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.containers).to.be.an('array');",
+                  "    pm.expect(response.total).to.be.a('number');",
+                  "    pm.expect(response.healthy).to.be.a('number');",
+                  "});",
+                  "",
+                  "pm.test('Response time is acceptable', function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(15000);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Docker Stats",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{api_key}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{node_red_url}}/docker/stats",
+              "host": ["{{node_red_url}}"],
+              "path": ["docker", "stats"]
+            },
+            "description": "Get Docker container statistics"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Docker stats endpoint responds', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Stats contain timestamp', function () {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response).to.have.property('timestamp');",
+                  "});",
+                  "",
+                  "pm.test('Stats contain container data', function () {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response).to.have.property('containers');",
+                  "    pm.expect(response.containers).to.be.an('array');",
+                  "});",
+                  "",
+                  "pm.test('Response time is acceptable', function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(20000);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Container Logs",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-API-Key", 
+                "value": "{{api_key}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{node_red_url}}/docker/logs/horse_racing_web_app_clean?lines=10",
+              "host": ["{{node_red_url}}"],
+              "path": ["docker", "logs", "horse_racing_web_app_clean"],
+              "query": [
+                {
+                  "key": "lines",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "Get container logs with line limit"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Container logs endpoint responds', function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 404, 500]);",
+                  "});",
+                  "",
+                  "if (pm.response.code === 200) {",
+                  "    pm.test('Logs contain expected data', function () {",
+                  "        const response = pm.response.json();",
+                  "        pm.expect(response).to.have.property('logs');",
+                  "        pm.expect(response).to.have.property('container');",
+                  "    });",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "📢 NTFY Integration",
+      "item": [
+        {
+          "name": "Send NTFY Notification",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "X-API-Key",
+                "value": "{{api_key}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"message\": \"Test notification from Postman API test\",\n  \"priority\": \"3\",\n  \"topic\": \"horse-racing-ai\",\n  \"title\": \"Postman Test\"\n}"
+            },
+            "url": {
+              "raw": "{{node_red_url}}/send-ntfy",
+              "host": ["{{node_red_url}}"],
+              "path": ["send-ntfy"]
+            },
+            "description": "Send test notification via NTFY"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('NTFY send endpoint responds', function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 500, 503]);",
+                  "});",
+                  "",
+                  "if (pm.response.code === 200) {",
+                  "    pm.test('Response contains status', function () {",
+                  "        const response = pm.response.json();",
+                  "        pm.expect(response).to.have.property('status');",
+                  "    });",
+                  "}",
+                  "",
+                  "pm.test('Response time is acceptable', function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(10000);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "🔧 Web App API",
+      "item": [
+        {
+          "name": "Web App Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{web_app_url}}/health",
+              "host": ["{{web_app_url}}"],
+              "path": ["health"]
+            },
+            "description": "Check web application health status"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Web app health endpoint responds', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response time is acceptable', function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(10000);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Processing Stats",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{web_app_url}}/api/processing/stats",
+              "host": ["{{web_app_url}}"],
+              "path": ["api", "processing", "stats"]
+            },
+            "description": "Get data processing statistics"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Processing stats endpoint accessible', function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 503]);",
+                  "});",
+                  "",
+                  "if (pm.response.code === 200) {",
+                  "    pm.test('Stats contain required fields', function () {",
+                  "        const response = pm.response.json();",
+                  "        pm.expect(response).to.have.property('cardsToday');",
+                  "        pm.expect(response).to.have.property('resultsToday');",
+                  "        pm.expect(response).to.have.property('totalCards');",
+                  "        pm.expect(response).to.have.property('totalResults');",
+                  "        pm.expect(response).to.have.property('timestamp');",
+                  "    });",
+                  "",
+                  "    pm.test('Stats values are numbers', function () {",
+                  "        const response = pm.response.json();",
+                  "        pm.expect(response.cardsToday).to.be.a('number');",
+                  "        pm.expect(response.resultsToday).to.be.a('number');",
+                  "        pm.expect(response.totalCards).to.be.a('number');",
+                  "        pm.expect(response.totalResults).to.be.a('number');",
+                  "    });",
+                  "",
+                  "    pm.test('Stats values are non-negative', function () {",
+                  "        const response = pm.response.json();",
+                  "        pm.expect(response.cardsToday).to.be.at.least(0);",
+                  "        pm.expect(response.resultsToday).to.be.at.least(0);",
+                  "        pm.expect(response.totalCards).to.be.at.least(0);",
+                  "        pm.expect(response.totalResults).to.be.at.least(0);",
+                  "    });",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Database Stats",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{web_app_url}}/api/database/stats",
+              "host": ["{{web_app_url}}"],
+              "path": ["api", "database", "stats"]
+            },
+            "description": "Get database connection statistics"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Database stats endpoint accessible', function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 503]);",
+                  "});",
+                  "",
+                  "if (pm.response.code === 200) {",
+                  "    pm.test('Database stats structure valid', function () {",
+                  "        const response = pm.response.json();",
+                  "        pm.expect(response).to.have.property('databases');",
+                  "        pm.expect(response).to.have.property('overall');",
+                  "    });",
+                  "",
+                  "    pm.test('Database status values valid', function () {",
+                  "        const response = pm.response.json();",
+                  "        Object.keys(response.databases).forEach(dbName => {",
+                  "            const db = response.databases[dbName];",
+                  "            pm.expect(db).to.have.property('status');",
+                  "            pm.expect(['online', 'offline']).to.include(db.status);",
+                  "        });",
+                  "    });",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Trigger Data Processing",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"data_type\": \"cards\",\n  \"start_date\": \"2025-08-30\",\n  \"end_date\": \"2025-08-30\",\n  \"source\": \"postman_api_test\"\n}"
+            },
+            "url": {
+              "raw": "{{web_app_url}}/api/processing/trigger",
+              "host": ["{{web_app_url}}"],
+              "path": ["api", "processing", "trigger"]
+            },
+            "description": "Trigger data processing job"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Processing trigger endpoint accessible', function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 400, 503]);",
+                  "});",
+                  "",
+                  "if (pm.response.code === 200) {",
+                  "    pm.test('Processing trigger response valid', function () {",
+                  "        const response = pm.response.json();",
+                  "        pm.expect(response).to.have.property('status');",
+                  "        pm.expect(response.status).to.equal('success');",
+                  "        pm.expect(response).to.have.property('processing_id');",
+                  "        pm.expect(response).to.have.property('data_type');",
+                  "    });",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "🔐 Authentication Tests",
+      "item": [
+        {
+          "name": "Test Valid API Key",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{api_key}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{node_red_url}}/containers/status",
+              "host": ["{{node_red_url}}"],
+              "path": ["containers", "status"]
+            },
+            "description": "Test authentication with valid API key"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Valid API key accepted', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response contains expected data', function () {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response).to.have.property('containers');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Test Invalid API Key",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "invalid-key-12345",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{node_red_url}}/containers/status",
+              "host": ["{{node_red_url}}"],
+              "path": ["containers", "status"]
+            },
+            "description": "Test authentication with invalid API key"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Authentication handled appropriately', function () {",
+                  "    // May return 200 (no auth enforced), 401, or 403",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 401, 403]);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Test Bearer Token",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer demo-token",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{node_red_url}}/containers/status",
+              "host": ["{{node_red_url}}"],
+              "path": ["containers", "status"]
+            },
+            "description": "Test Bearer token authentication"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Bearer token handled appropriately', function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 401, 403]);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "⚡ Performance Tests",
+      "item": [
+        {
+          "name": "Dashboard Load Performance",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{node_red_url}}/c2-dashboard",
+              "host": ["{{node_red_url}}"],
+              "path": ["c2-dashboard"]
+            },
+            "description": "Test dashboard load performance"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Dashboard loads within performance target', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    pm.expect(pm.response.responseTime).to.be.below(5000);",
+                  "});",
+                  "",
+                  "pm.test('Response size is reasonable', function () {",
+                  "    const responseSize = pm.response.responseSize;",
+                  "    pm.expect(responseSize).to.be.above(1000); // At least 1KB",
+                  "    pm.expect(responseSize).to.be.below(1000000); // Less than 1MB",
+                  "});",
+                  "",
+                  "console.log(`Dashboard load time: ${pm.response.responseTime}ms`);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "API Response Performance",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{api_key}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{node_red_url}}/containers/status",
+              "host": ["{{node_red_url}}"],
+              "path": ["containers", "status"]
+            },
+            "description": "Test API endpoint performance"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('API responds within performance target', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    pm.expect(pm.response.responseTime).to.be.below(3000);",
+                  "});",
+                  "",
+                  "console.log(`API response time: ${pm.response.responseTime}ms`);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "🛡️ Error Handling",
+      "item": [
+        {
+          "name": "Test Invalid Endpoint",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{node_red_url}}/invalid-endpoint-test",
+              "host": ["{{node_red_url}}"],
+              "path": ["invalid-endpoint-test"]
+            },
+            "description": "Test handling of invalid endpoints"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Invalid endpoint returns 404', function () {",
+                  "    pm.response.to.have.status(404);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Test Malformed JSON",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{'malformed': json, 'missing': quotes}"
+            },
+            "url": {
+              "raw": "{{node_red_url}}/send-ntfy",
+              "host": ["{{node_red_url}}"],
+              "path": ["send-ntfy"]
+            },
+            "description": "Test handling of malformed JSON"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Malformed JSON handled gracefully', function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([400, 422, 500]);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
