@@ -1,0 +1,45 @@
+[
+  {
+    "id": "test-tab",
+    "type": "tab",
+    "label": "Test",
+    "disabled": false,
+    "info": "Simple test endpoint"
+  },
+  {
+    "id": "http-test",
+    "type": "http in",
+    "z": "test-tab",
+    "name": "Test Endpoint",
+    "url": "/test",
+    "method": "get",
+    "upload": false,
+    "swaggerDoc": "",
+    "x": 120,
+    "y": 80,
+    "wires": [["function-test"]]
+  },
+  {
+    "id": "function-test",
+    "type": "function",
+    "z": "test-tab",
+    "name": "Test Response",
+    "func": "msg.payload = { message: 'Test endpoint working!', timestamp: new Date().toISOString() };\nreturn msg;",
+    "outputs": 1,
+    "noerr": 0,
+    "x": 300,
+    "y": 80,
+    "wires": [["http-response-test"]]
+  },
+  {
+    "id": "http-response-test",
+    "type": "http response",
+    "z": "test-tab",
+    "name": "Test Response",
+    "statusCode": "",
+    "headers": {"Content-Type": "application/json"},
+    "x": 480,
+    "y": 80,
+    "wires": []
+  }
+]
