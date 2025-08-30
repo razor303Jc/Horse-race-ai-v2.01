@@ -1,0 +1,143 @@
+{
+  "timestamp": "2025-08-30T20:50:18.971589",
+  "base_url": "http://c2.horse-racing.local/api/pipeline",
+  "endpoints_tested": [
+    "trigger",
+    "data_relationships",
+    "performance_tracker",
+    "ml_training",
+    "ai_selections"
+  ],
+  "results": {
+    "trigger": {
+      "sequential": {
+        "endpoint": "trigger",
+        "test_type": "sequential",
+        "total_requests": 3,
+        "successful_requests": 3,
+        "success_rate": 100.0,
+        "avg_response_time": 0.01295145352681478,
+        "min_response_time": 0.005367755889892578,
+        "max_response_time": 0.017122268676757812,
+        "median_response_time": 0.016364336013793945,
+        "std_dev": 0.006578599232860397
+      },
+      "concurrent": {
+        "endpoint": "trigger",
+        "test_type": "concurrent",
+        "total_requests": 3,
+        "successful_requests": 3,
+        "success_rate": 100.0,
+        "avg_response_time": 0.03392314910888672,
+        "min_response_time": 0.019427776336669922,
+        "max_response_time": 0.04431557655334473,
+        "median_response_time": 0.03802609443664551,
+        "std_dev": 0.012941262310076744
+      }
+    },
+    "data_relationships": {
+      "sequential": {
+        "endpoint": "data_relationships",
+        "test_type": "sequential",
+        "total_requests": 3,
+        "successful_requests": 3,
+        "success_rate": 100.0,
+        "avg_response_time": 0.015635172526041668,
+        "min_response_time": 0.015132665634155273,
+        "max_response_time": 0.015941619873046875,
+        "median_response_time": 0.01583123207092285,
+        "std_dev": 0.00043866986334763826
+      },
+      "concurrent": {
+        "endpoint": "data_relationships",
+        "test_type": "concurrent",
+        "total_requests": 3,
+        "successful_requests": 3,
+        "success_rate": 100.0,
+        "avg_response_time": 0.03281974792480469,
+        "min_response_time": 0.022846698760986328,
+        "max_response_time": 0.04063057899475098,
+        "median_response_time": 0.03498196601867676,
+        "std_dev": 0.009086968105827271
+      }
+    },
+    "performance_tracker": {
+      "sequential": {
+        "endpoint": "performance_tracker",
+        "test_type": "sequential",
+        "total_requests": 3,
+        "successful_requests": 3,
+        "success_rate": 100.0,
+        "avg_response_time": 0.013725598653157553,
+        "min_response_time": 0.009469270706176758,
+        "max_response_time": 0.016928672790527344,
+        "median_response_time": 0.014778852462768555,
+        "std_dev": 0.0038396194543989038
+      },
+      "concurrent": {
+        "endpoint": "performance_tracker",
+        "test_type": "concurrent",
+        "total_requests": 3,
+        "successful_requests": 3,
+        "success_rate": 100.0,
+        "avg_response_time": 0.035897413889567055,
+        "min_response_time": 0.02057623863220215,
+        "max_response_time": 0.048212289810180664,
+        "median_response_time": 0.03890371322631836,
+        "std_dev": 0.014061159552276456
+      }
+    },
+    "ml_training": {
+      "sequential": {
+        "endpoint": "ml_training",
+        "test_type": "sequential",
+        "total_requests": 3,
+        "successful_requests": 3,
+        "success_rate": 100.0,
+        "avg_response_time": 0.013076384862263998,
+        "min_response_time": 0.0047495365142822266,
+        "max_response_time": 0.01864457130432129,
+        "median_response_time": 0.015835046768188477,
+        "std_dev": 0.007346812886381286
+      },
+      "concurrent": {
+        "endpoint": "ml_training",
+        "test_type": "concurrent",
+        "total_requests": 3,
+        "successful_requests": 3,
+        "success_rate": 100.0,
+        "avg_response_time": 0.01225439707438151,
+        "min_response_time": 0.008871078491210938,
+        "max_response_time": 0.015964031219482422,
+        "median_response_time": 0.011928081512451172,
+        "std_dev": 0.003557717805819049
+      }
+    },
+    "ai_selections": {
+      "sequential": {
+        "endpoint": "ai_selections",
+        "test_type": "sequential",
+        "total_requests": 3,
+        "successful_requests": 3,
+        "success_rate": 100.0,
+        "avg_response_time": 0.01182397206624349,
+        "min_response_time": 0.008877992630004883,
+        "max_response_time": 0.015195131301879883,
+        "median_response_time": 0.011398792266845703,
+        "std_dev": 0.003179959692556907
+      },
+      "concurrent": {
+        "endpoint": "ai_selections",
+        "test_type": "concurrent",
+        "total_requests": 3,
+        "successful_requests": 3,
+        "success_rate": 100.0,
+        "avg_response_time": 0.017301241556803387,
+        "min_response_time": 0.01098942756652832,
+        "max_response_time": 0.022774219512939453,
+        "median_response_time": 0.018140077590942383,
+        "std_dev": 0.005937008061656705
+      }
+    }
+  }
+}
