@@ -63,12 +63,12 @@ services:
         GROUP_ID: ${GROUP_ID:-1000}
     container_name: horse_racing_web_app_clean
     environment:
-      # Multi-database configuration
-      CARDS_DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/cards_horse_racing_db
-      RESULTS_DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/results_horse_racing_db
-      ADVANCED_DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/advanced_racing_metrics_db
-      # Legacy fallback (for compatibility)
-      DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/cards_horse_racing_db
+      # Updated to use production results database with 11,284 records
+      CARDS_DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-horse_racing_password}@postgres:5432/results
+      RESULTS_DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-horse_racing_password}@postgres:5432/results
+      ADVANCED_DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-horse_racing_password}@postgres:5432/results
+      # Primary database - production results database
+      DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-horse_racing_password}@postgres:5432/results
       REDIS_URL: redis://:${REDIS_PASSWORD:-redis_password_123}@redis:6379/0
       PYTHONPATH: /app
       LOG_LEVEL: ${LOG_LEVEL:-INFO}

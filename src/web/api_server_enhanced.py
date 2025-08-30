@@ -45,31 +45,31 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Database connection parameters
+# Database connection parameters - Updated to use production results database
 DB_PARAMS = {
-    "host": "postgres",  # Use Docker service name for internal network
-    "port": 5432,  # Use internal PostgreSQL port
-    "database": "cards_horse_racing_db",  # Updated to use the correct database name
+    "host": "localhost",  # Use localhost for direct connection
+    "port": 5432,  # Standard PostgreSQL port
+    "database": "results",  # Production database with 11,284 records
     "user": "horse_racing",
-    "password": "secure_password_123",
+    "password": "horse_racing_password",
 }
 
 
 def get_db_connection():
-    """Get database connection to cards database (default)"""
+    """Get database connection to production results database"""
     try:
         # Use DATABASE_URL from environment (for Docker) or fallback to localhost
         database_url = os.environ.get("DATABASE_URL")
         if database_url:
             return psycopg2.connect(database_url, cursor_factory=RealDictCursor)
         else:
-            # Fallback for local development
+            # Use production results database with 11,284 records
             return psycopg2.connect(
                 host="localhost",
-                port=5434,
-                database="cards_horse_racing_db",  # Updated to correct database name
+                port=5432,
+                database="results",  # Production database
                 user="horse_racing",
-                password="secure_password_123",
+                password="horse_racing_password",
                 cursor_factory=RealDictCursor,
             )
     except Exception as e:
@@ -84,13 +84,13 @@ def get_cards_db_connection():
         if cards_url:
             return psycopg2.connect(cards_url, cursor_factory=RealDictCursor)
         else:
-            # Fallback for local development
+            # Use cards database
             return psycopg2.connect(
                 host="localhost",
-                port=5434,
-                database="cards_horse_racing_db",
+                port=5432,
+                database="cards_horse_racing_db",  # Cards database
                 user="horse_racing",
-                password="secure_password_123",
+                password="horse_racing_password",
                 cursor_factory=RealDictCursor,
             )
     except Exception as e:
@@ -105,13 +105,13 @@ def get_results_db_connection():
         if results_url:
             return psycopg2.connect(results_url, cursor_factory=RealDictCursor)
         else:
-            # Fallback for local development
+            # Use production results database (renamed to match .env)
             return psycopg2.connect(
                 host="localhost",
-                port=5434,
-                database="results_horse_racing_db",
+                port=5432,
+                database="results_horse_racing_db",  # Renamed database
                 user="horse_racing",
-                password="secure_password_123",
+                password="horse_racing_password",
                 cursor_factory=RealDictCursor,
             )
     except Exception as e:
@@ -126,13 +126,13 @@ def get_advanced_db_connection():
         if advanced_url:
             return psycopg2.connect(advanced_url, cursor_factory=RealDictCursor)
         else:
-            # Fallback for local development
+            # Use advanced database
             return psycopg2.connect(
                 host="localhost",
-                port=5434,
-                database="advanced_racing_metrics_db",
+                port=5432,
+                database="advanced_horse_racing_db",  # Advanced analytics database
                 user="horse_racing",
-                password="secure_password_123",
+                password="horse_racing_password",
                 cursor_factory=RealDictCursor,
             )
     except Exception as e:
