@@ -1,0 +1,427 @@
+[
+    {
+        "id": "main_dashboard_tab",
+        "type": "tab",
+        "label": "🏇 Horse Racing AI v2.05",
+        "disabled": false,
+        "info": "Main dashboard for Horse Racing AI with integrated file watcher and data processor v2.05"
+    },
+    {
+        "id": "redis_config",
+        "type": "redis-config",
+        "hostname": "redis",
+        "port": "6379",
+        "password": "${REDIS_PASSWORD}",
+        "db": "0"
+    },
+    {
+        "id": "ui_base",
+        "type": "ui_base",
+        "theme": {
+            "name": "theme-light",
+            "lightTheme": {
+                "default": "#0094CE",
+                "baseColor": "#0094CE",
+                "baseFont": "-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen-Sans,Ubuntu,Cantarell,Helvetica Neue,sans-serif",
+                "edited": true,
+                "reset": false
+            },
+            "darkTheme": {
+                "default": "#097479",
+                "baseColor": "#097479",
+                "baseFont": "-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen-Sans,Ubuntu,Cantarell,Helvetica Neue,sans-serif",
+                "edited": false
+            },
+            "customTheme": {
+                "name": "Untitled Theme 1",
+                "default": "#4B7930",
+                "baseColor": "#4B7930",
+                "baseFont": "-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen-Sans,Ubuntu,Cantarell,Helvetica Neue,sans-serif"
+            },
+            "themeState": {
+                "base-color": {
+                    "default": "#0094CE",
+                    "value": "#0094CE",
+                    "edited": false
+                },
+                "page-titlebar-backgroundColor": {
+                    "value": "#0094CE",
+                    "edited": false
+                },
+                "page-backgroundColor": {
+                    "value": "#fafafa",
+                    "edited": false
+                },
+                "page-sidebar-backgroundColor": {
+                    "value": "#ffffff",
+                    "edited": false
+                },
+                "group-textColor": {
+                    "value": "#1bbfff",
+                    "edited": false
+                },
+                "group-borderColor": {
+                    "value": "#ffffff",
+                    "edited": false
+                },
+                "group-backgroundColor": {
+                    "value": "#ffffff",
+                    "edited": false
+                },
+                "widget-textColor": {
+                    "value": "#111111",
+                    "edited": false
+                },
+                "widget-backgroundColor": {
+                    "value": "#0094ce",
+                    "edited": false
+                },
+                "widget-borderColor": {
+                    "value": "#ffffff",
+                    "edited": false
+                },
+                "base-font": {
+                    "value": "-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen-Sans,Ubuntu,Cantarell,Helvetica Neue,sans-serif"
+                }
+            },
+            "angularTheme": {
+                "primary": "indigo",
+                "accents": "blue",
+                "warn": "red",
+                "background": "grey",
+                "palette": "colours"
+            }
+        },
+        "site": {
+            "name": "🏇 Horse Racing AI v2.05",
+            "hideToolbar": "false",
+            "allowSwipe": "false",
+            "lockMenu": "false",
+            "allowTempTheme": "true",
+            "dateFormat": "DD/MM/YYYY",
+            "sizes": {
+                "sx": 48,
+                "sy": 48,
+                "gx": 6,
+                "gy": 6,
+                "cx": 6,
+                "cy": 6,
+                "px": 0,
+                "py": 0
+            }
+        }
+    },
+    {
+        "id": "ui_tab_main",
+        "type": "ui_tab",
+        "name": "🏇 Main Dashboard",
+        "icon": "dashboard",
+        "order": 1,
+        "disabled": false,
+        "hidden": false
+    },
+    {
+        "id": "ui_group_system_status",
+        "type": "ui_group",
+        "name": "System Status v2.05",
+        "tab": "ui_tab_main",
+        "order": 1,
+        "disp": true,
+        "width": "12",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "ui_group_file_operations",
+        "type": "ui_group",
+        "name": "File Operations v2.05",
+        "tab": "ui_tab_main",
+        "order": 2,
+        "disp": true,
+        "width": "12",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "system_status_template",
+        "type": "ui_template",
+        "z": "main_dashboard_tab",
+        "group": "ui_group_system_status",
+        "name": "System Status Dashboard",
+        "order": 1,
+        "width": 12,
+        "height": 8,
+        "format": "<div class=\"status-dashboard\">\n  <div class=\"status-header\">\n    <h2>🏇 Horse Racing AI v2.05 - System Status</h2>\n    <div class=\"timestamp\">Last Updated: {{msg.timestamp || 'Never'}}</div>\n  </div>\n  \n  <div class=\"status-grid\">\n    <div class=\"status-card file-watcher\">\n      <div class=\"card-header\">\n        <i class=\"fa fa-eye\"></i>\n        <h3>File Watcher v2.05</h3>\n      </div>\n      <div class=\"card-content\">\n        <div class=\"status-indicator\" ng-class=\"{'active': msg.watcher_status === 'running', 'inactive': msg.watcher_status !== 'running'}\">\n          {{msg.watcher_status || 'Unknown'}}\n        </div>\n        <div class=\"metrics\">\n          <div>Files Watched: {{msg.files_watched || 0}}</div>\n          <div>Last Check: {{msg.last_check || 'N/A'}}</div>\n        </div>\n      </div>\n    </div>\n    \n    <div class=\"status-card data-processor\">\n      <div class=\"card-header\">\n        <i class=\"fa fa-cogs\"></i>\n        <h3>Data Processor v2.05</h3>\n      </div>\n      <div class=\"card-content\">\n        <div class=\"status-indicator\" ng-class=\"{'active': msg.processor_status === 'ready', 'inactive': msg.processor_status !== 'ready'}\">\n          {{msg.processor_status || 'Unknown'}}\n        </div>\n        <div class=\"metrics\">\n          <div>Files Processed: {{msg.files_processed || 0}}</div>\n          <div>NULL Fixes Applied: {{msg.null_fixes || 0}}</div>\n        </div>\n      </div>\n    </div>\n    \n    <div class=\"status-card redis-status\">\n      <div class=\"card-header\">\n        <i class=\"fa fa-database\"></i>\n        <h3>Redis Cache</h3>\n      </div>\n      <div class=\"card-content\">\n        <div class=\"status-indicator\" ng-class=\"{'active': msg.redis_status === 'connected', 'inactive': msg.redis_status !== 'connected'}\">\n          {{msg.redis_status || 'Unknown'}}\n        </div>\n        <div class=\"metrics\">\n          <div>Keys Stored: {{msg.redis_keys || 0}}</div>\n          <div>Memory Usage: {{msg.redis_memory || 'N/A'}}</div>\n        </div>\n      </div>\n    </div>\n    \n    <div class=\"status-card db-status\">\n      <div class=\"card-header\">\n        <i class=\"fa fa-server\"></i>\n        <h3>PostgreSQL Database</h3>\n      </div>\n      <div class=\"card-content\">\n        <div class=\"status-indicator\" ng-class=\"{'active': msg.db_status === 'connected', 'inactive': msg.db_status !== 'connected'}\">\n          {{msg.db_status || 'Unknown'}}\n        </div>\n        <div class=\"metrics\">\n          <div>Records Count: {{msg.total_records || 0}}</div>\n          <div>Last Upload: {{msg.last_upload || 'N/A'}}</div>\n        </div>\n      </div>\n    </div>\n  </div>\n</div>\n\n<style>\n.status-dashboard {\n  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;\n  padding: 20px;\n}\n\n.status-header {\n  text-align: center;\n  margin-bottom: 30px;\n  border-bottom: 2px solid #0094CE;\n  padding-bottom: 15px;\n}\n\n.status-header h2 {\n  color: #0094CE;\n  margin: 0;\n  font-size: 24px;\n}\n\n.timestamp {\n  color: #666;\n  font-size: 14px;\n  margin-top: 5px;\n}\n\n.status-grid {\n  display: grid;\n  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));\n  gap: 20px;\n}\n\n.status-card {\n  background: white;\n  border-radius: 8px;\n  box-shadow: 0 2px 8px rgba(0,0,0,0.1);\n  border: 1px solid #e0e0e0;\n  overflow: hidden;\n  transition: transform 0.2s ease;\n}\n\n.status-card:hover {\n  transform: translateY(-2px);\n  box-shadow: 0 4px 12px rgba(0,0,0,0.15);\n}\n\n.card-header {\n  background: linear-gradient(135deg, #0094CE, #0078A8);\n  color: white;\n  padding: 15px;\n  display: flex;\n  align-items: center;\n  gap: 10px;\n}\n\n.card-header i {\n  font-size: 20px;\n}\n\n.card-header h3 {\n  margin: 0;\n  font-size: 16px;\n  font-weight: 600;\n}\n\n.card-content {\n  padding: 20px;\n}\n\n.status-indicator {\n  font-size: 18px;\n  font-weight: bold;\n  text-transform: uppercase;\n  padding: 8px 16px;\n  border-radius: 20px;\n  text-align: center;\n  margin-bottom: 15px;\n}\n\n.status-indicator.active {\n  background: #d4edda;\n  color: #155724;\n  border: 1px solid #c3e6cb;\n}\n\n.status-indicator.inactive {\n  background: #f8d7da;\n  color: #721c24;\n  border: 1px solid #f5c6cb;\n}\n\n.metrics {\n  display: flex;\n  flex-direction: column;\n  gap: 8px;\n}\n\n.metrics div {\n  display: flex;\n  justify-content: space-between;\n  padding: 5px 0;\n  border-bottom: 1px solid #f0f0f0;\n  font-size: 14px;\n}\n\n.metrics div:last-child {\n  border-bottom: none;\n}\n\n@media (max-width: 768px) {\n  .status-grid {\n    grid-template-columns: 1fr;\n  }\n  \n  .status-header h2 {\n    font-size: 20px;\n  }\n}\n</style>",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "className": "",
+        "x": 580,
+        "y": 100,
+        "wires": [[]]
+    },
+    {
+        "id": "file_operations_template",
+        "type": "ui_template",
+        "z": "main_dashboard_tab",
+        "group": "ui_group_file_operations",
+        "name": "File Operations Dashboard",
+        "order": 1,
+        "width": 12,
+        "height": 6,
+        "format": "<div class=\"file-operations\">\n  <div class=\"operations-header\">\n    <h3>📁 File Operations v2.05</h3>\n  </div>\n  \n  <div class=\"operation-buttons\">\n    <button class=\"btn btn-primary\" ng-click=\"startWatcher()\">\n      <i class=\"fa fa-play\"></i> Start File Watcher\n    </button>\n    \n    <button class=\"btn btn-success\" ng-click=\"processFiles()\">\n      <i class=\"fa fa-cogs\"></i> Process Data Files\n    </button>\n    \n    <button class=\"btn btn-info\" ng-click=\"checkStatus()\">\n      <i class=\"fa fa-refresh\"></i> Refresh Status\n    </button>\n    \n    <button class=\"btn btn-warning\" ng-click=\"viewLogs()\">\n      <i class=\"fa fa-file-text\"></i> View Logs\n    </button>\n  </div>\n  \n  <div class=\"operation-status\">\n    <div class=\"status-message\">{{msg.operation_message || 'Ready for operations'}}</div>\n    <div class=\"progress-bar\" ng-show=\"msg.operation_progress\">\n      <div class=\"progress-fill\" style=\"width: {{msg.operation_progress || 0}}%\"></div>\n    </div>\n  </div>\n</div>\n\n<style>\n.file-operations {\n  padding: 20px;\n  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;\n}\n\n.operations-header {\n  margin-bottom: 20px;\n  text-align: center;\n}\n\n.operations-header h3 {\n  color: #0094CE;\n  margin: 0;\n  font-size: 20px;\n}\n\n.operation-buttons {\n  display: grid;\n  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));\n  gap: 15px;\n  margin-bottom: 20px;\n}\n\n.btn {\n  padding: 12px 20px;\n  border: none;\n  border-radius: 6px;\n  font-size: 14px;\n  font-weight: 600;\n  cursor: pointer;\n  transition: all 0.2s ease;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  gap: 8px;\n}\n\n.btn:hover {\n  transform: translateY(-1px);\n  box-shadow: 0 4px 8px rgba(0,0,0,0.2);\n}\n\n.btn-primary {\n  background: #007bff;\n  color: white;\n}\n\n.btn-success {\n  background: #28a745;\n  color: white;\n}\n\n.btn-info {\n  background: #17a2b8;\n  color: white;\n}\n\n.btn-warning {\n  background: #ffc107;\n  color: #212529;\n}\n\n.operation-status {\n  background: #f8f9fa;\n  border: 1px solid #dee2e6;\n  border-radius: 6px;\n  padding: 15px;\n  text-align: center;\n}\n\n.status-message {\n  font-size: 16px;\n  color: #495057;\n  margin-bottom: 10px;\n}\n\n.progress-bar {\n  width: 100%;\n  height: 20px;\n  background: #e9ecef;\n  border-radius: 10px;\n  overflow: hidden;\n}\n\n.progress-fill {\n  height: 100%;\n  background: linear-gradient(90deg, #0094CE, #00b4e6);\n  transition: width 0.3s ease;\n}\n\n@media (max-width: 768px) {\n  .operation-buttons {\n    grid-template-columns: 1fr;\n  }\n}\n</style>\n\n<script>\n(function(scope) {\n  scope.startWatcher = function() {\n    scope.send({payload: \"start_watcher\", operation: \"file_watcher\"});\n  };\n  \n  scope.processFiles = function() {\n    scope.send({payload: \"process_files\", operation: \"data_processor\"});\n  };\n  \n  scope.checkStatus = function() {\n    scope.send({payload: \"check_status\", operation: \"status_check\"});\n  };\n  \n  scope.viewLogs = function() {\n    scope.send({payload: \"view_logs\", operation: \"log_viewer\"});\n  };\n})(scope);\n</script>",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "className": "",
+        "x": 580,
+        "y": 200,
+        "wires": [["operation_router"]]
+    },
+    {
+        "id": "status_updater",
+        "type": "inject",
+        "z": "main_dashboard_tab",
+        "name": "Update Status Every 30s",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "30",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 2,
+        "topic": "",
+        "payload": "get_system_status",
+        "payloadType": "str",
+        "x": 170,
+        "y": 100,
+        "wires": [["redis_status_reader"]]
+    },
+    {
+        "id": "redis_status_reader",
+        "type": "redis in",
+        "z": "main_dashboard_tab",
+        "server": "redis_config",
+        "command": "get",
+        "name": "Get System Status",
+        "topic": "system:status:v2_05",
+        "x": 380,
+        "y": 100,
+        "wires": [["status_formatter"]]
+    },
+    {
+        "id": "status_formatter",
+        "type": "function",
+        "z": "main_dashboard_tab",
+        "name": "Format Status Data",
+        "func": "try {\n    let status = {};\n    \n    if (msg.payload && typeof msg.payload === 'string') {\n        status = JSON.parse(msg.payload);\n    } else if (msg.payload && typeof msg.payload === 'object') {\n        status = msg.payload;\n    }\n    \n    // Format the status data for the dashboard\n    msg.timestamp = new Date().toLocaleString();\n    msg.watcher_status = status.file_watcher?.status || 'unknown';\n    msg.processor_status = status.data_processor?.status || 'unknown';\n    msg.redis_status = status.redis?.status || 'unknown';\n    msg.db_status = status.database?.status || 'unknown';\n    \n    msg.files_watched = status.file_watcher?.files_watched || 0;\n    msg.files_processed = status.data_processor?.files_processed || 0;\n    msg.null_fixes = status.data_processor?.null_fixes_applied || 0;\n    msg.redis_keys = status.redis?.keys_count || 0;\n    msg.redis_memory = status.redis?.memory_usage || 'N/A';\n    msg.total_records = status.database?.total_records || 0;\n    msg.last_check = status.file_watcher?.last_check || 'N/A';\n    msg.last_upload = status.database?.last_upload || 'N/A';\n    \n    return msg;\n} catch (error) {\n    // If there's an error parsing, return default status\n    msg.timestamp = new Date().toLocaleString();\n    msg.watcher_status = 'unknown';\n    msg.processor_status = 'unknown';\n    msg.redis_status = 'unknown';\n    msg.db_status = 'unknown';\n    msg.files_watched = 0;\n    msg.files_processed = 0;\n    msg.null_fixes = 0;\n    msg.redis_keys = 0;\n    msg.redis_memory = 'N/A';\n    msg.total_records = 0;\n    msg.last_check = 'N/A';\n    msg.last_upload = 'N/A';\n    \n    return msg;\n}",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 580,
+        "y": 60,
+        "wires": [["system_status_template"]]
+    },
+    {
+        "id": "operation_router",
+        "type": "switch",
+        "z": "main_dashboard_tab",
+        "name": "Route Operations",
+        "property": "operation",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "file_watcher",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "data_processor",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "status_check",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "log_viewer",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 4,
+        "x": 780,
+        "y": 200,
+        "wires": [
+            ["file_watcher_executor"],
+            ["data_processor_executor"],
+            ["status_check_executor"],
+            ["log_viewer_executor"]
+        ]
+    },
+    {
+        "id": "file_watcher_executor",
+        "type": "exec",
+        "z": "main_dashboard_tab",
+        "command": "python3 /data/tools/file_watching/enhanced_file_watcher_v2_05.py --daemon",
+        "addpay": false,
+        "append": "",
+        "useSpawn": "true",
+        "timer": "",
+        "winHide": false,
+        "oldrc": false,
+        "name": "Start File Watcher v2.05",
+        "x": 1020,
+        "y": 160,
+        "wires": [
+            ["operation_feedback"],
+            ["debug_output"],
+            []
+        ]
+    },
+    {
+        "id": "data_processor_executor",
+        "type": "exec",
+        "z": "main_dashboard_tab",
+        "command": "python3 /data/tools/data_processing/enhanced_data_processor_v2_05.py /data/workspace_data/2025-08-20/results_2025-08-20_11-51-40_uk-results-jutrjw.zip --expected-date 2025-08-19 --report-only",
+        "addpay": false,
+        "append": "",
+        "useSpawn": "false",
+        "timer": "",
+        "winHide": false,
+        "oldrc": false,
+        "name": "Run Data Processor v2.05",
+        "x": 1020,
+        "y": 200,
+        "wires": [
+            ["operation_feedback"],
+            ["debug_output"],
+            []
+        ]
+    },
+    {
+        "id": "status_check_executor",
+        "type": "function",
+        "z": "main_dashboard_tab",
+        "name": "Trigger Status Update",
+        "func": "// Trigger a status update\nmsg.payload = \"get_system_status\";\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1020,
+        "y": 240,
+        "wires": [["redis_status_reader"]]
+    },
+    {
+        "id": "log_viewer_executor",
+        "type": "exec",
+        "z": "main_dashboard_tab",
+        "command": "tail -n 50 /data/logs/data_processor_v2_05.log",
+        "addpay": false,
+        "append": "",
+        "useSpawn": "false",
+        "timer": "",
+        "winHide": false,
+        "oldrc": false,
+        "name": "Get Recent Logs",
+        "x": 1020,
+        "y": 280,
+        "wires": [
+            ["operation_feedback"],
+            ["debug_output"],
+            []
+        ]
+    },
+    {
+        "id": "operation_feedback",
+        "type": "function",
+        "z": "main_dashboard_tab",
+        "name": "Format Operation Feedback",
+        "func": "// Format operation feedback for the dashboard\nlet operation_message = \"\";\nlet operation_progress = 0;\n\nif (msg.payload) {\n    if (typeof msg.payload === 'string') {\n        operation_message = msg.payload.slice(0, 200) + (msg.payload.length > 200 ? '...' : '');\n    } else {\n        operation_message = JSON.stringify(msg.payload).slice(0, 200);\n    }\n    \n    // Set progress based on operation completion\n    if (operation_message.includes('completed') || operation_message.includes('success')) {\n        operation_progress = 100;\n    } else if (operation_message.includes('processing') || operation_message.includes('running')) {\n        operation_progress = 50;\n    } else {\n        operation_progress = 25;\n    }\n}\n\nmsg.operation_message = operation_message;\nmsg.operation_progress = operation_progress;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1280,
+        "y": 220,
+        "wires": [["file_operations_template"]]
+    },
+    {
+        "id": "debug_output",
+        "type": "debug",
+        "z": "main_dashboard_tab",
+        "name": "Operation Debug",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1280,
+        "y": 280,
+        "wires": []
+    },
+    {
+        "id": "system_status_updater",
+        "type": "function",
+        "z": "main_dashboard_tab",
+        "name": "Update System Status in Redis",
+        "func": "// Create system status object\nconst systemStatus = {\n    timestamp: new Date().toISOString(),\n    file_watcher: {\n        status: 'ready',\n        version: 'v2.05',\n        files_watched: 0,\n        last_check: new Date().toLocaleString()\n    },\n    data_processor: {\n        status: 'ready',\n        version: 'v2.05',\n        files_processed: 0,\n        null_fixes_applied: 0\n    },\n    redis: {\n        status: 'connected',\n        keys_count: 0,\n        memory_usage: 'N/A'\n    },\n    database: {\n        status: 'connected',\n        total_records: 0,\n        last_upload: 'N/A'\n    }\n};\n\nmsg.payload = JSON.stringify(systemStatus);\nmsg.topic = 'system:status:v2_05';\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 420,
+        "y": 300,
+        "wires": [["redis_status_writer"]]
+    },
+    {
+        "id": "redis_status_writer",
+        "type": "redis out",
+        "z": "main_dashboard_tab",
+        "server": "redis_config",
+        "command": "set",
+        "name": "Store System Status",
+        "topic": "",
+        "x": 680,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "initial_status_trigger",
+        "type": "inject",
+        "z": "main_dashboard_tab",
+        "name": "Initialize Status on Start",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 1,
+        "topic": "",
+        "payload": "initialize",
+        "payloadType": "str",
+        "x": 180,
+        "y": 300,
+        "wires": [["system_status_updater"]]
+    }
+]

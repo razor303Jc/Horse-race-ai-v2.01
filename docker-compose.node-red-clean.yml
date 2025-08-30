@@ -1,0 +1,78 @@
+version: '3.8'
+
+services:
+  # Node-RED C2 Command Center Service
+  node-red:
+    build:
+      context: ./docker/node-red
+      dockerfile: Dockerfile
+      args:
+        - DOCKER_GID=988  # Docker group ID from host
+    container_name: horse_racing_node_red
+    restart: unless-stopped
+    user: "${USER_ID:-1000}:${GROUP_ID:-1000}"
+    environment:
+      - TZ=UTC
+      - NODE_RED_LOG_LEVEL=info
+      - NODE_RED_CREDENTIAL_SECRET=horse_racing_ai_secret_key_2024
+      - DATABASE_URL=postgresql://horse_racing:secure_password_123@horse_racing_postgres_clean:5432/horse_racing
+      - CARDS_DATABASE_URL=postgresql://horse_racing:secure_password_123@horse_racing_postgres_clean:5432/cards_db
+      - RESULTS_DATABASE_URL=postgresql://horse_racing:secure_password_123@horse_racing_postgres_clean:5432/results_db
+      - ADVANCED_DATABASE_URL=postgresql://horse_racing:secure_password_123@horse_racing_postgres_clean:5432/advanced_racing_metrics_db
+      - SMTP_USER=${SMTP_USER:-your-email@gmail.com}
+      - APP_PASSWORD=${APP_PASSWORD}
+      - USER_NAME=${USER_NAME}
+    # No external port mapping - access through Traefik
+    expose:
+      - "1880"
+    volumes:
+      # Node-RED data persistence
+      - node_red_data:/data
+      # Docker socket access for container management
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      # Access to project files for automation
+      - ./:/workspace:ro
+      # Access to data directories
+      - ./data:/workspace/data
+      - ./logs:/workspace/logs
+      - ./temp_extract:/workspace/temp_extract
+      - ./temp_card_processing:/workspace/temp_card_processing
+      # Access to tools and scripts
+      - ./tools:/workspace/tools:ro
+      - ./scripts:/workspace/scripts:ro
+    networks:
+      - horse_racing_network
+      - traefik-dev
+    external_links:
+      - horse_racing_postgres_clean:postgres
+      - horse_racing_redis_clean:redis
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik-dev"
+      - "traefik.http.routers.node-red.rule=Host(`c2.horse-racing.local`)"
+      - "traefik.http.routers.node-red.entrypoints=web"
+      - "traefik.http.services.node-red.loadbalancer.server.port=1880"
+      # Create middleware for C2 dashboard routing
+      - "traefik.http.routers.node-red-c2.rule=Host(`horse-racing.local`) && PathPrefix(`/api`)"
+      - "traefik.http.routers.node-red-c2.entrypoints=web"
+      - "traefik.http.routers.node-red-c2.service=node-red"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:1880/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+networks:
+  horse_racing_network:
+    external: true
+    name: horse_racing_network
+  traefik-dev:
+    external: true
+    name: traefik-dev
+
+volumes:
+  node_red_data:
+    driver: local

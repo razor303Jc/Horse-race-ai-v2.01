@@ -1,0 +1,103 @@
+[
+  {
+    "id": "c2_dashboard_tab",
+    "type": "tab",
+    "label": "🎯 C2 Command Center",
+    "disabled": false,
+    "info": "Command & Control Dashboard"
+  },
+  {
+    "id": "c2_dashboard_endpoint",
+    "type": "http in",
+    "z": "c2_dashboard_tab",
+    "name": "C2 Dashboard",
+    "url": "/c2-dashboard",
+    "method": "get",
+    "upload": false,
+    "swaggerDoc": "",
+    "x": 180,
+    "y": 100,
+    "wires": [
+      [
+        "c2_dashboard_template"
+      ]
+    ]
+  },
+  {
+    "id": "c2_dashboard_template",
+    "type": "template",
+    "z": "c2_dashboard_tab",
+    "name": "C2 Dashboard HTML",
+    "field": "payload",
+    "fieldType": "msg",
+    "format": "html",
+    "syntax": "mustache",
+    "template": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>🏇 Horse Racing AI - C2 Command Center</title>\n    <style>\n        * { margin: 0; padding: 0; box-sizing: border-box; }\n        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #0a0a0a, #1a1a2e); color: #fff; min-height: 100vh; }\n        .header { background: linear-gradient(135deg, #1a1a2e, #16213e); padding: 30px 20px; text-align: center; border-bottom: 3px solid #00ff88; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }\n        .header h1 { font-size: 2.5em; margin-bottom: 10px; color: #00ff88; text-shadow: 0 0 20px rgba(0,255,136,0.5); }\n        .header p { font-size: 1.2em; color: #aaa; }\n        .container { max-width: 1400px; margin: 0 auto; padding: 40px 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 30px; }\n        .panel { background: linear-gradient(145deg, #1a1a2e, #2a2a3e); border: 1px solid #333; border-radius: 15px; padding: 25px; box-shadow: 0 8px 25px rgba(0,0,0,0.3); transition: transform 0.3s ease, box-shadow 0.3s ease; }\n        .panel:hover { transform: translateY(-5px); box-shadow: 0 12px 35px rgba(0,255,136,0.2); }\n        .panel h3 { color: #00ff88; margin-bottom: 20px; border-bottom: 2px solid #333; padding-bottom: 10px; font-size: 1.4em; display: flex; align-items: center; }\n        .panel h3::before { content: attr(data-icon); margin-right: 10px; font-size: 1.2em; }\n        .status-indicator { display: flex; justify-content: space-between; align-items: center; margin: 15px 0; padding: 10px; background: rgba(0,0,0,0.3); border-radius: 8px; }\n        .status-online { color: #00ff88; font-weight: bold; }\n        .status-offline { color: #ff4444; font-weight: bold; }\n        .status-warning { color: #ffaa00; font-weight: bold; }\n        .btn { background: linear-gradient(135deg, #00ff88, #00cc70); color: #000; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; margin: 8px 5px; font-weight: bold; font-size: 0.95em; transition: all 0.3s ease; text-decoration: none; display: inline-block; }\n        .btn:hover { background: linear-gradient(135deg, #00cc70, #00aa5a); transform: translateY(-2px); box-shadow: 0 4px 15px rgba(0,255,136,0.4); }\n        .btn-danger { background: linear-gradient(135deg, #ff4444, #cc3333); color: #fff; }\n        .btn-danger:hover { background: linear-gradient(135deg, #cc3333, #aa2222); }\n        .metric-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }\n        .metric-item { background: rgba(0,0,0,0.2); padding: 15px; border-radius: 8px; text-align: center; }\n        .metric-value { font-size: 1.8em; font-weight: bold; color: #00ff88; }\n        .metric-label { font-size: 0.9em; color: #aaa; margin-top: 5px; }\n        .quick-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }\n        .system-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }\n    </style>\n</head>\n<body>\n    <div class=\"header\">\n        <h1>🏇 Horse Racing AI - C2 Command Center</h1>\n        <p>Real-time Pipeline Control & System Monitoring</p>\n    </div>\n    \n    <div class=\"container\">\n        <!-- System Status Panel -->\n        <div class=\"panel\">\n            <h3 data-icon=\"📊\">System Status</h3>\n            <div class=\"system-grid\">\n                <div class=\"status-indicator\">\n                    <span>Node-RED C2:</span>\n                    <span class=\"status-online\">● ONLINE</span>\n                </div>\n                <div class=\"status-indicator\">\n                    <span>Database:</span>\n                    <span class=\"status-online\">● CONNECTED</span>\n                </div>\n                <div class=\"status-indicator\">\n                    <span>Redis Cache:</span>\n                    <span class=\"status-online\">● READY</span>\n                </div>\n                <div class=\"status-indicator\">\n                    <span>NTFY Service:</span>\n                    <span class=\"status-online\">● ACTIVE</span>\n                </div>\n                <div class=\"status-indicator\">\n                    <span>ML Pipeline:</span>\n                    <span class=\"status-online\">● STANDBY</span>\n                </div>\n                <div class=\"status-indicator\">\n                    <span>Data Pipeline:</span>\n                    <span class=\"status-online\">● READY</span>\n                </div>\n            </div>\n        </div>\n        \n        <!-- Performance Metrics Panel -->\n        <div class=\"panel\">\n            <h3 data-icon=\"📈\">Performance Metrics</h3>\n            <div class=\"metric-grid\">\n                <div class=\"metric-item\">\n                    <div class=\"metric-value\">0</div>\n                    <div class=\"metric-label\">Today's Selections</div>\n                </div>\n                <div class=\"metric-item\">\n                    <div class=\"metric-value\">85%</div>\n                    <div class=\"metric-label\">Success Rate</div>\n                </div>\n                <div class=\"metric-item\">\n                    <div class=\"metric-value\">+12.5%</div>\n                    <div class=\"metric-label\">ROI</div>\n                </div>\n                <div class=\"metric-item\">\n                    <div class=\"metric-value\">3</div>\n                    <div class=\"metric-label\">Active Models</div>\n                </div>\n            </div>\n        </div>\n        \n        <!-- Pipeline Control Panel -->\n        <div class=\"panel\">\n            <h3 data-icon=\"🔧\">Pipeline Control</h3>\n            <div class=\"quick-actions\">\n                <button class=\"btn\" onclick=\"triggerAction('data-validation')\">🔍 Start Data Validation</button>\n                <button class=\"btn\" onclick=\"triggerAction('data-processing')\">⚙️ Process Data</button>\n                <button class=\"btn\" onclick=\"triggerAction('upload-data')\">📤 Upload Data</button>\n                <button class=\"btn\" onclick=\"triggerAction('generate-ratings')\">🎯 Generate Ratings</button>\n                <button class=\"btn\" onclick=\"triggerAction('ml-training')\">🤖 Train Models</button>\n                <button class=\"btn btn-danger\" onclick=\"emergencyStop()\">🛑 Emergency Stop</button>\n            </div>\n        </div>\n        \n        <!-- Quick Navigation Panel -->\n        <div class=\"panel\">\n            <h3 data-icon=\"🎛️\">Quick Navigation</h3>\n            <div class=\"quick-actions\">\n                <a href=\"/admin\" class=\"btn\">🔧 Node-RED Editor</a>\n                <a href=\"http://localhost:8083\" class=\"btn\">🗄️ PgAdmin</a>\n                <a href=\"http://localhost:3000\" class=\"btn\">🌐 Web App</a>\n                <button class=\"btn\" onclick=\"refreshStatus()\">🔄 Refresh Status</button>\n            </div>\n        </div>\n    </div>\n    \n    <script>\n        function triggerAction(action) {\n            console.log('Triggering action:', action);\n            alert('Action triggered: ' + action.replace('-', ' ').toUpperCase());\n            // Here you would make actual API calls to trigger pipeline actions\n        }\n        \n        function emergencyStop() {\n            if (confirm('⚠️ Are you sure you want to trigger an emergency stop?')) {\n                console.log('Emergency stop triggered');\n                alert('🛑 Emergency stop activated!');\n            }\n        }\n        \n        function refreshStatus() {\n            console.log('Refreshing system status...');\n            location.reload();\n        }\n        \n        // Auto-refresh every 30 seconds\n        setInterval(function() {\n            console.log('Auto-refreshing status indicators...');\n            // You could update status indicators here without full page reload\n        }, 30000);\n        \n        console.log('🏇 Horse Racing AI C2 Command Center loaded successfully!');\n    </script>\n</body>\n</html>",
+    "output": "str",
+    "x": 460,
+    "y": 100,
+    "wires": [
+      [
+        "c2_dashboard_response"
+      ]
+    ]
+  },
+  {
+    "id": "c2_dashboard_response",
+    "type": "http response",
+    "z": "c2_dashboard_tab",
+    "name": "Send Dashboard",
+    "statusCode": "",
+    "headers": {},
+    "x": 720,
+    "y": 100,
+    "wires": []
+  },
+  {
+    "id": "root_redirect_endpoint",
+    "type": "http in",
+    "z": "c2_dashboard_tab",
+    "name": "Root Redirect",
+    "url": "/",
+    "method": "get",
+    "upload": false,
+    "swaggerDoc": "",
+    "x": 180,
+    "y": 200,
+    "wires": [
+      [
+        "root_redirect_template"
+      ]
+    ]
+  },
+  {
+    "id": "root_redirect_template",
+    "type": "template",
+    "z": "c2_dashboard_tab",
+    "name": "Redirect HTML",
+    "field": "payload",
+    "fieldType": "msg",
+    "format": "html",
+    "syntax": "mustache",
+    "template": "<!DOCTYPE html>\n<html>\n<head>\n    <meta http-equiv=\"refresh\" content=\"0; url=/c2-dashboard\">\n    <title>Redirecting to C2 Command Center</title>\n</head>\n<body>\n    <h1>🏇 Redirecting to Horse Racing AI C2 Command Center...</h1>\n    <p>If you are not redirected automatically, <a href=\"/c2-dashboard\">click here</a>.</p>\n</body>\n</html>",
+    "output": "str",
+    "x": 460,
+    "y": 200,
+    "wires": [
+      [
+        "root_redirect_response"
+      ]
+    ]
+  },
+  {
+    "id": "root_redirect_response",
+    "type": "http response",
+    "z": "c2_dashboard_tab",
+    "name": "Send Redirect",
+    "statusCode": "",
+    "headers": {},
+    "x": 720,
+    "y": 200,
+    "wires": []
+  }
+]

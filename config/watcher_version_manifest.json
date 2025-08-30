@@ -1,0 +1,191 @@
+{
+  "project": "Horse Racing AI File Watcher System",
+  "latest_version": "v2.05",
+  "version_history": {
+    "v2.05": {
+      "status": "latest",
+      "release_date": "2025-08-30",
+      "description": "Enhanced File Watcher with comprehensive C2 integration",
+      "features": [
+        "Real-time file monitoring with watchdog",
+        "Full Node-RED C2 Command Center integration",
+        "Pipeline API Handler connectivity",
+        "Redis status tracking and dashboard integration", 
+        "PostgreSQL database connectivity",
+        "Advanced data validation and quality checks",
+        "Event-driven pipeline triggering",
+        "Support for Cards, Results, and Form data",
+        "Automatic daily progression tracking",
+        "Clean error handling and recovery",
+        "Comprehensive logging and monitoring",
+        "Async processing for improved performance",
+        "ZIP file extraction and processing",
+        "Backup and retention management",
+        "Docker container health monitoring",
+        "Configuration-driven operation"
+      ],
+      "improvements_over_previous": [
+        "Unified architecture combining best features from all versions",
+        "Real-time integration with C2 Command Center",
+        "Enhanced error handling and retry mechanisms",
+        "Better data validation and quality assurance",
+        "Improved logging and status reporting",
+        "Configuration-driven flexibility",
+        "Docker container health awareness",
+        "Performance optimizations with async processing"
+      ],
+      "files": [
+        "tools/automation/enhanced_file_watcher_v2_05.py",
+        "config/enhanced_watcher_config_v2_05.json",
+        "tools/automation/start_enhanced_watcher_v2_05.sh"
+      ],
+      "dependencies": [
+        "watchdog>=2.1.0",
+        "redis>=4.3.0",
+        "psycopg2-binary>=2.9.0",
+        "pandas>=1.5.0",
+        "asyncio"
+      ],
+      "integration_points": [
+        "Node-RED C2 Command Center flows",
+        "Pipeline API Handler (/app/tools/pipeline_api_handler.py)",
+        "Redis status tracking",
+        "PostgreSQL database operations",
+        "Docker container health monitoring"
+      ]
+    },
+    "v2.04": {
+      "status": "deprecated", 
+      "description": "Enhanced monitoring with integration",
+      "files": ["tools/automation/daily_file_watcher_integration.py"]
+    },
+    "v2.03": {
+      "status": "deprecated",
+      "description": "Basic file monitoring",
+      "files": ["tools/automation/file_watcher.py"]
+    },
+    "enhanced": {
+      "status": "superseded_by_v2.05",
+      "description": "Feature-rich but not versioned properly",
+      "files": ["tools/automation/file_watcher_enhanced.py"]
+    },
+    "daily": {
+      "status": "superseded_by_v2.05", 
+      "description": "Daily monitoring focus",
+      "files": ["tools/automation/daily_file_watcher.py"]
+    }
+  },
+  "architecture_analysis": {
+    "v2.05_comprehensive_features": {
+      "file_monitoring": {
+        "technology": "watchdog.observers",
+        "scope": "Multiple directory monitoring",
+        "real_time": true,
+        "recursive": true,
+        "file_patterns": "Configurable patterns per data type"
+      },
+      "data_processing": {
+        "async_processing": true,
+        "zip_extraction": true,
+        "csv_validation": true,
+        "data_quality_checks": true,
+        "backup_management": true
+      },
+      "integration_layer": {
+        "c2_command_center": "Real-time status updates",
+        "pipeline_api": "Direct API handler calls",
+        "redis_tracking": "Status and progress monitoring",
+        "database_ops": "Direct PostgreSQL connectivity"
+      },
+      "error_handling": {
+        "retry_mechanisms": true,
+        "graceful_degradation": true,
+        "comprehensive_logging": true,
+        "status_reporting": true
+      },
+      "configuration": {
+        "json_driven": true,
+        "runtime_updates": true,
+        "validation": true,
+        "environment_specific": true
+      }
+    },
+    "previous_versions_analysis": {
+      "file_watcher_enhanced.py": {
+        "lines": 899,
+        "strengths": ["Comprehensive async processing", "ZIP extraction", "Good validation"],
+        "limitations": ["No version marking", "Limited C2 integration", "Configuration scattered"]
+      },
+      "daily_file_watcher.py": {
+        "lines": 738,
+        "strengths": ["Daily monitoring", "Persistence", "CSV backup integration"],
+        "limitations": ["No async processing", "Basic error handling", "Limited validation"]
+      },
+      "file_watcher.py": {
+        "lines": 521,
+        "strengths": ["Simple and reliable", "Basic monitoring"],
+        "limitations": ["No advanced features", "Limited data types", "Basic integration"]
+      },
+      "daily_file_watcher_integration.py": {
+        "lines": 519,
+        "strengths": ["Pipeline integration", "Docker awareness"],
+        "limitations": ["Limited validation", "Basic monitoring", "No async processing"]
+      }
+    }
+  },
+  "deployment_strategy": {
+    "v2.05": {
+      "startup_script": "tools/automation/start_enhanced_watcher_v2_05.sh",
+      "configuration": "config/enhanced_watcher_config_v2_05.json",
+      "state_persistence": "data/watcher_state_v2_05.json",
+      "logging": "logs/enhanced_file_watcher_v2_05.log",
+      "monitoring": "Redis keys with 'watcher:' prefix",
+      "health_checks": "Built-in container health monitoring",
+      "management": "Full service lifecycle management"
+    }
+  },
+  "testing_strategy": {
+    "functional_tests": [
+      "File detection and processing",
+      "ZIP extraction and validation", 
+      "Pipeline trigger mechanisms",
+      "Error handling and recovery",
+      "Redis status updates",
+      "Database connectivity"
+    ],
+    "integration_tests": [
+      "C2 Command Center integration",
+      "Pipeline API Handler calls",
+      "Docker container health checks",
+      "End-to-end data flow"
+    ],
+    "performance_tests": [
+      "Concurrent file processing",
+      "Large file handling",
+      "Memory usage monitoring",
+      "Response time measurements"
+    ]
+  },
+  "migration_path": {
+    "from_previous_versions": {
+      "steps": [
+        "Stop existing watcher services",
+        "Backup current state and configuration",
+        "Deploy v2.05 files",
+        "Update configuration",
+        "Test system connectivity",
+        "Start enhanced watcher v2.05",
+        "Verify integration with C2 Command Center"
+      ],
+      "rollback_strategy": "Previous version files preserved for emergency rollback"
+    }
+  },
+  "maintenance": {
+    "log_rotation": "Automatic when >50MB",
+    "state_persistence": "JSON files with Redis backup",
+    "health_monitoring": "Built-in Docker container checks",
+    "performance_monitoring": "Redis metrics and logging",
+    "configuration_updates": "Hot-reload capable",
+    "backup_strategy": "Automated file backup with retention"
+  }
+}

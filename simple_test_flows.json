@@ -1,0 +1,54 @@
+[
+  {
+    "id": "test-tab",
+    "type": "tab",
+    "label": "Test Tab",
+    "disabled": false,
+    "info": ""
+  },
+  {
+    "id": "test-http",
+    "type": "http in",
+    "z": "test-tab",
+    "name": "",
+    "url": "/test",
+    "method": "get",
+    "upload": false,
+    "swaggerDoc": "",
+    "x": 120,
+    "y": 80,
+    "wires": [["test-response"]]
+  },
+  {
+    "id": "test-response",
+    "type": "http response",
+    "z": "test-tab",
+    "name": "",
+    "statusCode": "",
+    "headers": {},
+    "x": 310,
+    "y": 80,
+    "wires": []
+  },
+  {
+    "id": "test-inject",
+    "type": "inject",
+    "z": "test-tab",
+    "name": "",
+    "props": [
+      {
+        "p": "payload"
+      }
+    ],
+    "repeat": "",
+    "crontab": "",
+    "once": false,
+    "onceDelay": 0.1,
+    "topic": "",
+    "payload": "Hello from Node-RED!",
+    "payloadType": "str",
+    "x": 110,
+    "y": 120,
+    "wires": [["test-response"]]
+  }
+]

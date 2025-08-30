@@ -18,12 +18,13 @@ services:
       - DATABASE_URL=${CARDS_DATABASE_URL}
       - CARDS_DATABASE_URL=${CARDS_DATABASE_URL}
       - RESULTS_DATABASE_URL=${RESULTS_DATABASE_URL}
-      - ADVANCED_DATABASE_URL=postgresql://horse_racing:${POSTGRES_PASSWORD}@postgres:5432/advanced_racing_metrics_db
+      - ADVANCED_DATABASE_URL=postgresql://horse_racing:${POSTGRES_PASSWORD}@horse_racing_postgres_clean:5432/advanced_racing_metrics_db
       - SMTP_USER=${SMTP_USER:-your-email@gmail.com}
       - APP_PASSWORD=${APP_PASSWORD}
       - USER_NAME=${USER_NAME}
-    ports:
-      - "1881:1880"  # Using port 1881 to avoid conflict with existing Node-RED
+    # Remove external port mapping - use Traefik instead
+    expose:
+      - "1880"
     volumes:
       # Node-RED data persistence
       - node_red_data:/data
@@ -41,17 +42,20 @@ services:
       - ./scripts:/workspace/scripts:ro
     networks:
       - horse_racing_network
+      - traefik-dev
     depends_on:
       - postgres
     extra_hosts:
       - "host.docker.internal:host-gateway"
     labels:
       - "traefik.enable=true"
-      - "traefik.docker.network=horse_racing_network"
-      - "traefik.http.routers.node-red.rule=Host(`nodered.horse-racing.local`)"
-      - "traefik.http.routers.node-red.entrypoints=websecure"
-      - "traefik.http.routers.node-red.tls.certresolver=letsencrypt"
+      - "traefik.docker.network=traefik-dev"
+      - "traefik.http.routers.node-red.rule=Host(`c2.horse-racing.local`)"
+      - "traefik.http.routers.node-red.entrypoints=web"
       - "traefik.http.services.node-red.loadbalancer.server.port=1880"
+      # Create middleware for API path stripping
+      - "traefik.http.middlewares.node-red-stripprefix.stripprefix.prefixes=/api"
+      - "traefik.http.routers.node-red.middlewares=node-red-stripprefix"
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:1880/"]
       interval: 30s
@@ -197,29 +201,24 @@ services:
       timeout: 10s
       retries: 3
 
-  # PgAdmin for database management
-  pgadmin:
-    image: dpage/pgadmin4:latest
-    container_name: horse_racing_pgadmin
-    restart: unless-stopped
-    environment:
-      PGADMIN_DEFAULT_EMAIL: admin@horse-racing.local
-      PGADMIN_DEFAULT_PASSWORD: admin123
-      PGADMIN_LISTEN_PORT: 80
-    ports:
-      - "8083:80"
-    networks:
-      - horse_racing_network
-    depends_on:
-      - postgres
+  # Reference external services from main docker-compose.clean.yml
+  postgres:
+    external: true
+    container_name: horse_racing_postgres_clean
+
+  redis:
+    external: true
+    container_name: horse_racing_redis_clean
+
+networks:
+  horse_racing_network:
+    external: true
+    name: horse_racing_network
+  traefik-dev:
+    external: true
+    name: traefik-dev
 
 volumes:
-  postgres_data:
-    driver: local
-  redis_data:
-    driver: local
-  ml_models:
-    driver: local
   node_red_data:
     driver: local
 

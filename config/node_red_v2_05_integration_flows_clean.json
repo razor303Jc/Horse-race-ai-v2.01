@@ -1,0 +1,426 @@
+[
+    {
+        "id": "v2_05_integration_tab",
+        "type": "tab",
+        "label": "🚀 v2.05 Data Pipeline",
+        "disabled": false,
+        "info": "Enhanced File Watcher and Data Processor v2.05 Integration"
+    },
+    {
+        "id": "data_watcher_tab",
+        "type": "tab", 
+        "label": "👀 File Watcher v2.05",
+        "disabled": false,
+        "info": "Enhanced File Watcher v2.05 - Monitors data directories"
+    },
+    {
+        "id": "data_processor_tab",
+        "type": "tab",
+        "label": "⚙️ Data Processor v2.05", 
+        "disabled": false,
+        "info": "Enhanced Data Processor v2.05 - Processes and validates data"
+    },
+    {
+        "id": "system_monitoring_tab",
+        "type": "tab",
+        "label": "📊 System Monitor v2.05",
+        "disabled": false,
+        "info": "System monitoring and status dashboard"
+    },
+    {
+        "id": "redis_config",
+        "type": "redis-config",
+        "hostname": "redis",
+        "port": "6379",
+        "password": "${REDIS_PASSWORD}",
+        "db": "0"
+    },
+    {
+        "id": "ui_base",
+        "type": "ui_base",
+        "theme": {
+            "name": "theme-light",
+            "lightTheme": {
+                "default": "#0094CE",
+                "baseColor": "#0094CE",
+                "baseFont": "-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen-Sans,Ubuntu,Cantarell,Helvetica Neue,sans-serif",
+                "edited": true,
+                "reset": false
+            },
+            "darkTheme": {
+                "default": "#097479",
+                "baseColor": "#097479",
+                "baseFont": "-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen-Sans,Ubuntu,Cantarell,Helvetica Neue,sans-serif",
+                "edited": false
+            },
+            "customTheme": {
+                "name": "Untitled Theme 1",
+                "default": "#4B7930",
+                "baseColor": "#4B7930",
+                "baseFont": "-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen-Sans,Ubuntu,Cantarell,Helvetica Neue,sans-serif"
+            },
+            "themeState": {
+                "base-color": {
+                    "default": "#0094CE",
+                    "value": "#0094CE",
+                    "edited": false
+                },
+                "page-titlebar-backgroundColor": {
+                    "value": "#0094CE",
+                    "edited": false
+                },
+                "page-backgroundColor": {
+                    "value": "#fafafa",
+                    "edited": false
+                },
+                "page-sidebar-backgroundColor": {
+                    "value": "#ffffff",
+                    "edited": false
+                },
+                "group-textColor": {
+                    "value": "#1bbfff",
+                    "edited": false
+                },
+                "group-borderColor": {
+                    "value": "#ffffff",
+                    "edited": false
+                },
+                "group-backgroundColor": {
+                    "value": "#ffffff",
+                    "edited": false
+                },
+                "widget-textColor": {
+                    "value": "#111111",
+                    "edited": false
+                },
+                "widget-backgroundColor": {
+                    "value": "#0094ce",
+                    "edited": false
+                },
+                "widget-borderColor": {
+                    "value": "#ffffff",
+                    "edited": false
+                },
+                "base-font": {
+                    "value": "-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen-Sans,Ubuntu,Cantarell,Helvetica Neue,sans-serif"
+                }
+            },
+            "angularTheme": {
+                "primary": "indigo",
+                "accents": "blue",
+                "warn": "red",
+                "background": "grey",
+                "palette": "colours"
+            }
+        },
+        "site": {
+            "name": "Horse Racing AI v2.05",
+            "hideToolbar": "false",
+            "allowSwipe": "false",
+            "lockMenu": "false",
+            "allowTempTheme": "true",
+            "dateFormat": "DD/MM/YYYY",
+            "sizes": {
+                "sx": 48,
+                "sy": 48,
+                "gx": 6,
+                "gy": 6,
+                "cx": 6,
+                "cy": 6,
+                "px": 0,
+                "py": 0
+            }
+        }
+    },
+    {
+        "id": "ui_tab_main",
+        "type": "ui_tab",
+        "name": "🏇 Main Dashboard",
+        "icon": "dashboard",
+        "order": 1,
+        "disabled": false,
+        "hidden": false
+    },
+    {
+        "id": "ui_tab_watcher",
+        "type": "ui_tab",
+        "name": "👀 File Watcher",
+        "icon": "remove_red_eye",
+        "order": 2,
+        "disabled": false,
+        "hidden": false
+    },
+    {
+        "id": "ui_tab_processor",
+        "type": "ui_tab",
+        "name": "⚙️ Data Processor",
+        "icon": "settings",
+        "order": 3,
+        "disabled": false,
+        "hidden": false
+    },
+    {
+        "id": "ui_group_main_status",
+        "type": "ui_group",
+        "name": "System Status",
+        "tab": "ui_tab_main",
+        "order": 1,
+        "disp": true,
+        "width": "6",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "ui_group_watcher_control",
+        "type": "ui_group",
+        "name": "File Watcher Control",
+        "tab": "ui_tab_watcher",
+        "order": 1,
+        "disp": true,
+        "width": "6",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "ui_group_processor_control",
+        "type": "ui_group",
+        "name": "Data Processor Control",
+        "tab": "ui_tab_processor",
+        "order": 1,
+        "disp": true,
+        "width": "6",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "system_status_display",
+        "type": "ui_text",
+        "z": "v2_05_integration_tab",
+        "group": "ui_group_main_status",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "name": "System Status",
+        "label": "v2.05 Integration Status",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "className": "",
+        "x": 580,
+        "y": 100,
+        "wires": []
+    },
+    {
+        "id": "file_watcher_trigger",
+        "type": "inject",
+        "z": "data_watcher_tab",
+        "name": "Start File Watcher",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "start_watcher",
+        "payloadType": "str",
+        "x": 160,
+        "y": 100,
+        "wires": [
+            [
+                "file_watcher_exec"
+            ]
+        ]
+    },
+    {
+        "id": "file_watcher_exec",
+        "type": "exec",
+        "z": "data_watcher_tab",
+        "command": "python3 /data/tools/file_watching/enhanced_file_watcher_v2_05.py --daemon",
+        "addpay": false,
+        "append": "",
+        "useSpawn": "true",
+        "timer": "",
+        "winHide": false,
+        "oldrc": false,
+        "name": "Enhanced File Watcher v2.05",
+        "x": 420,
+        "y": 100,
+        "wires": [
+            [
+                "watcher_status_redis"
+            ],
+            [
+                "debug_watcher"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "watcher_status_redis",
+        "type": "redis out",
+        "z": "data_watcher_tab",
+        "server": "redis_config",
+        "command": "set",
+        "name": "Update Watcher Status",
+        "topic": "watcher:status:v2_05",
+        "x": 720,
+        "y": 100,
+        "wires": []
+    },
+    {
+        "id": "data_processor_trigger",
+        "type": "inject",
+        "z": "data_processor_tab",
+        "name": "Process Sample Data",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "/data/workspace_data/2025-08-20/results_2025-08-20_11-51-40_uk-results-jutrjw.zip",
+        "payloadType": "str",
+        "x": 180,
+        "y": 100,
+        "wires": [
+            [
+                "data_processor_exec"
+            ]
+        ]
+    },
+    {
+        "id": "data_processor_exec",
+        "type": "exec",
+        "z": "data_processor_tab",
+        "command": "python3 /data/tools/data_processing/enhanced_data_processor_v2_05.py",
+        "addpay": true,
+        "append": "--expected-date 2025-08-19 --report-only",
+        "useSpawn": "false",
+        "timer": "",
+        "winHide": false,
+        "oldrc": false,
+        "name": "Enhanced Data Processor v2.05",
+        "x": 450,
+        "y": 100,
+        "wires": [
+            [
+                "processor_status_redis"
+            ],
+            [
+                "debug_processor"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "processor_status_redis",
+        "type": "redis out",
+        "z": "data_processor_tab",
+        "server": "redis_config",
+        "command": "set",
+        "name": "Update Processor Status",
+        "topic": "processor:status:v2_05",
+        "x": 760,
+        "y": 100,
+        "wires": []
+    },
+    {
+        "id": "debug_watcher",
+        "type": "debug",
+        "z": "data_watcher_tab",
+        "name": "Watcher Debug",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 720,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "debug_processor",
+        "type": "debug",
+        "z": "data_processor_tab",
+        "name": "Processor Debug",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 760,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "status_monitor",
+        "type": "inject",
+        "z": "system_monitoring_tab",
+        "name": "Check System Status",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "30",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "status_check",
+        "payloadType": "str",
+        "x": 170,
+        "y": 100,
+        "wires": [
+            [
+                "redis_status_check"
+            ]
+        ]
+    },
+    {
+        "id": "redis_status_check",
+        "type": "redis in",
+        "z": "system_monitoring_tab",
+        "server": "redis_config",
+        "command": "get",
+        "name": "Get Status from Redis",
+        "topic": "system:status:v2_05",
+        "x": 420,
+        "y": 100,
+        "wires": [
+            [
+                "status_display"
+            ]
+        ]
+    },
+    {
+        "id": "status_display",
+        "type": "ui_text",
+        "z": "system_monitoring_tab",
+        "group": "ui_group_main_status",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "name": "Live Status",
+        "label": "System Status",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "className": "",
+        "x": 680,
+        "y": 100,
+        "wires": []
+    }
+]

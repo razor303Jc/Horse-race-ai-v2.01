@@ -7,7 +7,7 @@ module.exports = {
 
   // Security settings
   httpAdminRoot: "/admin",
-  httpNodeRoot: "/api",
+  // httpNodeRoot: "/api",  // Removed to eliminate /api prefix
 
   // User directory
   userDir: "/data",

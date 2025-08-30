@@ -1,0 +1,247 @@
+{
+  "version": "v2.05",
+  "latest_version": "latest:v2.05",
+  "null_mapping_strategy": "standardized_negative_zero",
+  "ml_model_documentation": "All NULL values replaced with -0 for consistent ML model training",
+  "data_validation": {
+    "max_null_percentage": 25,
+    "required_columns": {
+      "races": [
+        "race_id",
+        "date", 
+        "course",
+        "race_time",
+        "race_name",
+        "distance"
+      ],
+      "records": [
+        "id",
+        "race_id", 
+        "horse_id",
+        "place",
+        "jockey",
+        "trainer"
+      ],
+      "horses": [
+        "id",
+        "name",
+        "country",
+        "age"
+      ],
+      "jockeys_stats": [
+        "jockey_id",
+        "name"
+      ],
+      "trainers_stats": [
+        "trainer_id", 
+        "name"
+      ]
+    },
+    "date_tolerance_days": 1,
+    "auto_correct_dates": true,
+    "validate_foreign_keys": true,
+    "check_data_consistency": true
+  },
+  "data_cleaning": {
+    "null_replacements": {
+      "standard_value": -0,
+      "description": "Standardized -0 replacement for all NULL/missing values",
+      "ml_model_mapping": "Value -0 indicates missing/unavailable data across all columns",
+      "legacy_string": "",
+      "legacy_numeric": 0,
+      "legacy_percentage": 0.0,
+      "date": null,
+      "boolean": false
+    },
+    "percentage_columns": [
+      "percentage_wins",
+      "percentage_placed", 
+      "flat_aw_rate",
+      "flat_aw_placed_rate",
+      "flat_turf_rate", 
+      "flat_turf_placed_rate",
+      "chase_rate",
+      "chase_placed_rate",
+      "hurdle_rate",
+      "hurdle_placed_rate"
+    ],
+    "weight_format_columns": [
+      "weight_uk",
+      "weight"
+    ],
+    "distance_format_columns": [
+      "distance_btn",
+      "distance_btn_total"
+    ],
+    "price_format_columns": [
+      "sp",
+      "starting_price",
+      "prize"
+    ],
+    "remove_html_entities": true,
+    "normalize_text_fields": true,
+    "handle_special_characters": true
+  },
+  "type_mapping": {
+    "integer_columns": [
+      "race_id",
+      "race_number",
+      "course_id", 
+      "runners_racecard",
+      "runners",
+      "draw",
+      "ew_racecard",
+      "ew",
+      "places_ew_racecard",
+      "places_ew",
+      "id",
+      "horse_number",
+      "place",
+      "horse_id",
+      "age",
+      "horse_rate",
+      "jockey_id",
+      "trainer_id",
+      "total_races",
+      "wins",
+      "placed"
+    ],
+    "float_columns": [
+      "weight",
+      "weight_uk",
+      "sp", 
+      "distance_btn_total",
+      "percentage_wins",
+      "percentage_placed",
+      "flat_aw_rate",
+      "flat_aw_placed_rate",
+      "flat_turf_rate",
+      "flat_turf_placed_rate", 
+      "chase_rate",
+      "chase_placed_rate",
+      "hurdle_rate",
+      "hurdle_placed_rate"
+    ],
+    "string_columns": [
+      "course",
+      "race_name",
+      "race_type",
+      "surface",
+      "going",
+      "class",
+      "years",
+      "distance",
+      "name",
+      "country",
+      "jockey",
+      "trainer",
+      "color",
+      "owner",
+      "sire", 
+      "dam",
+      "dam_sire",
+      "sex",
+      "gears",
+      "fav"
+    ],
+    "date_columns": [
+      "date",
+      "date_last_race"
+    ],
+    "time_columns": [
+      "race_time",
+      "finish_time"
+    ]
+  },
+  "data_quality_rules": {
+    "races": {
+      "max_runners": 40,
+      "min_runners": 2,
+      "valid_race_types": [
+        "Flat Turf",
+        "Flat AW", 
+        "National Hunt",
+        "Chase",
+        "Hurdle"
+      ],
+      "valid_surfaces": [
+        "Turf",
+        "All Weather",
+        "Dirt"
+      ]
+    },
+    "records": {
+      "max_place": 50,
+      "min_place": 1,
+      "valid_countries": [
+        "GB",
+        "IRE", 
+        "FR",
+        "USA",
+        "AUS"
+      ]
+    },
+    "horses": {
+      "min_age": 2,
+      "max_age": 25,
+      "valid_sexes": [
+        "colt",
+        "filly", 
+        "gelding",
+        "mare",
+        "stallion"
+      ]
+    }
+  },
+  "processing_options": {
+    "remove_duplicates": true,
+    "validate_relationships": true,
+    "generate_derived_fields": true,
+    "normalize_names": true,
+    "calculate_statistics": true,
+    "create_indexes": [
+      "race_id",
+      "horse_id", 
+      "jockey_id",
+      "trainer_id",
+      "date"
+    ]
+  },
+  "output_formats": {
+    "primary": "database",
+    "backup_formats": [
+      "csv",
+      "json"
+    ],
+    "compression": true,
+    "include_metadata": true
+  },
+  "error_handling": {
+    "continue_on_validation_errors": true,
+    "max_error_percentage": 10,
+    "log_all_errors": true,
+    "create_error_reports": true,
+    "quarantine_bad_records": true
+  },
+  "performance": {
+    "chunk_size": 10000,
+    "parallel_processing": true,
+    "max_memory_usage_mb": 2048,
+    "use_optimized_dtypes": true,
+    "enable_caching": true
+  },
+  "database_settings": {
+    "batch_insert_size": 1000,
+    "use_transactions": true,
+    "handle_conflicts": "ignore",
+    "create_backup_before_insert": true,
+    "verify_insert_counts": true
+  },
+  "logging": {
+    "level": "INFO",
+    "log_file": "logs/data_processor_v2_05.log",
+    "max_log_size_mb": 100,
+    "backup_count": 5,
+    "include_performance_metrics": true
+  }
+}

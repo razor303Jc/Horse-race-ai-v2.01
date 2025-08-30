@@ -1,0 +1,147 @@
+{
+  "version": "v2.05",
+  "latest_version": "v2.05",
+  "watcher_settings": {
+    "auto_process": true,
+    "validation_required": true,
+    "pipeline_integration": true,
+    "auto_backup": true,
+    "max_file_age_hours": 24,
+    "retry_attempts": 3,
+    "retry_delay_seconds": 30,
+    "status_update_interval_seconds": 30,
+    "monitoring_recursive": true
+  },
+  "data_validation": {
+    "required_columns": {
+      "races": [
+        "race_id",
+        "race_time",
+        "course",
+        "race_name",
+        "distance",
+        "going"
+      ],
+      "horses": [
+        "horse_id",
+        "horse_name",
+        "race_id",
+        "jockey",
+        "trainer",
+        "weight"
+      ],
+      "results": [
+        "race_id",
+        "position",
+        "horse_id",
+        "starting_price",
+        "finishing_time"
+      ]
+    },
+    "min_race_count": 5,
+    "max_missing_data_percent": 10,
+    "required_files": {
+      "cards": ["races.csv", "horses.csv"],
+      "results": ["results.csv"],
+      "form": []
+    }
+  },
+  "pipeline_triggers": {
+    "immediate_stages": [
+      "data_validation",
+      "quality_check"
+    ],
+    "delayed_stages": [
+      "database_upload",
+      "relationship_analysis"
+    ],
+    "final_stages": [
+      "ml_model_update",
+      "ai_selections_generation"
+    ],
+    "stage_delays": {
+      "immediate": 5,
+      "delayed": 30,
+      "final": 60,
+      "between_stages": 15
+    }
+  },
+  "file_patterns": {
+    "cards": {
+      "patterns": ["racecard", "card", "race-card", "racing-card"],
+      "extensions": [".zip", ".csv"],
+      "priority": 1
+    },
+    "results": {
+      "patterns": ["result", "outcome", "finish"],
+      "extensions": [".zip", ".csv"],
+      "priority": 2
+    },
+    "form": {
+      "patterns": ["form", "past-performance", "history", "previous"],
+      "extensions": [".zip", ".csv", ".json"],
+      "priority": 3
+    }
+  },
+  "directory_structure": {
+    "watch_directories": [
+      "data/daily_downloads/manual_download",
+      "data/daily_downloads/auto_download",
+      "data/external_feeds"
+    ],
+    "data_directories": [
+      "data/daily_downloads/cards_data",
+      "data/daily_downloads/results_data",
+      "data/daily_downloads/form_data",
+      "data/processed",
+      "data/backup"
+    ],
+    "required_directories": [
+      "logs",
+      "config",
+      "data/validation_reports",
+      "data/processing_logs"
+    ]
+  },
+  "redis_config": {
+    "host": "redis",
+    "port": 6379,
+    "password": "redis_password_123",
+    "timeout": 10,
+    "key_prefix": "watcher:",
+    "status_ttl": 3600
+  },
+  "database_config": {
+    "host": "postgres",
+    "port": "5432",
+    "dbname": "cards_horse_racing_db",
+    "user": "horse_racing",
+    "password": "secure_password_123",
+    "connection_timeout": 30
+  },
+  "logging": {
+    "level": "INFO",
+    "log_file": "logs/enhanced_file_watcher_v2_05.log",
+    "max_log_size_mb": 50,
+    "backup_count": 5,
+    "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  },
+  "api_integration": {
+    "pipeline_api_handler": "/app/tools/pipeline_api_handler.py",
+    "docker_container": "horse_racing_data_pipeline_clean",
+    "command_timeout": 300,
+    "max_retries": 3
+  },
+  "scheduling": {
+    "daily_reset_time": "00:00",
+    "max_processing_window_hours": 20,
+    "completion_check_interval_minutes": 15,
+    "cleanup_old_files_days": 7
+  },
+  "performance": {
+    "max_concurrent_files": 3,
+    "file_processing_timeout": 600,
+    "validation_timeout": 120,
+    "backup_async": true
+  }
+}
