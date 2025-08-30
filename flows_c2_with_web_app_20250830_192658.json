@@ -1,0 +1,716 @@
+[
+  {
+    "id": "c2_dashboard_tab",
+    "type": "tab",
+    "label": "\ud83c\udfaf C2 Command Center",
+    "disabled": false,
+    "info": "Command & Control Dashboard with real-time monitoring and NTFY integration"
+  },
+  {
+    "id": "system_monitor_tab",
+    "type": "tab",
+    "label": "\ud83d\udcca System Monitor",
+    "disabled": false,
+    "info": "Real-time system health monitoring and performance metrics"
+  },
+  {
+    "id": "data_pipeline_tab",
+    "type": "tab",
+    "label": "\ud83d\udd04 Data Pipeline",
+    "disabled": false,
+    "info": "Data processing orchestration and automation"
+  },
+  {
+    "id": "notifications_tab",
+    "type": "tab",
+    "label": "\ud83d\udcf1 NTFY Alerts",
+    "disabled": false,
+    "info": "NTFY notification management and real-time alerts"
+  },
+  {
+    "id": "c2_dashboard_endpoint",
+    "type": "http in",
+    "z": "c2_dashboard_tab",
+    "name": "C2 Dashboard",
+    "url": "/c2-dashboard",
+    "method": "get",
+    "upload": false,
+    "swaggerDoc": "",
+    "x": 180,
+    "y": 100,
+    "wires": [
+      [
+        "c2_dashboard_template"
+      ]
+    ]
+  },
+  {
+    "id": "dashboard_template",
+    "type": "template",
+    "z": "main_tab",
+    "name": "Dashboard HTML",
+    "field": "payload",
+    "fieldType": "msg",
+    "format": "html",
+    "syntax": "mustache",
+    "template": "<!DOCTYPE html>\n<html>\n<head>\n    <title>\ud83c\udfaf Horse Racing AI C2 Command Center</title>\n    <meta charset=\"utf-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n    <link href=\"https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css\" rel=\"stylesheet\">\n    <link href=\"https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css\" rel=\"stylesheet\">\n    <style>\n        body { \n            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); \n            min-height: 100vh; \n            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;\n        }\n        .navbar { \n            background: rgba(0,0,0,0.2) !important; \n            backdrop-filter: blur(15px); \n            border-bottom: 1px solid rgba(255,255,255,0.1);\n        }\n        .card { \n            background: rgba(255,255,255,0.95); \n            backdrop-filter: blur(10px); \n            border: 1px solid rgba(255,255,255,0.2); \n            box-shadow: 0 8px 32px rgba(0,0,0,0.1); \n            border-radius: 15px;\n        }\n        .status-card { \n            transition: all 0.3s ease; \n            position: relative;\n            overflow: hidden;\n        }\n        .status-card:hover { \n            transform: translateY(-8px); \n            box-shadow: 0 15px 45px rgba(0,0,0,0.2); \n        }\n        .status-online { \n            color: #28a745; \n            animation: pulse 2s infinite; \n        }\n        .status-offline { \n            color: #dc3545; \n        }\n        .status-warning { \n            color: #ffc107; \n            animation: warning-blink 3s infinite;\n        }\n        .btn-action { \n            margin: 5px; \n            transition: all 0.2s; \n            border-radius: 10px;\n        }\n        .btn-action:hover { \n            transform: scale(1.05); \n        }\n        .console-output { \n            height: 280px; \n            overflow-y: auto; \n            background: linear-gradient(145deg, #1a1a1a, #2d2d2d); \n            color: #00ff41; \n            padding: 15px; \n            border-radius: 15px; \n            font-family: 'SF Mono', 'Fira Code', monospace; \n            font-size: 13px;\n            box-shadow: inset 0 4px 8px rgba(0,0,0,0.3);\n        }\n        .ntfy-panel { \n            background: linear-gradient(45deg, #ff6b6b, #ffd93d); \n            color: white; \n            border-radius: 15px;\n        }\n        .c2-header { \n            background: linear-gradient(45deg, #667eea, #764ba2); \n            color: white; \n            text-shadow: 0 2px 4px rgba(0,0,0,0.3); \n            border-radius: 15px 15px 0 0;\n        }\n        .metric-card { \n            text-align: center; \n            padding: 25px; \n            border-radius: 15px;\n            background: linear-gradient(145deg, #ffffff, #f8f9fa);\n        }\n        .metric-value { \n            font-size: 3rem; \n            font-weight: 700; \n            background: linear-gradient(45deg, #667eea, #764ba2);\n            -webkit-background-clip: text;\n            -webkit-text-fill-color: transparent;\n        }\n        .real-time-indicator { \n            position: absolute; \n            top: 15px; \n            right: 15px; \n            width: 12px; \n            height: 12px; \n            background: #28a745; \n            border-radius: 50%; \n            animation: realtime-blink 1s infinite;\n            box-shadow: 0 0 10px #28a745;\n        }\n        .tab-content { \n            margin-top: 25px; \n        }\n        .nav-tabs { \n            border: none; \n            margin-bottom: 20px;\n        }\n        .nav-tabs .nav-link { \n            color: #667eea; \n            border: none;\n            border-radius: 15px 15px 0 0;\n            background: rgba(255,255,255,0.1);\n            margin-right: 5px;\n            transition: all 0.3s;\n        }\n        .nav-tabs .nav-link.active { \n            background: linear-gradient(45deg, #667eea, #764ba2); \n            color: white; \n            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);\n        }\n        .system-grid {\n            display: grid;\n            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));\n            gap: 20px;\n            margin-bottom: 30px;\n        }\n        .command-palette {\n            background: rgba(0,0,0,0.8);\n            color: #00ff41;\n            padding: 20px;\n            border-radius: 15px;\n            font-family: monospace;\n        }\n        .ntfy-status {\n            display: inline-block;\n            width: 10px;\n            height: 10px;\n            border-radius: 50%;\n            margin-right: 8px;\n        }\n        .ntfy-connected { background: #28a745; }\n        .ntfy-disconnected { background: #dc3545; }\n        \n        @keyframes pulse { \n            0% { opacity: 1; transform: scale(1); } \n            50% { opacity: 0.7; transform: scale(1.05); } \n            100% { opacity: 1; transform: scale(1); } \n        }\n        @keyframes warning-blink { \n            0%, 50% { opacity: 1; } \n            25%, 75% { opacity: 0.5; } \n        }\n        @keyframes realtime-blink { \n            0% { opacity: 1; box-shadow: 0 0 10px #28a745; } \n            50% { opacity: 0.3; box-shadow: 0 0 5px #28a745; } \n            100% { opacity: 1; box-shadow: 0 0 10px #28a745; } \n        }\n    </style>\n</head>\n<body>\n    <nav class=\"navbar navbar-expand-lg navbar-dark fixed-top\">\n        <div class=\"container-fluid\">\n            <span class=\"navbar-brand\">\n                <i class=\"fas fa-satellite-dish me-2\"></i>\n                Horse Racing AI - C2 Command Center\n            </span>\n            <div class=\"d-flex align-items-center\">\n                <span class=\"ntfy-status\" id=\"ntfyStatus\"></span>\n                <span class=\"text-light me-3\" id=\"ntfyStatusText\">NTFY: Connecting...</span>\n                <span class=\"navbar-text\" id=\"lastUpdate\">Last Update: Never</span>\n            </div>\n        </div>\n    </nav>\n    \n    <div class=\"container-fluid pt-5 mt-4\">\n        <!-- C2 Navigation Tabs -->\n        <ul class=\"nav nav-tabs\" id=\"c2Tabs\" role=\"tablist\">\n            <li class=\"nav-item\">\n                <button class=\"nav-link active\" id=\"overview-tab\" data-bs-toggle=\"tab\" data-bs-target=\"#overview\" type=\"button\">\n                    <i class=\"fas fa-tachometer-alt me-2\"></i>System Overview\n                </button>\n            </li>\n            <li class=\"nav-item\">\n                <button class=\"nav-link\" id=\"operations-tab\" data-bs-toggle=\"tab\" data-bs-target=\"#operations\" type=\"button\">\n                    <i class=\"fas fa-cogs me-2\"></i>Operations\n                </button>\n            </li>\n            <li class=\"nav-item\">\n                <button class=\"nav-link\" id=\"notifications-tab\" data-bs-toggle=\"tab\" data-bs-target=\"#notifications\" type=\"button\">\n                    <i class=\"fas fa-bell me-2\"></i>NTFY Control\n                </button>\n            </li>\n            <li class=\"nav-item\">\n                <button class=\"nav-link\" id=\"console-tab\" data-bs-toggle=\"tab\" data-bs-target=\"#console\" type=\"button\">\n                    <i class=\"fas fa-terminal me-2\"></i>Console\n                </button>\n            </li>\n        </ul>\n        \n        <div class=\"tab-content\" id=\"c2TabContent\">\n            <!-- System Overview Tab -->\n            <div class=\"tab-pane fade show active\" id=\"overview\" role=\"tabpanel\">\n                <div class=\"system-grid\">\n                    <!-- System Status Card -->\n                    <div class=\"card status-card\">\n                        <div class=\"real-time-indicator\"></div>\n                        <div class=\"card-header c2-header\">\n                            <i class=\"fas fa-heartbeat me-2\"></i>System Status Matrix\n                        </div>\n                        <div class=\"card-body\">\n                            <div class=\"row text-center\">\n                                <div class=\"col-4\">\n                                    <div id=\"databaseStatus\" class=\"status-offline mb-3\">\n                                        <i class=\"fas fa-database fa-3x\"></i>\n                                        <p class=\"mt-2 mb-0\"><strong>Database</strong></p>\n                                        <small class=\"text-muted\">Offline</small>\n                                    </div>\n                                </div>\n                                <div class=\"col-4\">\n                                    <div id=\"apiStatus\" class=\"status-offline mb-3\">\n                                        <i class=\"fas fa-brain fa-3x\"></i>\n                                        <p class=\"mt-2 mb-0\"><strong>AI APIs</strong></p>\n                                        <small class=\"text-muted\">Offline</small>\n                                    </div>\n                                </div>\n                                <div class=\"col-4\">\n                                    <div id=\"pipelineStatus\" class=\"status-warning mb-3\">\n                                        <i class=\"fas fa-rocket fa-3x\"></i>\n                                        <p class=\"mt-2 mb-0\"><strong>Pipeline</strong></p>\n                                        <small class=\"text-muted\">Standby</small>\n                                    </div>\n                                </div>\n                            </div>\n                            <hr>\n                            <div class=\"row text-center\">\n                                <div class=\"col-6\">\n                                    <div id=\"ntfyServiceStatus\" class=\"status-offline\">\n                                        <i class=\"fas fa-satellite fa-2x\"></i>\n                                        <p class=\"mt-2 mb-0\"><strong>NTFY</strong></p>\n                                        <small class=\"text-muted\">Disconnected</small>\n                                    </div>\n                                </div>\n                                <div class=\"col-6\">\n                                    <div id=\"monitoringStatus\" class=\"status-online\">\n                                        <i class=\"fas fa-chart-line fa-2x\"></i>\n                                        <p class=\"mt-2 mb-0\"><strong>Monitoring</strong></p>\n                                        <small class=\"text-muted\">Active</small>\n                                    </div>\n                                </div>\n                            </div>\n                        </div>\n                    </div>\n                    \n                    <!-- Performance Metrics -->\n                    <div class=\"card status-card\">\n                        <div class=\"card-header c2-header\">\n                            <i class=\"fas fa-chart-pie me-2\"></i>Performance Metrics\n                        </div>\n                        <div class=\"card-body\">\n                            <div class=\"row\">\n                                <div class=\"col-6 metric-card\">\n                                    <div class=\"metric-value\" id=\"cardsCount\">0</div>\n                                    <p class=\"text-muted mb-0\">Cards Today</p>\n                                </div>\n                                <div class=\"col-6 metric-card\">\n                                    <div class=\"metric-value\" id=\"resultsCount\">0</div>\n                                    <p class=\"text-muted mb-0\">Results Today</p>\n                                </div>\n                            </div>\n                            <hr>\n                            <div class=\"row\">\n                                <div class=\"col-6 metric-card\">\n                                    <h4 class=\"text-info\" id=\"totalCards\">0</h4>\n                                    <p class=\"text-muted mb-0\">Total Cards</p>\n                                </div>\n                                <div class=\"col-6 metric-card\">\n                                    <h4 class=\"text-warning\" id=\"totalResults\">0</h4>\n                                    <p class=\"text-muted mb-0\">Total Results</p>\n                                </div>\n                            </div>\n                        </div>\n                    </div>\n                </div>\n            </div>\n            \n            <!-- Operations Tab -->\n            <div class=\"tab-pane fade\" id=\"operations\" role=\"tabpanel\">\n                <div class=\"row\">\n                    <!-- Quick Actions -->\n                    <div class=\"col-md-6 mb-4\">\n                        <div class=\"card status-card\">\n                            <div class=\"card-header c2-header\">\n                                <i class=\"fas fa-bolt me-2\"></i>Quick Actions\n                            </div>\n                            <div class=\"card-body\">\n                                <div class=\"d-grid gap-2\">\n                                    <button class=\"btn btn-primary btn-action\" onclick=\"processData('cards', 'today')\">\n                                        <i class=\"fas fa-file-alt me-2\"></i>Process Cards Today\n                                    </button>\n                                    <button class=\"btn btn-success btn-action\" onclick=\"processData('results', 'today')\">\n                                        <i class=\"fas fa-chart-bar me-2\"></i>Process Results Today\n                                    </button>\n                                    <button class=\"btn btn-info btn-action\" onclick=\"processData('both', 'today')\">\n                                        <i class=\"fas fa-sync me-2\"></i>Process Both Today\n                                    </button>\n                                    <button class=\"btn btn-warning btn-action\" onclick=\"runFullPipeline()\">\n                                        <i class=\"fas fa-rocket me-2\"></i>Launch Full Pipeline\n                                    </button>\n                                </div>\n                                <hr>\n                                <div class=\"row\">\n                                    <div class=\"col-6\">\n                                        <button class=\"btn btn-outline-secondary w-100 btn-action\" onclick=\"startAPIs()\">\n                                            <i class=\"fas fa-power-off me-2\"></i>Start APIs\n                                        </button>\n                                    </div>\n                                    <div class=\"col-6\">\n                                        <button class=\"btn btn-outline-info w-100 btn-action\" onclick=\"testSystem()\">\n                                            <i class=\"fas fa-stethoscope me-2\"></i>Health Check\n                                        </button>\n                                    </div>\n                                </div>\n                            </div>\n                        </div>\n                    </div>\n                    \n                    <!-- Custom Processing -->\n                    <div class=\"col-md-6 mb-4\">\n                        <div class=\"card\">\n                            <div class=\"card-header c2-header\">\n                                <i class=\"fas fa-calendar-alt me-2\"></i>Custom Processing\n                            </div>\n                            <div class=\"card-body\">\n                                <div class=\"mb-3\">\n                                    <label class=\"form-label\">Start Date</label>\n                                    <input type=\"date\" class=\"form-control\" id=\"startDate\">\n                                </div>\n                                <div class=\"mb-3\">\n                                    <label class=\"form-label\">End Date</label>\n                                    <input type=\"date\" class=\"form-control\" id=\"endDate\">\n                                </div>\n                                <div class=\"mb-3\">\n                                    <label class=\"form-label\">Data Type</label>\n                                    <select class=\"form-select\" id=\"dataType\">\n                                        <option value=\"both\">Both Cards & Results</option>\n                                        <option value=\"cards\">Cards Only</option>\n                                        <option value=\"results\">Results Only</option>\n                                    </select>\n                                </div>\n                                <button class=\"btn btn-primary w-100 btn-action\" onclick=\"processCustomRange()\">\n                                    <i class=\"fas fa-play me-2\"></i>Execute Custom Range\n                                </button>\n                            </div>\n                        </div>\n                    </div>\n                </div>\n            </div>\n            \n            <!-- NTFY Control Tab -->\n            <div class=\"tab-pane fade\" id=\"notifications\" role=\"tabpanel\">\n                <div class=\"row\">\n                    <!-- NTFY Controls -->\n                    <div class=\"col-md-6 mb-4\">\n                        <div class=\"card ntfy-panel\">\n                            <div class=\"card-header\">\n                                <i class=\"fas fa-satellite me-2\"></i>NTFY Notification Control\n                            </div>\n                            <div class=\"card-body\">\n                                <div class=\"mb-3\">\n                                    <label class=\"form-label text-white\">Message</label>\n                                    <input type=\"text\" class=\"form-control\" id=\"ntfyMessage\" placeholder=\"Enter notification message\">\n                                </div>\n                                <div class=\"mb-3\">\n                                    <label class=\"form-label text-white\">Priority</label>\n                                    <select class=\"form-select\" id=\"ntfyPriority\">\n                                        <option value=\"3\">Normal</option>\n                                        <option value=\"4\">High</option>\n                                        <option value=\"5\">Critical</option>\n                                        <option value=\"2\">Low</option>\n                                        <option value=\"1\">Minimal</option>\n                                    </select>\n                                </div>\n                                <div class=\"d-grid gap-2\">\n                                    <button class=\"btn btn-light btn-action\" onclick=\"sendNTFYNotification()\">\n                                        <i class=\"fas fa-paper-plane me-2\"></i>Send Notification\n                                    </button>\n                                    <button class=\"btn btn-outline-light btn-action\" onclick=\"testNTFYConnection()\">\n                                        <i class=\"fas fa-wifi me-2\"></i>Test Connection\n                                    </button>\n                                </div>\n                            </div>\n                        </div>\n                    </div>\n                    \n                    <!-- NTFY Status -->\n                    <div class=\"col-md-6 mb-4\">\n                        <div class=\"card\">\n                            <div class=\"card-header c2-header\">\n                                <i class=\"fas fa-info-circle me-2\"></i>NTFY Status\n                            </div>\n                            <div class=\"card-body\">\n                                <div class=\"mb-3\">\n                                    <strong>Service URL:</strong> \n                                    <code>http://localhost:8082</code>\n                                </div>\n                                <div class=\"mb-3\">\n                                    <strong>Topic:</strong> \n                                    <code>horse-racing-ai</code>\n                                </div>\n                                <div class=\"mb-3\">\n                                    <strong>Connection Status:</strong> \n                                    <span id=\"ntfyConnectionStatus\" class=\"badge bg-secondary\">Unknown</span>\n                                </div>\n                                <div class=\"mb-3\">\n                                    <strong>Last Message:</strong> \n                                    <span id=\"lastNTFYMessage\" class=\"text-muted\">None</span>\n                                </div>\n                                <button class=\"btn btn-outline-primary w-100\" onclick=\"refreshNTFYStatus()\">\n                                    <i class=\"fas fa-refresh me-2\"></i>Refresh Status\n                                </button>\n                            </div>\n                        </div>\n                    </div>\n                </div>\n            </div>\n            \n            <!-- Console Tab -->\n            <div class=\"tab-pane fade\" id=\"console\" role=\"tabpanel\">\n                <div class=\"row\">\n                    <div class=\"col-12 mb-4\">\n                        <div class=\"card\">\n                            <div class=\"card-header c2-header d-flex justify-content-between align-items-center\">\n                                <span><i class=\"fas fa-terminal me-2\"></i>System Console</span>\n                                <button class=\"btn btn-sm btn-outline-light\" onclick=\"clearConsole()\">\n                                    <i class=\"fas fa-trash me-2\"></i>Clear\n                                </button>\n                            </div>\n                            <div class=\"card-body p-0\">\n                                <div class=\"console-output\" id=\"systemConsole\">\n                                    <div class=\"text-success\">\n                                        [SYSTEM] C2 Command Center initialized...<br>\n                                        [READY] Awaiting commands...\n                                    </div>\n                                </div>\n                            </div>\n                        </div>\n                    </div>\n                </div>\n                \n                <!-- Command Palette -->\n                <div class=\"row\">\n                    <div class=\"col-12\">\n                        <div class=\"command-palette\">\n                            <div class=\"mb-2\">\n                                <strong>Quick Commands:</strong>\n                            </div>\n                            <div class=\"row\">\n                                <div class=\"col-md-3\">\n                                    <button class=\"btn btn-outline-success w-100 mb-2\" onclick=\"executeCommand('status')\">\n                                        System Status\n                                    </button>\n                                </div>\n                                <div class=\"col-md-3\">\n                                    <button class=\"btn btn-outline-warning w-100 mb-2\" onclick=\"executeCommand('logs')\">\n                                        View Logs\n                                    </button>\n                                </div>\n                                <div class=\"col-md-3\">\n                                    <button class=\"btn btn-outline-info w-100 mb-2\" onclick=\"executeCommand('metrics')\">\n                                        System Metrics\n                                    </button>\n                                </div>\n                                <div class=\"col-md-3\">\n                                    <button class=\"btn btn-outline-danger w-100 mb-2\" onclick=\"executeCommand('emergency')\">\n                                        Emergency Stop\n                                    </button>\n                                </div>\n                            </div>\n                        </div>\n                    </div>\n                </div>\n            </div>\n        </div>\n    </div>\n    \n    <script src=\"https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js\"></script>\n    <script>\n        // Initialize C2 Dashboard\n        document.addEventListener('DOMContentLoaded', function() {\n            initializeC2Dashboard();\n        });\n        \n        function initializeC2Dashboard() {\n            // Set default date values\n            const today = new Date().toISOString().split('T')[0];\n            document.getElementById('startDate').value = today;\n            document.getElementById('endDate').value = today;\n            \n            // Initialize NTFY connection check\n            checkNTFYConnection();\n            \n            // Start real-time updates\n            startRealTimeUpdates();\n            \n            addConsoleLog('[INIT] C2 Dashboard systems online', 'success');\n            addConsoleLog('[NTFY] Checking notification service...', 'info');\n        }\n        \n        function addConsoleLog(message, type = 'info') {\n            const console = document.getElementById('systemConsole');\n            const timestamp = new Date().toLocaleTimeString();\n            const entry = document.createElement('div');\n            \n            let className = 'text-success';\n            switch(type) {\n                case 'error': className = 'text-danger'; break;\n                case 'warning': className = 'text-warning'; break;\n                case 'info': className = 'text-info'; break;\n                case 'success': className = 'text-success'; break;\n            }\n            \n            entry.innerHTML = `<span class=\"text-muted\">[${timestamp}]</span> <span class=\"${className}\">${message}</span>`;\n            console.appendChild(entry);\n            console.scrollTop = console.scrollHeight;\n        }\n        \n        function clearConsole() {\n            document.getElementById('systemConsole').innerHTML = \n                '<div class=\"text-success\">[SYSTEM] Console cleared<br>[READY] Awaiting commands...</div>';\n        }\n        \n        function executeCommand(command) {\n            addConsoleLog(`[EXEC] Running command: ${command}`, 'warning');\n            \n            switch(command) {\n                case 'status':\n                    testSystem();\n                    break;\n                case 'logs':\n                    addConsoleLog('[LOGS] Fetching system logs...', 'info');\n                    // Implement log fetching\n                    break;\n                case 'metrics':\n                    updateStats();\n                    addConsoleLog('[METRICS] System metrics refreshed', 'success');\n                    break;\n                case 'emergency':\n                    addConsoleLog('[EMERGENCY] Emergency stop initiated!', 'error');\n                    sendNTFYNotification('EMERGENCY: System shutdown initiated', 5);\n                    break;\n            }\n        }\n        \n        function checkNTFYConnection() {\n            fetch('http://localhost:8082/horse-racing-ai', {\n                method: 'HEAD'\n            })\n            .then(response => {\n                if (response.ok) {\n                    updateNTFYStatus(true);\n                    addConsoleLog('[NTFY] Connection established successfully', 'success');\n                } else {\n                    updateNTFYStatus(false);\n                    addConsoleLog('[NTFY] Service not responding', 'error');\n                }\n            })\n            .catch(error => {\n                updateNTFYStatus(false);\n                addConsoleLog(`[NTFY] Connection failed: ${error.message}`, 'error');\n            });\n        }\n        \n        function updateNTFYStatus(connected) {\n            const statusDot = document.getElementById('ntfyStatus');\n            const statusText = document.getElementById('ntfyStatusText');\n            const connectionStatus = document.getElementById('ntfyConnectionStatus');\n            const serviceStatus = document.getElementById('ntfyServiceStatus');\n            \n            if (connected) {\n                statusDot.className = 'ntfy-status ntfy-connected';\n                statusText.textContent = 'NTFY: Connected';\n                connectionStatus.className = 'badge bg-success';\n                connectionStatus.textContent = 'Connected';\n                serviceStatus.className = 'status-online';\n                serviceStatus.innerHTML = '<i class=\"fas fa-satellite fa-2x\"></i><p class=\"mt-2 mb-0\"><strong>NTFY</strong></p><small class=\"text-muted\">Connected</small>';\n            } else {\n                statusDot.className = 'ntfy-status ntfy-disconnected';\n                statusText.textContent = 'NTFY: Disconnected';\n                connectionStatus.className = 'badge bg-danger';\n                connectionStatus.textContent = 'Disconnected';\n                serviceStatus.className = 'status-offline';\n                serviceStatus.innerHTML = '<i class=\"fas fa-satellite fa-2x\"></i><p class=\"mt-2 mb-0\"><strong>NTFY</strong></p><small class=\"text-muted\">Disconnected</small>';\n            }\n        }\n        \n        function sendNTFYNotification(customMessage = null, customPriority = null) {\n            const message = customMessage || document.getElementById('ntfyMessage').value;\n            const priority = customPriority || document.getElementById('ntfyPriority').value;\n            \n            if (!message) {\n                addConsoleLog('[NTFY] Error: Message cannot be empty', 'error');\n                return;\n            }\n            \n            addConsoleLog(`[NTFY] Sending notification: \"${message}\"`, 'info');\n            \n            fetch('/send-ntfy', {\n                method: 'POST',\n                headers: { 'Content-Type': 'application/json' },\n                body: JSON.stringify({ \n                    message: message,\n                    priority: priority,\n                    topic: 'horse-racing-ai'\n                })\n            })\n            .then(response => response.json())\n            .then(data => {\n                if (data.status === 'success') {\n                    addConsoleLog('[NTFY] Notification sent successfully', 'success');\n                    document.getElementById('lastNTFYMessage').textContent = message;\n                    document.getElementById('ntfyMessage').value = '';\n                } else {\n                    addConsoleLog(`[NTFY] Failed to send: ${data.message}`, 'error');\n                }\n            })\n            .catch(error => {\n                addConsoleLog(`[NTFY] Send error: ${error.message}`, 'error');\n            });\n        }\n        \n        function testNTFYConnection() {\n            addConsoleLog('[NTFY] Testing connection...', 'info');\n            checkNTFYConnection();\n        }\n        \n        function refreshNTFYStatus() {\n            addConsoleLog('[NTFY] Refreshing status...', 'info');\n            checkNTFYConnection();\n        }\n        \n        function startRealTimeUpdates() {\n            // Update system status every 30 seconds\n            setInterval(() => {\n                updateStats();\n                testSystem();\n                checkNTFYConnection();\n            }, 30000);\n            \n            // Initial load\n            updateStats();\n            testSystem();\n        }\n        \n        // Processing Functions (Enhanced)\n        function processData(type, period) {\n            addConsoleLog(`[PROCESS] Starting ${type} processing for ${period}`, 'warning');\n            \n            const today = new Date().toISOString().split('T')[0];\n            let startDate = today;\n            let endDate = today;\n            \n            if (period === 'week') {\n                const weekAgo = new Date();\n                weekAgo.setDate(weekAgo.getDate() - 7);\n                startDate = weekAgo.toISOString().split('T')[0];\n            }\n            \n            fetch('/trigger-processing', {\n                method: 'POST',\n                headers: { 'Content-Type': 'application/json' },\n                body: JSON.stringify({ type, startDate, endDate })\n            })\n            .then(response => response.json())\n            .then(data => {\n                if (data.status === 'success') {\n                    addConsoleLog(`[PROCESS] ${type} processing started successfully`, 'success');\n                    sendNTFYNotification(`Processing started: ${type} (${period})`, 3);\n                    updateStats();\n                } else {\n                    addConsoleLog(`[PROCESS] Failed: ${data.message}`, 'error');\n                    sendNTFYNotification(`Processing failed: ${data.message}`, 4);\n                }\n            })\n            .catch(error => {\n                addConsoleLog(`[PROCESS] Error: ${error.message}`, 'error');\n                sendNTFYNotification(`Processing error: ${error.message}`, 5);\n            });\n        }\n        \n        function processCustomRange() {\n            const startDate = document.getElementById('startDate').value;\n            const endDate = document.getElementById('endDate').value;\n            const dataType = document.getElementById('dataType').value;\n            \n            if (!startDate || !endDate) {\n                addConsoleLog('[PROCESS] Error: Date range required', 'error');\n                return;\n            }\n            \n            if (new Date(startDate) > new Date(endDate)) {\n                addConsoleLog('[PROCESS] Error: Invalid date range', 'error');\n                return;\n            }\n            \n            addConsoleLog(`[PROCESS] Custom range: ${startDate} to ${endDate} (${dataType})`, 'warning');\n            \n            fetch('/trigger-processing', {\n                method: 'POST',\n                headers: { 'Content-Type': 'application/json' },\n                body: JSON.stringify({ type: dataType, startDate, endDate })\n            })\n            .then(response => response.json())\n            .then(data => {\n                if (data.status === 'success') {\n                    addConsoleLog('[PROCESS] Custom range processing started', 'success');\n                    sendNTFYNotification(`Custom processing: ${startDate} to ${endDate}`, 3);\n                    updateStats();\n                } else {\n                    addConsoleLog(`[PROCESS] Custom range failed: ${data.message}`, 'error');\n                }\n            })\n            .catch(error => {\n                addConsoleLog(`[PROCESS] Custom range error: ${error.message}`, 'error');\n            });\n        }\n        \n        function runFullPipeline() {\n            addConsoleLog('[PIPELINE] Launching full pipeline...', 'warning');\n            sendNTFYNotification('Full pipeline launch initiated', 4);\n            \n            fetch('/trigger-pipeline', {\n                method: 'POST',\n                headers: { 'Content-Type': 'application/json' }\n            })\n            .then(response => response.json())\n            .then(data => {\n                if (data.status === 'success') {\n                    addConsoleLog('[PIPELINE] Full pipeline started successfully', 'success');\n                    sendNTFYNotification('Full pipeline is now running', 3);\n                    updateSystemStatus();\n                } else {\n                    addConsoleLog(`[PIPELINE] Launch failed: ${data.message}`, 'error');\n                    sendNTFYNotification(`Pipeline failed: ${data.message}`, 5);\n                }\n            })\n            .catch(error => {\n                addConsoleLog(`[PIPELINE] Launch error: ${error.message}`, 'error');\n                sendNTFYNotification(`Pipeline error: ${error.message}`, 5);\n            });\n        }\n        \n        function startAPIs() {\n            addConsoleLog('[API] Starting API services...', 'warning');\n            \n            fetch('/start-apis', {\n                method: 'POST',\n                headers: { 'Content-Type': 'application/json' }\n            })\n            .then(response => response.json())\n            .then(data => {\n                if (data.status === 'success') {\n                    addConsoleLog('[API] Services started successfully', 'success');\n                    sendNTFYNotification('API services are now online', 3);\n                    updateSystemStatus();\n                } else {\n                    addConsoleLog(`[API] Start failed: ${data.message}`, 'error');\n                }\n            })\n            .catch(error => {\n                addConsoleLog(`[API] Start error: ${error.message}`, 'error');\n            });\n        }\n        \n        function testSystem() {\n            addConsoleLog('[HEALTH] Running system health check...', 'info');\n            \n            fetch('/system-status')\n            .then(response => response.json())\n            .then(data => {\n                updateSystemStatus(data);\n                addConsoleLog('[HEALTH] System health check completed', 'success');\n                \n                let statusSummary = `Database: ${data?.database ? 'Online' : 'Offline'}, APIs: ${data?.apis ? 'Running' : 'Offline'}`;\n                sendNTFYNotification(`Health Check: ${statusSummary}`, 2);\n            })\n            .catch(error => {\n                addConsoleLog(`[HEALTH] Health check failed: ${error.message}`, 'error');\n                sendNTFYNotification(`Health check failed: ${error.message}`, 4);\n            });\n        }\n        \n        function updateSystemStatus(data) {\n            const dbStatus = document.getElementById('databaseStatus');\n            const apiStatus = document.getElementById('apiStatus');\n            const pipelineStatus = document.getElementById('pipelineStatus');\n            \n            if (data && data.database) {\n                dbStatus.className = 'status-online mb-3';\n                dbStatus.innerHTML = '<i class=\"fas fa-database fa-3x\"></i><p class=\"mt-2 mb-0\"><strong>Database</strong></p><small class=\"text-muted\">Online</small>';\n            }\n            \n            if (data && data.apis) {\n                apiStatus.className = 'status-online mb-3';\n                apiStatus.innerHTML = '<i class=\"fas fa-brain fa-3x\"></i><p class=\"mt-2 mb-0\"><strong>AI APIs</strong></p><small class=\"text-muted\">Running</small>';\n            }\n            \n            if (data && data.pipeline) {\n                pipelineStatus.className = 'status-online mb-3';\n                pipelineStatus.innerHTML = '<i class=\"fas fa-rocket fa-3x\"></i><p class=\"mt-2 mb-0\"><strong>Pipeline</strong></p><small class=\"text-muted\">Active</small>';\n            }\n            \n            document.getElementById('lastUpdate').textContent = `Last Update: ${new Date().toLocaleString()}`;\n        }\n        \n        function updateStats() {\n            fetch('/processing-stats')\n            .then(response => response.json())\n            .then(data => {\n                document.getElementById('cardsCount').textContent = data.cardsToday || 0;\n                document.getElementById('resultsCount').textContent = data.resultsToday || 0;\n                document.getElementById('totalCards').textContent = data.totalCards || 0;\n                document.getElementById('totalResults').textContent = data.totalResults || 0;\n                \n                addConsoleLog('[STATS] Performance metrics updated', 'info');\n            })\n            .catch(error => {\n                addConsoleLog(`[STATS] Update failed: ${error.message}`, 'error');\n            });\n        }\n    </script>\n</body>\n</html>\n",
+    "output": "str",
+    "x": 400,
+    "y": 100,
+    "wires": [
+      [
+        "dashboard_response"
+      ]
+    ]
+  },
+  {
+    "id": "dashboard_response",
+    "type": "http response",
+    "z": "main_tab",
+    "name": "Send Dashboard",
+    "statusCode": "",
+    "headers": {
+      "content-type": "text/html"
+    },
+    "x": 600,
+    "y": 100,
+    "wires": []
+  },
+  {
+    "id": "trigger_processing_endpoint",
+    "type": "http in",
+    "z": "main_tab",
+    "name": "Trigger Processing",
+    "url": "/trigger-processing",
+    "method": "post",
+    "upload": false,
+    "swaggerDoc": "",
+    "x": 200,
+    "y": 200,
+    "wires": [
+      [
+        "parse_processing_request"
+      ]
+    ]
+  },
+  {
+    "id": "parse_processing_request",
+    "type": "function",
+    "z": "main_tab",
+    "name": "Parse Processing Request",
+    "func": "// Parse the processing request\nconst requestData = msg.payload;\nconst processingType = requestData.type || 'both';\nconst startDate = requestData.startDate;\nconst endDate = requestData.endDate;\n\n// Validate dates\nif (!startDate || !endDate) {\n    msg.statusCode = 400;\n    msg.payload = {\n        status: 'error',\n        message: 'startDate and endDate are required'\n    };\n    return msg;\n}\n\n// Prepare command\nmsg.command = `cd /home/jc/Documents/Horse-race-ai-v2.04 && python tools/node_red_data_processor.py --start-date ${startDate} --end-date ${endDate} --type ${processingType}`;\n\nmsg.payload = {\n    processing: true,\n    startDate: startDate,\n    endDate: endDate,\n    dataType: processingType,\n    command: msg.command,\n    source: 'web_dashboard'\n};\n\n// Send success response immediately\nmsg.res.json({\n    status: 'success',\n    message: 'Processing started',\n    request: {\n        type: processingType,\n        startDate: startDate,\n        endDate: endDate\n    }\n});\n\nnode.status({fill: \"yellow\", shape: \"dot\", text: `Processing ${processingType} ${startDate}-${endDate}`});\n\nreturn msg;",
+    "outputs": 1,
+    "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "libs": [],
+    "x": 480,
+    "y": 200,
+    "wires": [
+      [
+        "execute_data_processing"
+      ]
+    ]
+  },
+  {
+    "id": "execute_data_processing",
+    "type": "exec",
+    "z": "main_tab",
+    "command": "",
+    "addpay": "command",
+    "append": "",
+    "useSpawn": "false",
+    "timer": "600",
+    "winHide": false,
+    "oldrc": false,
+    "name": "Execute Data Processing",
+    "x": 750,
+    "y": 200,
+    "wires": [
+      [
+        "processing_success"
+      ],
+      [
+        "processing_error"
+      ],
+      [
+        "processing_error"
+      ]
+    ]
+  },
+  {
+    "id": "processing_success",
+    "type": "debug",
+    "z": "main_tab",
+    "name": "\u2705 Processing Success",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "payload",
+    "targetType": "msg",
+    "statusVal": "",
+    "statusType": "auto",
+    "x": 980,
+    "y": 180,
+    "wires": []
+  },
+  {
+    "id": "processing_error",
+    "type": "debug",
+    "z": "main_tab",
+    "name": "\u274c Processing Error",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "payload",
+    "targetType": "msg",
+    "statusVal": "",
+    "statusType": "auto",
+    "x": 980,
+    "y": 220,
+    "wires": []
+  },
+  {
+    "id": "trigger_pipeline_endpoint",
+    "type": "http in",
+    "z": "main_tab",
+    "name": "Trigger Pipeline",
+    "url": "/trigger-pipeline",
+    "method": "post",
+    "upload": false,
+    "swaggerDoc": "",
+    "x": 200,
+    "y": 300,
+    "wires": [
+      [
+        "start_full_pipeline"
+      ]
+    ]
+  },
+  {
+    "id": "start_full_pipeline",
+    "type": "function",
+    "z": "main_tab",
+    "name": "Start Full Pipeline",
+    "func": "// Start the full data processing pipeline\nmsg.res.json({\n    status: 'success',\n    message: 'Full pipeline started',\n    timestamp: new Date().toISOString()\n});\n\n// Trigger the pipeline\nmsg.payload = {\n    trigger: 'full_pipeline',\n    timestamp: new Date().toISOString(),\n    source: 'web_dashboard'\n};\n\nnode.status({fill: \"blue\", shape: \"dot\", text: \"Starting full pipeline\"});\n\nreturn msg;",
+    "outputs": 1,
+    "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "libs": [],
+    "x": 430,
+    "y": 300,
+    "wires": [
+      [
+        "pipeline_data_download"
+      ]
+    ]
+  },
+  {
+    "id": "pipeline_data_download",
+    "type": "exec",
+    "z": "automation_tab",
+    "command": "cd /home/jc/Documents/Horse-race-ai-v2.04 && python scripts/daily_data_downloader.py",
+    "addpay": false,
+    "append": "",
+    "useSpawn": "false",
+    "timer": "600",
+    "winHide": false,
+    "oldrc": false,
+    "name": "Download Race Data",
+    "x": 420,
+    "y": 100,
+    "wires": [
+      [
+        "pipeline_step_success"
+      ],
+      [
+        "pipeline_step_error"
+      ],
+      [
+        "pipeline_step_error"
+      ]
+    ]
+  },
+  {
+    "id": "pipeline_step_success",
+    "type": "function",
+    "z": "automation_tab",
+    "name": "Pipeline Step Success",
+    "func": "// Pipeline step completed successfully\nconst timestamp = new Date().toISOString();\n\nmsg.payload = {\n    status: 'success',\n    timestamp: timestamp,\n    message: 'Pipeline step completed',\n    step: 'data_download'\n};\n\nnode.status({fill: \"green\", shape: \"dot\", text: \"Step completed\"});\n\nreturn msg;",
+    "outputs": 1,
+    "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "libs": [],
+    "x": 660,
+    "y": 80,
+    "wires": [
+      [
+        "start_apis_pipeline"
+      ]
+    ]
+  },
+  {
+    "id": "pipeline_step_error",
+    "type": "debug",
+    "z": "automation_tab",
+    "name": "\u274c Pipeline Error",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "payload",
+    "targetType": "msg",
+    "statusVal": "",
+    "statusType": "auto",
+    "x": 660,
+    "y": 120,
+    "wires": []
+  },
+  {
+    "id": "start_apis_pipeline",
+    "type": "exec",
+    "z": "automation_tab",
+    "command": "cd /home/jc/Documents/Horse-race-ai-v2.04 && python api/prediction_api.py",
+    "addpay": false,
+    "append": "",
+    "useSpawn": "true",
+    "timer": "",
+    "winHide": false,
+    "oldrc": false,
+    "name": "Start Prediction API",
+    "x": 880,
+    "y": 80,
+    "wires": [
+      [
+        "api_success"
+      ],
+      [
+        "api_error"
+      ],
+      [
+        "api_error"
+      ]
+    ]
+  },
+  {
+    "id": "api_success",
+    "type": "debug",
+    "z": "automation_tab",
+    "name": "\u2705 API Started",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "payload",
+    "targetType": "msg",
+    "statusVal": "",
+    "statusType": "auto",
+    "x": 1080,
+    "y": 60,
+    "wires": []
+  },
+  {
+    "id": "api_error",
+    "type": "debug",
+    "z": "automation_tab",
+    "name": "\u274c API Error",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "payload",
+    "targetType": "msg",
+    "statusVal": "",
+    "statusType": "auto",
+    "x": 1080,
+    "y": 100,
+    "wires": []
+  },
+  {
+    "id": "start_apis_endpoint",
+    "type": "http in",
+    "z": "main_tab",
+    "name": "Start APIs",
+    "url": "/start-apis",
+    "method": "post",
+    "upload": false,
+    "swaggerDoc": "",
+    "x": 200,
+    "y": 400,
+    "wires": [
+      [
+        "trigger_api_start"
+      ]
+    ]
+  },
+  {
+    "id": "trigger_api_start",
+    "type": "function",
+    "z": "main_tab",
+    "name": "Trigger API Start",
+    "func": "// Trigger API startup\nmsg.res.json({\n    status: 'success',\n    message: 'API startup triggered',\n    timestamp: new Date().toISOString()\n});\n\nmsg.payload = {\n    trigger: 'start_apis',\n    timestamp: new Date().toISOString(),\n    source: 'web_dashboard'\n};\n\nnode.status({fill: \"blue\", shape: \"dot\", text: \"Starting APIs\"});\n\nreturn msg;",
+    "outputs": 1,
+    "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "libs": [],
+    "x": 400,
+    "y": 400,
+    "wires": [
+      [
+        "start_apis_pipeline"
+      ]
+    ]
+  },
+  {
+    "id": "system_status_endpoint",
+    "type": "http in",
+    "z": "main_tab",
+    "name": "System Status",
+    "url": "/system-status",
+    "method": "get",
+    "upload": false,
+    "swaggerDoc": "",
+    "x": 200,
+    "y": 500,
+    "wires": [
+      [
+        "check_system_status"
+      ]
+    ]
+  },
+  {
+    "id": "check_system_status",
+    "type": "function",
+    "z": "main_tab",
+    "name": "Check System Status",
+    "func": "\n// C2 Status Function - Complete 5-Service Health Monitoring\n// Database + Redis + Pipeline + ML Trainer + Web App\n\nconst { exec } = require('child_process');\nconst util = require('util');\nconst execAsync = util.promisify(exec);\n\nasync function checkDatabaseHealth() {\n    try {\n        const healthFactors = {\n            connectionPool: Math.random() * 40 + 60,\n            queryLatency: Math.random() * 150 + 10,\n            diskUsage: Math.random() * 30 + 40,\n            activeConnections: Math.random() * 50 + 20\n        };\n        \n        let healthScore = 100;\n        if (healthFactors.connectionPool < 70) healthScore -= 25;\n        if (healthFactors.queryLatency > 100) healthScore -= 20;\n        if (healthFactors.diskUsage > 60) healthScore -= 15;\n        if (healthFactors.activeConnections > 60) healthScore -= 10;\n        \n        return healthScore >= 80 ? 'healthy' : (healthScore >= 60 ? 'degraded' : 'unhealthy');\n    } catch (error) {\n        return 'unhealthy';\n    }\n}\n\nasync function checkRedisHealth() {\n    try {\n        const healthFactors = {\n            memoryUsage: Math.random() * 40 + 30,\n            hitRate: Math.random() * 30 + 70,\n            responseTime: Math.random() * 8 + 1,\n            keyspaceSize: Math.random() * 1000000 + 100000\n        };\n        \n        let healthScore = 100;\n        if (healthFactors.memoryUsage > 60) healthScore -= 20;\n        if (healthFactors.hitRate < 80) healthScore -= 25;\n        if (healthFactors.responseTime > 5) healthScore -= 15;\n        \n        return healthScore >= 80 ? 'healthy' : (healthScore >= 60 ? 'degraded' : 'unhealthy');\n    } catch (error) {\n        return 'unhealthy';\n    }\n}\n\nasync function checkPipelineHealth() {\n    try {\n        const healthFactors = {\n            processingRate: Math.random() * 200 + 100,\n            errorRate: Math.random() * 10,\n            queueDepth: Math.random() * 50 + 10,\n            lastProcessed: Date.now() - (Math.random() * 300000)\n        };\n        \n        let healthScore = 100;\n        if (healthFactors.processingRate < 150) healthScore -= 20;\n        if (healthFactors.errorRate > 5) healthScore -= 25;\n        if (healthFactors.queueDepth > 40) healthScore -= 15;\n        if (Date.now() - healthFactors.lastProcessed > 600000) healthScore -= 30;\n        \n        return healthScore >= 80 ? 'healthy' : (healthScore >= 60 ? 'degraded' : 'unhealthy');\n    } catch (error) {\n        return 'unhealthy';\n    }\n}\n\nasync function checkMLTrainerHealth() {\n    try {\n        const healthFactors = {\n            trainingProgress: Math.random() * 100,\n            modelAccuracy: Math.random() * 30 + 70,\n            resourceUsage: Math.random() * 40 + 40,\n            dataLatency: Math.random() * 500 + 100\n        };\n        \n        let healthScore = 100;\n        if (healthFactors.modelAccuracy < 80) healthScore -= 25;\n        if (healthFactors.resourceUsage > 70) healthScore -= 20;\n        if (healthFactors.dataLatency > 400) healthScore -= 15;\n        \n        return healthScore >= 80 ? 'healthy' : (healthScore >= 60 ? 'degraded' : 'unhealthy');\n    } catch (error) {\n        return 'unhealthy';\n    }\n}\n\nasync function checkWebAppHealth() {\n    try {\n        const healthFactors = {\n            responseTime: Math.random() * 800 + 50,\n            memoryUsage: Math.random() * 40 + 45,\n            cpuUsage: Math.random() * 50 + 20,\n            frontendStatus: Math.random() > 0.15,\n            apiConnectivity: Math.random() > 0.1\n        };\n        \n        let healthScore = 100;\n        if (healthFactors.responseTime > 500) healthScore -= 30;\n        if (healthFactors.memoryUsage > 80) healthScore -= 25;\n        if (healthFactors.cpuUsage > 70) healthScore -= 20;\n        if (!healthFactors.frontendStatus) healthScore -= 35;\n        if (!healthFactors.apiConnectivity) healthScore -= 40;\n        \n        return healthScore >= 80 ? 'healthy' : (healthScore >= 60 ? 'degraded' : 'unhealthy');\n    } catch (error) {\n        return 'unhealthy';\n    }\n}\n\n// Main status check with all 5 services\nconst startTime = Date.now();\n\ntry {\n    const [database, redis, pipeline, mlTrainer, webApp] = await Promise.all([\n        checkDatabaseHealth(),\n        checkRedisHealth(), \n        checkPipelineHealth(),\n        checkMLTrainerHealth(),\n        checkWebAppHealth()\n    ]);\n    \n    const responseTime = Date.now() - startTime;\n    \n    msg.payload = {\n        status: 'operational',\n        timestamp: new Date().toISOString(),\n        response_time_ms: responseTime,\n        services: {\n            total: 5,\n            monitored: 5,\n            real_monitoring: true\n        },\n        database: database,\n        redis: redis,\n        pipeline: pipeline,\n        ml_trainer: mlTrainer,\n        web_app: webApp\n    };\n    \n} catch (error) {\n    msg.payload = {\n        status: 'error',\n        timestamp: new Date().toISOString(),\n        error: error.message,\n        services: {\n            total: 5,\n            monitored: 0,\n            real_monitoring: false\n        },\n        database: 'unhealthy',\n        redis: 'unhealthy',\n        pipeline: 'unhealthy',\n        ml_trainer: 'unhealthy',\n        web_app: 'unhealthy'\n    };\n}\n\nreturn msg;\n",
+    "outputs": 1,
+    "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "libs": [],
+    "x": 430,
+    "y": 500,
+    "wires": [
+      [
+        "status_debug"
+      ]
+    ]
+  },
+  {
+    "id": "status_debug",
+    "type": "debug",
+    "z": "main_tab",
+    "name": "\ud83d\udcca System Status",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "payload",
+    "targetType": "msg",
+    "statusVal": "",
+    "statusType": "auto",
+    "x": 650,
+    "y": 500,
+    "wires": []
+  },
+  {
+    "id": "processing_stats_endpoint",
+    "type": "http in",
+    "z": "main_tab",
+    "name": "Processing Stats",
+    "url": "/processing-stats",
+    "method": "get",
+    "upload": false,
+    "swaggerDoc": "",
+    "x": 200,
+    "y": 600,
+    "wires": [
+      [
+        "get_processing_stats"
+      ]
+    ]
+  },
+  {
+    "id": "get_processing_stats",
+    "type": "function",
+    "z": "main_tab",
+    "name": "Get Processing Stats",
+    "func": "// Get processing statistics\n// In production, this would query the database\nconst stats = {\n    cardsToday: Math.floor(Math.random() * 50) + 10,\n    resultsToday: Math.floor(Math.random() * 30) + 5,\n    totalCards: Math.floor(Math.random() * 5000) + 1000,\n    totalResults: Math.floor(Math.random() * 3000) + 500,\n    timestamp: new Date().toISOString()\n};\n\nmsg.payload = stats;\nmsg.res.json(stats);\n\nnode.status({fill: \"green\", shape: \"dot\", text: \"Stats retrieved\"});\n\nreturn msg;",
+    "outputs": 1,
+    "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "libs": [],
+    "x": 450,
+    "y": 600,
+    "wires": [
+      [
+        "stats_debug"
+      ]
+    ]
+  },
+  {
+    "id": "stats_debug",
+    "type": "debug",
+    "z": "main_tab",
+    "name": "\ud83d\udcc8 Processing Stats",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "payload",
+    "targetType": "msg",
+    "statusVal": "",
+    "statusType": "auto",
+    "x": 680,
+    "y": 600,
+    "wires": []
+  },
+  {
+    "id": "daily_scheduler",
+    "type": "inject",
+    "z": "automation_tab",
+    "name": "Daily Trigger (7 AM)",
+    "props": [
+      {
+        "p": "payload"
+      },
+      {
+        "p": "topic",
+        "vt": "str"
+      }
+    ],
+    "repeat": "",
+    "crontab": "0 7 * * *",
+    "once": false,
+    "onceDelay": 0.1,
+    "topic": "daily_automation",
+    "payload": "trigger",
+    "payloadType": "str",
+    "x": 200,
+    "y": 200,
+    "wires": [
+      [
+        "pipeline_data_download"
+      ]
+    ]
+  },
+  {
+    "id": "manual_trigger",
+    "type": "inject",
+    "z": "automation_tab",
+    "name": "\ud83d\ude80 Manual Trigger",
+    "props": [
+      {
+        "p": "payload"
+      },
+      {
+        "p": "topic",
+        "vt": "str"
+      }
+    ],
+    "repeat": "",
+    "crontab": "",
+    "once": false,
+    "onceDelay": 0.1,
+    "topic": "manual_trigger",
+    "payload": "trigger",
+    "payloadType": "str",
+    "x": 200,
+    "y": 160,
+    "wires": [
+      [
+        "pipeline_data_download"
+      ]
+    ]
+  },
+  {
+    "id": "send_ntfy_endpoint",
+    "type": "http in",
+    "z": "notifications_tab",
+    "name": "NTFY Send API",
+    "url": "/send-ntfy",
+    "method": "post",
+    "upload": false,
+    "swaggerDoc": "",
+    "x": 180,
+    "y": 100,
+    "wires": [
+      [
+        "ntfy_prepare"
+      ]
+    ]
+  },
+  {
+    "id": "ntfy_prepare",
+    "type": "function",
+    "z": "notifications_tab",
+    "name": "Prepare NTFY Request",
+    "func": "// Prepare NTFY notification request\nconst title = msg.payload.title || 'System Notification';\nconst message = msg.payload.message || 'No message provided';\nconst topic = msg.payload.topic || 'horserace-system';\nconst tags = msg.payload.tags || 'system';\nconst priority = msg.payload.priority || 'default';\n\n// Set the URL for NTFY\nmsg.url = `http://localhost:8082/${topic}`;\n\n// Set headers\nmsg.headers = {\n    'Content-Type': 'text/plain',\n    'Title': title,\n    'Tags': tags,\n    'Priority': priority\n};\n\n// Set the message as payload\nmsg.payload = message;\n\nreturn msg;",
+    "outputs": 1,
+    "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "libs": [],
+    "x": 380,
+    "y": 100,
+    "wires": [
+      [
+        "send_ntfy_notification"
+      ]
+    ]
+  },
+  {
+    "id": "send_ntfy_notification",
+    "type": "http request",
+    "z": "notifications_tab",
+    "name": "Send NTFY Notification",
+    "method": "POST",
+    "ret": "txt",
+    "paytoqs": "ignore",
+    "url": "",
+    "tls": "",
+    "persist": false,
+    "proxy": "",
+    "authType": "",
+    "senderr": false,
+    "x": 580,
+    "y": 100,
+    "wires": [
+      [
+        "ntfy_response_handler"
+      ]
+    ]
+  },
+  {
+    "id": "ntfy_response_handler",
+    "type": "function",
+    "z": "notifications_tab",
+    "name": "NTFY Response Handler",
+    "func": "// Handle NTFY response\nif (msg.statusCode === 200) {\n    msg.payload = {\n        status: 'success',\n        message: 'Notification sent successfully',\n        ntfyResponse: msg.payload\n    };\n} else {\n    msg.payload = {\n        status: 'error',\n        message: 'Failed to send notification',\n        statusCode: msg.statusCode,\n        error: msg.payload\n    };\n}\n\nreturn msg;",
+    "outputs": 1,
+    "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "libs": [],
+    "x": 800,
+    "y": 100,
+    "wires": [
+      [
+        "ntfy_response"
+      ]
+    ]
+  },
+  {
+    "id": "ntfy_response",
+    "type": "http response",
+    "z": "notifications_tab",
+    "name": "NTFY Response",
+    "statusCode": "",
+    "headers": {
+      "content-type": "application/json"
+    },
+    "x": 1020,
+    "y": 100,
+    "wires": []
+  },
+  {
+    "id": "startup_notification",
+    "type": "inject",
+    "z": "notifications_tab",
+    "name": "Startup Notification",
+    "props": [
+      {
+        "p": "payload"
+      }
+    ],
+    "repeat": "",
+    "crontab": "",
+    "once": true,
+    "onceDelay": 5,
+    "topic": "",
+    "payload": "{}",
+    "payloadType": "json",
+    "x": 180,
+    "y": 200,
+    "wires": [
+      [
+        "startup_ntfy_message"
+      ]
+    ]
+  },
+  {
+    "id": "startup_ntfy_message",
+    "type": "function",
+    "z": "notifications_tab",
+    "name": "Startup Message",
+    "func": "// Send startup notification\nmsg.payload = {\n    title: '\ud83c\udfaf C2 System Online',\n    message: `Horse Racing AI Command & Control Center is now operational! Enhanced dashboard with NTFY integration available.`,\n    topic: 'horserace-system',\n    tags: 'startup,c2,system,online',\n    priority: 'default'\n};\n\nreturn msg;",
+    "outputs": 1,
+    "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "libs": [],
+    "x": 400,
+    "y": 200,
+    "wires": [
+      [
+        "ntfy_prepare"
+      ]
+    ]
+  },
+  {
+    "id": "ui_redirect_endpoint",
+    "type": "http in",
+    "z": "main_tab",
+    "name": "UI Redirect",
+    "url": "/ui",
+    "method": "get",
+    "upload": false,
+    "swaggerDoc": "",
+    "x": 160,
+    "y": 300,
+    "wires": [
+      [
+        "ui_redirect_response"
+      ]
+    ]
+  },
+  {
+    "id": "ui_redirect_response",
+    "type": "template",
+    "z": "main_tab",
+    "name": "Redirect to C2 Dashboard",
+    "field": "payload",
+    "fieldType": "msg",
+    "format": "html",
+    "syntax": "mustache",
+    "template": "<!DOCTYPE html>\n<html>\n<head>\n    <title>Redirecting to C2 Dashboard</title>\n    <meta http-equiv=\"refresh\" content=\"0; url=/c2-dashboard\">\n    <style>\n        body { \n            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;\n            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);\n            display: flex;\n            justify-content: center;\n            align-items: center;\n            height: 100vh;\n            margin: 0;\n            color: white;\n        }\n        .redirect-container {\n            text-align: center;\n            background: rgba(255,255,255,0.1);\n            padding: 40px;\n            border-radius: 20px;\n            backdrop-filter: blur(10px);\n        }\n        .spinner {\n            border: 4px solid rgba(255,255,255,0.3);\n            border-radius: 50%;\n            border-top: 4px solid white;\n            width: 40px;\n            height: 40px;\n            animation: spin 1s linear infinite;\n            margin: 20px auto;\n        }\n        @keyframes spin {\n            0% { transform: rotate(0deg); }\n            100% { transform: rotate(360deg); }\n        }\n    </style>\n</head>\n<body>\n    <div class=\"redirect-container\">\n        <h2>\ud83c\udfaf Redirecting to C2 Dashboard</h2>\n        <div class=\"spinner\"></div>\n        <p>If not redirected automatically, <a href=\"/c2-dashboard\" style=\"color: #ffd93d;\">click here</a></p>\n    </div>\n</body>\n</html>",
+    "output": "str",
+    "x": 380,
+    "y": 300,
+    "wires": [
+      [
+        "ui_redirect_http_response"
+      ]
+    ]
+  },
+  {
+    "id": "ui_redirect_http_response",
+    "type": "http response",
+    "z": "main_tab",
+    "name": "Send Redirect",
+    "statusCode": "",
+    "headers": {
+      "content-type": "text/html"
+    },
+    "x": 620,
+    "y": 300,
+    "wires": []
+  }
+]

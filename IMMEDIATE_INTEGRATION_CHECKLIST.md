@@ -123,7 +123,7 @@ echo '"node-red-contrib-postgres": "^1.0.0",' >> docker/node-red/package.json
 - ✅ Performance monitoring (9ms average response time)
 - ✅ **NEW: C2 Status Function Database Integration (Aug 30, 2025)**
   - ✅ C2 status function updated to call real `/database/health` endpoint
-  - ✅ Removed hardcoded `database: 'healthy'` value  
+  - ✅ Removed hardcoded `database: 'healthy'` value
   - ✅ Integration tests created and passing
 - ✅ **NEW: Redis Health Integration Complete (Aug 30, 2025)**
   - ✅ Redis health monitoring integrated into C2 status endpoint
