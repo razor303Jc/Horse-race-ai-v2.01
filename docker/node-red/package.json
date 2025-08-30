@@ -1,0 +1,19 @@
+{
+    "name": "horse-racing-c2-node-red",
+    "description": "Horse Racing AI C2 Command Center - Node-RED Configuration",
+    "version": "1.0.0",
+    "scripts": {
+        "start": "node $NODE_OPTIONS node_modules/node-red/red.js $FLOWS"
+    },
+    "dependencies": {
+        "node-red-contrib-cron-plus": "*",
+        "node-red-node-email": "*",
+        "node-red-contrib-moment": "*"
+    },
+    "node-red": {
+        "settings": {
+            "flowFile": "flows.json",
+            "credentialsFile": "flows_cred.json"
+        }
+    }
+}
