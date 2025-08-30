@@ -8,7 +8,8 @@
     "dependencies": {
         "node-red-contrib-cron-plus": "*",
         "node-red-node-email": "*",
-        "node-red-contrib-moment": "*"
+        "node-red-contrib-moment": "*",
+        "node-red-contrib-postgres": "^1.0.0"
     },
     "node-red": {
         "settings": {
