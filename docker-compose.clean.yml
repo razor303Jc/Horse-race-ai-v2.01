@@ -18,7 +18,8 @@ services:
       - postgres_data:/var/lib/postgresql/data
       - ./database/schemas:/docker-entrypoint-initdb.d
     networks:
-      - horse_racing_network
+      horse_racing_network:
+        ipv4_address: 172.20.0.10
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U horse_racing -d postgres"]
@@ -37,7 +38,8 @@ services:
     volumes:
       - redis_data:/data
     networks:
-      - horse_racing_network
+      horse_racing_network:
+        ipv4_address: 172.20.0.11
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
@@ -93,8 +95,9 @@ services:
       redis:
         condition: service_healthy
     networks:
-      - horse_racing_network
-      - traefik-dev  # Connect to Traefik network
+      horse_racing_network:
+        ipv4_address: 172.20.0.12
+      traefik-dev:  # Connect to Traefik network
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
@@ -154,7 +157,8 @@ services:
       redis:
         condition: service_healthy
     networks:
-      - horse_racing_network
+      horse_racing_network:
+        ipv4_address: 172.20.0.13
     restart: unless-stopped
     # Main pipeline coordinator
     command: ["python", "/app/tools/pipeline_coordinator.py"]
@@ -216,7 +220,8 @@ services:
       redis:
         condition: service_healthy
     networks:
-      - horse_racing_network
+      horse_racing_network:
+        ipv4_address: 172.20.0.14
     restart: unless-stopped
     # Early morning ML training with pipeline integration
     command: ["python", "/app/docker/ml_training/pipeline_integration.py"]
@@ -226,6 +231,55 @@ services:
       timeout: 30s
       start_period: 60s
       retries: 3
+
+  # Node-RED C2 Command Center - Automation and dashboard
+  node-red:
+    build:
+      context: ./docker/node-red
+      dockerfile: Dockerfile
+      args:
+        DOCKER_GID: ${DOCKER_GID:-999}
+    container_name: horse_racing_node_red
+    environment:
+      # Database connections
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: horse_racing
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-secure_password_123}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-redis_password_123}
+      # Node-RED specific
+      NODE_RED_ENABLE_PROJECTS: "false"
+      NODE_RED_ENABLE_SAFE_MODE: "false"
+      TZ: ${TZ:-UTC}
+    volumes:
+      - node_red_data:/data
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./logs:/data/logs:rw
+    ports:
+      - "1881:1880"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      horse_racing_network:
+        ipv4_address: 172.20.0.15
+      traefik-dev:
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:1880"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    labels:
+      # Traefik configuration for Node-RED
+      - "traefik.enable=true"
+      - "traefik.http.routers.node-red.rule=Host(`node-red.local`)"
+      - "traefik.http.routers.node-red.service=node-red"
+      - "traefik.http.services.node-red.loadbalancer.server.port=1880"
 
   # =============================================================================
   # PRODUCTION TRADING SERVICES
@@ -277,7 +331,8 @@ services:
       web-app:
         condition: service_healthy
     networks:
-      - horse_racing_network
+      horse_racing_network:
+        ipv4_address: 172.20.0.16
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "python", "-c", "import sys; sys.exit(0)"]
@@ -322,8 +377,9 @@ services:
       redis:
         condition: service_healthy
     networks:
-      - horse_racing_network
-      - traefik-dev
+      horse_racing_network:
+        ipv4_address: 172.20.0.17
+      traefik-dev:
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
@@ -378,7 +434,8 @@ services:
       redis:
         condition: service_healthy
     networks:
-      - horse_racing_network
+      horse_racing_network:
+        ipv4_address: 172.20.0.18
     restart: unless-stopped
     profiles:
       - production
@@ -401,8 +458,9 @@ services:
     expose:
       - "8000"  # MkDocs internal port
     networks:
-      - horse_racing_network
-      - traefik-dev  # Connect to Traefik network
+      horse_racing_network:
+        ipv4_address: 172.20.0.19
+      traefik-dev:  # Connect to Traefik network
     restart: unless-stopped  # Keep running for public access
     profiles:
       - docs
@@ -437,7 +495,8 @@ services:
       postgres:
         condition: service_healthy
     networks:
-      - horse_racing_network
+      horse_racing_network:
+        ipv4_address: 172.20.0.20
     restart: "no"  # Resource intensive - run on demand
     profiles:
       - news-analyzer
@@ -469,7 +528,8 @@ services:
       redis:
         condition: service_healthy
     networks:
-      - horse_racing_network
+      horse_racing_network:
+        ipv4_address: 172.20.0.21
     restart: "no"  # Run on demand
     profiles:
       - reports
@@ -497,8 +557,9 @@ services:
     depends_on:
       - postgres
     networks:
-      - horse_racing_network
-      - traefik-dev  # Connect to Traefik network
+      horse_racing_network:
+        ipv4_address: 172.20.0.22
+      traefik-dev:  # Connect to Traefik network
     restart: unless-stopped
     labels:
       # Traefik configuration
@@ -530,7 +591,8 @@ services:
     ports:
       - "8082:80"
     networks:
-      - horse_racing_network
+      horse_racing_network:
+        ipv4_address: 172.20.0.23
     restart: unless-stopped
     profiles:
       - notifications
@@ -552,11 +614,22 @@ volumes:
     driver: local
   news_analyzer_data:
     driver: local
+  node_red_data:
+    driver: local
 
 networks:
   horse_racing_network:
     driver: bridge
     name: horse_racing_network
+    enable_ipv6: false
+    driver_opts:
+      com.docker.network.enable_ipv4: "true"
+      com.docker.network.enable_ipv6: "false"
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.20.0.0/16
+          gateway: 172.20.0.1
   traefik-dev:
     external: true
     name: traefik-dev

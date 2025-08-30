@@ -1,32 +1,40 @@
-# Custom Node-RED Docker Image for Horse Racing AI
+# Fresh Node-RED C2 Command Center Docker Image
 FROM nodered/node-red:latest
 
 USER root
 
-# Install additional system dependencies if needed
+# Install system dependencies
 RUN apk add --no-cache \
     python3 \
     py3-pip \
     curl \
-    git
+    git \
+    docker-cli \
+    bash
 
-# Install required Node-RED nodes globally
-RUN npm install -g \
-    node-red-dashboard \
-    node-red-contrib-cron-plus \
-    node-red-node-email \
-    node-red-contrib-postgresql \
-    node-red-contrib-fs-ops \
-    node-red-contrib-moment \
-    node-red-contrib-ui-led \
-    @flowfuse/node-red-dashboard
+# Setup Docker group for container management
+ARG DOCKER_GID=999
+RUN addgroup -g ${DOCKER_GID} docker 2>/dev/null || true
+RUN adduser node-red docker 2>/dev/null || true
 
-# Copy custom settings
-COPY --chown=node-red:node-red settings.js /usr/src/node-red/custom-settings.js
-COPY --chown=node-red:node-red package.json /usr/src/node-red/package.json
-
-# Switch back to node-red user
+# Switch to node-red user
 USER node-red
 
-# Use default entrypoint
-ENTRYPOINT ["./entrypoint.sh"]
+# Copy package.json to data directory (following Node-RED best practices)
+COPY --chown=node-red:node-red package.json /data/package.json
+
+# Copy Node-RED configuration files
+COPY --chown=node-red:node-red settings.js /data/settings.js
+COPY --chown=node-red:node-red flows.json /data/flows.json
+
+# Set working directory to data (where Node-RED expects user files)
+WORKDIR /data
+
+# Install additional packages using npm (packages will be installed to /data/node_modules)
+RUN npm install
+
+# Return to default working directory
+WORKDIR /usr/src/node-red
+
+# Use standard Node-RED startup
+CMD ["npm", "start", "--cache", "/data/.npm", "--", "--userDir", "/data"]

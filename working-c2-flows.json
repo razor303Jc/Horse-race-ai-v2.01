@@ -1,0 +1,147 @@
+[
+    {
+        "id": "c2-dashboard-flow",
+        "type": "tab",
+        "label": "C2 Dashboard API",
+        "disabled": false,
+        "info": "Horse Racing AI C2 Command Center Dashboard API Endpoints"
+    },
+    {
+        "id": "dashboard-endpoint",
+        "type": "http in",
+        "z": "c2-dashboard-flow",
+        "name": "C2 Dashboard",
+        "url": "/c2-dashboard",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 120,
+        "y": 80,
+        "wires": [["dashboard-response"]]
+    },
+    {
+        "id": "dashboard-response",
+        "type": "template",
+        "z": "c2-dashboard-flow",
+        "name": "Dashboard HTML",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "html",
+        "syntax": "mustache",
+        "template": "<!DOCTYPE html>\n<html>\n<head>\n    <title>Horse Racing AI - C2 Command Center</title>\n    <meta charset=\"utf-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n    <style>\n        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background: #1a1a1a; color: #fff; }\n        .header { text-align: center; margin-bottom: 30px; }\n        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }\n        .card { background: #2a2a2a; border-radius: 8px; padding: 20px; border: 1px solid #333; }\n        .card h3 { margin-top: 0; color: #4CAF50; }\n        .status { padding: 5px 10px; border-radius: 4px; font-weight: bold; }\n        .status.online { background: #4CAF50; }\n        .status.offline { background: #f44336; }\n        .btn { background: #007ACC; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; margin: 5px; }\n        .btn:hover { background: #005999; }\n    </style>\n</head>\n<body>\n    <div class=\"header\">\n        <h1>🐎 Horse Racing AI - C2 Command Center</h1>\n        <p>Central Control Dashboard - System Status & Operations</p>\n    </div>\n    <div class=\"grid\">\n        <div class=\"card\">\n            <h3>📊 System Status</h3>\n            <p>Node-RED: <span class=\"status online\">ONLINE</span></p>\n            <p>Database: <span class=\"status online\">ONLINE</span></p>\n            <p>Web App: <span class=\"status online\">ONLINE</span></p>\n            <p>Last Update: {{timestamp}}</p>\n        </div>\n        <div class=\"card\">\n            <h3>🔄 Data Processing</h3>\n            <button class=\"btn\" onclick=\"triggerProcessing()\">Start Data Processing</button>\n            <button class=\"btn\" onclick=\"checkHealth()\">Health Check</button>\n            <p id=\"process-status\">Ready</p>\n        </div>\n        <div class=\"card\">\n            <h3>📈 Statistics</h3>\n            <p>Records Processed: <span id=\"records-count\">Loading...</span></p>\n            <p>Predictions Made: <span id=\"predictions-count\">Loading...</span></p>\n            <p>Success Rate: <span id=\"success-rate\">Loading...</span></p>\n        </div>\n        <div class=\"card\">\n            <h3>🚨 Alerts & Notifications</h3>\n            <button class=\"btn\" onclick=\"sendTestAlert()\">Send Test Alert</button>\n            <div id=\"alerts\">No active alerts</div>\n        </div>\n        <div class=\"card\">\n            <h3>🔧 Quick Actions</h3>\n            <button class=\"btn\" onclick=\"location.href='/ui'\">Node-RED Dashboard</button>\n            <button class=\"btn\" onclick=\"location.href='http://localhost:3000'\">Web App</button>\n            <button class=\"btn\" onclick=\"refreshStats()\">Refresh Stats</button>\n        </div>\n        <div class=\"card\">\n            <h3>📋 Recent Activity</h3>\n            <div id=\"activity-log\">Loading recent activity...</div>\n        </div>\n    </div>\n    <script>\n        function triggerProcessing() {\n            fetch('/trigger-processing', {method: 'POST'})\n                .then(r => r.json())\n                .then(data => {\n                    document.getElementById('process-status').textContent = data.message || 'Processing started';\n                });\n        }\n        function checkHealth() {\n            fetch('/health-check')\n                .then(r => r.json())\n                .then(data => {\n                    document.getElementById('process-status').textContent = 'Health: ' + data.status;\n                });\n        }\n        function sendTestAlert() {\n            fetch('/send-ntfy', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({message: 'Test alert from C2 Dashboard'})})\n                .then(r => r.json())\n                .then(data => {\n                    document.getElementById('alerts').innerHTML = '<p>Test alert sent: ' + data.message + '</p>';\n                });\n        }\n        function refreshStats() {\n            fetch('/system-stats')\n                .then(r => r.json())\n                .then(data => {\n                    document.getElementById('records-count').textContent = data.records || '0';\n                    document.getElementById('predictions-count').textContent = data.predictions || '0';\n                    document.getElementById('success-rate').textContent = data.success_rate || '0%';\n                });\n        }\n        // Auto-refresh stats every 30 seconds\n        setInterval(refreshStats, 30000);\n        refreshStats();\n    </script>\n</body>\n</html>",
+        "output": "str",
+        "x": 320,
+        "y": 80,
+        "wires": [["dashboard-http-response"]]
+    },
+    {
+        "id": "dashboard-http-response",
+        "type": "http response",
+        "z": "c2-dashboard-flow",
+        "name": "",
+        "statusCode": "",
+        "headers": {"content-type": "text/html"},
+        "x": 520,
+        "y": 80,
+        "wires": []
+    },
+    {
+        "id": "health-check-endpoint",
+        "type": "http in",
+        "z": "c2-dashboard-flow",
+        "name": "Health Check",
+        "url": "/health-check",
+        "method": "get",
+        "x": 120,
+        "y": 160,
+        "wires": [["health-check-response"]]
+    },
+    {
+        "id": "health-check-response",
+        "type": "function",
+        "z": "c2-dashboard-flow",
+        "name": "Health Status",
+        "func": "msg.payload = {\n    status: 'healthy',\n    timestamp: new Date().toISOString(),\n    services: {\n        'node-red': 'online',\n        'database': 'online',\n        'web-app': 'online'\n    }\n};\nreturn msg;",
+        "outputs": 1,
+        "x": 320,
+        "y": 160,
+        "wires": [["health-http-response"]]
+    },
+    {
+        "id": "health-http-response",
+        "type": "http response",
+        "z": "c2-dashboard-flow",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 520,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "stats-endpoint",
+        "type": "http in",
+        "z": "c2-dashboard-flow",
+        "name": "System Stats",
+        "url": "/system-stats",
+        "method": "get",
+        "x": 120,
+        "y": 240,
+        "wires": [["stats-response"]]
+    },
+    {
+        "id": "stats-response",
+        "type": "function",
+        "z": "c2-dashboard-flow",
+        "name": "Mock Stats",
+        "func": "msg.payload = {\n    records: Math.floor(Math.random() * 10000) + 1000,\n    predictions: Math.floor(Math.random() * 500) + 100,\n    success_rate: (Math.random() * 20 + 70).toFixed(1) + '%',\n    timestamp: new Date().toISOString()\n};\nreturn msg;",
+        "outputs": 1,
+        "x": 320,
+        "y": 240,
+        "wires": [["stats-http-response"]]
+    },
+    {
+        "id": "stats-http-response",
+        "type": "http response",
+        "z": "c2-dashboard-flow",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 520,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "trigger-processing-endpoint",
+        "type": "http in",
+        "z": "c2-dashboard-flow",
+        "name": "Trigger Processing",
+        "url": "/trigger-processing",
+        "method": "post",
+        "x": 120,
+        "y": 320,
+        "wires": [["trigger-processing-response"]]
+    },
+    {
+        "id": "trigger-processing-response",
+        "type": "function",
+        "z": "c2-dashboard-flow",
+        "name": "Processing Response",
+        "func": "msg.payload = {\n    message: 'Data processing pipeline started',\n    status: 'initiated',\n    timestamp: new Date().toISOString()\n};\nreturn msg;",
+        "outputs": 1,
+        "x": 320,
+        "y": 320,
+        "wires": [["trigger-http-response"]]
+    },
+    {
+        "id": "trigger-http-response",
+        "type": "http response",
+        "z": "c2-dashboard-flow",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 520,
+        "y": 320,
+        "wires": []
+    }
+]

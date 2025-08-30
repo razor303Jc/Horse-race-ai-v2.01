@@ -6,23 +6,29 @@ services:
     build:
       context: ./docker/node-red
       dockerfile: Dockerfile
+      args:
+        - DOCKER_GID=988  # Docker group ID from host
     container_name: horse_racing_node_red
     restart: unless-stopped
+    user: "${USER_ID:-1000}:${GROUP_ID:-1000}"
     environment:
       - TZ=UTC
       - NODE_RED_LOG_LEVEL=info
       - NODE_RED_CREDENTIAL_SECRET=horse_racing_ai_secret_key_2024
-      - DATABASE_URL=postgresql://horse_racing:secure_password_123@host.docker.internal:5432/postgres
-      - CARDS_DATABASE_URL=postgresql://horse_racing:secure_password_123@host.docker.internal:5432/cards_horse_racing_db
-      - RESULTS_DATABASE_URL=postgresql://horse_racing:secure_password_123@host.docker.internal:5432/results_horse_racing_db
-      - ADVANCED_DATABASE_URL=postgresql://horse_racing:secure_password_123@host.docker.internal:5432/advanced_racing_metrics_db
+      - DATABASE_URL=${CARDS_DATABASE_URL}
+      - CARDS_DATABASE_URL=${CARDS_DATABASE_URL}
+      - RESULTS_DATABASE_URL=${RESULTS_DATABASE_URL}
+      - ADVANCED_DATABASE_URL=postgresql://horse_racing:${POSTGRES_PASSWORD}@postgres:5432/advanced_racing_metrics_db
       - SMTP_USER=${SMTP_USER:-your-email@gmail.com}
-      - APP_PASSWORD=${APP_PASSWORD:-awmf ulio rtjv qybx}
+      - APP_PASSWORD=${APP_PASSWORD}
+      - USER_NAME=${USER_NAME}
     ports:
       - "1881:1880"  # Using port 1881 to avoid conflict with existing Node-RED
     volumes:
       # Node-RED data persistence
       - node_red_data:/data
+      # Docker socket access for container management
+      - /var/run/docker.sock:/var/run/docker.sock:ro
       # Access to project files for automation
       - ./:/workspace:ro
       # Access to data directories

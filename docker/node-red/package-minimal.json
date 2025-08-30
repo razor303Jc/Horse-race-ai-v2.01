@@ -1,0 +1,14 @@
+{
+  "name": "horse-racing-ai-node-red",
+  "version": "1.0.0",
+  "description": "Horse Racing AI Node-RED Automation System",
+  "dependencies": {
+    "node-red-dashboard": "^3.6.0"
+  },
+  "scripts": {
+    "start": "node-red"
+  },
+  "engines": {
+    "node": ">=14"
+  }
+}

@@ -1,99 +1,87 @@
 module.exports = {
-  // Node-RED runtime settings
+  // Node-RED settings for Horse Racing AI C2 Command Center
+
+  // HTTP settings
   uiPort: process.env.PORT || 1880,
-  mqttReconnectTime: 15000,
-  serialReconnectTime: 15000,
-  debugMaxLength: 1000,
-  debugUseColors: true,
+  uiHost: "0.0.0.0",
 
-  // Flow settings
-  flowFile: "flows.json",
-  flowFilePretty: true,
+  // Security settings
+  httpAdminRoot: "/admin",
+  httpNodeRoot: "/api",
+
+  // User directory
   userDir: "/data",
-  nodesDir: "/data/nodes",
 
-  // Security
-  credentialSecret: process.env.NODE_RED_CREDENTIAL_SECRET || false,
+  // Flow file
+  flowFile: "flows.json",
 
-  // Web interface settings
-  httpAdminRoot: "/",
-  httpNodeRoot: "/",
-  ui: {
-    path: "ui",
-    middleware: function (req, res, next) {
-      // Add any custom middleware here
-      next();
+  // Enable projects
+  editorTheme: {
+    projects: {
+      enabled: false,
+    },
+    page: {
+      title: "Horse Racing AI - C2 Command Center",
+      favicon: "/absolute/path/to/theme/icon",
+    },
+    header: {
+      title: "🏇 Horse Racing AI C2",
+      url: "https://github.com/razor303Jc/Horse-race-ai-v2.01",
+    },
+    menu: {
+      "menu-item-keyboard-shortcuts": false,
+      "menu-item-help": {
+        label: "Help & Documentation",
+        url: "http://localhost:8000/docs",
+      },
     },
   },
 
-  // Global context for Horse Racing AI
-  functionGlobalContext: {
-    horse_racing: {
-      database_url:
-        process.env.DATABASE_URL ||
-        "postgresql://horse_racing:secure_password_123@localhost:5432/postgres",
-      cards_database_url:
-        process.env.CARDS_DATABASE_URL ||
-        "postgresql://horse_racing:secure_password_123@localhost:5432/cards_horse_racing_db",
-      results_database_url:
-        process.env.RESULTS_DATABASE_URL ||
-        "postgresql://horse_racing:secure_password_123@localhost:5432/results_horse_racing_db",
-      advanced_database_url:
-        process.env.ADVANCED_DATABASE_URL ||
-        "postgresql://horse_racing:secure_password_123@localhost:5432/advanced_racing_metrics_db",
-      workspace_path: "/workspace",
-      data_path: "/workspace/data",
-      tools_path: "/workspace/tools",
-      logs_path: "/workspace/logs",
-      smtp_host: "smtp.gmail.com",
-      smtp_port: 465,
-      smtp_user: process.env.SMTP_USER || "your-email@gmail.com",
-      smtp_password: process.env.APP_PASSWORD || "awmf ulio rtjv qybx",
-    },
-  },
-
-  // Context storage
-  exportGlobalContextKeys: false,
-  contextStorage: {
-    default: "memoryOnly",
-    memoryOnly: { module: "memory" },
-    file: { module: "localfilesystem" },
+  // Runtime settings
+  runtimeState: {
+    enabled: false,
+    ui: false,
   },
 
   // Logging
   logging: {
     console: {
-      level: process.env.NODE_RED_LOG_LEVEL || "info",
+      level: "info",
       metrics: false,
       audit: false,
     },
-    file: {
-      level: "info",
-      filename: "/data/node-red.log",
-      maxFiles: 5,
-      maxSize: "10MB",
-    },
   },
 
-  // Editor settings
-  editorTheme: {
-    projects: {
-      enabled: false,
-    },
-    palette: {
-      editable: true,
-    },
-    codeEditor: {
-      lib: "monaco",
-      options: {
-        theme: "vs-dark",
-      },
-    },
-  },
-
-  // Function node settings
-  functionExternalModules: true,
+  // Function timeout
   functionGlobalContext: {
-    // Add global modules here if needed
+    // Database connections
+    postgres: {
+      host: process.env.POSTGRES_HOST || "172.20.0.10",
+      port: process.env.POSTGRES_PORT || 5432,
+      database: "cards_horse_racing_db",
+      user: process.env.POSTGRES_USER || "horse_racing",
+      password: process.env.POSTGRES_PASSWORD || "secure_password_123",
+    },
+    redis: {
+      host: process.env.REDIS_HOST || "172.20.0.11",
+      port: process.env.REDIS_PORT || 6379,
+      password: process.env.REDIS_PASSWORD || "redis_password_123",
+    },
+    // API endpoints
+    api: {
+      webApp: "http://172.20.0.12:8000",
+      pipeline: "http://172.20.0.13:8000",
+      mlTrainer: "http://172.20.0.14:8000",
+    },
+  },
+
+  // Export settings
+  exportGlobalContextKeys: false,
+
+  // Context storage
+  contextStorage: {
+    default: "memoryOnly",
+    memoryOnly: { module: "memory" },
+    file: { module: "localfilesystem" },
   },
 };

@@ -1,21 +1,19 @@
 {
-  "name": "horse-racing-ai-node-red",
-  "version": "1.0.0",
-  "description": "Horse Racing AI Node-RED Automation System",
-  "dependencies": {
-    "node-red-dashboard": "^3.6.0",
-    "node-red-contrib-cron-plus": "^1.5.1",
-    "node-red-node-email": "^2.1.0",
-    "node-red-contrib-postgresql": "^3.0.0",
-    "node-red-contrib-fs-ops": "^1.6.0",
-    "node-red-contrib-moment": "^4.0.0",
-    "node-red-contrib-ui-led": "^0.4.11",
-    "@flowfuse/node-red-dashboard": "^1.0.0"
-  },
-  "scripts": {
-    "start": "node-red"
-  },
-  "engines": {
-    "node": ">=14"
-  }
+    "name": "horse-racing-c2-node-red",
+    "description": "Horse Racing AI C2 Command Center - Node-RED Configuration",
+    "version": "1.0.0",
+    "scripts": {
+        "start": "node $NODE_OPTIONS node_modules/node-red/red.js $FLOWS"
+    },
+    "dependencies": {
+        "node-red-contrib-cron-plus": "*",
+        "node-red-node-email": "*",
+        "node-red-contrib-moment": "*"
+    },
+    "node-red": {
+        "settings": {
+            "flowFile": "flows.json",
+            "credentialsFile": "flows_cred.json"
+        }
+    }
 }
