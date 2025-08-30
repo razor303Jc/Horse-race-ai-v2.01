@@ -7,24 +7,28 @@
 ## 🎯 **Objective**
 
 Create efficient entity tables with unique indexes for:
+
 - **Horses** - Unique horse entities with CSV IDs and auto-increment keys
-- **Jockeys** - Unique jockey entities with CSV IDs and auto-increment keys  
+- **Jockeys** - Unique jockey entities with CSV IDs and auto-increment keys
 - **Trainers** - Unique trainer entities with CSV IDs and auto-increment keys
 
 ## 📊 **CSV Data Analysis Results**
 
 ### **Horse IDs:**
+
 - **Format:** Numeric (e.g., 1234567, 2345678)
 - **Sample IDs:** 1234567, 2345678, 3456789, 4567890, 5678901
 - **Usage:** Present in horse_details.csv and race results
 
 ### **Jockey IDs:**
+
 - **Format:** Numeric (e.g., 12345, 23456)
 - **Sample IDs:** 12345, 23456, 34567, 45678, 56789
 - **Usage:** Present in horse_details.csv and race results
 
 ### **Trainer IDs:**
-- **Format:** Numeric (e.g., 1234, 2345)  
+
+- **Format:** Numeric (e.g., 1234, 2345)
 - **Sample IDs:** 1234, 2345, 3456, 4567, 5678
 - **Usage:** Present in horse_details.csv
 
@@ -33,6 +37,7 @@ Create efficient entity tables with unique indexes for:
 ### **Phase 1: Database Schema Design** ⏳
 
 #### **Task 1.1: Create Entity Schemas** 🔄
+
 - [ ] Design `horses` entity table for all 3 databases
 - [ ] Design `jockeys` entity table for all 3 databases
 - [ ] Design `trainers` entity table for all 3 databases
@@ -40,8 +45,9 @@ Create efficient entity tables with unique indexes for:
 - [ ] Include audit fields (created_at, updated_at)
 
 #### **Task 1.2: Create Migration Scripts** 📝
+
 - [ ] Create PostgreSQL migration for `results` database
-- [ ] Create PostgreSQL migration for `cards` database  
+- [ ] Create PostgreSQL migration for `cards` database
 - [ ] Create PostgreSQL migration for `advanced_metrics` database
 - [ ] Add rollback scripts for each migration
 - [ ] Test migrations on development environment
@@ -49,6 +55,7 @@ Create efficient entity tables with unique indexes for:
 ### **Phase 2: Schema Implementation** ⏳
 
 #### **Task 2.1: Horses Entity Table** 🐎
+
 ```sql
 -- Target schema for horses table
 CREATE TABLE horses (
@@ -68,6 +75,7 @@ CREATE TABLE horses (
 ```
 
 **Implementation Steps:**
+
 - [ ] Create horses table in `results` database
 - [ ] Create horses table in `cards` database
 - [ ] Create horses table in `advanced_metrics` database
@@ -75,6 +83,7 @@ CREATE TABLE horses (
 - [ ] Test table creation and constraints
 
 #### **Task 2.2: Jockeys Entity Table** 🏇
+
 ```sql
 -- Target schema for jockeys table
 CREATE TABLE jockeys (
@@ -92,6 +101,7 @@ CREATE TABLE jockeys (
 ```
 
 **Implementation Steps:**
+
 - [ ] Create jockeys table in `results` database
 - [ ] Create jockeys table in `cards` database
 - [ ] Create jockeys table in `advanced_metrics` database
@@ -99,6 +109,7 @@ CREATE TABLE jockeys (
 - [ ] Test table creation and constraints
 
 #### **Task 2.3: Trainers Entity Table** 👨‍🏫
+
 ```sql
 -- Target schema for trainers table
 CREATE TABLE trainers (
@@ -117,6 +128,7 @@ CREATE TABLE trainers (
 ```
 
 **Implementation Steps:**
+
 - [ ] Create trainers table in `results` database
 - [ ] Create trainers table in `cards` database
 - [ ] Create trainers table in `advanced_metrics` database
@@ -126,6 +138,7 @@ CREATE TABLE trainers (
 ### **Phase 3: Data Population** ⏳
 
 #### **Task 3.1: Extract Unique Entities** 📊
+
 - [ ] Create script to extract unique horses from CSV files
 - [ ] Create script to extract unique jockeys from CSV files
 - [ ] Create script to extract unique trainers from CSV files
@@ -133,6 +146,7 @@ CREATE TABLE trainers (
 - [ ] Generate entity population statistics
 
 #### **Task 3.2: Populate Entity Tables** 🔄
+
 - [ ] Populate horses table from 2025-08-26 dataset
 - [ ] Populate jockeys table from 2025-08-26 dataset
 - [ ] Populate trainers table from 2025-08-26 dataset
@@ -140,6 +154,7 @@ CREATE TABLE trainers (
 - [ ] Generate population reports
 
 #### **Task 3.3: Create Lookup Functions** 🔍
+
 - [ ] Create function to get horse by CSV horse_id
 - [ ] Create function to get jockey by CSV jockey_id
 - [ ] Create function to get trainer by CSV trainer_id
@@ -149,6 +164,7 @@ CREATE TABLE trainers (
 ### **Phase 4: Integration & Testing** ⏳
 
 #### **Task 4.1: Update Existing Tables** 🔗
+
 - [ ] Add foreign key relationships to existing race tables
 - [ ] Update horse_details imports to use entity tables
 - [ ] Update race results imports to use entity tables
@@ -156,6 +172,7 @@ CREATE TABLE trainers (
 - [ ] Test data consistency
 
 #### **Task 4.2: Performance Testing** ⚡
+
 - [ ] Benchmark entity table query performance
 - [ ] Test lookup performance with large datasets
 - [ ] Optimize indexes based on query patterns
@@ -163,6 +180,7 @@ CREATE TABLE trainers (
 - [ ] Document performance improvements
 
 #### **Task 4.3: Data Validation** ✅
+
 - [ ] Validate entity data against CSV sources
 - [ ] Check for orphaned records in related tables
 - [ ] Verify constraint enforcement
@@ -172,6 +190,7 @@ CREATE TABLE trainers (
 ### **Phase 5: Documentation & Maintenance** ⏳
 
 #### **Task 5.1: Documentation** 📚
+
 - [ ] Document entity table schemas
 - [ ] Create entity relationship diagrams
 - [ ] Document lookup procedures and best practices
@@ -179,6 +198,7 @@ CREATE TABLE trainers (
 - [ ] Update system architecture documentation
 
 #### **Task 5.2: Automation Scripts** 🤖
+
 - [ ] Create automated entity sync scripts
 - [ ] Add entity table monitoring
 - [ ] Create backup and restore procedures
@@ -208,18 +228,21 @@ database/
 ## 🎯 **Success Criteria**
 
 ### **Performance Goals:**
+
 - **Entity Lookups:** < 5ms for single entity lookup
 - **Bulk Operations:** Handle 10,000+ entity operations efficiently
 - **Storage Efficiency:** Reduce redundant data storage by 60%+
 - **Query Performance:** 50%+ improvement in relational queries
 
 ### **Data Quality Goals:**
+
 - **Uniqueness:** 100% unique entities across all tables
 - **Referential Integrity:** 0 orphaned records
 - **Data Consistency:** 100% match with CSV source data
 - **Completeness:** All entities from test dataset captured
 
 ### **Integration Goals:**
+
 - **Seamless Integration:** No disruption to existing workflows
 - **Backward Compatibility:** Existing queries continue to work
 - **Performance:** No degradation in current system performance
@@ -228,12 +251,14 @@ database/
 ## 🚀 **Getting Started**
 
 ### **Immediate Next Steps:**
+
 1. **Review CSV data structure** - Confirm ID formats and patterns
 2. **Create entity schemas** - Design optimal table structures
 3. **Test on development** - Validate approach before production
 4. **Create migration scripts** - Prepare for database updates
 
 ### **Quick Start Commands:**
+
 ```bash
 # 1. Check PostgreSQL connection
 docker exec -it horse_racing_postgres_clean psql -U horse_racing -d postgres

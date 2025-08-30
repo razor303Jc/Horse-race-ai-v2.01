@@ -1,0 +1,35 @@
+# Testing Configuration for Horse Racing AI v2.05
+# Generated: Sat Aug 30 10:34:07 PM BST 2025
+
+databases:
+  postgres:
+    host: localhost
+    port: 5432
+    user: postgres
+    password: ""
+    databases:
+      - results
+      - cards  
+      - advanced_metrics
+
+test_data:
+  primary_dataset: "2025-08-26"
+  backup_location: "/home/jc/Documents/Horse-race-ai-v2.05/backups/csv_backup_20250830_223401"
+  archive_location: "backups/csv_backup_20250830_223401.tar.gz"
+
+performance_targets:
+  database:
+    simple_query_ms: 100
+    complex_query_ms: 500
+  api:
+    response_time_ms: 200
+    p95_response_ms: 1000
+  webapp:
+    initial_load_s: 2
+    navigation_ms: 500
+
+testing_phases:
+  - foundation_testing
+  - load_testing  
+  - integration_testing
+  - optimization_testing

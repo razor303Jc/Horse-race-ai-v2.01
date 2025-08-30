@@ -6,12 +6,14 @@
 ## 📊 **Available Data Inventory**
 
 ### **Primary Test Dataset: 2025-08-26**
+
 - **Total Records:** 12,454 across 8 data types
 - **Coverage:** Complete racing day with all data relationships
 - **Size:** ~18MB (largest single-day dataset)
 - **Quality:** Full relational data with horses, jockeys, trainers, races
 
 **Data Breakdown:**
+
 - **Jockeys Stats:** 6,607 records (performance history)
 - **Trainers Stats:** 4,261 records (trainer performance)
 - **Horses:** 419 records (horse profiles)
@@ -22,6 +24,7 @@
 - **Results Races:** 45 records (race results)
 
 ### **Historical Data Archives**
+
 - **Date Range:** August 20-27, 2025 (8 days)
 - **ZIP Archives:** Raw CSV data in `data/raw_csv_archives/`
 - **Total Size:** ~32MB compressed data
@@ -32,24 +35,28 @@
 ### **1. Daily Operations Simulation**
 
 #### **A. Data Pipeline Testing**
+
 ```bash
 # Simulate daily data ingestion
 ./tests/simulate_daily_pipeline.py --date 2025-08-26 --mode full
 ```
 
 **Test Scenarios:**
+
 - **Morning Pipeline:** Racecard data processing
 - **Live Updates:** Real-time race result processing
 - **Evening Summary:** Daily statistics compilation
 - **Error Recovery:** Handle incomplete data scenarios
 
 #### **B. ML Model Training Simulation**
+
 ```python
 # Test ML pipeline with historical data
 python tools/ml_trainer.py --dataset data/2025-08-26 --mode simulation
 ```
 
 **Training Scenarios:**
+
 - **Full Day Training:** Complete dataset processing
 - **Incremental Updates:** New race data integration
 - **Model Validation:** Cross-day prediction accuracy
@@ -60,26 +67,30 @@ python tools/ml_trainer.py --dataset data/2025-08-26 --mode simulation
 #### **A. Load Testing Scenarios**
 
 **SQLite Performance Tests:**
+
 ```bash
 # Test database operations with full dataset
 python tests/db_performance_test.py --dataset 2025-08-26 --operations all
 ```
 
 **Test Operations:**
+
 - **Bulk Insert:** 12,454 records insertion speed
 - **Complex Queries:** Multi-table joins performance
 - **Index Performance:** Query optimization testing
 - **Concurrent Access:** Multiple pipeline access
 
 #### **B. Data Integrity Testing**
+
 ```sql
 -- Test referential integrity
-SELECT COUNT(*) FROM race_results r 
-LEFT JOIN horses h ON r.horse_id = h.horse_id 
+SELECT COUNT(*) FROM race_results r
+LEFT JOIN horses h ON r.horse_id = h.horse_id
 WHERE h.horse_id IS NULL;
 ```
 
 **Validation Tests:**
+
 - **Foreign Key Constraints:** Data relationship validation
 - **Data Type Consistency:** Schema enforcement testing
 - **Duplicate Detection:** Primary key validation
@@ -88,24 +99,28 @@ WHERE h.horse_id IS NULL;
 ### **3. API Performance Testing**
 
 #### **A. REST API Load Testing**
+
 ```python
 # API stress testing with realistic data
 python tests/api_load_test.py --dataset 2025-08-26 --concurrent 50
 ```
 
 **API Test Scenarios:**
+
 - **Race Data Retrieval:** `/api/races/2025-08-26`
 - **Horse Performance:** `/api/horses/{horse_id}/stats`
 - **Jockey Analysis:** `/api/jockeys/{jockey_id}/performance`
 - **Prediction Requests:** `/api/predictions/race/{race_id}`
 
 #### **B. Real-time Data Simulation**
+
 ```bash
 # Simulate live race updates
 python tests/realtime_api_test.py --race-day 2025-08-26 --speed 10x
 ```
 
 **Real-time Tests:**
+
 - **WebSocket Connections:** Live update delivery
 - **Data Freshness:** Real-time prediction updates
 - **Cache Performance:** Redis caching effectiveness
@@ -114,24 +129,28 @@ python tests/realtime_api_test.py --race-day 2025-08-26 --speed 10x
 ### **4. Web Application Testing**
 
 #### **A. Frontend Performance**
+
 ```javascript
 // Load testing with realistic data volumes
 npm run test:performance -- --dataset 2025-08-26
 ```
 
 **UI Performance Tests:**
+
 - **Data Visualization:** Large dataset rendering
 - **Interactive Charts:** Real-time chart updates
 - **Dashboard Loading:** Multi-widget performance
 - **Mobile Responsiveness:** Cross-device testing
 
 #### **B. User Journey Simulation**
+
 ```bash
 # Simulate user workflows
 python tests/user_journey_test.py --scenarios daily_bettor,analyst,trainer
 ```
 
 **User Scenarios:**
+
 - **Daily Bettor:** Race selection and betting simulation
 - **Racing Analyst:** Deep data analysis workflows
 - **Trainer:** Horse performance tracking
@@ -140,23 +159,26 @@ python tests/user_journey_test.py --scenarios daily_bettor,analyst,trainer
 ### **5. Node-RED Flow Testing**
 
 #### **A. Pipeline Flow Testing**
+
 ```bash
 # Test Node-RED automation flows
 node tests/nodered_flow_test.js --flows c2_basic_flows.json --data 2025-08-26
 ```
 
 **Flow Test Scenarios:**
+
 - **Data Ingestion Flows:** CSV processing automation
 - **ML Training Flows:** Automated model updates
 - **Alert Systems:** Performance monitoring alerts
 - **Integration Flows:** Cross-system data sharing
 
 #### **B. Error Handling Testing**
+
 ```json
 {
   "test_scenarios": [
     "network_timeout",
-    "invalid_data_format", 
+    "invalid_data_format",
     "database_connection_failure",
     "memory_overflow"
   ]
@@ -166,7 +188,9 @@ node tests/nodered_flow_test.js --flows c2_basic_flows.json --data 2025-08-26
 ## 🚀 **Implementation Plan**
 
 ### **Phase 1: Foundation Testing (Week 1)**
+
 1. **Setup Test Environment**
+
    - Configure test database with 2025-08-26 data
    - Deploy testing infrastructure
    - Initialize monitoring systems
@@ -177,7 +201,9 @@ node tests/nodered_flow_test.js --flows c2_basic_flows.json --data 2025-08-26
    - Web app loading speed metrics
 
 ### **Phase 2: Load Testing (Week 2)**
+
 1. **Database Stress Testing**
+
    - Concurrent user simulation (10, 50, 100 users)
    - Large query optimization
    - Memory usage monitoring
@@ -188,7 +214,9 @@ node tests/nodered_flow_test.js --flows c2_basic_flows.json --data 2025-08-26
    - Response time under load
 
 ### **Phase 3: Integration Testing (Week 3)**
+
 1. **End-to-End Workflows**
+
    - Complete daily operation simulation
    - Multi-system integration testing
    - Data consistency validation
@@ -199,7 +227,9 @@ node tests/nodered_flow_test.js --flows c2_basic_flows.json --data 2025-08-26
    - Alert system validation
 
 ### **Phase 4: Optimization (Week 4)**
+
 1. **Performance Tuning**
+
    - Database index optimization
    - API caching strategies
    - Frontend optimization
@@ -214,6 +244,7 @@ node tests/nodered_flow_test.js --flows c2_basic_flows.json --data 2025-08-26
 ### **Test Data Sets**
 
 #### **Primary Test Set (2025-08-26)**
+
 ```yaml
 primary_dataset:
   date: "2025-08-26"
@@ -227,6 +258,7 @@ primary_dataset:
 ```
 
 #### **Historical Comparison (2025-08-20 to 2025-08-27)**
+
 ```yaml
 historical_dataset:
   date_range: "2025-08-20:2025-08-27"
@@ -239,6 +271,7 @@ historical_dataset:
 ```
 
 #### **Stress Test Data (Synthetic)**
+
 ```yaml
 stress_test_data:
   multiplier: "10x"
@@ -252,6 +285,7 @@ stress_test_data:
 ## 🔧 **Testing Tools & Scripts**
 
 ### **Automated Test Suite**
+
 ```bash
 # Complete test suite execution
 ./run_comprehensive_tests.sh --dataset 2025-08-26 --suite all
@@ -264,6 +298,7 @@ stress_test_data:
 ```
 
 ### **Performance Monitoring**
+
 ```bash
 # Real-time monitoring during tests
 python tools/test_monitor.py --dashboard http://localhost:3000
@@ -273,6 +308,7 @@ python tools/generate_performance_report.py --test-run latest
 ```
 
 ### **Data Simulation Tools**
+
 ```bash
 # Simulate race day progression
 python tools/race_day_simulator.py --date 2025-08-26 --speed 60x
@@ -284,18 +320,21 @@ python tools/load_generator.py --pattern realistic --duration 1h
 ## 📈 **Success Metrics**
 
 ### **Performance Targets**
+
 - **Database Queries:** < 100ms for simple, < 500ms for complex
 - **API Response:** < 200ms average, < 1s p95
 - **Web App Loading:** < 2s initial load, < 500ms navigation
 - **Node-RED Processing:** < 5s for standard flows
 
 ### **Reliability Targets**
+
 - **Uptime:** 99.9% during testing periods
 - **Data Integrity:** 100% referential integrity
 - **Error Rate:** < 0.1% for all operations
 - **Recovery Time:** < 30s for automatic recovery
 
 ### **Scalability Targets**
+
 - **Concurrent Users:** Support 100+ simultaneous users
 - **Data Volume:** Handle 10x current data volume
 - **Response Degradation:** < 20% under 5x load
@@ -304,16 +343,19 @@ python tools/load_generator.py --pattern realistic --duration 1h
 ## 🔄 **Continuous Testing Strategy**
 
 ### **Daily Automated Tests**
+
 - **Smoke Tests:** Basic functionality validation
 - **Regression Tests:** Previous issue prevention
 - **Performance Monitoring:** Continuous baseline tracking
 
 ### **Weekly Comprehensive Tests**
+
 - **Full Load Testing:** Complete system stress testing
 - **Integration Testing:** End-to-end workflow validation
 - **Security Testing:** Vulnerability assessment
 
 ### **Monthly Capacity Planning**
+
 - **Growth Simulation:** Future data volume testing
 - **Infrastructure Assessment:** Resource requirement analysis
 - **Optimization Review:** Performance improvement opportunities
