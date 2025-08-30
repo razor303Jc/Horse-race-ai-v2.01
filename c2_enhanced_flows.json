@@ -1,0 +1,87 @@
+[
+  {
+    "id": "c2-main-tab",
+    "type": "tab",
+    "label": "C2 Command Center",
+    "disabled": false,
+    "info": "Horse Racing AI Command & Control Center"
+  },
+  {
+    "id": "http-c2-dashboard",
+    "type": "http in",
+    "z": "c2-main-tab",
+    "name": "C2 Dashboard",
+    "url": "/c2",
+    "method": "get",
+    "upload": false,
+    "swaggerDoc": "",
+    "x": 120,
+    "y": 80,
+    "wires": [["template-c2-enhanced-dashboard"]]
+  },
+  {
+    "id": "template-c2-enhanced-dashboard",
+    "type": "template",
+    "z": "c2-main-tab",
+    "name": "Enhanced C2 Dashboard",
+    "field": "payload",
+    "fieldType": "msg",
+    "format": "html",
+    "syntax": "mustache",
+    "template": "<!DOCTYPE html>\n<html>\n<head>\n    <title>Horse Racing AI - C2 Command Center</title>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <style>\n        * { margin: 0; padding: 0; box-sizing: border-box; }\n        body { font-family: 'Segoe UI', Arial, sans-serif; background: #0a0a0a; color: #fff; }\n        .header { background: linear-gradient(135deg, #1a1a2e, #16213e); padding: 20px; text-align: center; border-bottom: 2px solid #00ff88; }\n        .container { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; padding: 20px; }\n        .panel { background: #1a1a2e; border: 1px solid #333; border-radius: 8px; padding: 20px; }\n        .panel h3 { color: #00ff88; margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 10px; }\n        .status-green { color: #00ff88; }\n        .status-yellow { color: #ffaa00; }\n        .status-red { color: #ff4444; }\n        .metric { display: flex; justify-content: space-between; margin: 10px 0; }\n        .btn { background: #00ff88; color: #000; border: none; padding: 10px 16px; border-radius: 4px; cursor: pointer; margin: 5px 0; width: 100%; font-weight: bold; }\n        .btn:hover { background: #00cc70; }\n        .btn:active { background: #009955; }\n        .btn-warning { background: #ffaa00; color: #000; }\n        .btn-warning:hover { background: #dd8800; }\n        .btn-danger { background: #ff4444; color: #fff; }\n        .btn-danger:hover { background: #cc2222; }\n        .btn:disabled { background: #555; color: #888; cursor: not-allowed; }\n        .progress-indicator { background: #333; padding: 10px; border-radius: 4px; margin: 10px 0; font-family: monospace; }\n        .log-output { background: #000; color: #0f0; padding: 10px; border-radius: 4px; margin: 10px 0; font-family: monospace; font-size: 12px; max-height: 200px; overflow-y: auto; }\n        .full-width { grid-column: 1 / -1; }\n        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }\n        .executing { animation: pulse 1s infinite; }\n    </style>\n</head>\n<body>\n    <div class=\"header\">\n        <h1>🏇 Horse Racing AI - C2 Command Center</h1>\n        <p>Real-time Pipeline Control & Monitoring Dashboard</p>\n        <div style=\"margin-top: 10px; font-size: 14px; opacity: 0.8;\">🚀 Now with Python Script Automation</div>\n    </div>\n    \n    <div class=\"container\">\n        <div class=\"panel\">\n            <h3>📊 System Status</h3>\n            <div class=\"metric\">\n                <span>Node-RED C2 Center:</span>\n                <span class=\"status-green\">● ONLINE</span>\n            </div>\n            <div class=\"metric\">\n                <span>Database:</span>\n                <span class=\"status-green\">● Connected</span>\n            </div>\n            <div class=\"metric\">\n                <span>Pipeline System:</span>\n                <span class=\"status-green\">● Ready</span>\n            </div>\n            <div class=\"metric\">\n                <span>Docker Containers:</span>\n                <span class=\"status-green\">● Running</span>\n            </div>\n            <div class=\"metric\">\n                <span>Last Pipeline Run:</span>\n                <span id=\"last-pipeline-status\" class=\"status-yellow\">● Checking...</span>\n            </div>\n        </div>\n        \n        <div class=\"panel\">\n            <h3>🚀 Pipeline Automation</h3>\n            <button id=\"btn-manual-pipeline\" class=\"btn\" onclick=\"triggerPipeline('manual-trigger')\">\n                🔄 Run Full Pipeline\n            </button>\n            <button id=\"btn-data-relationships\" class=\"btn\" onclick=\"triggerPipeline('data-relationships')\">\n                📊 Data Relationships\n            </button>\n            <button id=\"btn-performance-tracker\" class=\"btn\" onclick=\"triggerPipeline('performance-tracker')\">\n                📈 Performance Tracker\n            </button>\n            <button id=\"btn-ml-training\" class=\"btn btn-warning\" onclick=\"triggerPipeline('ml-training')\">\n                🤖 ML Training\n            </button>\n            <button id=\"btn-ai-selections\" class=\"btn\" onclick=\"triggerPipeline('ai-selections')\">\n                🎯 Generate Selections\n            </button>\n        </div>\n        \n        <div class=\"panel\">\n            <h3>🔧 System Actions</h3>\n            <button class=\"btn\" onclick=\"window.open('/admin', '_blank')\">\n                🔧 Open Node-RED Editor\n            </button>\n            <button class=\"btn\" onclick=\"refreshStatus()\">\n                🔄 Refresh Status\n            </button>\n            <button class=\"btn\" onclick=\"clearLogs()\">\n                🗑️ Clear Logs\n            </button>\n            <button class=\"btn btn-warning\" onclick=\"if(confirm('Stop all running pipelines?')) stopAllPipelines()\">\n                ⏹️ Stop All Pipelines\n            </button>\n        </div>\n        \n        <div class=\"panel full-width\">\n            <h3>📋 Pipeline Execution Status</h3>\n            <div id=\"pipeline-progress\" class=\"progress-indicator\">\n                ✨ Ready to execute pipeline operations\n            </div>\n            <div id=\"pipeline-logs\" class=\"log-output\">\n                🏇 Horse Racing AI C2 Command Center loaded successfully!<br>\n                📡 Pipeline automation system ready<br>\n                🔍 Checking pipeline status...\n            </div>\n        </div>\n    </div>\n    \n    <script>\n        let isExecuting = false;\n        \n        const triggerPipeline = async (action) => {\n            if (isExecuting) {\n                showError('Pipeline is already executing. Please wait...');\n                return;\n            }\n            \n            try {\n                setExecuting(true);\n                showProgress(`🚀 Starting ${action}...`);\n                \n                const response = await fetch(`/api/pipeline/${action}`, {\n                    method: 'POST',\n                    headers: { 'Content-Type': 'application/json' },\n                    body: JSON.stringify({ \n                        timestamp: new Date().toISOString(),\n                        source: 'c2_dashboard'\n                    })\n                });\n                \n                const result = await response.json();\n                \n                if (result.success) {\n                    showProgress(`✅ ${action} triggered successfully`);\n                    addLog(`[${new Date().toLocaleTimeString()}] ✅ ${action} started with request ID: ${result.request_id}`);\n                    \n                    // Start polling for status updates\n                    pollPipelineStatus();\n                } else {\n                    showError(`❌ ${action} failed: ${result.error || 'Unknown error'}`);\n                }\n                \n            } catch (error) {\n                showError(`🌐 Network error: ${error.message}`);\n                setExecuting(false);\n            }\n        };\n        \n        const pollPipelineStatus = async () => {\n            try {\n                const response = await fetch('/api/pipeline/status');\n                const status = await response.json();\n                \n                if (status.success && status.last_execution) {\n                    const lastExec = status.last_execution;\n                    const statusEl = document.getElementById('last-pipeline-status');\n                    \n                    if (lastExec.success) {\n                        statusEl.innerHTML = '● Success';\n                        statusEl.className = 'status-green';\n                        showSuccess(`✅ Pipeline completed in ${lastExec.execution_time_ms}ms`);\n                        setExecuting(false);\n                    } else {\n                        statusEl.innerHTML = '● Failed';\n                        statusEl.className = 'status-red';\n                        showError(`❌ Pipeline failed: ${lastExec.error_type || 'Unknown error'}`);\n                        setExecuting(false);\n                    }\n                    \n                    addLog(`[${new Date().toLocaleTimeString()}] Pipeline status: ${lastExec.success ? 'SUCCESS' : 'FAILED'}`);\n                }\n                \n                // Continue polling if still executing\n                if (isExecuting) {\n                    setTimeout(pollPipelineStatus, 2000);\n                }\n                \n            } catch (error) {\n                console.error('Status polling error:', error);\n                if (isExecuting) {\n                    setTimeout(pollPipelineStatus, 5000); // Retry with longer delay\n                }\n            }\n        };\n        \n        const setExecuting = (executing) => {\n            isExecuting = executing;\n            const buttons = document.querySelectorAll('.btn');\n            buttons.forEach(btn => {\n                if (btn.onclick && btn.onclick.toString().includes('triggerPipeline')) {\n                    btn.disabled = executing;\n                    if (executing) {\n                        btn.classList.add('executing');\n                    } else {\n                        btn.classList.remove('executing');\n                    }\n                }\n            });\n        };\n        \n        const showProgress = (message) => {\n            document.getElementById('pipeline-progress').innerHTML = \n                `<div style=\"color: #ffaa00;\">⏳ ${message}</div>`;\n        };\n        \n        const showSuccess = (message) => {\n            document.getElementById('pipeline-progress').innerHTML = \n                `<div style=\"color: #00ff88;\">✅ ${message}</div>`;\n        };\n        \n        const showError = (message) => {\n            document.getElementById('pipeline-progress').innerHTML = \n                `<div style=\"color: #ff4444;\">❌ ${message}</div>`;\n        };\n        \n        const addLog = (message) => {\n            const logEl = document.getElementById('pipeline-logs');\n            logEl.innerHTML += message + '<br>';\n            logEl.scrollTop = logEl.scrollHeight;\n        };\n        \n        const refreshStatus = async () => {\n            showProgress('🔄 Refreshing system status...');\n            try {\n                const response = await fetch('/api/pipeline/status');\n                const status = await response.json();\n                \n                if (status.success) {\n                    showSuccess('✅ Status refreshed successfully');\n                    addLog(`[${new Date().toLocaleTimeString()}] 🔄 Status refreshed - Total executions: ${status.total_executions}`);\n                } else {\n                    showError('❌ Failed to refresh status');\n                }\n            } catch (error) {\n                showError(`🌐 Failed to refresh: ${error.message}`);\n            }\n        };\n        \n        const clearLogs = () => {\n            document.getElementById('pipeline-logs').innerHTML = '🗑️ Logs cleared<br>';\n            showProgress('✨ Ready for new operations');\n        };\n        \n        const stopAllPipelines = async () => {\n            showProgress('⏹️ Stopping all pipeline operations...');\n            setExecuting(false);\n            addLog(`[${new Date().toLocaleTimeString()}] ⏹️ All pipeline operations stopped by user`);\n            showProgress('⏹️ All operations stopped');\n        };\n        \n        // Initialize dashboard\n        window.addEventListener('load', () => {\n            addLog(`[${new Date().toLocaleTimeString()}] 🏇 C2 Command Center initialized`);\n            addLog(`[${new Date().toLocaleTimeString()}] 🚀 Pipeline automation ready`);\n            \n            // Initial status check\n            setTimeout(refreshStatus, 1000);\n        });\n        \n        console.log('🏇 Horse Racing AI C2 Command Center Enhanced Dashboard loaded!');\n    </script>\n</body>\n</html>",
+    "output": "str",
+    "x": 320,
+    "y": 80,
+    "wires": [["http-response-c2"]]
+  },
+  {
+    "id": "http-response-c2",
+    "type": "http response",
+    "z": "c2-main-tab",
+    "name": "Send HTML Response",
+    "statusCode": "",
+    "headers": {"Content-Type": "text/html"},
+    "x": 520,
+    "y": 80,
+    "wires": []
+  },
+  {
+    "id": "http-root-redirect",
+    "type": "http in",
+    "z": "c2-main-tab",
+    "name": "Root Redirect",
+    "url": "/",
+    "method": "get",
+    "upload": false,
+    "swaggerDoc": "",
+    "x": 120,
+    "y": 160,
+    "wires": [["template-root-redirect"]]
+  },
+  {
+    "id": "template-root-redirect",
+    "type": "template",
+    "z": "c2-main-tab",
+    "name": "Redirect to C2",
+    "field": "payload",
+    "fieldType": "msg",
+    "format": "html",
+    "syntax": "mustache",
+    "template": "<!DOCTYPE html>\n<html>\n<head>\n    <meta http-equiv=\"refresh\" content=\"0; url=/c2\">\n    <title>Redirecting to C2 Command Center</title>\n</head>\n<body>\n    <h1>Redirecting to Horse Racing AI C2 Command Center...</h1>\n    <p>If you are not redirected automatically, <a href=\"/c2\">click here</a>.</p>\n</body>\n</html>",
+    "output": "str",
+    "x": 320,
+    "y": 160,
+    "wires": [["http-response-redirect"]]
+  },
+  {
+    "id": "http-response-redirect",
+    "type": "http response",
+    "z": "c2-main-tab",
+    "name": "Send Redirect Response",
+    "statusCode": "",
+    "headers": {"Content-Type": "text/html"},
+    "x": 540,
+    "y": 160,
+    "wires": []
+  }
+]

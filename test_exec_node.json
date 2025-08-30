@@ -1,0 +1,103 @@
+[
+  {
+    "id": "test-exec-node",
+    "type": "exec",
+    "z": "",
+    "command": "docker",
+    "addpay": false,
+    "append": "exec horse_racing_data_pipeline_clean python /app/tools/manual_pipeline_trigger.py --help",
+    "useSpawn": false,
+    "timer": "",
+    "winHide": false,
+    "oldrc": false,
+    "name": "Test Manual Pipeline",
+    "env": [
+      {
+        "name": "PYTHONUNBUFFERED",
+        "value": "1",
+        "type": "str"
+      }
+    ],
+    "timeout": "30",
+    "killSignal": "SIGTERM",
+    "x": 300,
+    "y": 200,
+    "wires": [
+      ["test-success-debug"],
+      ["test-error-debug"],
+      ["test-exit-debug"]
+    ]
+  },
+  {
+    "id": "test-inject",
+    "type": "inject",
+    "z": "",
+    "name": "🧪 Test Exec Node",
+    "props": [
+      {
+        "p": "payload",
+        "v": "test",
+        "vt": "str"
+      }
+    ],
+    "repeat": "",
+    "crontab": "",
+    "once": false,
+    "onceDelay": 0.1,
+    "topic": "",
+    "x": 120,
+    "y": 200,
+    "wires": [["test-exec-node"]]
+  },
+  {
+    "id": "test-success-debug",
+    "type": "debug",
+    "z": "",
+    "name": "✅ Success Output",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "payload",
+    "targetType": "msg",
+    "statusVal": "",
+    "statusType": "auto",
+    "x": 520,
+    "y": 180,
+    "wires": []
+  },
+  {
+    "id": "test-error-debug",
+    "type": "debug",
+    "z": "",
+    "name": "❌ Error Output",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "payload",
+    "targetType": "msg",
+    "statusVal": "",
+    "statusType": "auto",
+    "x": 520,
+    "y": 220,
+    "wires": []
+  },
+  {
+    "id": "test-exit-debug",
+    "type": "debug",
+    "z": "",
+    "name": "🔄 Exit Code",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "payload",
+    "targetType": "msg",
+    "statusVal": "",
+    "statusType": "auto",
+    "x": 520,
+    "y": 260,
+    "wires": []
+  }
+]
