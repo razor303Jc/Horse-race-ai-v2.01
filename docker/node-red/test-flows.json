@@ -1,0 +1,48 @@
+[
+  {
+    "id": "test-tab",
+    "type": "tab",
+    "label": "Test",
+    "disabled": false,
+    "info": ""
+  },
+  {
+    "id": "http-test",
+    "type": "http in",
+    "z": "test-tab",
+    "name": "Test C2",
+    "url": "/c2",
+    "method": "get",
+    "upload": false,
+    "swaggerDoc": "",
+    "x": 120,
+    "y": 80,
+    "wires": [["template-test"]]
+  },
+  {
+    "id": "template-test",
+    "type": "template",
+    "z": "test-tab",
+    "name": "Test Response",
+    "field": "payload",
+    "fieldType": "msg",
+    "format": "html",
+    "syntax": "mustache",
+    "template": "<html><body><h1>C2 Dashboard Test</h1><p>Node-RED is working!</p></body></html>",
+    "output": "str",
+    "x": 320,
+    "y": 80,
+    "wires": [["http-response-test"]]
+  },
+  {
+    "id": "http-response-test",
+    "type": "http response",
+    "z": "test-tab",
+    "name": "Send Response",
+    "statusCode": "",
+    "headers": {},
+    "x": 520,
+    "y": 80,
+    "wires": []
+  }
+]
