@@ -9,14 +9,16 @@
 Based on analysis of existing scripts (mapping, validate, process, upload, bulk, daily), we have created enhanced v2.05 versions with comprehensive Testing & Simulation Strategy integration:
 
 ### **1. Data Mapping v2.05** - `data_mapping_v2_05.py`
+
 - **Purpose:** PostgreSQL entity table mappings and schema validation
-- **Features:** 
+- **Features:**
   - CSV-to-Entity field mappings with validation
   - Data type conversion and validation
   - Schema compatibility checking
   - Performance-optimized field mappings
 
 ### **2. Data Validation v2.05** - `data_validation_v2_05.py`
+
 - **Purpose:** Comprehensive data validation and quality assessment
 - **Features:**
   - CSV data validation and quality checks
@@ -25,6 +27,7 @@ Based on analysis of existing scripts (mapping, validate, process, upload, bulk,
   - Performance validation metrics
 
 ### **3. Data Processing v2.05** - `data_processing_v2_05.py`
+
 - **Purpose:** Enhanced data processing pipeline for PostgreSQL entity tables
 - **Features:**
   - CSV data extraction and processing
@@ -33,6 +36,7 @@ Based on analysis of existing scripts (mapping, validate, process, upload, bulk,
   - Memory-efficient processing for large datasets
 
 ### **4. Upload System v2.05** - `upload_system_v2_05.py`
+
 - **Purpose:** Advanced upload system for PostgreSQL entity tables
 - **Features:**
   - High-performance batch uploads to PostgreSQL
@@ -41,6 +45,7 @@ Based on analysis of existing scripts (mapping, validate, process, upload, bulk,
   - UPSERT functionality with conflict resolution
 
 ### **5. Daily Operations v2.05** - `daily_operations_v2_05.py`
+
 - **Purpose:** Complete daily workflow automation
 - **Features:**
   - Complete daily data pipeline automation
@@ -49,6 +54,7 @@ Based on analysis of existing scripts (mapping, validate, process, upload, bulk,
   - Error recovery and data integrity checks
 
 ### **6. Testing Orchestrator v2.05** - `testing_orchestrator_v2_05.py`
+
 - **Purpose:** Master orchestrator for comprehensive testing
 - **Features:**
   - Complete testing framework coordination
@@ -57,6 +63,7 @@ Based on analysis of existing scripts (mapping, validate, process, upload, bulk,
   - Comprehensive reporting and analytics
 
 ### **7. Main Execution Script** - `testing_strategy_v2_05_main.py`
+
 - **Purpose:** Master execution script for all testing modes
 - **Features:**
   - Command-line interface for different testing modes
@@ -66,6 +73,7 @@ Based on analysis of existing scripts (mapping, validate, process, upload, bulk,
 ## 🚀 **Usage Examples**
 
 ### **Complete Testing & Simulation Strategy**
+
 ```bash
 # Run full comprehensive testing and simulation
 python tools/testing_v2_05/testing_strategy_v2_05_main.py --mode full --date 2025-08-26
@@ -73,7 +81,7 @@ python tools/testing_v2_05/testing_strategy_v2_05_main.py --mode full --date 202
 # Testing suite only
 python tools/testing_v2_05/testing_strategy_v2_05_main.py --mode testing --date 2025-08-26
 
-# Simulation scenarios only  
+# Simulation scenarios only
 python tools/testing_v2_05/testing_strategy_v2_05_main.py --mode simulation --date 2025-08-26
 
 # Daily pipeline execution
@@ -81,6 +89,7 @@ python tools/testing_v2_05/testing_strategy_v2_05_main.py --mode daily --date 20
 ```
 
 ### **Individual Component Testing**
+
 ```bash
 # Test data mapping
 python tools/testing_v2_05/data_mapping_v2_05.py
@@ -103,21 +112,25 @@ python tools/testing_v2_05/daily_operations_v2_05.py
 These v2.05 scripts directly implement the Testing & Simulation Strategy outlined in `TESTING_SIMULATION_STRATEGY.md`:
 
 ### **Phase 1: Foundation Testing (Week 1)**
+
 - ✅ Database performance baselines with entity tables
 - ✅ API response time baselines with realistic data
 - ✅ Data validation and integrity testing
 
-### **Phase 2: Load Testing (Week 2)**  
+### **Phase 2: Load Testing (Week 2)**
+
 - ✅ Concurrent user simulation capabilities
 - ✅ Large dataset processing optimization
 - ✅ Memory usage monitoring and batch processing
 
 ### **Phase 3: Integration Testing (Week 3)**
+
 - ✅ End-to-end workflow testing
 - ✅ Multi-system integration validation
 - ✅ Data consistency across entity tables
 
 ### **Phase 4: Optimization (Week 4)**
+
 - ✅ Performance tuning and benchmarking
 - ✅ Scalability testing with realistic data volumes
 - ✅ Future capacity planning support
@@ -134,12 +147,14 @@ All scripts implement the performance targets from the Testing Strategy:
 ## 📈 **Testing Data Integration**
 
 ### **Primary Test Dataset: 2025-08-26**
+
 - **Total Records:** 12,454 across 8 data types ✅
 - **Entity Tables:** horses_entity, jockeys_entity, trainers_entity ✅
 - **Data Validation:** Comprehensive quality assessment ✅
 - **Performance Testing:** Realistic data volume simulation ✅
 
 ### **PostgreSQL Entity Tables Ready**
+
 - ✅ All entity tables created with proper schema
 - ✅ Auto-increment primary keys with original CSV ID preservation
 - ✅ Performance indexes and constraints implemented
@@ -148,18 +163,21 @@ All scripts implement the performance targets from the Testing Strategy:
 ## 🔧 **Next Steps for Execution**
 
 1. **Validate Environment Setup:**
+
    ```bash
    # Ensure PostgreSQL entity tables are ready
    python setup_entity_tables_docker.sh
    ```
 
 2. **Execute Full Testing Strategy:**
+
    ```bash
    # Run complete testing and simulation
    python tools/testing_v2_05/testing_strategy_v2_05_main.py --mode full
    ```
 
 3. **Review Comprehensive Reports:**
+
    - Testing suite results in `/tmp/comprehensive_testing_report_v2_05_*.json`
    - Daily pipeline reports in `/tmp/daily_pipeline_report_*.json`
    - Performance metrics and validation results
