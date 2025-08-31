@@ -1,0 +1,45 @@
+Race_ID,race_number,race_time,course_id,Course,Race_type,Date,Race_name,Class,Years,Distance,Surface,Prize,Runners_racecard,Runners,Draw,EW_racecard,EW,Places_EW_racecard,Places_EW
+183473,1,16:38,4,Ballinrobe,Hurdle,2025-08-25,Adare Manor Opportunity Maiden Hurdle,No Class,4YO plus,2m 2f 60y,Good,"€7,200",10,9,None,5,5,3,3
+183474,2,17:13,4,Ballinrobe,Hurdle,2025-08-25,Hollymount Nursing Home Handicap Hurdle,No Class,4YO only,2m 2f 60y,Good,"€15,000",6,6,None,4,4,2,2
+183475,3,17:43,4,Ballinrobe,Hurdle,2025-08-25,Paddy Smyth Memorial Mares Maiden Hurdle,No Class,4YO plus,2m 6f 61y,Good,"€6,000",9,8,None,5,5,3,3
+183476,4,18:13,4,Ballinrobe,Hurdle,2025-08-25,On-Course Bookmakers Handicap Hurdle,No Class,4YO plus,2m 6f 61y,Good,"€6,000",13,11,None,4,5,3,3
+183477,5,18:43,4,Ballinrobe,Hurdle,2025-08-25,On-Course Bookmakers Handicap Hurdle,No Class,4YO plus,2m 6f 61y,Good,"€6,000",14,14,None,4,4,3,3
+183478,6,19:13,4,Ballinrobe,Chase,2025-08-25,BoyleSports Home Of The Early Payout Chase,No Class,4YO plus,2m 1f 48y,Good,"€9,300",4,4,None,1,1,1,1
+183479,7,19:43,4,Ballinrobe,Chase,2025-08-25,Corrib Oil Beginners Chase,No Class,4YO plus,2m 7f 65y,Good,"€6,601",9,9,None,5,5,3,3
+183480,8,20:13,4,Ballinrobe,Flat Turf,2025-08-25,Irish Stallion Farms EBF Fillies Flat Race,No Class,4YO only,2m 71y,Good,"€6,601",12,11,None,5,5,3,3
+183467,1,14:20,10,Cartmel,Hurdle,2025-08-25,Sticky Toffee Pudding Juvenile Hurdle,Class 4,3YO only,2m 1f 46y,Good,"£4,030",7,7,None,4,4,2,2
+183468,2,14:55,10,Cartmel,Hurdle,2025-08-25,Campbell &amp; Rowley Handicap Hurdle,Class 4,4YO plus,2m 6f 31y,Good,"£4,251",10,9,None,5,5,3,3
+183469,3,15:30,10,Cartmel,Hurdle,2025-08-25,Lakes Luxury Loos Handicap Hurdle,Class 2,4YO plus,3m 1f 83y,Good,"£11,447",9,8,None,5,5,3,3
+183470,4,16:05,10,Cartmel,Chase,2025-08-25,Wicks Group Cavendish Cup Handicap Chase,Class 3,4YO plus,3m 1f 107y,Good,"£10,905",9,9,None,5,5,3,3
+183471,5,16:43,10,Cartmel,Chase,2025-08-25,EWGA Handicap Chase,Class 3,4YO plus,2m 5f 34y,Good,"£8,265",11,11,None,5,5,3,3
+183472,6,17:18,10,Cartmel,Chase,2025-08-25,FGH Handicap Chase,Class 5,4YO plus,2m 1f 61y,Good,"£4,251",9,8,None,5,5,3,3
+183444,1,13:53,14,Chepstow,Flat Turf,2025-08-25,Noahs Retreat / Accessibility At Heart Restricted Maiden Stakes,Class 5,2YO only,7f 16y,Good-good to firm in places,"£3,672",8,7,None,5,4,3,2
+183445,2,14:28,14,Chepstow,Flat Turf,2025-08-25,DragonBet Welsh Racing Festival 10-12 Oct Nursery,Class 6,2YO only,5f 16y,Good-good to firm in places,"£4,187",6,6,High,4,4,2,2
+183446,3,15:03,14,Chepstow,Flat Turf,2025-08-25,DragonBet Supporting British Racing Chepstow Mile Series Final Handicap,Class 2,3YO plus,1m 14y,Good-good to firm in places,"£18,039",16,15,None,4,4,4,3
+183447,4,15:38,14,Chepstow,Flat Turf,2025-08-25,DragonBet Born From The Betting Ring Maiden Stakes,Class 5,3YO plus,5f 16y,Good-good to firm in places,"£3,888",6,5,High,4,4,2,2
+183448,5,16:13,14,Chepstow,Flat Turf,2025-08-25,Tom's Big Bike Ride Handicap,Class 6,3YO plus,5f 16y,Good-good to firm in places,"£4,187",8,7,High,5,4,3,2
+183449,6,16:48,14,Chepstow,Flat Turf,2025-08-25,DragonBet Independent Bookmaker Handicap,Class 6,3YO plus,7f 16y,Good-good to firm in places,"£4,187",10,9,None,5,5,3,3
+183450,7,17:23,14,Chepstow,Flat Turf,2025-08-25,DragonBet WRF The Value Festival Handicap,Class 6,3YO plus,6f 16y,Good-good to firm in places,"£4,187",8,7,High,5,4,3,2
+183481,1,13:58,21,Downpatrick,Hurdle,2025-08-25,A J C Group Maiden Hurdle,No Class,4YO plus,2m 1f 165y,Good,"€6,000",10,9,None,5,5,3,3
+183482,2,14:33,21,Downpatrick,Hurdle,2025-08-25,Ulster Carpets Handicap Hurdle,No Class,4YO plus,2m 1f 165y,Good,"€6,000",9,9,None,5,5,3,3
+183483,3,15:08,21,Downpatrick,Hurdle,2025-08-25,Randox Maiden Hurdle,No Class,4YO plus,2m 5f 180y,Good,"€6,000",7,6,None,4,4,2,2
+183484,4,15:43,21,Downpatrick,Hurdle,2025-08-25,Randox Handicap Hurdle,No Class,4YO plus,2m 5f 180y,Good,"€6,899",9,9,None,5,5,3,3
+183485,5,16:18,21,Downpatrick,Chase,2025-08-25,Miss Northern Ireland - Carly Wilson Beginners Chase,No Class,4YO plus,2m 3f 100y,Good,"€6,601",5,5,None,4,4,2,2
+183486,6,16:53,21,Downpatrick,Chase,2025-08-25,Downpatrick Racecourse Style Awards Handicap Chase,No Class,4YO plus,2m 3f 100y,Good,"€6,000",8,8,None,5,5,3,3
+183487,7,17:28,21,Downpatrick,Chase,2025-08-25,"Drop, Lock &amp; Leave Handicap Chase",No Class,4YO plus,2m 1f 165y,Good,"€8,700",9,9,None,5,5,3,3
+183451,1,13:30,61,Ripon,Flat Turf,2025-08-25,Squadron Flyer At Aldwark Manor Estate EBF Restricted Maiden Stakes,Class 4,2YO only,6f,Good-good to firm in places,"£4,860",9,9,High,5,5,3,3
+183452,2,14:05,61,Ripon,Flat Turf,2025-08-25,Squadron Flyer At Aldwark Manor Estate EBF Restricted Maiden Stakes,Class 4,2YO only,6f,Good-good to firm in places,"£4,860",9,9,High,5,5,3,3
+183453,3,14:40,61,Ripon,Flat Turf,2025-08-25,Harrogate Theatre Panto Tickets Now On-Sale Restricted Maiden Stakes,Class 5,3YO to,1m 1f 170y,Good-good to firm in places,"£4,860",7,7,None,4,4,2,2
+183454,4,15:15,61,Ripon,Flat Turf,2025-08-25,British Stallion Studs EBF Ripon Champion Two Yrs Old Trophy Stakes,Class 1,2YO only,6f,Good-good to firm in places,"£22,408",7,7,High,4,4,2,2
+183455,5,15:50,61,Ripon,Flat Turf,2025-08-25,Ripon Rowels Handicap,Class 2,3YO plus,1m,Good-good to firm in places,"£15,462",8,7,None,5,4,3,2
+183456,6,16:23,61,Ripon,Flat Turf,2025-08-25,Queen Mary's Her Best Day Every Day Handicap,Class 5,3YO plus,5f,Good-good to firm in places,"£4,711",12,11,None,4,5,3,3
+183457,7,16:58,61,Ripon,Flat Turf,2025-08-25,Lily Burnet Memorial Classified Stakes,Class 6,3YO plus,1m 1f 170y,Good-good to firm in places,"£3,664",10,10,None,5,5,3,3
+183458,8,17:33,61,Ripon,Flat Turf,2025-08-25,AJA Amateur Jockeys' Handicap,Class 6,4YO plus,1m 2f 190y,Good-good to firm in places,"£3,477",10,9,High,5,5,3,3
+183459,1,13:45,67,Southwell,Flat AW,2025-08-25,Join Southwell Golf Club Maiden Fillies' Stakes,Class 5,2YO only,4f 214y,Standard  (AW),"£3,672",9,8,None,5,5,3,3
+183460,2,14:15,67,Southwell,Flat AW,2025-08-25,Joy Silvester Mobile Barbering Handicap,Class 5,3YO plus,1m 6f 21y,Standard  (AW),"£3,978",12,12,High,4,4,3,3
+183461,3,14:50,67,Southwell,Flat AW,2025-08-25,National Racehorse Week Handicap,Class 6,3YO plus,1m 13y,Standard  (AW),"£3,245",13,13,None,4,4,3,3
+183462,4,15:25,67,Southwell,Flat AW,2025-08-25,N&amp;L Franklin Developments Handicap,Class 5,3YO only,1m 13y,Standard  (AW),"£5,234",11,11,None,5,5,3,3
+183463,5,16:00,67,Southwell,Flat AW,2025-08-25,Grace &amp; Dotty Fedoras And Feathers Handicap,Class 5,3YO only,7f 14y,Standard  (AW),"£3,978",10,10,None,5,5,3,3
+183464,6,16:33,67,Southwell,Flat AW,2025-08-25,Grace &amp; Dotty Fedoras And Feathers Handicap,Class 5,3YO only,7f 14y,Standard  (AW),"£3,978",9,9,None,5,5,3,3
+183465,7,17:08,67,Southwell,Flat AW,2025-08-25,At The Races App Expert Tips Handicap,Class 5,4YO plus,6f 16y,Standard  (AW),"£3,978",14,14,None,4,4,3,3
+183466,8,17:38,67,Southwell,Flat AW,2025-08-25,Golf And Gallop Handicap,Class 6,3YO only,6f 16y,Standard  (AW),"£3,245",13,10,None,4,5,3,3

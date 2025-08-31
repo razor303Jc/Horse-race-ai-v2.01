@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   # =============================================================================
   # INFRASTRUCTURE SERVICES
@@ -51,7 +49,66 @@ services:
   # =============================================================================
   # CORE APPLICATION SERVICES
   # =============================================================================
-
+  node-red:
+    build:
+      context: ./docker/node-red
+      dockerfile: Dockerfile
+      args:
+        - DOCKER_GID=988  # Docker group ID from host
+    container_name: horse_racing_node_red
+    restart: unless-stopped
+    user: "${USER_ID:-1000}:${GROUP_ID:-1000}"
+    environment:
+      - TZ=UTC
+      - NODE_RED_LOG_LEVEL=info
+      - NODE_RED_CREDENTIAL_SECRET=horse_racing_ai_secret_key_2024
+      - DATABASE_URL=${CARDS_DATABASE_URL}
+      - CARDS_DATABASE_URL=${CARDS_DATABASE_URL}
+      - RESULTS_DATABASE_URL=${RESULTS_DATABASE_URL}
+      - AI_DATABASE_URL=${AI_DATABASE_URL}
+      - SMTP_USER=${SMTP_USER:-your-email@gmail.com}
+      - APP_PASSWORD=${APP_PASSWORD}
+      - USER_NAME=${USER_NAME}
+    # Remove external port mapping - use Traefik instead
+    expose:
+      - "1880"
+    volumes:
+      # Node-RED data persistence
+      - node_red_data:/data
+      # Docker socket access for container management
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      # Access to project files for automation
+      - ./:/workspace:ro
+      # Access to data directories
+      - ./data:/workspace/data
+      - ./logs:/workspace/logs
+      - ./temp_extract:/workspace/temp_extract
+      - ./temp_card_processing:/workspace/temp_card_processing
+      # Access to tools and scripts
+      - ./tools:/workspace/tools:ro
+      - ./scripts:/workspace/scripts:ro
+    networks:
+      - horse_racing_network
+      - traefik-dev
+    depends_on:
+      - postgres
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik-dev"
+      - "traefik.http.routers.node-red.rule=Host(`c2.horse-racing.local`)"
+      - "traefik.http.routers.node-red.entrypoints=web"
+      - "traefik.http.services.node-red.loadbalancer.server.port=1880"
+      # Create middleware for API path stripping
+      - "traefik.http.middlewares.node-red-stripprefix.stripprefix.prefixes=/api"
+      - "traefik.http.routers.node-red.middlewares=node-red-stripprefix"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:1880/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
   # Web Application - Main UI and API
   web-app:
     build:
@@ -66,7 +123,7 @@ services:
       # Multi-database configuration
       CARDS_DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/cards_horse_racing_db
       RESULTS_DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/results_horse_racing_db
-      ADVANCED_DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/advanced_racing_metrics_db
+      AI_DATABASE_URL: ${AI_DATABASE_URL}
       # Legacy fallback (for compatibility)
       DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/cards_horse_racing_db
       REDIS_URL: redis://:${REDIS_PASSWORD:-redis_password_123}@redis:6379/0
@@ -127,7 +184,7 @@ services:
       # Multi-database configuration
       CARDS_DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/cards_horse_racing_db
       RESULTS_DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/results_horse_racing_db
-      ADVANCED_DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/advanced_racing_metrics_db
+      AI_DATABASE_URL: ${AI_DATABASE_URL}
       # Legacy fallback (for compatibility)
       DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/cards_horse_racing_db
       REDIS_URL: redis://:${REDIS_PASSWORD:-redis_password_123}@redis:6379/0
@@ -178,7 +235,7 @@ services:
       # Multi-database configuration
       CARDS_DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/cards_horse_racing_db
       RESULTS_DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/results_horse_racing_db
-      ADVANCED_DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/advanced_racing_metrics_db
+      AI_DATABASE_URL: ${AI_DATABASE_URL}
       # Legacy fallback (for compatibility)
       DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/advanced_racing_metrics_db
       REDIS_URL: redis://:${REDIS_PASSWORD:-redis_password_123}@redis:6379/0
@@ -245,7 +302,7 @@ services:
       # Multi-database configuration
       CARDS_DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/cards_horse_racing_db
       RESULTS_DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/results_horse_racing_db
-      ADVANCED_DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/advanced_racing_metrics_db
+      AI_DATABASE_URL: ${AI_DATABASE_URL}
       # Legacy fallback (for compatibility)
       DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/advanced_racing_metrics_db
       REDIS_URL: redis://:${REDIS_PASSWORD:-redis_password_123}@redis:6379/0
@@ -301,7 +358,7 @@ services:
       # Multi-database configuration
       CARDS_DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/cards_horse_racing_db
       RESULTS_DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/results_horse_racing_db
-      ADVANCED_DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/advanced_racing_metrics_db
+      AI_DATABASE_URL: ${AI_DATABASE_URL}
       # Legacy fallback (for compatibility)
       DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/advanced_racing_metrics_db
       REDIS_URL: redis://:${REDIS_PASSWORD:-redis_password_123}@redis:6379/0
@@ -352,7 +409,7 @@ services:
       # Multi-database configuration
       CARDS_DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/cards_horse_racing_db
       RESULTS_DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/results_horse_racing_db
-      ADVANCED_DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/advanced_racing_metrics_db
+      AI_DATABASE_URL: ${AI_DATABASE_URL}
       # Legacy fallback (for compatibility)
       DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/advanced_racing_metrics_db
       REDIS_URL: redis://:${REDIS_PASSWORD:-redis_password_123}@redis:6379/0
@@ -423,7 +480,7 @@ services:
       # Multi-database configuration
       CARDS_DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/cards_horse_racing_db
       RESULTS_DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/results_horse_racing_db
-      ADVANCED_DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/advanced_racing_metrics_db
+      AI_DATABASE_URL: ${AI_DATABASE_URL}
       # Legacy fallback (for compatibility)
       DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/advanced_racing_metrics_db
       OLLAMA_HOST: 0.0.0.0:11434
@@ -452,7 +509,7 @@ services:
       # Multi-database configuration
       CARDS_DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/cards_horse_racing_db
       RESULTS_DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/results_horse_racing_db
-      ADVANCED_DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/advanced_racing_metrics_db
+      AI_DATABASE_URL: ${AI_DATABASE_URL}
       # Legacy fallback (for compatibility)
       DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/advanced_racing_metrics_db
       REDIS_URL: redis://:${REDIS_PASSWORD:-redis_password_123}@redis:6379/0
@@ -540,6 +597,8 @@ volumes:
   postgres_data:
     driver: local
   redis_data:
+    driver: local
+  node_red_data:
     driver: local
   pgadmin_data:
     driver: local
