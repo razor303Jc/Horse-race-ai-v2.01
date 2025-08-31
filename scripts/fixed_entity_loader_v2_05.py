@@ -2,40 +2,24 @@
 """
 Fixed Entity Data Loader for PostgreSQL v2.05
 Properly map CSV columns to PostgreSQL schema and load complete entity data
+Uses centralized database configuration for reliable connections
 """
 import subprocess
 import pandas as pd
 import logging
+import sys
 from pathlib import Path
+
+# Add the project root to the path to import config
+sys.path.append(str(Path(__file__).parent.parent))
+from config.database_config import db_config, execute_sql_command
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(message)s")
 
 
-def execute_sql(database, sql_command):
-    """Execute SQL command via docker exec"""
-    cmd = [
-        "docker",
-        "exec",
-        "horse_racing_postgres_clean",
-        "psql",
-        "-U",
-        "horse_racing",
-        "-d",
-        database,
-        "-c",
-        sql_command,
-    ]
-
-    try:
-        result = subprocess.run(cmd, capture_output=True, text=True, check=True)
-        if result.returncode == 0:
-            return True
-        else:
-            logging.error(f"SQL failed: {result.stderr.strip()}")
-            return False
-    except Exception as e:
-        logging.error(f"Failed to execute SQL: {e}")
-        return False
+def execute_sql(database_type, sql_command):
+    """Execute SQL command via database config"""
+    return execute_sql_command(database_type, sql_command)
 
 
 def load_horses_data():
@@ -286,23 +270,12 @@ def verify_data_loading():
 
     total_records = 0
     for table in tables:
-        result = subprocess.run(
-            [
-                "docker",
-                "exec",
-                "horse_racing_postgres_clean",
-                "psql",
-                "-U",
-                "horse_racing",
-                "-d",
-                "results",
-                "-t",
-                "-c",
-                f"SELECT COUNT(*) FROM {table};",
-            ],
-            capture_output=True,
-            text=True,
+        cmd = db_config.get_docker_exec_command(
+            "results", f"SELECT COUNT(*) FROM {table};"
         )
+        cmd.append("-t")  # Add tuples-only flag
+
+        result = subprocess.run(cmd, capture_output=True, text=True)
 
         if result.returncode == 0:
             count = int(result.stdout.strip())
