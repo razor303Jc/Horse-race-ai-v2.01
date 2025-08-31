@@ -1,13 +1,27 @@
 # 🏇 HORSE RACING AI - UPDATED TODO LIST
 
-## Post-Schema Guardian Success (August 25, 2025)
+## Post-Advanced Metrics Database Setup (August 31, 2025)
 
-_Generated after successful resolution of all schema issues_  
-_Current Status: 14,825 records uploaded successfully, schema consistency achieved_
+_Last Updated: August 31, 2025_  
+_Current Status: Advanced metrics database initialized, ML Analytics integrated to Node-RED_
 
 ---
 
-## 🎉 **MAJOR RECENT ACHIEVEMENT - SCHEMA GUARDIAN SUCCESS**
+## 🎉 **MAJOR RECENT ACHIEVEMENTS**
+
+### ✅ **COMPLETED: Advanced Metrics Database Setup (August 31, 2025)**
+
+**🏆 DATABASE ARCHITECTURE ENHANCED:**
+
+- ✅ **Advanced metrics database** initialized with 5 comprehensive tables
+- ✅ **horse_speed_ratings**: Speed figures, pace analysis, sectional breakdowns
+- ✅ **horse_power_ratings**: Class-par ratings with 8 adjustment factors  
+- ✅ **horse_form_scores**: Multi-factor form analysis system
+- ✅ **monte_carlo_simulations**: Probability analysis and betting insights
+- ✅ **horse_advanced_metrics**: Consolidated summary table
+- ✅ **ML Analytics Framework** imported and deployed to Node-RED
+
+### ✅ **COMPLETED: Schema Guardian Success (August 25, 2025)**
 
 ### ✅ **COMPLETED: Schema Issues Resolution (August 25, 2025)**
 
@@ -39,7 +53,36 @@ _Current Status: 14,825 records uploaded successfully, schema consistency achiev
 
 ## 🔥 **CURRENT CRITICAL PRIORITIES**
 
-### 1. **Test Framework Audit & Enhancement** 🔬 **IMMEDIATE (3-4 hours)**
+### 1. **Advanced Metrics Data Population Automation** 🔬 **IMMEDIATE (2-3 hours)**
+
+**Status:** 🔴 CRITICAL - Database ready, needs data pipeline automation  
+**Priority:** FOUNDATIONAL - Advanced analytics require data population
+
+**🎯 OBJECTIVE: Create automated system to populate advanced metrics tables from existing results data**
+
+**Key Requirements:**
+- ✅ Database tables created and ready (5 advanced metrics tables)
+- 🔄 **IN PROGRESS:** Data extraction from existing results_horse_racing_db
+- 📊 **NEEDED:** Transform results data into advanced metrics format
+- 🔄 **NEEDED:** Automated calculation pipeline for:
+  - Speed figures and pace ratings
+  - Power ratings with class/distance adjustments  
+  - Form scores with multi-factor analysis
+  - Monte Carlo probability simulations
+  - Consolidated summary metrics
+
+**Implementation Plan:**
+- [ ] **Phase 1:** Data extraction script from results database (30 min)
+- [ ] **Phase 2:** Advanced metrics calculation engine (90 min)
+- [ ] **Phase 3:** Automated population pipeline (45 min)
+- [ ] **Phase 4:** Validation and testing (15 min)
+
+**Success Criteria:**
+- All 5 advanced metrics tables populated with calculated data
+- Automated daily updates from results database
+- Integration with ML Analytics Node-RED flows
+
+### 2. **Test Framework Audit & Enhancement** 🔬 **HIGH PRIORITY (3-4 hours)**
 
 **Status:** 🔴 CRITICAL - Extensive framework exists, needs audit  
 **Priority:** FOUNDATIONAL - Required for reliable development
