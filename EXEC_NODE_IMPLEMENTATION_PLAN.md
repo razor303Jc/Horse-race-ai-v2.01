@@ -38,14 +38,22 @@ Based on analysis of the Horse Racing AI codebase, here are the priority Python 
    - **Node-RED Integration**: Scheduled ML training automation
 
 5. **AI Selections Generator**
+
    - **Script**: `scripts/run_real_selections.py`
    - **Purpose**: Generate AI-powered race predictions
    - **Current Usage**: Manual execution
    - **Node-RED Integration**: Automated daily selections
 
+6. **Entity Data Loader** ⭐ **RECENTLY DISCOVERED**
+   - **Script**: `scripts/fixed_entity_loader_v2_05.py`
+   - **Purpose**: Load horses, jockeys, and trainers entity data from CSV to PostgreSQL
+   - **Current Usage**: Manual execution (script recovered from commit c1c164b)
+   - **Node-RED Integration**: Automated entity data refresh
+   - **Status**: ✅ VERIFIED WORKING - Successfully loaded 11,328 records
+
 #### **🎯 TIER 3: Utility Scripts (Future Enhancement)**
 
-6. **Data Validator**
+7. **Data Validator**
    - **Script**: `docker/automation/data_validator.py`
    - **Purpose**: Validate incoming data files
    - **Current Usage**: Manual validation
@@ -152,6 +160,22 @@ Based on analysis of the Horse Racing AI codebase, here are the priority Python 
   "timeout": "180",  // 3 minutes
   "env": {
     "PYTHONUNBUFFERED": "1"
+  }
+}
+```
+
+#### **6. Entity Data Loader Exec Node** ⭐ **NEW**
+
+```javascript
+{
+  "id": "entity-loader-exec",
+  "type": "exec",
+  "name": "Entity Data Loader",
+  "command": "docker exec horse_racing_data_pipeline_clean python /app/scripts/fixed_entity_loader_v2_05.py",
+  "timeout": "300",  // 5 minutes
+  "env": {
+    "PYTHONUNBUFFERED": "1",
+    "ENTITY_DATA_PATH": "/app/data/2025-08-26"
   }
 }
 ```

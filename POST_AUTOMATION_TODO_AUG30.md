@@ -48,6 +48,107 @@ All manual script execution replaced with automated scheduling, API-driven contr
 **Status:** 🟡 MONITORING - Automation is deployed, now verify operation  
 **Priority:** VALIDATION - Ensure autonomous operation works correctly
 
+### 2. **Add Entity Loader Script to Node-RED Automation** 🗃️ **UPDATED PRIORITY (1-2 days)**
+
+**Status:** � IN PROGRESS - Script fixed with centralized database configuration  
+**Priority:** HIGH - Entity data loading essential + database config now standardized
+
+**📝 BACKGROUND:**
+
+- ✅ Successfully located and fixed `scripts/fixed_entity_loader_v2_05.py` from commit c1c164b
+- ✅ **NEW**: Implemented centralized database configuration system
+- ✅ **NEW**: Created `.env` file with proper database credentials
+- ✅ **NEW**: Database connection module (`config/database_config.py`)
+- ✅ Script loads horses, jockeys, and trainers entity data from CSV files into PostgreSQL
+- ✅ **VERIFIED WORKING**: Successfully loaded 11,328 total records with new config
+- ✅ **FIXED**: All database connection issues resolved permanently
+
+**🎯 REQUIRED ACTIONS:**
+
+- [ ] Add `fixed_entity_loader_v2_05.py` to Node-RED exec node automation
+- [ ] Create API endpoint: `/api/pipeline/entity-loader`
+- [ ] Add to scheduled automation (weekly entity refresh)
+- [ ] Include in manual trigger control panel
+- [ ] Test automated execution via Node-RED
+
+**💻 NODE-RED INTEGRATION SPEC:**
+
+```javascript
+{
+  "name": "🗃️ Entity Loader",
+  "script": "/app/scripts/fixed_entity_loader_v2_05.py",
+  "container": "horse_racing_data_pipeline_clean",
+  "timeout": "300", // 5 minutes
+  "description": "Load entity data (horses, jockeys, trainers) from CSV to PostgreSQL",
+  "env": {
+    "PYTHONPATH": "/app",
+    "PYTHONUNBUFFERED": "1"
+  }
+}
+```
+
+**🔧 DATABASE CONFIGURATION IMPROVEMENTS:**
+
+- ✅ **Centralized Config**: `config/database_config.py` module created
+- ✅ **Environment Variables**: `.env` file with all database URLs
+- ✅ **Connection Validation**: Automatic testing and error handling
+- ✅ **Docker Integration**: Proper container and network configuration
+- ✅ **Error Prevention**: No more "database does not exist" issues
+
+**📊 CURRENT STATUS:**
+
+- Script File: ✅ `scripts/fixed_entity_loader_v2_05.py` (working, updated)
+- Database Config: ✅ Centralized configuration implemented
+- Database: ✅ PostgreSQL results_horse_racing_db (connected reliably)
+- CSV Data: ✅ `data/2025-08-26/` (418 horses, 6,606 jockeys, 4,260 trainers)
+- Node-RED: ❌ Not automated (needs exec node deployment)
+
+### 3. **Update All Scripts with Centralized Database Configuration** 🔧 **NEW PRIORITY (2-3 days)**
+
+**Status:** 🔴 PENDING - System-wide database configuration standardization needed  
+**Priority:** MEDIUM - Improve reliability and prevent future connection issues
+
+**📝 BACKGROUND:**
+
+- ✅ **Database config system created**: `config/database_config.py`
+- ✅ **Environment file established**: `.env` with all database URLs
+- ✅ **First script updated**: `scripts/fixed_entity_loader_v2_05.py` working perfectly
+- 🔄 **Remaining scripts need updates** to use centralized configuration
+
+**🎯 SCRIPTS TO UPDATE:**
+
+- [ ] `tools/manual_pipeline_trigger.py` - Main pipeline orchestration
+- [ ] `tools/data_processing/automated_relationships_pipeline.py` - Data processing
+- [ ] `tools/automation/daily_performance_tracker.py` - Performance monitoring
+- [ ] `docker/ml_training/unified_ml_trainer.py` - ML training pipeline
+- [ ] `scripts/run_real_selections.py` - AI selections generator
+
+**💻 CONFIGURATION TEMPLATE:**
+
+```python
+# Add to imports
+from config.database_config import db_config, execute_sql_command
+
+# Replace hardcoded connections with:
+success = execute_sql_command("results", sql_command)
+url = db_config.get_database_url("cards")
+cmd = db_config.get_docker_exec_command("advanced", sql_query)
+```
+
+**✅ BENEFITS:**
+
+- Eliminate hardcoded database names and connections
+- Prevent "database does not exist" errors
+- Centralized password and credential management
+- Consistent error handling across all scripts
+- Easy environment switching (dev/prod)
+- Future-proof database architecture
+
+**📊 DOCUMENTATION:**
+
+- ✅ `DATABASE_CONFIGURATION_GUIDE.md` - Complete implementation guide
+- ✅ `scripts/test_database_config.py` - Testing and validation tool
+
 **Why This Must Come First:**
 
 - ✅ **Automation Deployed** - System is now autonomous
@@ -275,7 +376,7 @@ All manual script execution replaced with automated scheduling, API-driven contr
 ### ✅ **RECENTLY COMPLETED (100% SUCCESS):**
 
 - Complete automation suite deployment
-- 5 Python scripts automated via Node-RED
+- 5 Python scripts automated via Node-RED (entity loader pending)
 - Scheduled automation with cron expressions
 - File watcher and system monitoring
 - API endpoints for all scripts
@@ -283,6 +384,7 @@ All manual script execution replaced with automated scheduling, API-driven contr
 
 ### 🔄 **CURRENT FOCUS:**
 
+- **ADD**: Entity loader script automation (6th script)
 - Monitor automated execution results
 - Validate automation performance
 - Enhance testing framework for automation
