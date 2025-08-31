@@ -1,7 +1,0 @@
-{
-  "timestamp": 1756591172.1015131,
-  "database_path": "/home/jc/Documents/Horse-race-ai-v2.05/data/processed/racing_data.db",
-  "tests": {},
-  "error": "no such table: horses",
-  "status": "failed"
-}
