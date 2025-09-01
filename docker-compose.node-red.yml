@@ -201,15 +201,6 @@ services:
       timeout: 10s
       retries: 3
 
-  # Reference external services from main docker-compose.clean.yml
-  postgres:
-    external: true
-    container_name: horse_racing_postgres_clean
-
-  redis:
-    external: true
-    container_name: horse_racing_redis_clean
-
 networks:
   horse_racing_network:
     external: true
@@ -221,7 +212,3 @@ networks:
 volumes:
   node_red_data:
     driver: local
-
-networks:
-  horse_racing_network:
-    external: true

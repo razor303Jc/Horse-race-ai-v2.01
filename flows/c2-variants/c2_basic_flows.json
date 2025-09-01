@@ -1,0 +1,87 @@
+[
+  {
+    "id": "c2-main-tab",
+    "type": "tab",
+    "label": "C2 Command Center",
+    "disabled": false,
+    "info": "Horse Racing AI Command & Control Center"
+  },
+  {
+    "id": "http-c2-dashboard",
+    "type": "http in",
+    "z": "c2-main-tab",
+    "name": "C2 Dashboard",
+    "url": "/c2",
+    "method": "get",
+    "upload": false,
+    "swaggerDoc": "",
+    "x": 120,
+    "y": 80,
+    "wires": [["template-c2-dashboard"]]
+  },
+  {
+    "id": "template-c2-dashboard",
+    "type": "template",
+    "z": "c2-main-tab",
+    "name": "C2 HTML Dashboard",
+    "field": "payload",
+    "fieldType": "msg",
+    "format": "html",
+    "syntax": "mustache",
+    "template": "<!DOCTYPE html>\n<html>\n<head>\n    <title>Horse Racing AI - C2 Command Center</title>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <style>\n        * { margin: 0; padding: 0; box-sizing: border-box; }\n        body { font-family: 'Segoe UI', Arial, sans-serif; background: #0a0a0a; color: #fff; }\n        .header { background: linear-gradient(135deg, #1a1a2e, #16213e); padding: 20px; text-align: center; border-bottom: 2px solid #00ff88; }\n        .container { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 20px; }\n        .panel { background: #1a1a2e; border: 1px solid #333; border-radius: 8px; padding: 20px; }\n        .panel h3 { color: #00ff88; margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 10px; }\n        .status-green { color: #00ff88; }\n        .metric { display: flex; justify-content: space-between; margin: 10px 0; }\n        .btn { background: #00ff88; color: #000; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; margin: 5px; }\n        .btn:hover { background: #00cc70; }\n    </style>\n</head>\n<body>\n    <div class=\"header\">\n        <h1>🏇 Horse Racing AI - C2 Command Center</h1>\n        <p>Real-time Pipeline Control & Monitoring</p>\n    </div>\n    \n    <div class=\"container\">\n        <div class=\"panel\">\n            <h3>📊 System Status</h3>\n            <div class=\"metric\">\n                <span>Node-RED C2 Center:</span>\n                <span class=\"status-green\">● ONLINE</span>\n            </div>\n            <div class=\"metric\">\n                <span>Database:</span>\n                <span class=\"status-green\">● Connected</span>\n            </div>\n            <div class=\"metric\">\n                <span>Pipeline:</span>\n                <span class=\"status-green\">● Ready</span>\n            </div>\n        </div>\n        \n        <div class=\"panel\">\n            <h3>🔧 Quick Actions</h3>\n            <button class=\"btn\" onclick=\"alert('Data validation triggered!')\">Start Data Validation</button>\n            <button class=\"btn\" onclick=\"alert('Data processing triggered!')\">Process Data</button>\n            <button class=\"btn\" onclick=\"alert('Ratings generation triggered!')\">Generate Ratings</button>\n            <div style=\"margin-top: 15px;\">\n                <a href=\"/admin\" class=\"btn\">Open Node-RED Editor</a>\n            </div>\n        </div>\n    </div>\n    \n    <script>\n        console.log('Horse Racing AI C2 Command Center loaded successfully!');\n    </script>\n</body>\n</html>",
+    "output": "str",
+    "x": 320,
+    "y": 80,
+    "wires": [["http-response-c2"]]
+  },
+  {
+    "id": "http-response-c2",
+    "type": "http response",
+    "z": "c2-main-tab",
+    "name": "Send HTML Response",
+    "statusCode": "",
+    "headers": {"Content-Type": "text/html"},
+    "x": 520,
+    "y": 80,
+    "wires": []
+  },
+  {
+    "id": "http-root-redirect",
+    "type": "http in",
+    "z": "c2-main-tab",
+    "name": "Root Redirect",
+    "url": "/",
+    "method": "get",
+    "upload": false,
+    "swaggerDoc": "",
+    "x": 120,
+    "y": 160,
+    "wires": [["template-root-redirect"]]
+  },
+  {
+    "id": "template-root-redirect",
+    "type": "template",
+    "z": "c2-main-tab",
+    "name": "Redirect to C2",
+    "field": "payload",
+    "fieldType": "msg",
+    "format": "html",
+    "syntax": "mustache",
+    "template": "<!DOCTYPE html>\n<html>\n<head>\n    <meta http-equiv=\"refresh\" content=\"0; url=/c2\">\n    <title>Redirecting to C2 Command Center</title>\n</head>\n<body>\n    <h1>Redirecting to Horse Racing AI C2 Command Center...</h1>\n    <p>If you are not redirected automatically, <a href=\"/c2\">click here</a>.</p>\n</body>\n</html>",
+    "output": "str",
+    "x": 320,
+    "y": 160,
+    "wires": [["http-response-redirect"]]
+  },
+  {
+    "id": "http-response-redirect",
+    "type": "http response",
+    "z": "c2-main-tab",
+    "name": "Send Redirect Response",
+    "statusCode": "",
+    "headers": {"Content-Type": "text/html"},
+    "x": 540,
+    "y": 160,
+    "wires": []
+  }
+]

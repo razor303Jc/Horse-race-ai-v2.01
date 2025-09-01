@@ -1,0 +1,58 @@
+[
+  {
+    "id": "navbar-injection-tab",
+    "type": "tab",
+    "label": "Navbar Injection",
+    "disabled": false,
+    "info": "Navbar injection for cross-dashboard navigation"
+  },
+  {
+    "id": "http-inject-navbar",
+    "type": "http in",
+    "z": "navbar-injection-tab",
+    "name": "Inject Advanced Metrics Navbar",
+    "url": "/inject-metrics-navbar",
+    "method": "get",
+    "upload": false,
+    "swaggerDoc": "",
+    "x": 140,
+    "y": 80,
+    "wires": [
+      [
+        "function-inject-navbar"
+      ]
+    ]
+  },
+  {
+    "id": "function-inject-navbar",
+    "type": "function",
+    "z": "navbar-injection-tab",
+    "name": "Create Navbar Injection Script",
+    "func": "// Navbar Injection Script\n// This script adds the Advanced Metrics tab to existing dashboard navbars\n\nconst injectionScript = `\n<script>\n// Advanced Metrics Navbar Injection\n(function() {\n    'use strict';\n    \n    function injectAdvancedMetricsNavItem() {\n        // Find the navbar\n        const navbar = document.querySelector('.navbar-nav');\n        if (!navbar) {\n            console.log('Navbar not found, retrying in 500ms...');\n            setTimeout(injectAdvancedMetricsNavItem, 500);\n            return;\n        }\n        \n        // Check if already injected\n        if (navbar.querySelector('a[href=\"/metrics\"]')) {\n            console.log('Advanced Metrics nav item already exists');\n            return;\n        }\n        \n        // Create the Advanced Metrics nav item\n        const metricsNavItem = document.createElement('li');\n        metricsNavItem.className = 'nav-item';\n        \n        const metricsLink = document.createElement('a');\n        metricsLink.className = 'nav-link';\n        metricsLink.href = '/metrics';\n        metricsLink.innerHTML = '⚡ Advanced Metrics';\n        \n        // Add hover effects\n        metricsLink.style.transition = 'all 0.3s';\n        metricsLink.addEventListener('mouseenter', function() {\n            this.style.color = '#aa44ff';\n            this.style.background = 'rgba(170,68,255,0.1)';\n        });\n        metricsLink.addEventListener('mouseleave', function() {\n            this.style.color = '#aaa';\n            this.style.background = 'transparent';\n        });\n        \n        metricsNavItem.appendChild(metricsLink);\n        navbar.appendChild(metricsNavItem);\n        \n        console.log('✅ Advanced Metrics nav item injected successfully');\n        \n        // Add notification\n        showInjectionNotification();\n    }\n    \n    function showInjectionNotification() {\n        const notification = document.createElement('div');\n        notification.innerHTML = '⚡ Advanced Metrics navigation added!';\n        notification.style.cssText = \\`\n            position: fixed;\n            top: 20px;\n            right: 20px;\n            background: linear-gradient(135deg, #aa44ff, #8833cc);\n            color: white;\n            padding: 10px 20px;\n            border-radius: 8px;\n            box-shadow: 0 4px 12px rgba(170,68,255,0.3);\n            font-size: 14px;\n            font-weight: bold;\n            z-index: 10000;\n            animation: slideIn 0.3s ease-out;\n        \\`;\n        \n        // Add animation\n        const style = document.createElement('style');\n        style.textContent = \\`\n            @keyframes slideIn {\n                from { transform: translateX(100%); opacity: 0; }\n                to { transform: translateX(0); opacity: 1; }\n            }\n            @keyframes slideOut {\n                from { transform: translateX(0); opacity: 1; }\n                to { transform: translateX(100%); opacity: 0; }\n            }\n        \\`;\n        document.head.appendChild(style);\n        \n        document.body.appendChild(notification);\n        \n        // Auto-remove after 3 seconds\n        setTimeout(() => {\n            notification.style.animation = 'slideOut 0.3s ease-in';\n            setTimeout(() => {\n                if (notification.parentNode) {\n                    notification.parentNode.removeChild(notification);\n                }\n            }, 300);\n        }, 3000);\n    }\n    \n    // Initialize injection when DOM is ready\n    if (document.readyState === 'loading') {\n        document.addEventListener('DOMContentLoaded', injectAdvancedMetricsNavItem);\n    } else {\n        injectAdvancedMetricsNavItem();\n    }\n    \n    // Also try injection after a delay to handle dynamic content\n    setTimeout(injectAdvancedMetricsNavItem, 1000);\n    setTimeout(injectAdvancedMetricsNavItem, 3000);\n    \n})();\n</script>\n`;\n\nconst html = `\n<!DOCTYPE html>\n<html>\n<head>\n    <title>Advanced Metrics Navbar Injection</title>\n    <style>\n        body { \n            font-family: 'Segoe UI', Arial, sans-serif; \n            background: #0a0a0a; \n            color: #fff; \n            padding: 40px; \n            text-align: center;\n        }\n        .container {\n            max-width: 800px;\n            margin: 0 auto;\n            background: #1a1a2e;\n            border: 1px solid #333;\n            border-radius: 8px;\n            padding: 30px;\n        }\n        h1 { color: #aa44ff; margin-bottom: 20px; }\n        .instruction {\n            background: #2a2a3e;\n            border: 1px solid #444;\n            border-radius: 6px;\n            padding: 20px;\n            margin: 20px 0;\n            text-align: left;\n        }\n        .code-block {\n            background: #000;\n            border: 1px solid #333;\n            border-radius: 4px;\n            padding: 15px;\n            font-family: monospace;\n            font-size: 12px;\n            overflow-x: auto;\n            margin: 10px 0;\n        }\n        .highlight { color: #aa44ff; font-weight: bold; }\n        .success { color: #00ff88; }\n        .button {\n            background: #aa44ff;\n            color: #fff;\n            border: none;\n            padding: 10px 20px;\n            border-radius: 4px;\n            cursor: pointer;\n            margin: 10px;\n            text-decoration: none;\n            display: inline-block;\n        }\n        .button:hover { background: #8833cc; }\n    </style>\n</head>\n<body>\n    <div class=\"container\">\n        <h1>⚡ Advanced Metrics Navbar Injection</h1>\n        \n        <p>This page provides the injection script to add Advanced Metrics navigation to existing dashboards.</p>\n        \n        <div class=\"instruction\">\n            <h3>🎯 Automatic Injection</h3>\n            <p>The injection script has been loaded and will automatically attempt to add the Advanced Metrics tab to any dashboard navbar it finds.</p>\n            <div class=\"code-block\">\n<span class=\"highlight\">Status:</span> <span class=\"success\">Script loaded and running</span><br>\n<span class=\"highlight\">Target:</span> .navbar-nav elements<br>\n<span class=\"highlight\">Retry:</span> Automatic with 500ms, 1s, and 3s delays<br>\n<span class=\"highlight\">Visual:</span> Notification will appear when injection is successful\n            </div>\n        </div>\n        \n        <div class=\"instruction\">\n            <h3>📋 Manual Usage Instructions</h3>\n            <p>To manually inject the navbar on any dashboard:</p>\n            <ol>\n                <li>Navigate to the target dashboard (e.g., /data-processing)</li>\n                <li>Open browser developer tools (F12)</li>\n                <li>Go to the Console tab</li>\n                <li>Copy and paste the injection script below</li>\n                <li>Press Enter to execute</li>\n            </ol>\n        </div>\n        \n        <div class=\"instruction\">\n            <h3>🔗 Quick Navigation</h3>\n            <p>Test the injected navigation:</p>\n            <a href=\"/c2\" class=\"button\">🎯 C2 Command Center</a>\n            <a href=\"/data-processing\" class=\"button\">📊 Data Processing</a>\n            <a href=\"/metrics\" class=\"button\">⚡ Advanced Metrics</a>\n            <a href=\"/admin\" class=\"button\">⚙️ Node-RED Admin</a>\n        </div>\n        \n        <div class=\"instruction\">\n            <h3>💾 Injection Script</h3>\n            <p>Copy this script to manually inject the navbar:</p>\n            <div class=\"code-block\" id=\"injection-script\">${injectionScript.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</div>\n            <button class=\"button\" onclick=\"copyToClipboard()\">📋 Copy Script</button>\n        </div>\n    </div>\n    \n    ${injectionScript}\n    \n    <script>\n        function copyToClipboard() {\n            const scriptText = document.getElementById('injection-script').textContent;\n            navigator.clipboard.writeText(scriptText).then(() => {\n                alert('Injection script copied to clipboard!');\n            }).catch(err => {\n                console.error('Could not copy script: ', err);\n                // Fallback: select text\n                const range = document.createRange();\n                range.selectNode(document.getElementById('injection-script'));\n                window.getSelection().removeAllRanges();\n                window.getSelection().addRange(range);\n            });\n        }\n        \n        // Auto-execute injection\n        console.log('🚀 Advanced Metrics Navbar Injection page loaded');\n        console.log('✅ Injection script will run automatically on compatible pages');\n    </script>\n</body>\n</html>\n`;\n\nmsg.payload = html;\nreturn msg;",
+    "outputs": 1,
+    "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "libs": [],
+    "x": 380,
+    "y": 80,
+    "wires": [
+      [
+        "http-response-inject-navbar"
+      ]
+    ]
+  },
+  {
+    "id": "http-response-inject-navbar",
+    "type": "http response",
+    "z": "navbar-injection-tab",
+    "name": "Send Injection Response",
+    "statusCode": "",
+    "headers": {
+      "Content-Type": "text/html"
+    },
+    "x": 640,
+    "y": 80,
+    "wires": []
+  }
+]

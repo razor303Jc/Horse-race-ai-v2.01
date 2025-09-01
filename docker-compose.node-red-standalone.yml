@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  # Node-RED Automation Service - Standalone
+  node-red:
+    build:
+      context: ./docker/node-red
+      dockerfile: Dockerfile
+      args:
+        - DOCKER_GID=988  # Docker group ID from host
+    container_name: horse_racing_node_red_clean
+    restart: unless-stopped
+    user: "${USER_ID:-1000}:${GROUP_ID:-1000}"
+    environment:
+      - TZ=UTC
+      - NODE_RED_LOG_LEVEL=info
+      - NODE_RED_CREDENTIAL_SECRET=horse_racing_ai_secret_key_2024
+      - DATABASE_URL=${CARDS_DATABASE_URL}
+      - CARDS_DATABASE_URL=${CARDS_DATABASE_URL}
+      - RESULTS_DATABASE_URL=${RESULTS_DATABASE_URL}
+      - ADVANCED_DATABASE_URL=postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@horse_racing_postgres_clean:5432/advanced_racing_metrics_db
+      - SMTP_USER=${SMTP_USER:-your-email@gmail.com}
+      - APP_PASSWORD=${APP_PASSWORD}
+      - USER_NAME=${USER_NAME}
+    ports:
+      - "1880:1880"  # Direct port mapping for now
+    volumes:
+      # Node-RED data persistence
+      - node_red_data:/data
+      # Mount docker socket for Docker integration
+      - /var/run/docker.sock:/var/run/docker.sock
+      # Mount host directories for file access
+      - ./:/workspace:ro
+      - ./data:/app/data
+      - ./temp_card_processing:/app/temp_card_processing
+    networks:
+      - horse_racing_network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:1880/"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+networks:
+  horse_racing_network:
+    external: true
+    name: horse_racing_network
+
+volumes:
+  node_red_data:
+    driver: local

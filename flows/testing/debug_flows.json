@@ -1,0 +1,99 @@
+[
+  {
+    "id": "debug_tab",
+    "type": "tab",
+    "label": "🔍 Debug & Test",
+    "disabled": false,
+    "info": "Debug flows to troubleshoot endpoints"
+  },
+  {
+    "id": "debug_test_endpoint",
+    "type": "http in",
+    "z": "debug_tab",
+    "name": "Debug Test",
+    "url": "/debug-test",
+    "method": "get",
+    "upload": false,
+    "swaggerDoc": "",
+    "x": 120,
+    "y": 80,
+    "wires": [["debug_response_template"]]
+  },
+  {
+    "id": "debug_response_template",
+    "type": "template",
+    "z": "debug_tab",
+    "name": "Debug Response",
+    "field": "payload",
+    "fieldType": "msg",
+    "format": "html",
+    "syntax": "mustache",
+    "template": "<!DOCTYPE html>\n<html>\n<head>\n    <title>Debug Test - Node-RED Working</title>\n</head>\n<body>\n    <h1>🔍 Debug Test Success!</h1>\n    <p>✅ Node-RED HTTP endpoints are working!</p>\n    <p>⏰ Time: {{timestamp}}</p>\n    <p>🌐 URL: {{req.url}}</p>\n    <p>📍 Method: {{req.method}}</p>\n    <h2>Available Endpoints:</h2>\n    <ul>\n        <li><a href=\"/c2-dashboard\">/c2-dashboard</a></li>\n        <li><a href=\"/system-status\">/system-status</a></li>\n        <li><a href=\"/ui\">/ui</a></li>\n        <li><a href=\"/debug-test\">/debug-test</a> (this page)</li>\n    </ul>\n</body>\n</html>",
+    "output": "str",
+    "x": 320,
+    "y": 80,
+    "wires": [["debug_add_timestamp", "debug_response_node"]]
+  },
+  {
+    "id": "debug_add_timestamp", 
+    "type": "function",
+    "z": "debug_tab",
+    "name": "Add Timestamp",
+    "func": "msg.timestamp = new Date().toISOString();\nreturn msg;",
+    "outputs": 1,
+    "noerr": 0,
+    "x": 520,
+    "y": 60,
+    "wires": [[]]
+  },
+  {
+    "id": "debug_response_node",
+    "type": "http response",
+    "z": "debug_tab",
+    "name": "Send Debug Response",
+    "statusCode": "",
+    "headers": {"Content-Type": "text/html"},
+    "x": 540,
+    "y": 100,
+    "wires": []
+  },
+  {
+    "id": "debug_c2_test",
+    "type": "http in",
+    "z": "debug_tab", 
+    "name": "C2 Debug Test",
+    "url": "/c2-debug",
+    "method": "get",
+    "upload": false,
+    "swaggerDoc": "",
+    "x": 120,
+    "y": 160,
+    "wires": [["debug_c2_template"]]
+  },
+  {
+    "id": "debug_c2_template",
+    "type": "template",
+    "z": "debug_tab",
+    "name": "C2 Debug Template",
+    "field": "payload", 
+    "fieldType": "msg",
+    "format": "html",
+    "syntax": "mustache",
+    "template": "<!DOCTYPE html>\n<html>\n<head>\n    <title>🎯 C2 Debug Test</title>\n    <style>\n        body { font-family: Arial, sans-serif; background: #1a1a2e; color: #fff; padding: 20px; }\n        .panel { background: #2a2a3e; padding: 20px; border-radius: 10px; margin: 20px 0; }\n        .success { color: #00ff88; }\n        .error { color: #ff4444; }\n    </style>\n</head>\n<body>\n    <h1>🎯 C2 Debug Test Page</h1>\n    <div class=\"panel\">\n        <h2 class=\"success\">✅ This endpoint is working!</h2>\n        <p>URL: /c2-debug</p>\n        <p>If you can see this, Node-RED HTTP endpoints are functional.</p>\n    </div>\n    <div class=\"panel\">\n        <h2>🔗 Try These Links:</h2>\n        <ul>\n            <li><a href=\"/c2-dashboard\" style=\"color: #00ff88;\">/c2-dashboard (main dashboard)</a></li>\n            <li><a href=\"/debug-test\" style=\"color: #00ff88;\">/debug-test</a></li>\n            <li><a href=\"/system-status\" style=\"color: #00ff88;\">/system-status</a></li>\n        </ul>\n    </div>\n</body>\n</html>",
+    "output": "str",
+    "x": 340,
+    "y": 160,
+    "wires": [["debug_c2_response"]]
+  },
+  {
+    "id": "debug_c2_response",
+    "type": "http response",
+    "z": "debug_tab",
+    "name": "C2 Debug Response",
+    "statusCode": "",
+    "headers": {"Content-Type": "text/html"},
+    "x": 560,
+    "y": 160,
+    "wires": []
+  }
+]

@@ -1,0 +1,181 @@
+[
+    {
+        "id": "advanced_metrics_flow",
+        "type": "tab",
+        "label": "Advanced Metrics Pipeline",
+        "disabled": false,
+        "info": "Automated advanced metrics calculation for horse racing data",
+        "env": []
+    },
+    {
+        "id": "inject_trigger",
+        "type": "inject",
+        "z": "advanced_metrics_flow",
+        "name": "Trigger Advanced Metrics",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "advanced_metrics",
+        "payload": "start",
+        "payloadType": "str",
+        "x": 180,
+        "y": 120,
+        "wires": [
+            [
+                "exec_metrics"
+            ]
+        ]
+    },
+    {
+        "id": "exec_metrics",
+        "type": "exec",
+        "z": "advanced_metrics_flow",
+        "command": "docker exec horse_racing_data_pipeline_clean python /app/docker_advanced_metrics_populator.py",
+        "addpay": "",
+        "append": "",
+        "useSpawn": "false",
+        "timer": "",
+        "winHide": false,
+        "oldrc": false,
+        "name": "Execute Advanced Metrics",
+        "x": 450,
+        "y": 120,
+        "wires": [
+            [
+                "success_output"
+            ],
+            [
+                "error_output"
+            ],
+            [
+                "return_code"
+            ]
+        ]
+    },
+    {
+        "id": "success_output",
+        "type": "debug",
+        "z": "advanced_metrics_flow",
+        "name": "Success Output",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 720,
+        "y": 80,
+        "wires": []
+    },
+    {
+        "id": "error_output",
+        "type": "debug",
+        "z": "advanced_metrics_flow",
+        "name": "Error Output",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 720,
+        "y": 120,
+        "wires": []
+    },
+    {
+        "id": "return_code",
+        "type": "debug",
+        "z": "advanced_metrics_flow",
+        "name": "Return Code",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 720,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "schedule_metrics",
+        "type": "inject",
+        "z": "advanced_metrics_flow",
+        "name": "Daily at 2 AM",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "00 02 * * *",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "scheduled_metrics",
+        "payload": "daily_run",
+        "payloadType": "str",
+        "x": 180,
+        "y": 200,
+        "wires": [
+            [
+                "exec_metrics"
+            ]
+        ]
+    },
+    {
+        "id": "metrics_notification",
+        "type": "function",
+        "z": "advanced_metrics_flow",
+        "name": "Process Results",
+        "func": "// Parse the output and create notification\nconst output = msg.payload.toString();\n\n// Check for success indicators\nif (output.includes('SUCCESS: Advanced metrics populated!')) {\n    msg.payload = {\n        status: 'success',\n        message: 'Advanced metrics calculation completed successfully',\n        timestamp: new Date().toISOString(),\n        details: output\n    };\n    msg.topic = 'metrics_success';\n} else if (output.includes('ERROR') || output.includes('FAILED')) {\n    msg.payload = {\n        status: 'error',\n        message: 'Advanced metrics calculation failed',\n        timestamp: new Date().toISOString(),\n        details: output\n    };\n    msg.topic = 'metrics_error';\n} else {\n    msg.payload = {\n        status: 'info',\n        message: 'Advanced metrics calculation in progress',\n        timestamp: new Date().toISOString(),\n        details: output\n    };\n    msg.topic = 'metrics_info';\n}\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 450,
+        "y": 280,
+        "wires": [
+            [
+                "final_debug"
+            ]
+        ]
+    },
+    {
+        "id": "final_debug",
+        "type": "debug",
+        "z": "advanced_metrics_flow",
+        "name": "Final Result",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 720,
+        "y": 280,
+        "wires": []
+    }
+]
