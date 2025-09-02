@@ -11,12 +11,14 @@
 ### **1. Node-RED Pipeline Automation** ⚠️ **HIGHEST PRIORITY**
 
 #### **Current Issues:**
+
 - C2 dashboard shows pretty UI but no functional backend
 - API endpoints (`/c2/status`, `/c2/pipeline/*`) return 404 errors
 - Exec nodes not properly configured or missing
 - No actual automation workflows running
 
 #### **Required Fixes:**
+
 ```bash
 # 1. Check Node-RED flow configuration
 docker exec horse_racing_node_red ls -la /data/flows.json
@@ -32,6 +34,7 @@ curl http://localhost:1880/flows
 ```
 
 #### **Action Plan:**
+
 1. **Audit existing flows** - Understand what's deployed vs what's working
 2. **Fix exec node configuration** - Ensure Python scripts can be executed
 3. **Create functional API endpoints** - Make `/c2/status` return real data
@@ -42,12 +45,14 @@ curl http://localhost:1880/flows
 ### **2. Data Pipeline Container Networking** ⚠️ **HIGH PRIORITY**
 
 #### **Current Issues:**
+
 - Container shows "unhealthy" status
 - Database connections fail inside container (localhost:5434 vs Docker network)
 - Scripts work manually but fail in automated execution
 - No proper container-to-container communication
 
 #### **Required Fixes:**
+
 ```bash
 # 1. Check container network configuration
 docker network inspect horse_racing_network
@@ -70,6 +75,7 @@ docker exec horse_racing_data_pipeline_clean env | grep -i db
 ```
 
 #### **Action Plan:**
+
 1. **Fix database connection strings** - Use Docker service names not localhost
 2. **Update environment variables** - Proper DB host/port configuration
 3. **Test automated script execution** - Ensure container can run Python tools
@@ -80,11 +86,13 @@ docker exec horse_racing_data_pipeline_clean env | grep -i db
 ### **3. Database Table Access Permissions** ⚠️ **MEDIUM PRIORITY**
 
 #### **Current Issues:**
+
 - Web app API shows "Connection failed" for table access
 - Inconsistent table names (jockeys_stats vs actual schema)
 - Some queries fail despite database connectivity
 
 #### **Required Investigation:**
+
 ```bash
 # 1. Check actual table names in each database
 python -c "
@@ -109,6 +117,7 @@ for db in dbs:
 ### **4. Paper Trading System Design** 📊 **NEXT PHASE**
 
 #### **Core Components Required:**
+
 ```python
 # Virtual Portfolio Manager
 class VirtualPortfolio:
@@ -116,11 +125,11 @@ class VirtualPortfolio:
         self.balance = starting_balance
         self.positions = {}
         self.trade_history = []
-    
+
     def place_bet(self, selection, stake, odds):
         # Simulate bet placement
         pass
-    
+
     def settle_bet(self, selection, result):
         # Calculate P&L
         pass
@@ -136,6 +145,7 @@ class PerformanceTracker:
 ```
 
 #### **Database Schema Required:**
+
 ```sql
 -- Virtual trades table
 CREATE TABLE virtual_trades (
@@ -166,6 +176,7 @@ CREATE TABLE virtual_portfolio (
 ### **5. Betdaq API Integration Architecture** 🔗 **RESEARCH PHASE**
 
 #### **API Requirements Research:**
+
 ```bash
 # 1. Betdaq API Documentation Review
 # - Authentication methods (API keys, OAuth)
@@ -187,6 +198,7 @@ CREATE TABLE virtual_portfolio (
 ```
 
 #### **Implementation Strategy:**
+
 1. **Phase 1**: Read-only integration (odds, results)
 2. **Phase 2**: Paper trading with live odds
 3. **Phase 3**: Real betting capability
@@ -197,6 +209,7 @@ CREATE TABLE virtual_portfolio (
 ### **6. Production Deployment Planning** 🚀 **FUTURE PHASE**
 
 #### **Infrastructure Requirements:**
+
 - **VPS/Cloud Hosting**: Digital Ocean, AWS, or similar
 - **Domain & SSL**: Professional domain with HTTPS
 - **Database**: Production PostgreSQL with backups
@@ -204,6 +217,7 @@ CREATE TABLE virtual_portfolio (
 - **Security**: Firewall, fail2ban, proper authentication
 
 #### **Estimated Costs:**
+
 - **Development Server**: $20-50/month
 - **Production Server**: $50-100/month
 - **Domain & SSL**: $10-20/year
@@ -215,18 +229,21 @@ CREATE TABLE virtual_portfolio (
 ## 🎯 **WEEK 1 ACTION PLAN**
 
 ### **Monday-Tuesday: Node-RED Fix**
+
 - [ ] Audit current Node-RED flows and identify missing components
 - [ ] Fix exec node configuration for Python script execution
 - [ ] Create functional `/c2/status` API endpoint
 - [ ] Test basic pipeline automation workflow
 
 ### **Wednesday-Thursday: Container Fix**
+
 - [ ] Fix data pipeline container database connectivity
 - [ ] Update environment variables for Docker network communication
 - [ ] Test automated script execution from within container
 - [ ] Resolve container health check issues
 
 ### **Friday: Foundation Planning**
+
 - [ ] Design paper trading system database schema
 - [ ] Research Betdaq API requirements and limitations
 - [ ] Plan production deployment architecture
@@ -237,12 +254,14 @@ CREATE TABLE virtual_portfolio (
 ## 📊 **SUCCESS METRICS FOR WEEK 1**
 
 ### **Technical Validation:**
+
 - [ ] Node-RED C2 dashboard API endpoints return 200 responses
 - [ ] Data pipeline container shows "healthy" status
 - [ ] Automated pipeline execution works end-to-end
 - [ ] All database table access issues resolved
 
 ### **Foundation Readiness:**
+
 - [ ] Paper trading system design complete
 - [ ] Betdaq API integration plan documented
 - [ ] Production deployment strategy defined
