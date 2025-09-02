@@ -23,17 +23,15 @@ COPY docker/requirements/requirements-ml-models.txt .
 # Install ML dependencies (this takes time but only when needed)
 RUN pip install --no-cache-dir -r requirements-ml-models.txt
 
-# Copy model training code and tools
-COPY models/ ./models/
-COPY tools/ ./tools/
-COPY data/ ./data/
+# Copy only non-volume mounted files needed during build
 COPY config/ ./config/
-COPY docker/ml_training/ ./docker/ml_training/
 COPY docker/pipeline_management/ ./docker/pipeline_management/
 
-# Create directories
-RUN mkdir -p logs trained_models results reports cache && \
-    chmod 777 logs trained_models results reports cache
+# Note: models/, data/, tools/, src/, and docker/ml_training/ are mounted as volumes at runtime
+
+# Create directories (including those mounted as volumes)
+RUN mkdir -p logs trained_models results reports cache models data tools src docker/ml_training && \
+    chmod 777 logs trained_models results reports cache models data tools src
 
 # Set Python path
 ENV PYTHONPATH=/app

@@ -1,0 +1,198 @@
+# =============================================================================
+# ML Training Service - Docker Ignore
+# =============================================================================
+# Optimized for machine learning training and model development
+# Includes: ML code, training scripts, model configurations
+# Excludes: web files, data files, flows, documentation
+# =============================================================================
+
+# =============================================================================
+# DEVELOPMENT & VERSION CONTROL
+# =============================================================================
+.git/
+.gitignore
+.github/
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.editorconfig
+
+# =============================================================================
+# PYTHON DEVELOPMENT
+# =============================================================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+.env/
+.venv/
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Testing (keep ML-specific tests)
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+htmlcov/
+tests/web/
+tests/api/
+tests/integration/
+test_web_*.py
+test_api_*.py
+pytest.ini
+
+# =============================================================================
+# LOGS & TEMPORARY FILES (MOUNTED AS VOLUMES)
+# =============================================================================
+*.log
+*.tmp
+*.temp
+temp/
+tmp/
+logs/
+*.pid
+*.seed
+*.pid.lock
+
+# =============================================================================
+# DATA FILES (MOUNTED AS VOLUMES)
+# =============================================================================
+# Training data (mount as read-only volumes)
+data/
+backups/
+results/
+backup_auto_downloader/
+temp_card_processing/
+
+# =============================================================================
+# WEB APPLICATION FILES (NOT NEEDED)
+# =============================================================================
+templates/
+static/
+src/web/
+
+# =============================================================================
+# MODEL FILES (CONDITIONAL)
+# =============================================================================
+# Pre-trained models (mount as volumes for persistence)
+models/*.pkl
+models/*.joblib
+models/*.h5
+models/*.pt
+models/*.pth
+trained_models/*.pkl
+trained_models/*.joblib
+trained_models/*.h5
+trained_models/*.pt
+trained_models/*.pth
+
+# Keep model configuration and code
+!models/*.py
+!models/*.json
+!models/*.yaml
+!models/*.yml
+!trained_models/*.py
+!trained_models/*.json
+!trained_models/*.yaml
+!trained_models/*.yml
+
+# ML cache (mount as volume)
+ml_cache/
+cache/
+*.cache
+
+# =============================================================================
+# NODE-RED & FLOWS (NOT NEEDED)
+# =============================================================================
+flows/
+c2_protected_files/
+flows_*.json
+docker/node-red/
+
+# =============================================================================
+# DOCUMENTATION & SCRIPTS
+# =============================================================================
+*.md
+!README.md
+docs/
+analysis/
+scripts/
+*.sh
+!docker/entrypoints/*.sh
+!docker/ml_training/*.sh
+
+# =============================================================================
+# OTHER SERVICES
+# =============================================================================
+monitoring/
+reports/
+api/
+betdaq/
+src/feeds/
+src/fast_results/
+
+# =============================================================================
+# CONFIG & COMPOSE FILES
+# =============================================================================
+docker-compose*.yml
+docker-compose*.yaml
+.dockerignore
+Makefile
+.flake8
+pyproject.toml
+
+# Environment files (use env vars)
+.env*
+!.env.example
+
+# =============================================================================
+# JUPYTER NOTEBOOKS (DEVELOPMENT ONLY)
+# =============================================================================
+*.ipynb
+.ipynb_checkpoints/
+
+# =============================================================================
+# INCLUDE ONLY ML-SPECIFIC FILES
+# =============================================================================
+# The following will be explicitly included:
+# src/horse_racing_ai/
+# src/contextual_ai/
+# src/ml_cache/
+# src/database/
+# src/logging/
+# src/error_handling/
+# docker/ml_training/
+# docker/requirements/ml-requirements.txt
+# config/ml_config.yaml
+# models/*.py (model definitions)
+# tests/ml/ (ML-specific tests)

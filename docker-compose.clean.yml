@@ -158,7 +158,7 @@ services:
     # Main pipeline coordinator
     command: ["python", "/app/tools/pipeline_coordinator.py"]
     healthcheck:
-      test: ["CMD", "python", "-c", "import redis; r=redis.Redis(host='redis', port=6379, password='${REDIS_PASSWORD:-redis_password_123}', decode_responses=True); print('Pipeline Status:', r.get('pipeline:status') or 'Ready')"]
+      test: ["CMD", "pgrep", "-f", "pipeline_coordinator"]
       interval: 60s
       timeout: 30s
       retries: 3
@@ -383,10 +383,66 @@ services:
       - production
 
   # =============================================================================
-  # OPTIONAL/SUPPORT SERVICES
+  # WORKFLOW & AUTOMATION SERVICES
   # =============================================================================
 
-  # Documentation Service - Public facing via Traefik
+  # Node-RED Enhanced - Workflow automation with v2.05 flows
+  node-red:
+    build:
+      context: .
+      dockerfile: docker/node-red/Dockerfile.enhanced
+      args:
+        USER_NAME: ${USER_NAME:-jc}
+        USER_ID: ${USER_ID:-1000}
+        GROUP_ID: ${GROUP_ID:-1000}
+    container_name: horse_racing_node_red
+    environment:
+      # Multi-database configuration
+      CARDS_DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/cards_horse_racing_db
+      RESULTS_DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/results_horse_racing_db
+      ADVANCED_DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/advanced_racing_metrics_db
+      # Legacy fallback (for compatibility)
+      DATABASE_URL: postgresql://horse_racing:${POSTGRES_PASSWORD:-secure_password_123}@postgres:5432/advanced_racing_metrics_db
+      REDIS_URL: redis://:${REDIS_PASSWORD:-redis_password_123}@redis:6379/0
+      NODE_RED_ENABLE_SAFE_MODE: "false"
+      NODE_RED_ENABLE_PROJECTS: "true"
+      FLOWS: flows.json
+      # Flow building configuration
+      FLOW_SOURCE_DIR: /app/flow_sources
+      BUILD_FLOWS_ON_START: "true"
+      FLOW_VERSION: v2.05
+      # Development settings
+      NODE_ENV: ${NODE_ENV:-production}
+      TZ: ${TZ:-UTC}
+    volumes:
+      - node_red_data:/data
+      - ./flows:/app/flow_sources:ro  # Flow source files
+      - ./logs:/app/logs:rw
+      - ./data:/app/data:ro  # Access to data files
+    ports:
+      - "1880:1880"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - horse_racing_network
+      - traefik-dev
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://0.0.0.0:1880/admin/"]
+      interval: 30s
+      timeout: 10s
+      start_period: 60s
+      retries: 3
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.node-red.rule=Host(`node-red.horserace.local`)"
+      - "traefik.http.routers.node-red.service=node-red"
+      - "traefik.http.services.node-red.loadbalancer.server.port=1880"
+
+  # Documentation Service - Project documentation with MkDocs
   docs:
     build:
       context: .
@@ -395,7 +451,7 @@ services:
     volumes:
       - ./docs:/docs/docs:ro
       - ./documentation:/docs/documentation:ro
-      - ./mkdocs-clean.yml:/docs/mkdocs.yml:ro
+      - ./docs/mkdocs-clean.yml:/docs/mkdocs.yml:ro
     # Remove port conflict - use Traefik instead
     expose:
       - "8000"  # MkDocs internal port
@@ -403,14 +459,48 @@ services:
       - horse_racing_network
       - traefik-dev  # Connect to Traefik network
     restart: unless-stopped  # Keep running for public access
-    profiles:
-      - docs
     labels:
       # Traefik configuration
       - "traefik.enable=true"
       - "traefik.http.routers.horserace-docs.rule=Host(`horserace-docs.local`)"
       - "traefik.http.routers.horserace-docs.service=horserace-docs"
       - "traefik.http.services.horserace-docs.loadbalancer.server.port=8000"
+
+  # Notification Service - System alerts and monitoring
+  ntfy:
+    image: binwiederhier/ntfy
+    container_name: horse_racing_ntfy
+    command:
+      - serve
+      - --cache-file
+      - /var/cache/ntfy/cache.db
+      - --auth-file
+      - /var/lib/ntfy/auth.db
+      - --auth-default-access
+      - deny-all
+    environment:
+      - NTFY_BASE_URL=http://localhost:8082
+      - NTFY_UPSTREAM_BASE_URL=https://ntfy.sh
+      - NTFY_LISTEN_HTTP=:80
+      - NTFY_AUTH_DEFAULT_ACCESS=deny-all
+    volumes:
+      - ntfy_cache:/var/cache/ntfy
+      - ntfy_config:/var/lib/ntfy
+    ports:
+      - "8082:80"
+    networks:
+      - horse_racing_network
+      - traefik-dev
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.ntfy.rule=Host(`ntfy.horserace.local`)"
+      - "traefik.http.routers.ntfy.service=ntfy"
+      - "traefik.http.services.ntfy.loadbalancer.server.port=80"
+
+  # =============================================================================
+  # OPTIONAL/SUPPORT SERVICES
+  # =============================================================================
 
   # News Analysis Service - Optional AI-powered news analysis
   news-analyzer:
@@ -503,34 +593,6 @@ services:
       - "traefik.http.routers.pgadmin.service=pgadmin"
       - "traefik.http.services.pgadmin.loadbalancer.server.port=80"
 
-  # Notification Service
-  ntfy:
-    image: binwiederhier/ntfy
-    container_name: horse_racing_ntfy
-    command:
-      - serve
-      - --cache-file
-      - /var/cache/ntfy/cache.db
-      - --auth-file
-      - /var/lib/ntfy/auth.db
-      - --auth-default-access
-      - deny-all
-    environment:
-      - NTFY_BASE_URL=http://localhost:8082
-      - NTFY_UPSTREAM_BASE_URL=https://ntfy.sh
-      - NTFY_LISTEN_HTTP=:80
-      - NTFY_AUTH_DEFAULT_ACCESS=deny-all
-    volumes:
-      - ntfy_cache:/var/cache/ntfy
-      - ntfy_config:/var/lib/ntfy
-    ports:
-      - "8082:80"
-    networks:
-      - horse_racing_network
-    restart: unless-stopped
-    profiles:
-      - notifications
-
 # =============================================================================
 # VOLUMES AND NETWORKS
 # =============================================================================
@@ -541,6 +603,8 @@ volumes:
   redis_data:
     driver: local
   pgadmin_data:
+    driver: local
+  node_red_data:
     driver: local
   ntfy_cache:
     driver: local
@@ -562,17 +626,20 @@ networks:
 # =============================================================================
 # Usage Examples:
 # 
-# Core services only:
+# Core services with automation & documentation:
+# docker-compose up postgres redis web-app data-pipeline ml-trainer node-red docs ntfy
+#
+# Core services only (minimal):
 # docker-compose up postgres redis web-app data-pipeline ml-trainer
 #
-# With documentation:
-# docker-compose --profile docs up
-#
 # With admin tools:
-# docker-compose --profile admin up
+# docker-compose up postgres redis web-app data-pipeline ml-trainer pgadmin
 #
 # Full development setup:
-# docker-compose --profile docs --profile admin --profile reports up
+# docker-compose --profile reports up
 #
 # Production minimal:
 # docker-compose up postgres redis web-app data-pipeline ml-trainer
+#
+# Production full with automation:
+# docker-compose up postgres redis web-app data-pipeline ml-trainer node-red docs ntfy pgadmin

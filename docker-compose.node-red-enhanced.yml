@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  horse_racing_node_red_enhanced:
+    build:
+      context: ./docker/node-red
+      dockerfile: Dockerfile.enhanced
+    container_name: horse_racing_node_red_enhanced_v205
+    environment:
+      - NODE_RED_ENABLE_PROJECTS=true
+      - NODE_RED_ENABLE_SAFE_MODE=false
+      - FLOWS=flows.json
+      - NODE_ENV=production
+      # Database configuration
+      - CARDS_DATABASE_URL=postgresql://horse_racing:horse_racing_password@postgres:5432/cards_horse_racing_db
+      - RESULTS_DATABASE_URL=postgresql://horse_racing:horse_racing_password@postgres:5432/results_horse_racing_db
+      - AI_DATABASE_URL=postgresql://horse_racing:horse_racing_password@postgres:5432/ai_horse_racing_db
+      - REDIS_URL=redis://:redis_password_123@redis:6379/0
+      # Flow build configuration
+      - FLOW_BUILD_ENABLED=true
+      - FLOW_VERSION=v2.05
+      - AUTO_DEPLOY=true
+    ports:
+      - "1880:1880"
+    volumes:
+      - ./data/node-red:/data
+      - ./flows:/data/flows-source:ro
+      - ./logs/node-red:/data/logs
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - horse_racing_network
+    depends_on:
+      - horse_racing_postgres_clean
+      - horse_racing_redis_clean
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:1880/c2/status"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 45s
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.nodered.rule=Host(`c2.horse-racing.local`)"
+      - "traefik.http.routers.nodered.entrypoints=web"
+      - "traefik.http.services.nodered.loadbalancer.server.port=1880"
+
+networks:
+  horse_racing_network:
+    external: true

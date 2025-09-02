@@ -1,0 +1,166 @@
+# =============================================================================
+# Documentation Service - Docker Ignore
+# =============================================================================
+# Optimized for MkDocs documentation serving
+# Includes: documentation files, markdown, configs
+# Excludes: source code, data files, logs, models
+# =============================================================================
+
+# =============================================================================
+# DEVELOPMENT & VERSION CONTROL
+# =============================================================================
+.git/
+.gitignore
+.github/
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.editorconfig
+
+# =============================================================================
+# SOURCE CODE (NOT NEEDED FOR DOCS)
+# =============================================================================
+src/
+api/
+betdaq/
+
+# =============================================================================
+# PYTHON FILES (NOT NEEDED)
+# =============================================================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+.env/
+.venv/
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Python testing
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+htmlcov/
+tests/
+test_*.py
+*_test.py
+pytest.ini
+
+# =============================================================================
+# NODE.JS FILES (NOT NEEDED)
+# =============================================================================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.npm
+.eslintcache
+.node_repl_history
+*.tsbuildinfo
+
+# =============================================================================
+# LOGS & TEMPORARY FILES
+# =============================================================================
+*.log
+*.tmp
+*.temp
+temp/
+tmp/
+logs/
+*.pid
+*.seed
+*.pid.lock
+
+# =============================================================================
+# DATA & MODEL FILES (NOT NEEDED)
+# =============================================================================
+data/
+backups/
+results/
+models/
+trained_models/
+ml_cache/
+cache/
+backup_auto_downloader/
+temp_card_processing/
+
+# =============================================================================
+# APPLICATION FILES (NOT NEEDED)
+# =============================================================================
+templates/
+static/
+flows/
+c2_protected_files/
+flows_*.json
+
+# =============================================================================
+# DOCKER & BUILD FILES (NOT NEEDED)
+# =============================================================================
+docker/ml_training/
+docker/pipeline_management/
+docker/node-red/
+docker/entrypoints/
+docker/requirements/
+
+# =============================================================================
+# CONFIG & COMPOSE FILES
+# =============================================================================
+docker-compose*.yml
+docker-compose*.yaml
+.dockerignore
+Makefile
+.flake8
+pyproject.toml
+
+# Environment files
+.env*
+!.env.example
+
+# =============================================================================
+# SCRIPTS (NOT NEEDED)
+# =============================================================================
+scripts/
+*.sh
+!docker/docs/*.sh
+
+# =============================================================================
+# INCLUDE ONLY DOCUMENTATION FILES
+# =============================================================================
+# The following will be explicitly included:
+# docs/
+# *.md
+# mkdocs*.yml
+# documentation/
+# analysis/ (if contains useful docs)
+# README.md
+# Any documentation assets

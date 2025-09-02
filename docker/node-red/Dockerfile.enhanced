@@ -1,0 +1,60 @@
+# 🏇 Horse Racing AI v2.05 - Enhanced Node-RED Container
+# =====================================================
+# Includes automatic flow building and deployment
+
+FROM nodered/node-red:latest
+
+USER root
+
+# Install system dependencies including build tools
+RUN apk add --no-cache \
+    python3 \
+    py3-pip \
+    curl \
+    git \
+    docker-cli \
+    bash \
+    tar \
+    gzip \
+    findutils \
+    coreutils
+
+# Setup Docker group for container management
+ARG DOCKER_GID=999
+RUN addgroup -g ${DOCKER_GID} docker 2>/dev/null || true
+RUN adduser node-red docker 2>/dev/null || true
+
+# Switch to node-red user
+USER node-red
+
+# Copy package.json to data directory (following Node-RED best practices)
+COPY --chown=node-red:node-red docker/node-red/package.json /data/package.json
+
+# Copy Node-RED configuration files
+COPY --chown=node-red:node-red docker/node-red/settings.js /data/settings.js
+
+# Copy enhanced entrypoint script
+COPY --chown=node-red:node-red docker/node-red/entrypoint-enhanced.sh /data/entrypoint-enhanced.sh
+
+# Copy build script (flows are mounted as volume at runtime)
+COPY --chown=node-red:node-red docker/node-red/build_final_flows_v2_05.sh /data/build_final_flows_v2_05.sh
+
+# Note: flows are mounted as volume at /app/flow_sources
+
+# Set working directory to data (where Node-RED expects user files)
+WORKDIR /data
+
+# Install Node-RED packages
+RUN npm install
+
+# Make scripts executable
+RUN chmod +x /data/entrypoint-enhanced.sh /data/build_final_flows_v2_05.sh
+
+# Create necessary directories
+RUN mkdir -p /data/flows-build /data/logs
+
+# Return to default working directory
+WORKDIR /usr/src/node-red
+
+# Use enhanced entrypoint that builds flows automatically
+CMD ["/data/entrypoint-enhanced.sh"]

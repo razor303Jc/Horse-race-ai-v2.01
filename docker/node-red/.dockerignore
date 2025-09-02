@@ -1,0 +1,185 @@
+# =============================================================================
+# Node-RED Service - Docker Ignore
+# =============================================================================
+# Optimized for Node-RED workflow automation with v2.05 flows
+# Includes: flows, Node-RED configs, automation scripts
+# Excludes: Python ML code, web templates, data files
+# =============================================================================
+
+# =============================================================================
+# DEVELOPMENT & VERSION CONTROL
+# =============================================================================
+.git/
+.gitignore
+.github/
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.editorconfig
+
+# =============================================================================
+# PYTHON FILES (NOT NEEDED FOR NODE-RED)
+# =============================================================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+.env/
+.venv/
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Python testing
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+htmlcov/
+tests/
+test_*.py
+*_test.py
+pytest.ini
+
+# =============================================================================
+# NODE.JS DEVELOPMENT
+# =============================================================================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.npm
+.eslintcache
+.node_repl_history
+*.tsbuildinfo
+
+# =============================================================================
+# LOGS & TEMPORARY FILES (MOUNTED AS VOLUMES)
+# =============================================================================
+*.log
+*.tmp
+*.temp
+temp/
+tmp/
+logs/
+*.pid
+*.seed
+*.pid.lock
+
+# =============================================================================
+# DATA FILES (MOUNTED AS VOLUMES)
+# =============================================================================
+data/
+backups/
+results/
+backup_auto_downloader/
+temp_card_processing/
+
+# =============================================================================
+# PYTHON APPLICATION FILES (NOT NEEDED)
+# =============================================================================
+src/web/
+src/horse_racing_ai/
+src/contextual_ai/
+src/feeds/
+src/fast_results/
+src/betdaq/
+api/
+betdaq/
+
+# =============================================================================
+# WEB TEMPLATES & STATIC FILES (NOT NEEDED)
+# =============================================================================
+templates/
+static/
+
+# =============================================================================
+# ML MODELS (NOT NEEDED)
+# =============================================================================
+models/
+trained_models/
+ml_cache/
+cache/
+*.cache
+
+# =============================================================================
+# DOCUMENTATION & SCRIPTS
+# =============================================================================
+*.md
+!README.md
+docs/
+analysis/
+scripts/
+*.sh
+!docker/entrypoints/*.sh
+!docker/node-red/*.sh
+!build_final_flows_v2_05.sh
+
+# =============================================================================
+# OTHER SERVICES
+# =============================================================================
+monitoring/
+reports/
+docker/ml_training/
+docker/pipeline_management/
+
+# =============================================================================
+# CONFIG & COMPOSE FILES
+# =============================================================================
+docker-compose*.yml
+docker-compose*.yaml
+.dockerignore
+Makefile
+.flake8
+pyproject.toml
+
+# Environment files (use env vars)
+.env*
+!.env.example
+
+# =============================================================================
+# PYTHON REQUIREMENTS (NOT NEEDED)
+# =============================================================================
+docker/requirements/
+requirements*.txt
+!docker/node-red/package.json
+
+# =============================================================================
+# INCLUDE ONLY NODE-RED SPECIFIC FILES
+# =============================================================================
+# The following will be explicitly included:
+# flows/
+# c2_protected_files/
+# flows_*.json
+# docker/node-red/
+# src/database/ (for database connections)
+# src/logging/ (for logging)
+# config/node_red_config.yaml

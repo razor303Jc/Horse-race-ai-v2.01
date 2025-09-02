@@ -1,0 +1,167 @@
+# =============================================================================
+# Data Pipeline Service - Docker Ignore  
+# =============================================================================
+# Optimized for data processing and pipeline automation
+# Includes: pipeline code, automation scripts, database modules
+# Excludes: web files, ML models, documentation, flows
+# =============================================================================
+
+# =============================================================================
+# DEVELOPMENT & VERSION CONTROL
+# =============================================================================
+.git/
+.gitignore
+.github/
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.editorconfig
+
+# =============================================================================
+# PYTHON DEVELOPMENT
+# =============================================================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+.env/
+.venv/
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Testing
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+htmlcov/
+tests/
+test_*.py
+*_test.py
+pytest.ini
+
+# =============================================================================
+# LOGS & TEMPORARY FILES (MOUNTED AS VOLUMES)
+# =============================================================================
+*.log
+*.tmp
+*.temp
+temp/
+tmp/
+logs/
+*.pid
+*.seed
+*.pid.lock
+
+# =============================================================================
+# LARGE DATA FILES (MOUNTED AS VOLUMES)
+# =============================================================================
+# Raw data files
+data/
+backups/
+results/
+backup_auto_downloader/
+temp_card_processing/
+
+# Cache files
+ml_cache/
+cache/
+*.cache
+
+# =============================================================================
+# WEB APPLICATION FILES (NOT NEEDED)
+# =============================================================================
+templates/
+static/
+src/web/
+
+# =============================================================================
+# ML MODELS (MOUNTED AS VOLUMES)
+# =============================================================================
+models/
+trained_models/
+
+# =============================================================================
+# NODE-RED & FLOWS (NOT NEEDED)
+# =============================================================================
+flows/
+c2_protected_files/
+flows_*.json
+docker/node-red/
+
+# =============================================================================
+# DOCUMENTATION & SCRIPTS
+# =============================================================================
+*.md
+!README.md
+docs/
+analysis/
+scripts/
+*.sh
+!docker/entrypoints/*.sh
+!docker/pipeline_management/*.sh
+
+# =============================================================================
+# OTHER SERVICES
+# =============================================================================
+monitoring/
+reports/
+api/
+betdaq/
+
+# =============================================================================
+# CONFIG & COMPOSE FILES
+# =============================================================================
+docker-compose*.yml
+docker-compose*.yaml
+.dockerignore
+Makefile
+.flake8
+pyproject.toml
+
+# Environment files (use env vars)
+.env*
+!.env.example
+
+# =============================================================================
+# INCLUDE ONLY PIPELINE-SPECIFIC FILES
+# =============================================================================
+# The following will be explicitly included:
+# src/automation/
+# src/database/
+# src/feeds/
+# src/fast_results/
+# src/logging/
+# src/error_handling/
+# docker/pipeline_management/
+# docker/requirements/pipeline-requirements.txt
+# config/pipeline_config.yaml

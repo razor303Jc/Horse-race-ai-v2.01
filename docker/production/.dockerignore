@@ -1,0 +1,184 @@
+# =============================================================================
+# Production Trading Service - Docker Ignore
+# =============================================================================
+# Optimized for live trading and strategy execution
+# Includes: trading code, API integrations, production configs
+# Excludes: development files, documentation, web UI, training data
+# =============================================================================
+
+# =============================================================================
+# DEVELOPMENT & VERSION CONTROL
+# =============================================================================
+.git/
+.gitignore
+.github/
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.editorconfig
+
+# =============================================================================
+# PYTHON DEVELOPMENT
+# =============================================================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+.env/
+.venv/
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Testing (exclude most tests for production)
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+htmlcov/
+tests/
+test_*.py
+*_test.py
+pytest.ini
+
+# =============================================================================
+# LOGS & TEMPORARY FILES (MOUNTED AS VOLUMES)
+# =============================================================================
+*.log
+*.tmp
+*.temp
+temp/
+tmp/
+logs/
+*.pid
+*.seed
+*.pid.lock
+
+# =============================================================================
+# TRAINING DATA (NOT NEEDED FOR PRODUCTION)
+# =============================================================================
+data/training/
+data/historical/
+backups/
+backup_auto_downloader/
+temp_card_processing/
+
+# =============================================================================
+# WEB APPLICATION FILES (NOT NEEDED)
+# =============================================================================
+templates/
+static/
+src/web/
+
+# =============================================================================
+# DEVELOPMENT ML FILES (NOT NEEDED)
+# =============================================================================
+src/contextual_ai/training/
+docker/ml_training/
+ml_cache/
+cache/
+*.cache
+
+# =============================================================================
+# NODE-RED & FLOWS (NOT NEEDED)
+# =============================================================================
+flows/
+c2_protected_files/
+flows_*.json
+docker/node-red/
+
+# =============================================================================
+# DOCUMENTATION & SCRIPTS
+# =============================================================================
+*.md
+!README.md
+docs/
+analysis/
+scripts/development/
+scripts/testing/
+*.sh
+!docker/entrypoints/*.sh
+
+# =============================================================================
+# OTHER SERVICES
+# =============================================================================
+monitoring/
+reports/
+docker/pipeline_management/
+
+# =============================================================================
+# CONFIG & COMPOSE FILES
+# =============================================================================
+docker-compose*.yml
+docker-compose*.yaml
+.dockerignore
+Makefile
+.flake8
+pyproject.toml
+
+# Environment files (use env vars)
+.env*
+!.env.example
+
+# =============================================================================
+# LARGE MODEL FILES (MOUNT TRAINED MODELS AS VOLUMES)
+# =============================================================================
+models/training/
+trained_models/*.pkl
+trained_models/*.joblib
+trained_models/*.h5
+trained_models/*.pt
+trained_models/*.pth
+
+# Keep model configuration and inference code
+!models/*.py
+!models/*.json
+!models/*.yaml
+!models/*.yml
+!trained_models/*.py
+!trained_models/*.json
+!trained_models/*.yaml
+!trained_models/*.yml
+
+# =============================================================================
+# INCLUDE ONLY PRODUCTION-SPECIFIC FILES
+# =============================================================================
+# The following will be explicitly included:
+# src/horse_racing_ai/production/
+# src/database/
+# src/logging/
+# src/error_handling/
+# api/ (trading APIs)
+# betdaq/ (betting exchange APIs)
+# config/production_config.yaml
+# docker/requirements/production-requirements.txt
+# models/ (inference models only)
+# trained_models/ (production models only)

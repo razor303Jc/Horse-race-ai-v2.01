@@ -70,6 +70,7 @@
 **Analytics Components:**
 
 - ✅ **AI Selections:** 252 horses/day with 76.5% AUC
+- ** Note to self** 252 to way to meny need to reduce, use disparancy from mean of top rated mean of other race conteanders & over top conpeating horses in othere races
 - ✅ **Power Ratings:** 8-component comprehensive assessment
 - ✅ **Speed & Pace Analysis:** Sectional breakdowns with tactical insights
 - ✅ **Monte Carlo Simulations:** 1000+ runs per race for probability modeling

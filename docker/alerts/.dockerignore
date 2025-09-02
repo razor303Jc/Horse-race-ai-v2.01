@@ -1,0 +1,167 @@
+# =============================================================================
+# Alerts Service - Docker Ignore
+# =============================================================================
+# Optimized for notification and alert management
+# Includes: alert code, notification templates, messaging APIs
+# Excludes: ML models, data files, flows, web UI
+# =============================================================================
+
+# =============================================================================
+# DEVELOPMENT & VERSION CONTROL
+# =============================================================================
+.git/
+.gitignore
+.github/
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.editorconfig
+
+# =============================================================================
+# PYTHON DEVELOPMENT
+# =============================================================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+.env/
+.venv/
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Testing
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+htmlcov/
+tests/
+test_*.py
+*_test.py
+pytest.ini
+
+# =============================================================================
+# LOGS & TEMPORARY FILES (MOUNTED AS VOLUMES)
+# =============================================================================
+*.log
+*.tmp
+*.temp
+temp/
+tmp/
+logs/
+*.pid
+*.seed
+*.pid.lock
+
+# =============================================================================
+# DATA FILES (NOT NEEDED)
+# =============================================================================
+data/
+backups/
+results/
+backup_auto_downloader/
+temp_card_processing/
+
+# =============================================================================
+# ML FILES (NOT NEEDED)
+# =============================================================================
+models/
+trained_models/
+ml_cache/
+cache/
+*.cache
+src/horse_racing_ai/
+src/contextual_ai/
+docker/ml_training/
+
+# =============================================================================
+# WEB APPLICATION FILES (MINIMAL NEEDED)
+# =============================================================================
+static/
+src/web/dashboard/
+src/web/admin/
+
+# =============================================================================
+# NODE-RED & FLOWS (NOT NEEDED)
+# =============================================================================
+flows/
+c2_protected_files/
+flows_*.json
+docker/node-red/
+
+# =============================================================================
+# OTHER SERVICES
+# =============================================================================
+src/feeds/
+src/fast_results/
+api/trading/
+betdaq/
+docker/pipeline_management/
+monitoring/
+reports/
+
+# =============================================================================
+# DOCUMENTATION & SCRIPTS
+# =============================================================================
+*.md
+!README.md
+docs/
+analysis/
+scripts/
+*.sh
+!docker/entrypoints/*.sh
+
+# =============================================================================
+# CONFIG & COMPOSE FILES
+# =============================================================================
+docker-compose*.yml
+docker-compose*.yaml
+.dockerignore
+Makefile
+.flake8
+pyproject.toml
+
+# Environment files (use env vars)
+.env*
+!.env.example
+
+# =============================================================================
+# INCLUDE ONLY ALERTS-SPECIFIC FILES
+# =============================================================================
+# The following will be explicitly included:
+# src/alerts/
+# src/database/
+# src/logging/
+# src/error_handling/
+# templates/alerts/ (email/SMS templates)
+# config/alerts_config.yaml
+# docker/requirements/alerts-requirements.txt

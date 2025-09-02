@@ -1,0 +1,147 @@
+# =============================================================================
+# Web Application Service - Docker Ignore
+# =============================================================================
+# Optimized for Flask/Django web application with minimal dependencies
+# Includes: source code, templates, static files, configuration
+# Excludes: data files, logs, models, testing files
+# =============================================================================
+
+# =============================================================================
+# DEVELOPMENT & VERSION CONTROL
+# =============================================================================
+.git/
+.gitignore
+.github/
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.editorconfig
+
+# =============================================================================
+# PYTHON DEVELOPMENT
+# =============================================================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+.env/
+.venv/
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Testing
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+htmlcov/
+tests/
+test_*.py
+*_test.py
+pytest.ini
+
+# =============================================================================
+# LOGS & TEMPORARY FILES
+# =============================================================================
+*.log
+*.tmp
+*.temp
+temp/
+tmp/
+logs/
+*.pid
+*.seed
+*.pid.lock
+
+# =============================================================================
+# DATA & MODELS (MOUNTED AS VOLUMES)
+# =============================================================================
+data/
+backups/
+results/
+models/
+trained_models/
+ml_cache/
+cache/
+
+# =============================================================================
+# DOCUMENTATION & SCRIPTS
+# =============================================================================
+*.md
+!README.md
+docs/
+analysis/
+scripts/
+*.sh
+!docker/entrypoints/*.sh
+
+# =============================================================================
+# OTHER SERVICES' FILES
+# =============================================================================
+# Node-RED flows (not needed for web app)
+flows/
+c2_protected_files/
+flows_*.json
+
+# ML training files
+docker/ml_training/
+monitoring/
+reports/
+
+# Betdaq API files (if separate)
+betdaq/
+
+# =============================================================================
+# CONFIG & COMPOSE FILES
+# =============================================================================
+docker-compose*.yml
+docker-compose*.yaml
+.dockerignore
+Makefile
+.flake8
+pyproject.toml
+
+# Environment files (use env vars)
+.env*
+!.env.example
+
+# =============================================================================
+# INCLUDE ONLY WEB-SPECIFIC FILES
+# =============================================================================
+# The following will be explicitly included:
+# src/web/
+# src/database/
+# src/logging/
+# templates/
+# static/
+# config/web_config.yaml
+# docker/requirements/web-requirements.txt
