@@ -497,8 +497,14 @@ async def get_race_details(race_id: str):
             horse_data = {
                 "horse_name": entry["horse_name"] or "Unknown",
                 "horse_number": i,
-                "jockey": entry["jockey_name"] if entry["jockey_name"] != "Unknown" else "TBA",
-                "trainer": entry["trainer_name"] if entry["trainer_name"] != "Unknown" else "TBA",
+                "jockey": (
+                    entry["jockey_name"] if entry["jockey_name"] != "Unknown" else "TBA"
+                ),
+                "trainer": (
+                    entry["trainer_name"]
+                    if entry["trainer_name"] != "Unknown"
+                    else "TBA"
+                ),
                 "age": None,
                 "country": None,
                 "color": None,
@@ -564,23 +570,23 @@ async def get_speed_ratings():
         conn = get_db_connection()
         if not conn:
             return {"error": "Database connection failed"}
-        
+
         cursor = conn.cursor()
         cursor.execute("SELECT COUNT(*) FROM speed_ratings;")
         count = cursor.fetchone()[0]
-        
+
         cursor.execute("SELECT * FROM speed_ratings LIMIT 10;")
         ratings = cursor.fetchall()
-        
+
         cursor.close()
         conn.close()
-        
+
         return {
             "status": "success",
             "total_ratings": count,
-            "sample_ratings": [dict(rating) for rating in ratings]
+            "sample_ratings": [dict(rating) for rating in ratings],
         }
-        
+
     except Exception as e:
         return {"error": f"Failed to fetch speed ratings: {str(e)}"}
 
@@ -1476,7 +1482,7 @@ async def get_available_horses():
         )
 
         horses_data = cursor.fetchall()
-        
+
         horses = []
         for horse in horses_data:
             horse_dict = dict(horse)
@@ -1485,13 +1491,17 @@ async def get_available_horses():
                     "id": str(horse_dict["id"]),
                     "name": horse_dict["horse_name"],
                     "horse_id": horse_dict["horse_id"],
-                    "created_at": horse_dict["created_at"].isoformat() if horse_dict["created_at"] else None,
+                    "created_at": (
+                        horse_dict["created_at"].isoformat()
+                        if horse_dict["created_at"]
+                        else None
+                    ),
                     # Provide default values for frontend compatibility
                     "age": None,
                     "sex": None,
                     "total_races": 0,
                     "wins": 0,
-                    "percentage_wins": 0
+                    "percentage_wins": 0,
                 }
             )
 
