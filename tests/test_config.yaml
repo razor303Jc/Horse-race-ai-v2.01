@@ -5,12 +5,12 @@ databases:
   postgres:
     host: localhost
     port: 5432
-    user: postgres
-    password: ""
+    user: horse_racing
+    password: "secure_password_123"
     databases:
-      - results
-      - cards  
-      - advanced_metrics
+      - cards_horse_racing_db
+      - results_horse_racing_db  
+      - advanced_racing_metrics_db
 
 test_data:
   primary_dataset: "2025-08-26"

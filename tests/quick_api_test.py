@@ -10,7 +10,7 @@ import requests
 import time
 from datetime import datetime
 
-NODE_RED_URL = "http://c2.horse-racing.local"
+NODE_RED_URL = "http://localhost:1880"
 
 
 def quick_api_test():

@@ -45,35 +45,36 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Database connection parameters - Updated to use production results database
+# Database connection parameters - Updated for Docker container environment
 DB_PARAMS = {
-    "host": "localhost",  # Use localhost for direct connection
+    "host": "horse_racing_postgres_clean",  # Docker container hostname
     "port": 5432,  # Standard PostgreSQL port
-    "database": "results",  # Production database with 11,284 records
+    "database": "results_horse_racing_db",  # Correct results database name
     "user": "horse_racing",
-    "password": "horse_racing_password",
+    "password": "secure_password_123",  # Correct password
 }
 
 
 def get_db_connection():
     """Get database connection to production results database"""
     try:
-        # Use DATABASE_URL from environment (for Docker) or fallback to localhost
+        # Use DATABASE_URL from environment (for Docker) or fallback to correct parameters
         database_url = os.environ.get("DATABASE_URL")
-        if database_url:
+        if database_url and "horse_racing_postgres_clean" in database_url:
+            # Environment variable exists and has correct host, use it
             return psycopg2.connect(database_url, cursor_factory=RealDictCursor)
         else:
-            # Use production results database with 11,284 records
+            # Use correct Docker container parameters
             return psycopg2.connect(
-                host="localhost",
+                host="horse_racing_postgres_clean",  # Correct Docker hostname
                 port=5432,
-                database="results",  # Production database
+                database="results_horse_racing_db",  # Correct database name
                 user="horse_racing",
-                password="horse_racing_password",
+                password="secure_password_123",  # Correct password
                 cursor_factory=RealDictCursor,
             )
     except Exception as e:
-        print(f"Database connection failed: {e}")
+        print(f"Results database connection failed: {e}")
         return None
 
 
@@ -81,16 +82,17 @@ def get_cards_db_connection():
     """Get connection to cards database (races, horses, jockeys, trainers)"""
     try:
         cards_url = os.environ.get("CARDS_DATABASE_URL")
-        if cards_url:
+        if cards_url and "horse_racing_postgres_clean" in cards_url:
+            # Environment variable exists and has correct host, use it
             return psycopg2.connect(cards_url, cursor_factory=RealDictCursor)
         else:
-            # Use cards database
+            # Use correct Docker container parameters
             return psycopg2.connect(
-                host="localhost",
+                host="horse_racing_postgres_clean",  # Correct Docker hostname
                 port=5432,
-                database="cards_horse_racing_db",  # Cards database
+                database="cards_horse_racing_db",  # Correct database name
                 user="horse_racing",
-                password="horse_racing_password",
+                password="secure_password_123",  # Correct password
                 cursor_factory=RealDictCursor,
             )
     except Exception as e:
@@ -102,16 +104,17 @@ def get_results_db_connection():
     """Get connection to results database (records, race results)"""
     try:
         results_url = os.environ.get("RESULTS_DATABASE_URL")
-        if results_url:
+        if results_url and "horse_racing_postgres_clean" in results_url:
+            # Environment variable exists and has correct host, use it
             return psycopg2.connect(results_url, cursor_factory=RealDictCursor)
         else:
-            # Use production results database (renamed to match .env)
+            # Use correct Docker container parameters
             return psycopg2.connect(
-                host="localhost",
+                host="horse_racing_postgres_clean",  # Correct Docker hostname
                 port=5432,
-                database="results_horse_racing_db",  # Renamed database
+                database="results_horse_racing_db",  # Correct database name
                 user="horse_racing",
-                password="horse_racing_password",
+                password="secure_password_123",  # Correct password
                 cursor_factory=RealDictCursor,
             )
     except Exception as e:
@@ -120,19 +123,20 @@ def get_results_db_connection():
 
 
 def get_advanced_db_connection():
-    """Get connection to advanced metrics database (ML features, analytics)"""
+    """Get connection to advanced metrics database"""
     try:
         advanced_url = os.environ.get("ADVANCED_DATABASE_URL")
-        if advanced_url:
+        if advanced_url and "horse_racing_postgres_clean" in advanced_url:
+            # Environment variable exists and has correct host, use it
             return psycopg2.connect(advanced_url, cursor_factory=RealDictCursor)
         else:
-            # Use advanced database
+            # Use correct Docker container parameters
             return psycopg2.connect(
-                host="localhost",
+                host="horse_racing_postgres_clean",  # Correct Docker hostname
                 port=5432,
-                database="advanced_horse_racing_db",  # Advanced analytics database
+                database="advanced_racing_metrics_db",  # Correct database name
                 user="horse_racing",
-                password="horse_racing_password",
+                password="secure_password_123",  # Correct password
                 cursor_factory=RealDictCursor,
             )
     except Exception as e:
@@ -194,11 +198,17 @@ async def get_database_stats():
     total_records = 0
 
     try:
-        # Cards database stats (races, horses, jockeys, trainers)
+        # Cards database stats (races, jockeys, trainers, race cards)
         cards_conn = get_cards_db_connection()
         if cards_conn:
             cursor = cards_conn.cursor()
-            cards_tables = ["races", "horses", "jockeys_stats", "trainers_stats"]
+            # Use actual table names that exist in cards_horse_racing_db
+            cards_tables = [
+                "races",
+                "jockeys_stats",
+                "trainers_stats",
+                "racecard_details",
+            ]
 
             for table in cards_tables:
                 try:
@@ -214,11 +224,12 @@ async def get_database_stats():
         else:
             stats["cards_database"] = "Connection failed"
 
-        # Results database stats (records, race results)
+        # Results database stats (race results, horses mapping)
         results_conn = get_results_db_connection()
         if results_conn:
             cursor = results_conn.cursor()
-            results_tables = ["records"]
+            # Use actual table names that exist in results_horse_racing_db
+            results_tables = ["race_results", "horses_mapping"]
 
             for table in results_tables:
                 try:
@@ -316,7 +327,7 @@ async def get_races_by_date(date: str):
             race_time,
             course,
             race_name,
-            class,
+            class_level,
             distance,
             surface,
             prize,
@@ -440,7 +451,7 @@ async def get_race_details(race_id: str):
     try:
         cursor = conn.cursor()
 
-        # Get race information from race_cards table
+        # Get race information from races table
         race_query = """
         SELECT 
             race_id,
@@ -448,14 +459,14 @@ async def get_race_details(race_id: str):
             race_time,
             course,
             race_type,
-            race_date,
+            date as race_date,
             race_name,
-            class,
+            class_level,
             distance,
             surface,
             prize,
             runners
-        FROM race_cards
+        FROM races
         WHERE race_id = %s
         LIMIT 1;
         """
@@ -466,78 +477,43 @@ async def get_race_details(race_id: str):
         if not race_info:
             raise HTTPException(status_code=404, detail="Race not found")
 
-        # Get horse entries for this race
+        # Get horse entries for this race from racecard_details
         entries_query = """
         SELECT 
-            h.name as horse_name,
-            h.age as horse_age,
-            h.country as horse_country,
-            h.color as horse_color,
-            h.sex as horse_sex,
-            h.total_races,
-            h.wins,
-            h.percentage_wins,
-            re.horse_number,
-            re.draw,
-            re.weight_kg,
-            re.jockey,
-            re.trainer,
-            re.odds,
-            re.favourite_position,
-            re.timeform_comments as form,
-            re.horse_rate as official_rating
-        FROM race_entries re
-        JOIN horses h ON re.horse_id = h.horse_id
-        WHERE re.race_id = %s
-        ORDER BY re.horse_number;
+            horse_name,
+            jockey_name,
+            trainer_name
+        FROM racecard_details
+        WHERE race_id = %s
+        ORDER BY id;
         """
 
         cursor.execute(entries_query, (race_id,))
         entries = cursor.fetchall()
 
-        # Process entries
+        # Process entries with simplified structure
         horses = []
-        for entry in entries:
-            # Calculate win probability from odds
-            try:
-                odds_str = entry["odds"] or "10/1"
-                if "/" in odds_str:
-                    num, den = map(float, odds_str.split("/"))
-                    decimal_odds = (num / den) + 1
-                else:
-                    decimal_odds = float(odds_str)
-                probability = (1 / decimal_odds) * 100
-            except (ValueError, TypeError, ZeroDivisionError):
-                probability = 0
-                decimal_odds = 0
-
-            # Calculate win rate
-            wins = entry["wins"] or 0
-            total_races = entry["total_races"] or 0
-            win_rate = (wins / total_races * 100) if total_races > 0 else 0
-
+        for i, entry in enumerate(entries, 1):
             horse_data = {
                 "horse_name": entry["horse_name"] or "Unknown",
-                "horse_number": entry["horse_number"],
-                "jockey": entry["jockey"] if entry["jockey"] != "Unknown" else "TBA",
-                "trainer": entry["trainer"] if entry["trainer"] != "Unknown" else "TBA",
-                "age": entry["horse_age"],
-                "country": entry["horse_country"],
-                "color": entry["horse_color"],
-                "sex": entry["horse_sex"],
-                "weight_kg": float(entry["weight_kg"]) if entry["weight_kg"] else 0,
-                "draw": entry["draw"],
-                "form": entry["form"] or "N/A",
-                "odds": entry["odds"] or "N/A",
-                "favourite_position": entry["favourite_position"],
-                "win_probability": round(probability, 1),
-                "decimal_odds": round(decimal_odds, 2),
-                "career_record": (
-                    f"{int(wins)}/{int(total_races)}" if total_races else "0/0"
-                ),
-                "win_rate": round(win_rate, 1),
-                "percentage_wins": entry["percentage_wins"],
-                "official_rating": entry["official_rating"],
+                "horse_number": i,
+                "jockey": entry["jockey_name"] if entry["jockey_name"] != "Unknown" else "TBA",
+                "trainer": entry["trainer_name"] if entry["trainer_name"] != "Unknown" else "TBA",
+                "age": None,
+                "country": None,
+                "color": None,
+                "sex": None,
+                "weight_kg": 0,
+                "draw": i,
+                "form": "N/A",
+                "odds": "N/A",
+                "favourite_position": None,
+                "win_probability": 0,
+                "decimal_odds": 0,
+                "career_record": "0/0",
+                "win_rate": 0,
+                "percentage_wins": 0,
+                "official_rating": 0,
             }
             horses.append(horse_data)
 
@@ -561,74 +537,52 @@ async def get_race_details(race_id: str):
                 else ""
             ),
             "race_name": race_info["race_name"] or f"Race {race_info['race_number']}",
-            "class": race_info["class"],
+            "class_level": race_info["class_level"],
             "distance": race_info["distance"],
             "surface": race_info["surface"],
             "prize": race_info["prize"],
             "total_runners": race_info["runners"],
             "horses": horses,
-            "data_source": "live_database",
-            "timestamp": datetime.now().isoformat(),
         }
 
-        return race_details
+        return {
+            "status": "success",
+            "race": race_details,
+            "message": f"Race details for {race_info['course']} Race {race_info['race_number']}",
+        }
 
-    except HTTPException:
-        raise
     except Exception as e:
-        conn.close()
+        if conn:
+            conn.close()
         raise HTTPException(status_code=500, detail=f"Database query failed: {str(e)}")
 
-        # Get horses for this race
-        horses_query = """
-        SELECT 
-            horse_name,
-            jockey_name,
-            trainer_name,
-            horse_age,
-            horse_weight_kg,
-            win_odds,
-            place_odds,
-            form,
-            career_wins,
-            career_runs
-        FROM records
-        WHERE race_id = %s AND horse_name != '0'
-        ORDER BY CAST(win_odds AS NUMERIC) ASC;
-        """
 
-        cursor.execute(horses_query, (race_id,))
-        horses = cursor.fetchall()
-
+@app.get("/api/speed_ratings")
+async def get_speed_ratings():
+    """Get speed ratings from database"""
+    try:
+        conn = get_db_connection()
+        if not conn:
+            return {"error": "Database connection failed"}
+        
+        cursor = conn.cursor()
+        cursor.execute("SELECT COUNT(*) FROM speed_ratings;")
+        count = cursor.fetchone()[0]
+        
+        cursor.execute("SELECT * FROM speed_ratings LIMIT 10;")
+        ratings = cursor.fetchall()
+        
         cursor.close()
         conn.close()
-
-        if not race_info and not horses:
-            raise HTTPException(status_code=404, detail="Race not found")
-
-        # Format response
-        response = {
-            "race_id": race_id,
-            "race_info": (
-                dict(race_info)
-                if race_info
-                else {
-                    "race_name": f"Race {race_id}",
-                    "course": "Unknown",
-                    "distance": "Unknown",
-                    "prize_money": 0,
-                }
-            ),
-            "horses": [dict(horse) for horse in horses],
-            "total_runners": len(horses),
-            "timestamp": datetime.now().isoformat(),
+        
+        return {
+            "status": "success",
+            "total_ratings": count,
+            "sample_ratings": [dict(rating) for rating in ratings]
         }
-
-        return response
-
+        
     except Exception as e:
-        conn.close()
-        raise HTTPException(status_code=500, detail=f"Database query failed: {str(e)}")
+        return {"error": f"Failed to fetch speed ratings: {str(e)}"}
 
 
 @app.get("/api/daily_races")
@@ -652,7 +606,7 @@ async def get_daily_races():
             race_time,
             course,
             race_name,
-            class,
+            class_level,
             distance,
             surface,
             prize,
@@ -850,10 +804,10 @@ async def get_betting_recommendations():
 
         if race_ids:
             results_query = """
-            SELECT race_id, horse, jockey, trainer, weight, draw, sp
-            FROM results_records 
-            WHERE race_id = ANY(%s) AND sp IS NOT NULL AND sp > 0
-            ORDER BY CAST(sp AS NUMERIC)
+            SELECT race_id, horse_name, position, time_seconds
+            FROM race_results 
+            WHERE race_id = ANY(%s) AND time_seconds IS NOT NULL AND time_seconds > 0
+            ORDER BY position
             """
             results_cursor.execute(results_query, (race_ids,))
             results = results_cursor.fetchall()
@@ -1500,73 +1454,56 @@ def serve_react_app():
 
 @app.get("/api/horses/available")
 async def get_available_horses():
-    """Get list of available horses for analysis"""
+    """Get list of available horses from horses_mapping"""
     try:
-        conn = get_cards_db_connection()
+        conn = get_db_connection()  # Use results database where horses_mapping is
         if not conn:
-            logger.error("Failed to connect to cards database")
+            logger.error("Failed to connect to results database")
             return JSONResponse(
                 status_code=500, content={"error": "Database connection failed"}
             )
 
         cursor = conn.cursor()
 
-        # Get horses from today's races first, then recent races
+        # Get horses from horses_mapping table
         cursor.execute(
             """
-            SELECT DISTINCT h.id, h.name, h.age, h.sex, h.total_races, h.wins, h.percentage_wins
-            FROM horses h
-            JOIN racecard_details rd ON h.id = rd.horse_id
-            JOIN races r ON rd.race_id = r.race_id
-            WHERE r.date >= '2025-08-25'  -- Recent races including today
-            ORDER BY h.name
+            SELECT id, horse_name, horse_id, created_at
+            FROM horses_mapping
+            ORDER BY horse_name
             LIMIT 50
         """
         )
 
         horses_data = cursor.fetchall()
-
-        if not horses_data:
-            # Fallback to any horses in the database
-            cursor.execute(
-                """
-                SELECT DISTINCT h.id, h.name, h.age, h.sex, h.total_races, h.wins, h.percentage_wins
-                FROM horses h
-                ORDER BY h.name
-                LIMIT 50
-            """
-            )
-            horses_data = cursor.fetchall()
-
+        
         horses = []
         for horse in horses_data:
             horse_dict = dict(horse)
             horses.append(
                 {
                     "id": str(horse_dict["id"]),
-                    "name": horse_dict["name"],
-                    "age": horse_dict.get("age"),
-                    "sex": horse_dict.get("sex"),
-                    "total_races": horse_dict.get("total_races"),
-                    "wins": horse_dict.get("wins"),
-                    "win_percentage": horse_dict.get("percentage_wins"),
+                    "name": horse_dict["horse_name"],
+                    "horse_id": horse_dict["horse_id"],
+                    "created_at": horse_dict["created_at"].isoformat() if horse_dict["created_at"] else None,
+                    # Provide default values for frontend compatibility
+                    "age": None,
+                    "sex": None,
+                    "total_races": 0,
+                    "wins": 0,
+                    "percentage_wins": 0
                 }
             )
 
         cursor.close()
         conn.close()
 
-        return {
-            "status": "success",
-            "horses": horses,
-            "count": len(horses),
-            "data_source": "live_database",
-        }
+        return {"horses": horses}
 
     except Exception as e:
-        logger.error(f"Error fetching available horses: {str(e)}")
+        logger.error(f"Error fetching horses: {e}")
         return JSONResponse(
-            status_code=500, content={"error": f"Failed to fetch horses: {str(e)}"}
+            status_code=500, content={"error": f"Database error: {str(e)}"}
         )
 
 
